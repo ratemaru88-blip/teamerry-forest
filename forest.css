@@ -322,30 +322,30 @@ body.camera-intro .forest-scene {
 }
 
 .ambient-particle--spark {
-  background-image: url("../ASSETS/effects/ambient/spark.webp");
+  background-image: url("./ASSETS/effects/ambient/spark.webp");
   mix-blend-mode: screen;
   filter: brightness(calc(0.86 + var(--glow-boost)));
 }
 
 .ambient-particle--leaf {
-  background-image: url("../ASSETS/effects/ambient/leaf-particle.webp");
+  background-image: url("./ASSETS/effects/ambient/leaf-particle.webp");
   animation-name: leafWander;
 }
 
 .ambient-particle--shimmer {
-  background-image: url("../ASSETS/effects/ambient/water-shimmer.webp");
+  background-image: url("./ASSETS/effects/ambient/water-shimmer.webp");
   mix-blend-mode: screen;
   animation-name: waterShimmer;
 }
 
 .ambient-particle--ripple {
-  background-image: url("../ASSETS/effects/ambient/lake-ripple.webp");
+  background-image: url("./ASSETS/effects/ambient/lake-ripple.webp");
   mix-blend-mode: screen;
   animation-name: lakeRipple;
 }
 
 .ambient-particle--glow {
-  background-image: url("../ASSETS/effects/ambient/glow.webp");
+  background-image: url("./ASSETS/effects/ambient/glow.webp");
   mix-blend-mode: screen;
   filter: brightness(calc(0.92 + var(--glow-boost)));
 }
@@ -527,7 +527,7 @@ body.camera-intro .forest-scene {
   border: 0;
   padding: 0;
   border-radius: 0;
-  background: url("../ASSETS/events/BottleMail_vo2.webp") center / contain no-repeat;
+  background: url("./ASSETS/events/BottleMail_vo2.webp") center / contain no-repeat;
   filter:
     drop-shadow(0 1px 1px rgba(15, 34, 26, 0.2))
     drop-shadow(0 3px 3px rgba(19, 56, 67, 0.14));
@@ -835,7 +835,7 @@ body.intro-finished .forest-portal--fortune {
   margin-top: -10px;
   border: 0;
   border-radius: 50%;
-  background: url("../ASSETS/effects/events/hidden-drop.webp") center / contain no-repeat;
+  background: url("./ASSETS/effects/events/hidden-drop.webp") center / contain no-repeat;
   box-shadow: 0 0 13px rgba(178, 248, 255, 0.58), 0 0 24px rgba(223, 255, 214, 0.32);
   cursor: pointer;
   opacity: 0;
@@ -904,7 +904,7 @@ body.intro-finished .hidden-drop {
   height: 58px;
   margin-left: -29px;
   margin-top: -29px;
-  background-image: url("../ASSETS/effects/events/ripple-expand.webp");
+  background-image: url("./ASSETS/effects/events/ripple-expand.webp");
   opacity: 0;
   animation: tapRipple 820ms ease-out forwards;
 }
@@ -920,7 +920,7 @@ body.intro-finished .hidden-drop {
   height: 86px;
   margin-left: -43px;
   margin-top: -43px;
-  background-image: url("../ASSETS/effects/events/glow-expand.webp");
+  background-image: url("./ASSETS/effects/events/glow-expand.webp");
   animation: memoryGlowExpand 980ms ease-out forwards;
 }
 
@@ -929,7 +929,7 @@ body.intro-finished .hidden-drop {
   height: 82px;
   margin-left: -41px;
   margin-top: -41px;
-  background-image: url("../ASSETS/effects/events/sparkle-burst.webp");
+  background-image: url("./ASSETS/effects/events/sparkle-burst.webp");
   animation: memorySparkleBurst 980ms ease-out forwards;
 }
 
@@ -938,7 +938,7 @@ body.intro-finished .hidden-drop {
   height: 102px;
   margin-left: -51px;
   margin-top: -51px;
-  background-image: url("../ASSETS/effects/events/ripple-expand.webp");
+  background-image: url("./ASSETS/effects/events/ripple-expand.webp");
   animation: memoryRippleExpand 1200ms ease-out forwards;
 }
 
@@ -947,7 +947,7 @@ body.intro-finished .hidden-drop {
   height: 90px;
   margin-left: -64px;
   margin-top: -45px;
-  background-image: url("../ASSETS/effects/events/memory-fog.webp");
+  background-image: url("./ASSETS/effects/events/memory-fog.webp");
   animation: memoryFog 1500ms ease-out forwards;
   mix-blend-mode: normal;
 }
