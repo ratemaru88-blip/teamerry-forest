@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeaMerry Forest</title>
+  <link rel="stylesheet" href="SOURCE/forest.css">
+</head>
+<body>
+  <main class="forest-scene" aria-label="TeaMerryの森を探索する入口">
+    <div class="forest-stage viewport">
+      <div id="stage" class="forest-world world">
+        <div class="forest-background" aria-hidden="true">
+          <video class="forest-bg is-visible" data-bg-video data-current-src="./ASSETS/backgrounds/forest_day_v02.webm" autoplay muted loop playsinline src="./ASSETS/backgrounds/forest_day_v02.webm"></video>
+          <video class="forest-bg" data-bg-video autoplay muted loop playsinline></video>
+        </div>
+
+        <div class="map-content forest-ui" aria-label="森の中にある入口">
+          <img class="forest-milkyway" src="./ASSETS/effects/sky_milkyway_v02.png" alt="" aria-hidden="true">
+          <img class="forest-moon" alt="" aria-hidden="true">
+
+          <div class="map-atmosphere" aria-hidden="true">
+            <span class="map-mist map-mist--valley"></span>
+            <span class="map-mist map-mist--left-slope"></span>
+            <span class="map-mist map-mist--river"></span>
+            <span class="map-mist map-mist--trees"></span>
+          </div>
+          <div class="forest-creatures" aria-hidden="true"></div>
+          <div class="forest-drift" aria-hidden="true"></div>
+
+          <a class="forest-portal forest-portal--game" href="index.html" aria-label="雫ゲームへ">
+            <img src="./ASSETS/ui/Forest_Dew_Game_J.webp" alt="">
+          </a>
+
+          <a class="forest-portal forest-portal--fortune" href="https://ratemaru88.wixsite.com/teamerry/%E3%83%86%E3%82%B9%E3%83%88" aria-label="フォーチュンクッキー">
+            <img src="./ASSETS/ui/FortuneCookie.webp" alt="">
+            <span class="portal-caption">キッズおみくじ</span>
+          </a>
+
+          <a class="forest-portal forest-portal--shrine" href="https://ratemaru88.wixsite.com/teamerry/%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E3%83%9D%E3%83%AA%E3%82%B7%E3%83%BC" aria-label="森のおみくじ">
+            <img src="./ASSETS/ui/Omikuji_J.webp" alt="">
+          </a>
+
+          <a class="forest-portal forest-portal--onsen" href="https://www.youtube.com/shorts/iSJxSmvZMes" aria-label="お茶の参り温泉郷">
+            <img src="./ASSETS/ui/chachajii_onsenkyou_J.webp" alt="">
+          </a>
+
+          <a class="forest-portal forest-portal--character" href="https://ratemaru88.wixsite.com/teamerry/about-5-1" aria-label="キャラクター">
+            <img src="./ASSETS/ui/characte_J%20.webp" alt="">
+          </a>
+
+          <a class="forest-portal forest-portal--artwork" href="https://ratemaru88.wixsite.com/teamerry/about-1-2" aria-label="作品">
+            <img src="./ASSETS/ui/Artwork_Falls_J.webp" alt="">
+          </a>
+
+          <a class="forest-portal forest-portal--blog" href="https://ratemaru88.wixsite.com/teamerry/%E6%97%A7kakaoblend" aria-label="ブログ">
+            <img src="./ASSETS/ui/Memory_Cave_J2.webp" alt="">
+          </a>
+
+          <button class="forest-portal forest-portal--contact" type="button" data-coming-soon="お問い合わせ" aria-label="お問い合わせ">
+            <img src="./ASSETS/ui/toiawase.webp" alt="">
+          </button>
+
+          <button class="hidden-drop hidden-drop--one" type="button" aria-label="光る雫を調べる"></button>
+          <button class="hidden-drop hidden-drop--two" type="button" aria-label="光る雫を調べる"></button>
+          <button class="hidden-drop hidden-drop--three" type="button" aria-label="光る雫を調べる"></button>
+        </div>
+      </div>
+
+      <div class="forest-vignette" aria-hidden="true"></div>
+    </div>
+
+    <div class="tap-effects" aria-hidden="true"></div>
+    <div class="mint-guide" aria-hidden="true">
+      <img class="mint-guide__image mint-guide__image--normal" src="./ASSETS/effects/mint-guide.webp" alt="">
+      <img class="mint-guide__image mint-guide__image--blink" src="./ASSETS/effects/mint-guide-blink.webp" alt="">
+    </div>
+    <div class="mobile-walker" aria-hidden="true">
+      <div class="mobile-walker__bubble"></div>
+      <div class="mobile-walker__sweat"></div>
+      <div class="mobile-walker__bento"></div>
+      <div class="mobile-walker__sleep-mark">Zzz</div>
+      <img class="mobile-walker__image" src="./ASSETS/effects/mint-guide.webp" alt="">
+    </div>
+
+    <section class="forest-title" aria-label="TeaMerry Forest">
+      <p>Tiny World in a Teacup</p>
+      <h1>TeaMerry Forest</h1>
+    </section>
+
+    <p class="forest-toast" role="status" aria-live="polite"></p>
+    <p class="forest-narration" role="status" aria-live="polite"></p>
+
+    <aside class="debug-panel" aria-label="Debug Panel">
+      <div class="debug-panel__header">
+        <strong>Debug Panel</strong>
+        <button class="debug-panel__close" type="button" data-debug-hide aria-label="Debug Panelを閉じる">x</button>
+      </div>
+      <div class="debug-panel__grid">
+        <button type="button" data-debug-time="day">昼モード</button>
+        <button type="button" data-debug-time="evening-a">夕方前モード</button>
+        <button type="button" data-debug-time="evening-b">夕焼けモード</button>
+        <button type="button" data-debug-time="night">夜モード</button>
+        <button type="button" data-debug-toggle="mist" aria-pressed="false">霧OFF</button>
+        <button type="button" data-debug-toggle="walker" aria-pressed="true">Walker ON</button>
+        <button type="button" data-debug-action="bird">鳥出現テスト</button>
+        <button type="button" data-debug-action="moon">月表示テスト</button>
+        <button type="button" data-debug-action="super-moon">スーパームーン</button>
+        <button type="button" data-debug-action="milkyway">天の川表示</button>
+        <button type="button" data-debug-action="bottle">ボトルメールテスト</button>
+        <button type="button" data-debug-action="memory-effect">雫エフェクト</button>
+        <button type="button" data-debug-action="se">SE再生テスト</button>
+        <button type="button" data-debug-action="fast-scroll">高速反応テスト</button>
+        <button type="button" data-debug-action="angry">怒り反応テスト</button>
+        <button type="button" data-debug-action="side-move">左右移動テスト</button>
+        <button type="button" data-debug-action="kakao-run">Kakao run test</button>
+        <button type="button" data-debug-action="kakao-lunch">Kakao lunch test</button>
+        <button type="button" data-debug-action="kakao-sleep">Kakao sleep test</button>
+        <button type="button" data-debug-action="wake-up">Wake up test</button>
+      </div>
+      <label class="debug-panel__fast">
+        <input type="checkbox" data-debug-fast>
+        <span>高速モード</span>
+      </label>
+      <label class="debug-panel__fast">
+        <input type="checkbox" data-debug-idle-fast>
+        <span>Idle timer fast mode</span>
+      </label>
+    </aside>
+  </main>
+
+  <script src="SOURCE/forest.js"></script>
+</body>
+</html>
