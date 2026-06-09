@@ -46,19 +46,19 @@
   const backgroundSlots = {
     day: {
       label: "昼",
-      src: "./ASSETS/backgrounds/forest_day_v02.webm",
+      src: "./ASSETS/backgrounds/決定稿_Webｍ/forest_day_v02.webm",
     },
     "evening-a": {
       label: "夕方前",
-      src: "./ASSETS/backgrounds/forest_evening_A_v02.webm",
+      src: "./ASSETS/backgrounds/決定稿_Webｍ/forest_evening_A_v02..webm",
     },
     "evening-b": {
       label: "夕焼け",
-      src: "./ASSETS/backgrounds/forest_evening_B_v02.webm",
+      src: "./ASSETS/backgrounds/決定稿_Webｍ/forest_evening_B_v02.webm",
     },
     night: {
       label: "夜",
-      src: "./ASSETS/backgrounds/forest_night_v02.webm",
+      src: "./ASSETS/backgrounds/決定稿_Webｍ/forest_night_v02.webm",
     },
   };
   let visibleBackgroundIndex = 0;
@@ -90,22 +90,22 @@
   };
   const moonPhases = {
     crescent: {
-      src: "./ASSETS/effects/moon.small.crescent2.png",
+      src: "./ASSETS/images/effects　/moon.small.crescent2.png",
       size: 66,
       opacity: 0.64,
     },
     half: {
-      src: "./ASSETS/effects/moon.halt1.png",
+      src: "./ASSETS/images/effects　/moon.halt1.png",
       size: 90,
       opacity: 0.68,
     },
     full: {
-      src: "./ASSETS/effects/moon.hull.png",
+      src: "./ASSETS/images/effects　/moon.hull.png",
       size: 108,
       opacity: 0.72,
     },
     super: {
-      src: "./ASSETS/effects/moon.big.full.png",
+      src: "./ASSETS/images/effects　/moon.big.full.png",
       size: 160,
       opacity: 0.78,
     },
@@ -1074,7 +1074,7 @@
   const setBirdFrame = (bird, frame) => {
     const image = bird.querySelector("img");
     if (image) {
-      image.src = `./ASSETS/birds/character/${frame}`;
+      image.src = `./ASSETS/images/events/birds/character/${frame}`;
     }
   };
 
@@ -1120,7 +1120,7 @@
     bird.style.setProperty("--bird-x", `${perch.x}%`);
     bird.style.setProperty("--bird-y", `${perch.y}%`);
     bird.style.setProperty("--bird-scale", perch.scale);
-    image.src = "./ASSETS/birds/character/bird-idle.webp";
+    image.src = "./ASSETS/images/events/birds/character/bird-idle.webp";
     image.alt = "";
     bird.append(image);
     creatures.append(bird);
