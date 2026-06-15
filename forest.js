@@ -17,6 +17,8 @@
   const debugPanel = document.querySelector(".debug-panel");
   const mobileWalker = document.querySelector(".mobile-walker");
   const mobileWalkerBubble = document.querySelector(".mobile-walker__bubble");
+  const kakaoWalker = document.querySelector(".kakao-walker");
+  const kakaoWalkerImage = document.querySelector(".kakao-walker__image");
 
   if (!scene || !map) {
     return;
@@ -40,6 +42,7 @@
   const isCoarsePointer = window.matchMedia("(hover: none), (pointer: coarse)").matches;
   const isFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const mobileWalkerQuery = window.matchMedia("(max-width: 759px)");
+  const kakaoWalkerQuery = window.matchMedia("(min-width: 760px)");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const randomBetween = (min, max) => min + Math.random() * (max - min);
   const pick = (items) => items[Math.floor(Math.random() * items.length)];
@@ -205,6 +208,69 @@
     restTimers: [],
     restStage: "",
     raf: 0,
+  };
+
+  const kakaoWalkerAssets = {
+    walk: {
+      up: [
+        "./ASSETS/images/events/kakao_walk/kakao_back_A1.webp",
+      ],
+      down: [
+        "./ASSETS/images/events/kakao_walk/kakao_front_A1.webp",
+        "./ASSETS/images/events/kakao_walk/kakao_front_left1.webp",
+        "./ASSETS/images/events/kakao_walk/kakao_front_A1.webp",
+        "./ASSETS/images/events/kakao_walk/kakao_front_right_1.webp",
+      ],
+      left: [
+        "./ASSETS/images/events/kakao_walk/kakao_left_1.webp",
+        "./ASSETS/images/events/kakao_walk/kakao_left_2.webp",
+      ],
+      right: [
+        "./ASSETS/images/events/kakao_walk/kakao_right_1.webp",
+        "./ASSETS/images/events/kakao_walk/kakao_right_2.webp",
+      ],
+    },
+    bento: [
+      "./ASSETS/images/events/kakao_walk/kakao_bentou_A1.webp",
+      "./ASSETS/images/events/kakao_walk/kakao_bentou_A2.webp",
+    ],
+    nap: [
+      "./ASSETS/images/events/kakao_walk/kakao_napping_A1.webp",
+      "./ASSETS/images/events/kakao_walk/kakao_napping_A2.webp",
+      "./ASSETS/images/events/kakao_walk/kakao_napping_A3.webp",
+    ],
+  };
+
+  const kakaoWalkPath = [
+    { x: 285, y: 956 },
+    { x: 352, y: 928 },
+    { x: 438, y: 908 },
+    { x: 525, y: 866 },
+    { x: 584, y: 820 },
+    { x: 610, y: 778 },
+    { x: 566, y: 748 },
+    { x: 505, y: 736 },
+    { x: 552, y: 706 },
+    { x: 632, y: 684 },
+  ];
+
+  const kakaoWalkerState = {
+    enabled: false,
+    mode: "walk",
+    x: kakaoWalkPath[0].x,
+    y: kakaoWalkPath[0].y,
+    pointIndex: 0,
+    direction: 1,
+    lastTime: 0,
+    raf: 0,
+    restTimer: 0,
+    frameTimer: 0,
+    wakeTimer: 0,
+    frameIndex: 0,
+    walkFrameIndex: 0,
+    walkFrameElapsed: 0,
+    walkFrameDelay: 360,
+    walkDirection: "down",
   };
 
   const centerCamera = () => {
@@ -1018,6 +1084,194 @@
     walkerState.stopTimer = window.setTimeout(finishWalkerScroll, reduceMotion ? 260 : 760);
   };
 
+  const isKakaoWalkerActive = () => Boolean(kakaoWalker && kakaoWalkerImage && kakaoWalkerQuery.matches && !reduceMotion);
+
+  const setKakaoImage = (src) => {
+    if (kakaoWalkerImage && kakaoWalkerImage.getAttribute("src") !== src) {
+      kakaoWalkerImage.src = src;
+    }
+  };
+
+  const getKakaoDirection = (from, to) => {
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      return dx >= 0 ? "right" : "left";
+    }
+
+    return dy >= 0 ? "down" : "up";
+  };
+
+  const setKakaoWalkImage = (direction, elapsedMs) => {
+    const frames = kakaoWalkerAssets.walk[direction] || kakaoWalkerAssets.walk.down;
+
+    if (kakaoWalkerState.walkDirection !== direction) {
+      kakaoWalkerState.walkDirection = direction;
+      kakaoWalkerState.walkFrameIndex = 0;
+      kakaoWalkerState.walkFrameElapsed = 0;
+      kakaoWalkerState.walkFrameDelay = randomBetween(320, 400);
+    } else if (frames.length > 1) {
+      kakaoWalkerState.walkFrameElapsed += elapsedMs;
+
+      if (kakaoWalkerState.walkFrameElapsed >= kakaoWalkerState.walkFrameDelay) {
+        kakaoWalkerState.walkFrameElapsed = 0;
+        kakaoWalkerState.walkFrameIndex = (kakaoWalkerState.walkFrameIndex + 1) % frames.length;
+        kakaoWalkerState.walkFrameDelay = randomBetween(320, 400);
+      }
+    }
+
+    setKakaoImage(frames[kakaoWalkerState.walkFrameIndex % frames.length]);
+  };
+
+  const setKakaoMode = (mode) => {
+    if (!kakaoWalker) {
+      return;
+    }
+
+    kakaoWalkerState.mode = mode;
+    if (mode === "walk") {
+      window.clearInterval(kakaoWalkerState.frameTimer);
+      kakaoWalkerState.frameTimer = 0;
+      kakaoWalkerState.walkFrameElapsed = 0;
+    }
+    kakaoWalker.classList.toggle("is-walking", mode === "walk");
+    kakaoWalker.classList.toggle("is-bento", mode === "bento");
+    kakaoWalker.classList.toggle("is-nap", mode === "nap");
+    kakaoWalker.classList.toggle("is-wake", mode === "wake");
+  };
+
+  const clearKakaoTimers = () => {
+    window.clearTimeout(kakaoWalkerState.restTimer);
+    window.clearInterval(kakaoWalkerState.frameTimer);
+    window.clearTimeout(kakaoWalkerState.wakeTimer);
+    kakaoWalkerState.restTimer = 0;
+    kakaoWalkerState.frameTimer = 0;
+    kakaoWalkerState.wakeTimer = 0;
+  };
+
+  const scheduleKakaoRest = () => {
+    if (!kakaoWalkerState.enabled) {
+      return;
+    }
+
+    window.clearTimeout(kakaoWalkerState.restTimer);
+    kakaoWalkerState.restTimer = window.setTimeout(() => {
+      startKakaoRest(Math.random() < 0.54 ? "bento" : "nap");
+    }, randomBetween(16000, 26000));
+  };
+
+  const startKakaoFrameLoop = (frames, interval) => {
+    kakaoWalkerState.frameIndex = 0;
+    setKakaoImage(frames[0]);
+    window.clearInterval(kakaoWalkerState.frameTimer);
+    kakaoWalkerState.frameTimer = window.setInterval(() => {
+      kakaoWalkerState.frameIndex = (kakaoWalkerState.frameIndex + 1) % frames.length;
+      setKakaoImage(frames[kakaoWalkerState.frameIndex]);
+    }, interval);
+  };
+
+  const wakeKakaoWalker = () => {
+    if (!kakaoWalkerState.enabled) {
+      return;
+    }
+
+    window.clearInterval(kakaoWalkerState.frameTimer);
+    kakaoWalkerState.frameTimer = 0;
+    setKakaoMode("wake");
+    setKakaoImage(kakaoWalkerAssets.walk.down[0]);
+    kakaoWalkerState.wakeTimer = window.setTimeout(() => {
+      setKakaoMode("walk");
+      kakaoWalkerState.lastTime = performance.now();
+      scheduleKakaoRest();
+    }, 900);
+  };
+
+  function startKakaoRest(kind) {
+    if (!kakaoWalkerState.enabled || kakaoWalkerState.mode !== "walk") {
+      scheduleKakaoRest();
+      return;
+    }
+
+    setKakaoMode(kind);
+
+    if (kind === "bento") {
+      startKakaoFrameLoop(kakaoWalkerAssets.bento, 760);
+      kakaoWalkerState.wakeTimer = window.setTimeout(wakeKakaoWalker, randomBetween(5200, 7200));
+    } else {
+      startKakaoFrameLoop(kakaoWalkerAssets.nap, 920);
+      kakaoWalkerState.wakeTimer = window.setTimeout(wakeKakaoWalker, randomBetween(7600, 9800));
+    }
+  }
+
+  function updateKakaoWalkerFrame(now) {
+    if (!kakaoWalkerState.enabled || !kakaoWalker) {
+      kakaoWalkerState.raf = 0;
+      return;
+    }
+
+    if (kakaoWalkerState.mode === "walk") {
+      const from = kakaoWalkPath[kakaoWalkerState.pointIndex];
+      const nextIndex = kakaoWalkerState.pointIndex + kakaoWalkerState.direction;
+      const to = kakaoWalkPath[nextIndex];
+
+      if (to) {
+        const elapsed = Math.min(90, Math.max(0, now - kakaoWalkerState.lastTime)) / 1000;
+        const speed = 14;
+        const dx = to.x - kakaoWalkerState.x;
+        const dy = to.y - kakaoWalkerState.y;
+        const distance = Math.hypot(dx, dy);
+        const step = speed * elapsed;
+        const walkDirection = getKakaoDirection(from, to);
+
+        setKakaoWalkImage(walkDirection, elapsed * 1000);
+
+        if (distance <= step) {
+          kakaoWalkerState.x = to.x;
+          kakaoWalkerState.y = to.y;
+          kakaoWalkerState.pointIndex = nextIndex;
+
+          if (kakaoWalkerState.pointIndex === 0 || kakaoWalkerState.pointIndex === kakaoWalkPath.length - 1) {
+            kakaoWalkerState.direction *= -1;
+          }
+        } else if (distance > 0) {
+          kakaoWalkerState.x += dx / distance * step;
+          kakaoWalkerState.y += dy / distance * step;
+        }
+      }
+    }
+
+    kakaoWalker.style.setProperty("--kakao-x", `${kakaoWalkerState.x.toFixed(1)}px`);
+    kakaoWalker.style.setProperty("--kakao-y", `${kakaoWalkerState.y.toFixed(1)}px`);
+    kakaoWalkerState.lastTime = now;
+    kakaoWalkerState.raf = window.requestAnimationFrame(updateKakaoWalkerFrame);
+  }
+
+  const syncKakaoWalker = () => {
+    const active = isKakaoWalkerActive();
+    kakaoWalkerState.enabled = active;
+
+    if (!kakaoWalker) {
+      return;
+    }
+
+    kakaoWalker.classList.toggle("is-active", active);
+
+    if (!active) {
+      clearKakaoTimers();
+      setKakaoMode("walk");
+      return;
+    }
+
+    if (!kakaoWalkerState.raf) {
+      kakaoWalkerState.lastTime = performance.now();
+      setKakaoMode("walk");
+      setKakaoImage(kakaoWalkerAssets.walk.down[0]);
+      kakaoWalkerState.raf = window.requestAnimationFrame(updateKakaoWalkerFrame);
+      scheduleKakaoRest();
+    }
+  };
+
   const addAmbientParticle = () => {
     if (!mapAtmosphere || reduceMotion) {
       return;
@@ -1637,6 +1891,7 @@
     }
 
     syncWalkerEnabled();
+    syncKakaoWalker();
     updateWalkerTargetFromScroll();
   });
 
@@ -1694,6 +1949,7 @@
   applyTimePreset();
   startRiverSound();
   syncWalkerEnabled();
+  syncKakaoWalker();
   updateWalkerTargetFromScroll();
   const handleWalkerMediaChange = () => {
     syncWalkerEnabled();
@@ -1703,6 +1959,14 @@
     mobileWalkerQuery.addEventListener("change", handleWalkerMediaChange);
   } else if (typeof mobileWalkerQuery.addListener === "function") {
     mobileWalkerQuery.addListener(handleWalkerMediaChange);
+  }
+  const handleKakaoWalkerMediaChange = () => {
+    syncKakaoWalker();
+  };
+  if (typeof kakaoWalkerQuery.addEventListener === "function") {
+    kakaoWalkerQuery.addEventListener("change", handleKakaoWalkerMediaChange);
+  } else if (typeof kakaoWalkerQuery.addListener === "function") {
+    kakaoWalkerQuery.addListener(handleKakaoWalkerMediaChange);
   }
   window.setInterval(applyTimePreset, 60 * 1000);
 

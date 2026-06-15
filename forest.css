@@ -748,6 +748,94 @@ body.intro-finished .forest-portal--fortune .portal-caption {
   filter: brightness(1.14) drop-shadow(0 0 10px rgba(255, 246, 187, 0.38));
 }
 
+.kakao-walker {
+  position: absolute;
+  left: var(--kakao-x, 360px);
+  top: var(--kakao-y, 920px);
+  z-index: 4;
+  display: none;
+  width: var(--kakao-size, 52px);
+  height: 86px;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -100%);
+  transform-origin: center bottom;
+  transition: opacity 900ms ease, width 360ms ease;
+  will-change: left, top;
+}
+
+body.intro-finished .kakao-walker.is-active {
+  opacity: 0.92;
+}
+
+.kakao-walker__image {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  translate: -50% 0;
+  filter: drop-shadow(0 8px 10px rgba(5, 14, 10, 0.32));
+  transform-origin: center bottom;
+  animation: kakaoIdle 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.kakao-walker.is-walking .kakao-walker__image {
+  animation: kakaoStep 820ms ease-in-out infinite;
+}
+
+.kakao-walker.is-bento,
+.kakao-walker.is-nap {
+  width: var(--kakao-rest-size, 70px);
+}
+
+.kakao-walker.is-bento .kakao-walker__image {
+  animation: kakaoBento 1.3s ease-in-out infinite;
+}
+
+.kakao-walker.is-nap .kakao-walker__image {
+  filter: drop-shadow(0 8px 10px rgba(5, 14, 10, 0.32)) brightness(0.88);
+  animation: kakaoNap 2.8s ease-in-out infinite;
+}
+
+.kakao-walker.is-wake .kakao-walker__image {
+  animation: kakaoWake 520ms ease-out 2;
+}
+
+.kakao-walker::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  z-index: -1;
+  width: 48px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(4, 10, 7, 0.25), transparent 68%);
+  translate: -50% 0;
+}
+
+.kakao-walker__sleep-bubble {
+  position: absolute;
+  right: -14px;
+  top: -10px;
+  display: block;
+  width: 32px;
+  height: auto;
+  opacity: 0;
+  filter: drop-shadow(0 4px 7px rgba(6, 14, 10, 0.24));
+  pointer-events: none;
+  transform-origin: left bottom;
+}
+
+.kakao-walker.is-nap .kakao-walker__sleep-bubble {
+  opacity: 0.9;
+  animation: kakaoSleepBubble 2.2s ease-in-out infinite;
+}
+
 .forest-portal--game {
   --portal-size: 160px;
   --portal-opacity: 0.94;
@@ -1474,6 +1562,71 @@ body.debug-panel-hidden .debug-panel {
   }
 }
 
+@keyframes kakaoIdle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-2px) rotate(1deg);
+  }
+}
+
+@keyframes kakaoStep {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-2px) rotate(1deg);
+  }
+}
+
+@keyframes kakaoBento {
+  0%,
+  100% {
+    transform: translateY(4px) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(1px) rotate(1deg);
+  }
+}
+
+@keyframes kakaoNap {
+  0%,
+  100% {
+    transform: translateY(8px) rotate(-4deg);
+  }
+
+  50% {
+    transform: translateY(10px) rotate(-5deg);
+  }
+}
+
+@keyframes kakaoWake {
+  0% {
+    transform: translateY(8px) rotate(-5deg) scaleY(0.92);
+  }
+
+  100% {
+    transform: translateY(0) rotate(0deg) scaleY(1);
+  }
+}
+
+@keyframes kakaoSleepBubble {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(0.96);
+  }
+
+  50% {
+    transform: translate(5px, -7px) scale(1.04);
+  }
+}
+
 @keyframes tapRipple {
   0% {
     opacity: 0.62;
@@ -1906,6 +2059,10 @@ body.debug-panel-hidden .debug-panel {
   .forest-toast.is-visible {
     transform: translate(-50%, 0);
   }
+
+  .kakao-walker {
+    display: block;
+  }
 }
 
 @media (max-width: 759px) {
@@ -1988,6 +2145,8 @@ body.debug-panel-hidden .debug-panel {
   .mobile-walker,
   .mobile-walker__image,
   .mobile-walker__bubble,
+  .kakao-walker__image,
+  .kakao-walker__sleep-bubble,
   .map-mist,
   .ambient-particle,
   .forest-bird,
