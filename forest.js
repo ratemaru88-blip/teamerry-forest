@@ -1808,12 +1808,13 @@
       return;
     }
 
-    if (isMobileWalkerActive()) {
-      return;
-    }
-
     if (isCoarsePointer) {
       addScreenEffect("tap-ripple", event.clientX, event.clientY);
+    }
+
+    if (isMobileWalkerActive()) {
+      wakeWalkerForScroll();
+      clearWalkerRestTimers();
     }
 
     state.dragging = true;

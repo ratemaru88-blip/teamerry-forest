@@ -47,6 +47,7 @@ a {
   height: 100vh;
   min-height: 0;
   overflow: hidden;
+  touch-action: none;
   background:
     radial-gradient(circle at 50% 42%, rgba(255, 246, 219, 0.12), transparent 34%),
     linear-gradient(180deg, #25382d 0%, #101f18 100%);
@@ -73,6 +74,7 @@ a {
   height: 100vh;
   z-index: 1;
   overflow: hidden;
+  touch-action: none;
 }
 
 .forest-world,
@@ -84,6 +86,7 @@ a {
   height: var(--map-base-height);
   transform: scale(var(--stage-scale));
   transform-origin: top left;
+  touch-action: none;
 }
 
 #stage {
