@@ -1,0 +1,161 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #120d08;
+  overflow: hidden;
+  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+}
+
+.cave-scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #120d08;
+}
+
+.cave-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* エルダー */
+.elder {
+  position: absolute;
+  z-index: 5;
+  width: clamp(190px, 16vw, 285px);
+  right: 14.5%;
+  bottom: 22.5%;
+  animation: elderBreath 4s ease-in-out infinite;
+  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.42));
+  pointer-events: none;
+}
+
+/* 吹き出し */
+.elder-bubble {
+  position: absolute;
+  z-index: 6;
+  right: 24%;
+  top: 18%;
+  max-width: min(360px, 28vw);
+  padding: 14px 19px;
+  border-radius: 20px;
+  background: rgba(255, 244, 214, 0.92);
+  color: #3b2615;
+  font-weight: 700;
+  font-size: clamp(15px, 1.25vw, 20px);
+  line-height: 1.55;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.elder-bubble::after {
+  content: "";
+  position: absolute;
+  right: 24px;
+  bottom: -13px;
+  width: 28px;
+  height: 22px;
+  background: rgba(255, 244, 214, 0.92);
+  clip-path: polygon(0 0, 100% 0, 78% 100%);
+}
+
+/* 記録書 */
+.ledger-button {
+  position: absolute;
+  z-index: 7;
+  left: 37.5%;
+  bottom: 10%;
+  width: clamp(260px, 26vw, 455px);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transform: translateX(-50%) rotate(-2deg);
+  transform-origin: 50% 70%;
+}
+
+.ledger-button img {
+  width: 100%;
+  display: block;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter:
+    drop-shadow(0 20px 12px rgba(0, 0, 0, 0.38))
+    drop-shadow(0 4px 4px rgba(32, 18, 8, 0.4));
+}
+
+.ledger-button:hover img,
+.ledger-button:focus-visible img {
+  transform: translateY(-2px) scale(1.04);
+  filter:
+    drop-shadow(0 20px 12px rgba(0, 0, 0, 0.38))
+    drop-shadow(0 0 18px rgba(255, 204, 99, 0.8));
+}
+
+.ledger-button.is-opening img {
+  transform: translateY(-3px) scale(1.08);
+  filter:
+    drop-shadow(0 20px 12px rgba(0, 0, 0, 0.36))
+    drop-shadow(0 0 28px rgba(255, 215, 120, 1));
+}
+
+@keyframes elderBreath {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* スマホ調整 */
+@media (max-width: 768px) {
+  .cave-bg {
+    object-position: center center;
+  }
+
+  .elder {
+    width: clamp(150px, 42vw, 220px);
+    right: 5%;
+    bottom: 37%;
+  }
+
+  .elder-bubble {
+    top: 9%;
+    right: 6%;
+    left: 8%;
+    max-width: none;
+    padding: 12px 15px;
+    font-size: clamp(13px, 3.7vw, 16px);
+    text-align: center;
+  }
+
+  .elder-bubble::after {
+    right: 26%;
+  }
+
+  .ledger-button {
+    width: min(76vw, 330px);
+    left: 50%;
+    bottom: 8%;
+    transform: translateX(-50%) rotate(-2deg);
+  }
+
+  .ledger-button:hover img,
+  .ledger-button:focus-visible img {
+    transform: scale(1.03);
+  }
+
+  .ledger-button.is-opening {
+    transform: translateX(-50%) rotate(-2deg) scale(1.03);
+  }
+}
