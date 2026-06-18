@@ -5,11 +5,10 @@
 html,
 body {
   margin: 0;
-  width: 100%;
   min-height: 100%;
-  background: #120d08;
-  overflow: hidden;
-  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  background: #160f0a;
+  color: #3b2615;
+  font-family: "Yuji Syuku", "Yu Mincho", serif;
 }
 
 .cave-scene {

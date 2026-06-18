@@ -18,7 +18,7 @@ function blinkElder() {
   }, 320);
 }
 
-setInterval(blinkElder, 9000);
+setInterval(blinkElder, 6500);
 
 if (ledgerButton && ledgerImage) {
   ledgerButton.addEventListener("click", () => {
