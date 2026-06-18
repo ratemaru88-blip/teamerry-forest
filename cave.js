@@ -27,7 +27,11 @@ if (ledgerButton && ledgerImage) {
     ledgerImage.src = ledgerGlow;
 
     setTimeout(() => {
+      document.body.classList.add("is-ledger-transition");
+    }, 650);
+
+    setTimeout(() => {
       window.location.href = "ledger.html";
-    }, 900);
+    }, 1250);
   });
 }

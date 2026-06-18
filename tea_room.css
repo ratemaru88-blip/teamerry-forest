@@ -1,0 +1,36 @@
+html, body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+.tea-room {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: url("../assets/images/tea_room/tea_room_pc_bg.webp") center/cover no-repeat;
+  overflow: hidden;
+}
+
+.mori-button {
+  position: fixed;
+  right: 4vw;
+  bottom: 4vh;
+  width: 180px;
+  animation: floatLeaf 3s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .tea-room {
+    background-image: url("../assets/images/tea_room/tea_room_mobile_bg.webp");
+  }
+
+  .mori-button {
+    width: 130px;
+  }
+}
+
+@keyframes floatLeaf {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}

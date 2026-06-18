@@ -11,6 +11,21 @@ body {
   font-family: "Yuji Syuku", "Yu Mincho", serif;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.55s ease;
+}
+
+body.is-ledger-transition::before {
+  opacity: 1;
+}
+
 .cave-scene {
   position: relative;
   width: 100vw;
