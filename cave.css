@@ -88,6 +88,16 @@ body.is-ledger-transition::before {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
+.typing-cursor {
+  display: inline-block;
+  width: 0.08em;
+  height: 1em;
+  margin-left: 0.08em;
+  background: currentColor;
+  vertical-align: -0.12em;
+  animation: typingCursor 0.85s steps(1) infinite;
+}
+
 .elder-bubble::after {
   content: "";
   position: absolute;
@@ -97,6 +107,18 @@ body.is-ledger-transition::before {
   height: 20%;
   background: rgba(255, 244, 214, 0.92);
   clip-path: polygon(0 0, 100% 0, 78% 100%);
+}
+
+@keyframes typingCursor {
+  0%,
+  45% {
+    opacity: 1;
+  }
+
+  46%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* 記録書 */
