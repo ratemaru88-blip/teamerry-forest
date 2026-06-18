@@ -15,10 +15,10 @@ function blinkElder() {
 
   setTimeout(() => {
     elder.src = elderIdle;
-  }, 180);
+  }, 320);
 }
 
-setInterval(blinkElder, 4200);
+setInterval(blinkElder, 9000);
 
 if (ledgerButton && ledgerImage) {
   ledgerButton.addEventListener("click", () => {
