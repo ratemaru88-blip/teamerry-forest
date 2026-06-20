@@ -2111,18 +2111,29 @@ body.debug-panel-hidden .debug-panel {
   html,
   body {
     width: 100%;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   body {
-    touch-action: none;
+    touch-action: pan-y;
   }
 
   .forest-scene {
-    height: 100vh;
-    min-height: 0;
+    height: 180vh;
+    min-height: 180vh;
+    touch-action: pan-y;
     cursor: default;
+  }
+
+  .forest-stage,
+  .viewport,
+  .forest-world,
+  .world,
+  .map-content,
+  .forest-ui {
+    touch-action: pan-y;
   }
 
   :root {
