@@ -139,10 +139,6 @@ a {
   opacity: 1;
 }
 
-body.camera-intro .forest-scene {
-  cursor: default;
-}
-
 .map-atmosphere,
 .forest-creatures,
 .forest-drift {

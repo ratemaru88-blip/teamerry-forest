@@ -28,7 +28,6 @@
     enabled: false,
     dragging: false,
     pointerId: null,
-    intro: true,
     minX: 0,
     minY: 0,
     x: 0,
@@ -182,7 +181,7 @@
       walker: true,
     },
     fastMode: false,
-    idleFastMode: false,
+    mintGuideFastMode: false,
     timers: {
       ambient: 0,
       bird: 0,
@@ -205,8 +204,7 @@
     stopTimer: 0,
     speechTimer: 0,
     centerTimer: 0,
-    restTimers: [],
-    restStage: "",
+    guideTimers: [],
     raf: 0,
   };
 
@@ -290,16 +288,6 @@
     };
   };
 
-  const getPulledBackCamera = () => {
-    const size = getViewportSize();
-    const scaledWorld = getScaledWorldSize();
-
-    return {
-      x: (size.width - scaledWorld.width) / 2,
-      y: -Math.max(0, (scaledWorld.height - size.height) * 0.18),
-    };
-  };
-
   const clampState = () => {
     const size = getViewportSize();
     const scaledWorld = getScaledWorldSize();
@@ -316,20 +304,6 @@
     clampState();
     const cameraX = `${state.x}px`;
     const cameraY = `${state.y}px`;
-    const size = getViewportSize();
-
-    console.log("viewport", size.width, size.height);
-    console.log("camera", state.x, state.y);
-    console.log("[forest camera]", {
-      stateX: state.x,
-      stateY: state.y,
-      minX: state.minX,
-      minY: state.minY,
-      windowInnerWidth: window.innerWidth,
-      windowInnerHeight: window.innerHeight,
-      cameraX,
-      cameraY,
-    });
 
     document.documentElement.style.setProperty("--camera-x", cameraX);
     document.documentElement.style.setProperty("--camera-y", cameraY);
@@ -385,50 +359,16 @@
     window.requestAnimationFrame(tick);
   };
 
-  const finishIntro = () => {
+  const initializeCamera = () => {
     centerCamera();
     state.enabled = true;
-    state.intro = false;
-    renderMap();
-    document.body.classList.remove("camera-intro");
-    document.body.classList.add("intro-finished");
-  };
-
-  const runCameraIntro = () => {
-    const pulled = getPulledBackCamera();
-    const mid = getCameraForWorldPoint(940, 500);
-
-    document.body.classList.add("camera-intro");
-    state.enabled = false;
-    state.intro = true;
-    state.x = pulled.x;
-    state.y = pulled.y;
     renderMap();
 
-    window.setTimeout(() => {
-      if (!state.intro) {
-        return;
-      }
-
-      animateCameraTo({
-        x: mid.x,
-        y: mid.y,
-        duration: reduceMotion ? 1 : 2200,
-        onComplete: () => {
-          if (!state.intro) {
-            return;
-          }
-
-          const main = getCameraForWorldPoint(960, 540);
-          animateCameraTo({
-            x: main.x,
-            y: main.y,
-            duration: reduceMotion ? 1 : 1700,
-            onComplete: finishIntro,
-          });
-        },
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.body.classList.add("intro-finished");
       });
-    }, reduceMotion ? 0 : 450);
+    });
   };
 
   const showToast = (message) => {
@@ -461,10 +401,8 @@
   };
 
   const revealWorldPointForTest = (worldX, worldY) => {
-    if (state.intro || !state.enabled) {
+    if (!state.enabled) {
       state.enabled = true;
-      state.intro = false;
-      document.body.classList.remove("camera-intro");
       document.body.classList.add("intro-finished");
     }
 
@@ -810,42 +748,52 @@
     }, 5200);
   };
 
-  const walkerLines = {
+  const mintGuideLines = {
+    general: [
+      "こんにちは。",
+      "今日はどこへ行ってみる？",
+      "気になる場所を押してみてね。",
+      "まろうどのティールームで一息ついていく？",
+      "忘れじの洞窟にはエルダーがいるよ。",
+      "星風のテラスでは風の便りが届くんだ。",
+      "金のどんぐりを見つけたら触ってみてね。",
+      "光る雫は森の小さな出来事だよ。",
+      "ゆっくりしていってね。",
+      "森のみんなも待ってるよ。",
+    ],
     fast: [
-      "ま、待って〜！",
-      "速いよ〜！",
-      "ふぅ追いついた",
-      "急に走らないで〜！",
+      "森は逃げないよ。ゆっくり見ていってね。",
+      "気になる場所を押してみてね。",
     ],
-    angry: [
-      "もう！どっちなの〜！",
-      "上？下？はっきりして〜！",
-      "目が回る〜！",
-      "森で暴走禁止〜！",
-    ],
-    side: [
-      "見に行くね",
-      "こっちかな？",
-      "確認中〜",
-    ],
-    rest: [
-      "ちょっと休憩〜",
-    ],
-    lunch: [
-      "おべんとうタイム！",
-    ],
-    sleep: [
-      "むにゃ",
-    ],
-    wake: [
-      "えっ、もう行くの！？",
-      "置いてかないで〜！",
+    direction: [
+      "今日はどこへ行ってみる？",
+      "森の中をゆっくり見てみよう。",
     ],
   };
 
+  const getSeasonalMintLine = () => {
+    const month = new Date().getMonth() + 1;
+
+    if (month >= 3 && month <= 5) {
+      return "花の香りが増えてきたね。";
+    }
+    if (month >= 6 && month <= 8) {
+      return "今日は鳥たちが元気だよ。";
+    }
+    if (month >= 9 && month <= 11) {
+      return "どんぐりがたくさん落ちてるね。";
+    }
+    return "少し静かな森だね。";
+  };
+
+  const pickMintGuideLine = () => pick([
+    ...mintGuideLines.general,
+    getSeasonalMintLine(),
+  ]);
+
   const isMobileWalkerActive = () => Boolean(mobileWalker && mobileWalkerQuery.matches && debugState.toggles.walker);
 
-  const setWalkerSpeech = (message) => {
+  const setMintGuideSpeech = (message) => {
     if (!mobileWalker || !mobileWalkerBubble) {
       return;
     }
@@ -864,73 +812,46 @@
     }
   };
 
-  const clearWalkerRestTimers = () => {
-    walkerState.restTimers.forEach((timer) => window.clearTimeout(timer));
-    walkerState.restTimers = [];
+  const clearMintGuideTimers = () => {
+    walkerState.guideTimers.forEach((timer) => window.clearTimeout(timer));
+    walkerState.guideTimers = [];
   };
 
-  const clearWalkerRestState = () => {
-    ["is-resting", "is-lunching", "is-sleeping", "is-waking"].forEach((name) => setWalkerClass(name, false));
-    walkerState.restStage = "";
+  const clearMintIdleState = () => {
+    ["is-resting", "is-waking"].forEach((name) => setWalkerClass(name, false));
   };
 
-  const setWalkerRestStage = (stage) => {
+  const showMintIdleGuide = () => {
     if (!walkerState.enabled || !mobileWalker) {
       return;
     }
 
-    clearWalkerRestState();
-    walkerState.restStage = stage;
+    clearMintIdleState();
     setWalkerClass("is-walking", false);
     setWalkerClass("is-running", false);
-
-    if (stage === "rest") {
-      setWalkerClass("is-resting", true);
-      setWalkerSpeech(pick(walkerLines.rest));
-    } else if (stage === "lunch") {
-      setWalkerClass("is-lunching", true);
-      setWalkerSpeech(pick(walkerLines.lunch));
-    } else if (stage === "sleep") {
-      setWalkerClass("is-sleeping", true);
-      setWalkerSpeech(pick(walkerLines.sleep));
-    }
+    setMintGuideSpeech(pickMintGuideLine());
   };
 
-  const getIdleDelays = () => {
-    return debugState.idleFastMode
-      ? { rest: 1200, lunch: 2400, sleep: 4200 }
-      : { rest: 5000, lunch: 10000, sleep: 18000 };
-  };
+  const getMintGuideDelay = () => debugState.mintGuideFastMode ? 1200 : 7000;
 
-  const scheduleWalkerIdleRest = () => {
+  const scheduleMintGuide = () => {
     if (!walkerState.enabled) {
       return;
     }
 
-    clearWalkerRestTimers();
-    const delays = getIdleDelays();
-    walkerState.restTimers = [
-      window.setTimeout(() => setWalkerRestStage("rest"), delays.rest),
-      window.setTimeout(() => setWalkerRestStage("lunch"), delays.lunch),
-      window.setTimeout(() => setWalkerRestStage("sleep"), delays.sleep),
+    clearMintGuideTimers();
+    walkerState.guideTimers = [
+      window.setTimeout(showMintIdleGuide, getMintGuideDelay()),
     ];
   };
 
   const wakeWalkerForScroll = () => {
-    if (!walkerState.enabled || !walkerState.restStage) {
+    if (!walkerState.enabled) {
       return;
     }
 
-    const wasSleeping = walkerState.restStage === "sleep";
-    clearWalkerRestTimers();
-    clearWalkerRestState();
-    setWalkerClass("is-waking", true);
-    setWalkerSpeech(pick(walkerLines.wake));
-    window.setTimeout(() => setWalkerClass("is-waking", false), reduceMotion ? 350 : 1300);
-
-    if (wasSleeping) {
-      setWalkerClass("is-running", true);
-    }
+    clearMintGuideTimers();
+    clearMintIdleState();
   };
 
   const syncWalkerEnabled = () => {
@@ -940,8 +861,8 @@
     document.body.classList.toggle("mobile-walker-disabled", mobileWalkerQuery.matches && !debugState.toggles.walker);
 
     if (!active) {
-      clearWalkerRestTimers();
-      clearWalkerRestState();
+      clearMintGuideTimers();
+      clearMintIdleState();
     }
 
     if (active && !walkerState.raf) {
@@ -950,7 +871,7 @@
       walkerState.lastScrollY = window.scrollY || 0;
       walkerState.lastTime = performance.now();
       walkerState.raf = window.requestAnimationFrame(updateWalkerFrame);
-      scheduleWalkerIdleRest();
+      scheduleMintGuide();
     }
   };
 
@@ -995,9 +916,9 @@
     setWalkerClass("is-running", false);
     setWalkerClass("is-walking", false);
     setWalkerClass("is-sweating", true);
-    setWalkerSpeech(pick(walkerLines.fast));
+    setMintGuideSpeech(pick(mintGuideLines.fast));
     window.setTimeout(() => setWalkerClass("is-sweating", false), 1900);
-    scheduleWalkerIdleRest();
+    scheduleMintGuide();
   };
 
   const triggerWalkerAngry = () => {
@@ -1007,7 +928,7 @@
 
     setWalkerClass("is-angry", true);
     setWalkerClass("is-running", false);
-    setWalkerSpeech(pick(walkerLines.angry));
+    setMintGuideSpeech(pick(mintGuideLines.direction));
     window.setTimeout(() => setWalkerClass("is-angry", false), 1800);
   };
 
@@ -1017,9 +938,9 @@
     }
 
     setWalkerClass("is-running", true);
-    clearWalkerRestTimers();
-    clearWalkerRestState();
-    setWalkerSpeech(pick(walkerLines.fast));
+    clearMintGuideTimers();
+    clearMintIdleState();
+    setMintGuideSpeech(pick(mintGuideLines.fast));
     window.clearTimeout(walkerState.stopTimer);
     walkerState.stopTimer = window.setTimeout(finishWalkerScroll, reduceMotion ? 500 : 1200);
   };
@@ -1032,9 +953,9 @@
     const distance = reduceMotion ? 18 : 42;
     walkerState.targetX = side === "left" ? -distance : distance;
     setWalkerClass("is-walking", true);
-    clearWalkerRestTimers();
-    clearWalkerRestState();
-    setWalkerSpeech(pick(walkerLines.side));
+    clearMintGuideTimers();
+    clearMintIdleState();
+    setMintGuideSpeech(pick(mintGuideLines.direction));
     window.clearTimeout(walkerState.centerTimer);
     walkerState.centerTimer = window.setTimeout(() => {
       walkerState.targetX = 0;
@@ -1056,7 +977,7 @@
 
     if (Math.abs(delta) > 1) {
       wakeWalkerForScroll();
-      clearWalkerRestTimers();
+      clearMintGuideTimers();
     }
 
     updateWalkerTargetFromScroll(speed);
@@ -1662,9 +1583,9 @@
     const idleFastInput = debugPanel.querySelector("[data-debug-idle-fast]");
     if (idleFastInput) {
       idleFastInput.addEventListener("change", () => {
-        debugState.idleFastMode = idleFastInput.checked;
-        scheduleWalkerIdleRest();
-        showToast(debugState.idleFastMode ? "休憩タイマーを短縮しました。" : "休憩タイマーを通常速度に戻しました。");
+        debugState.mintGuideFastMode = idleFastInput.checked;
+        scheduleMintGuide();
+        showToast(debugState.mintGuideFastMode ? "ミントの案内タイマーを短縮しました。" : "ミントの案内タイマーを通常速度に戻しました。");
       });
     }
 
@@ -1763,35 +1684,45 @@
     const kakaoRunButton = debugPanel.querySelector('[data-debug-action="kakao-run"]');
     if (kakaoRunButton) {
       kakaoRunButton.addEventListener("click", () => {
-        syncWalkerEnabled();
-        triggerWalkerFast();
+        syncKakaoWalker();
+        if (kakaoWalkerState.enabled) {
+          clearKakaoTimers();
+          setKakaoMode("walk");
+          kakaoWalkerState.lastTime = performance.now();
+          scheduleKakaoRest();
+        }
       });
     }
 
     const kakaoLunchButton = debugPanel.querySelector('[data-debug-action="kakao-lunch"]');
     if (kakaoLunchButton) {
       kakaoLunchButton.addEventListener("click", () => {
-        syncWalkerEnabled();
-        setWalkerRestStage("lunch");
+        syncKakaoWalker();
+        if (kakaoWalkerState.enabled) {
+          clearKakaoTimers();
+          setKakaoMode("walk");
+          startKakaoRest("bento");
+        }
       });
     }
 
     const kakaoSleepButton = debugPanel.querySelector('[data-debug-action="kakao-sleep"]');
     if (kakaoSleepButton) {
       kakaoSleepButton.addEventListener("click", () => {
-        syncWalkerEnabled();
-        setWalkerRestStage("sleep");
+        syncKakaoWalker();
+        if (kakaoWalkerState.enabled) {
+          clearKakaoTimers();
+          setKakaoMode("walk");
+          startKakaoRest("nap");
+        }
       });
     }
 
     const wakeButton = debugPanel.querySelector('[data-debug-action="wake-up"]');
     if (wakeButton) {
       wakeButton.addEventListener("click", () => {
-        syncWalkerEnabled();
-        if (!walkerState.restStage) {
-          setWalkerRestStage("sleep");
-        }
-        wakeWalkerForScroll();
+        syncKakaoWalker();
+        wakeKakaoWalker();
       });
     }
 
@@ -1799,7 +1730,7 @@
   };
 
   resizeStage();
-  runCameraIntro();
+  initializeCamera();
 
   scene.addEventListener("pointerdown", (event) => {
     ensureAudio();
@@ -1814,7 +1745,7 @@
 
     if (isMobileWalkerActive()) {
       wakeWalkerForScroll();
-      clearWalkerRestTimers();
+      clearMintGuideTimers();
     }
 
     state.dragging = true;
@@ -1904,7 +1835,7 @@
     toast.addEventListener("click", () => {
       const target = cameraTargets[toast.dataset.cameraTarget];
 
-      if (!target || state.intro) {
+      if (!target) {
         return;
       }
 
