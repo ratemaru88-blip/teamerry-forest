@@ -1,0 +1,189 @@
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #120f0a;
+}
+
+/* 星風のテラス本体 */
+.observatory {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-image: url("../assets/images/observatory/observatory_day_pc.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/* 夜モード */
+.observatory.is-night {
+  background-image: url("../assets/images/observatory/observatory_night_pc.webp");
+}
+
+/* 妖精エリア */
+.fairy-area {
+  position: absolute;
+  left: 120px;
+  bottom: 110px;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.fairy {
+  width: 105px;
+  height: auto;
+  flex-shrink: 0;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
+  animation: fairyFloat 4s ease-in-out infinite;
+}
+
+.fairy-balloon {
+  max-width: 280px;
+  padding: 13px 17px;
+  border-radius: 18px;
+  background: rgba(255, 248, 220, 0.9);
+  color: #4a341d;
+  font-size: 15px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+
+/* 昼夜パネル */
+.day-panel,
+.night-panel {
+  position: absolute;
+  z-index: 25;
+  left: 50%;
+  bottom: 7vh;
+  transform: translateX(-50%);
+}
+
+.night-panel {
+  display: none;
+}
+
+.observatory.is-night .day-panel {
+  display: none;
+}
+
+.observatory.is-night .night-panel {
+  display: block;
+}
+
+/* メイン操作ボタン */
+.action-button {
+  border: none;
+  cursor: pointer;
+  padding: 0.85em 1.7em;
+  border-radius: 999px;
+  background: rgba(238, 203, 122, 0.9);
+  color: #4a3218;
+  font-size: clamp(15px, 1.4vw, 20px);
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  box-shadow:
+    0 0 12px rgba(255, 220, 130, 0.45),
+    0 8px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.action-button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.08);
+}
+
+/* 森へ戻る */
+.forest-back {
+  position: fixed;
+  right: 4vw;
+  bottom: 4vh;
+  z-index: 40;
+  padding: 0.75em 1.5em;
+  border-radius: 999px;
+  background: rgba(90, 64, 30, 0.78);
+  color: #f5e4b3;
+  text-decoration: none;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  box-shadow:
+    0 0 10px rgba(255, 220, 130, 0.35),
+    0 6px 14px rgba(0, 0, 0, 0.35);
+  animation: buttonFloat 3.8s ease-in-out infinite;
+}
+
+.forest-back:hover {
+  background: rgba(130, 92, 42, 0.9);
+}
+
+/* アニメーション */
+@keyframes fairyFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes buttonFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(1deg);
+  }
+}
+
+/* スマホ */
+@media (max-width: 768px) {
+  .fairy-area {
+    left: 22px;
+    bottom: 125px;
+    gap: 8px;
+  }
+
+  .fairy {
+    width: 82px;
+  }
+
+  .fairy-balloon {
+    max-width: 190px;
+    padding: 11px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+/* 星風のテラスUI 最終固定 */
+#observatoryLink {
+  position: absolute !important;
+  top: 12% !important;
+  right: 6% !important;
+  width: 55px !important;
+  height: auto !important;
+  z-index: 999 !important;
+  display: block !important;
+  cursor: pointer !important;
+}
+
+#observatoryUi {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  pointer-events: none !important;
+  filter: drop-shadow(0 0 8px rgba(255, 220, 120, 0.45));
+}
+
+#observatoryLink:hover #observatoryUi {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 14px rgba(255, 230, 150, 0.8));
+}

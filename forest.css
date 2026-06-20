@@ -943,6 +943,49 @@ body:not(.intro-finished) .forest-hokora {
   z-index: 5;
 }
 
+/* 星風のテラスUI */
+#observatoryLink {
+  position: absolute !important;
+  left: 1566px !important;
+  top: 207px !important;
+  right: auto !important;
+  width: 50px !important;
+  z-index: 60 !important;
+  display: block !important;
+  cursor: pointer;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: observatoryUiFadeIn 1.2s 1.8s ease both;
+}
+
+#observatoryUi {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  cursor: pointer;
+  filter: drop-shadow(0 0 8px rgba(255, 220, 120, 0.45));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+#observatoryLink:hover #observatoryUi {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 14px rgba(255, 230, 150, 0.8));
+}
+
+@keyframes observatoryUiFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .hidden-drop {
   position: absolute;
   z-index: 3;
