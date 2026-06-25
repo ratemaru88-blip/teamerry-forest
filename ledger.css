@@ -24,7 +24,7 @@ body {
   height: min(94vw, 1080px);
   aspect-ratio: 1 / 1;
   margin: 0 auto;
-  overflow: hidden;
+  overflow: visible;
   container-type: inline-size;
 }
 
@@ -139,13 +139,18 @@ body {
 }
 
 .ledger-close-button {
+  position: absolute;
+  left: 50%;
+  top: 81%;
+  z-index: 2;
   display: block;
-  width: min(74vw, 360px);
-  margin: 18px auto 0;
+  width: min(24cqw, 260px);
+  margin: 0;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
+  transform: translateX(-50%);
 }
 
 .ledger-close-button img {
@@ -160,10 +165,6 @@ body {
   outline: 2px solid rgba(255, 232, 170, 0.92);
   outline-offset: 4px;
   border-radius: 6px;
-}
-
-.ledger.ledger--profile .ledger-close-button {
-  display: none;
 }
 
 .ledger-nav {
@@ -239,9 +240,10 @@ body {
   }
 
   .ledger-close-button {
-    width: min(82vw, 360px);
-    margin: 12px 0 20px;
-    transform: translateX(calc((100vw - 100%) / 2));
+    left: 25%;
+    top: 80%;
+    width: min(54vw, 260px);
+    transform: translateX(-50%);
   }
 
   .ledger-contents {
