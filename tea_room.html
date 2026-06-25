@@ -8,6 +8,14 @@
 </head>
 <body>
   <main class="tea-room" aria-label="まろうどのティールーム">
+    <div class="coffee-steam" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="master-speech" id="masterSpeech" aria-live="polite"></div>
+
     <a
       href="https://ratemaru88.wixsite.com/teamerry/blog"
       class="bookshelf-link bookshelf-link--blog"
@@ -52,5 +60,24 @@
       >
     </a>
   </main>
+
+  <script>
+    const masterMessages = [
+      "今日は\n風が先に\n来ていたよ。",
+      "誰かの願いが\n空へ向かった\nみたいだね。",
+      "リルがまた\n押し花を\n置いていったよ。",
+      "森が少し\n静かだね。",
+      "お茶の香りが\nよく広がる日だ。",
+      "小さなまろうどが\nさっきまで\n座っていたよ。",
+      "何もしない時間も\nここでは\n大切なんだ。",
+      "カップがひとつ\n君を待っていたよ。",
+    ];
+
+    const masterSpeech = document.getElementById("masterSpeech");
+    if (masterSpeech) {
+      masterSpeech.textContent =
+        masterMessages[Math.floor(Math.random() * masterMessages.length)];
+    }
+  </script>
 </body>
 </html>
