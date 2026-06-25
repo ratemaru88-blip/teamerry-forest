@@ -211,10 +211,10 @@ body {
   }
 
   .ledger-contents {
-    width: 100svh;
+    width: 100vw;
     max-width: none;
-    height: 100vh;
-    min-height: 100svh;
+    height: 100vw;
+    min-height: 0;
     aspect-ratio: 1 / 1;
     margin: 0;
   }
