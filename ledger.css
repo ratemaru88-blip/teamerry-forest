@@ -202,8 +202,8 @@ body {
 
   .ledger {
     padding: 0;
-    width: 100vw;
-    min-width: 100vw;
+    width: 200vw;
+    min-width: 200vw;
   }
 
   .ledger.ledger--profile {
@@ -211,9 +211,9 @@ body {
   }
 
   .ledger-contents {
-    width: 100vw;
+    width: 200vw;
     max-width: none;
-    height: 100vw;
+    height: 200vw;
     min-height: 0;
     aspect-ratio: 1 / 1;
     margin: 0;
