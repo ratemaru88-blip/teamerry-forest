@@ -138,6 +138,34 @@ body {
   margin: 0;
 }
 
+.ledger-close-button {
+  display: block;
+  width: min(74vw, 360px);
+  margin: 18px auto 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ledger-close-button img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ledger-close-button:focus-visible {
+  outline: 2px solid rgba(255, 232, 170, 0.92);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.ledger.ledger--profile .ledger-close-button {
+  display: none;
+}
+
 .ledger-nav {
   position: relative;
   width: min(520px, 92vw);
@@ -208,6 +236,12 @@ body {
 
   .ledger.ledger--profile {
     width: 200vw;
+  }
+
+  .ledger-close-button {
+    width: min(82vw, 360px);
+    margin: 12px 0 20px;
+    transform: translateX(calc((100vw - 100%) / 2));
   }
 
   .ledger-contents {

@@ -46,6 +46,10 @@
       </div>
     </section>
 
+    <button type="button" class="ledger-close-button" id="ledgerCloseButton" aria-label="記録書を閉じる">
+      <img src="./assets/images/record/ledger_close_botan.webp" alt="">
+    </button>
+
     <section id="liluProfile" class="lilu-profile" hidden aria-label="リルの記録書">
       <nav class="ledger-nav" aria-label="記録書ページ操作">
         <img class="ledger-nav-img" src="./assets/images/record/kirokusyo_botun.webp" alt="">
@@ -66,6 +70,7 @@
     const ledger = document.getElementById("ledger");
     const residentsLink = document.querySelector("[data-open='residents']");
     const closeButton = document.querySelector(".ledger-nav-hit--close");
+    const ledgerCloseButton = document.getElementById("ledgerCloseButton");
 
     if (ledgerContents && liluProfile) {
       ledgerContents.hidden = false;
@@ -88,6 +93,17 @@
         ledgerContents.hidden = false;
         ledger?.classList.remove("ledger--profile");
         window.scrollTo({ left: 0, top: 0 });
+      });
+    }
+
+    if (ledgerCloseButton) {
+      ledgerCloseButton.addEventListener("click", () => {
+        if (window.history.length > 1) {
+          window.history.back();
+          return;
+        }
+
+        window.location.href = "cave.html";
       });
     }
   </script>
