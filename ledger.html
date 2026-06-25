@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="./ledger.css">
 </head>
 <body>
-  <main class="ledger">
+  <main class="ledger" id="ledger">
     <section id="ledgerContents" class="ledger-contents" aria-label="記録書の目次">
       <img class="ledger-contents-bg" src="./assets/images/cave/ledger_open.webp" alt="">
 
@@ -63,18 +63,22 @@
   <script>
     const ledgerContents = document.getElementById("ledgerContents");
     const liluProfile = document.getElementById("liluProfile");
+    const ledger = document.getElementById("ledger");
     const residentsLink = document.querySelector("[data-open='residents']");
     const closeButton = document.querySelector(".ledger-nav-hit--close");
 
     if (ledgerContents && liluProfile) {
       ledgerContents.hidden = false;
       liluProfile.hidden = true;
+      ledger?.classList.remove("ledger--profile");
     }
 
     if (residentsLink && ledgerContents && liluProfile) {
       residentsLink.addEventListener("click", () => {
         ledgerContents.hidden = true;
         liluProfile.hidden = false;
+        ledger?.classList.add("ledger--profile");
+        window.scrollTo({ left: 0, top: 0 });
       });
     }
 
@@ -82,6 +86,8 @@
       closeButton.addEventListener("click", () => {
         liluProfile.hidden = true;
         ledgerContents.hidden = false;
+        ledger?.classList.remove("ledger--profile");
+        window.scrollTo({ left: 0, top: 0 });
       });
     }
   </script>

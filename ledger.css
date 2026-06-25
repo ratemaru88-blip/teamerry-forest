@@ -21,6 +21,7 @@ body {
 .ledger-contents {
   position: relative;
   width: min(94vw, 1080px);
+  height: min(94vw, 1080px);
   aspect-ratio: 1 / 1;
   margin: 0 auto;
   overflow: hidden;
@@ -28,6 +29,8 @@ body {
 }
 
 .ledger-contents-bg {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -192,24 +195,40 @@ body {
 }
 
 @media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: auto;
+  }
+
   .ledger {
     padding: 0;
+    width: 100vw;
+    min-width: 100vw;
+  }
+
+  .ledger.ledger--profile {
+    width: 200vw;
   }
 
   .ledger-contents {
-    width: min(100vw, calc(100vh * 9 / 16));
-    aspect-ratio: 9 / 16;
+    width: 100svh;
+    max-width: none;
+    height: 100vh;
+    min-height: 100svh;
+    aspect-ratio: 1 / 1;
+    margin: 0;
   }
 
   .ledger-contents-bg {
-    object-fit: cover;
-    object-position: 86% center;
-    transform: scale(1.32);
-    transform-origin: 70% center;
+    position: absolute;
+    inset: 0;
+    object-fit: contain;
+    object-position: center center;
+    transform: none;
   }
 
   .ledger-contents-text {
-    display: none;
+    display: block;
   }
 
   .ledger-contents-layer {
@@ -219,48 +238,61 @@ body {
   }
 
   .ledger-menu {
-    left: 24%;
-    top: 36%;
-    width: 62%;
-    gap: 5cqw;
+    left: 52%;
+    top: 33%;
+    width: 33%;
+    gap: 1.4cqw;
   }
 
   .ledger-menu-card {
-    grid-template-columns: 7cqw minmax(0, 1fr);
-    gap: 2cqw;
-    padding: 2.2cqw 0;
+    grid-template-columns: 4cqw minmax(0, 1fr);
+    gap: 1cqw;
+    padding: 1.3cqw 0.7cqw;
   }
 
   .ledger-menu-number {
-    font-size: 4.7cqw;
+    font-size: 2.5cqw;
   }
 
   .ledger-menu-card strong {
-    font-size: 3.8cqw;
+    font-size: 2.1cqw;
     white-space: nowrap;
   }
 
   .ledger-menu-card small {
-    font-size: 2.25cqw;
+    font-size: 1.1cqw;
   }
 
   .ledger-nav-img {
-    width: min(92vw, 520px);
-    margin: 12px auto 14px;
+    width: 100%;
+    margin: 0;
+  }
+
+  .ledger-nav {
+    width: 100vw;
+    margin: 12px 0 14px;
+  }
+
+  .lilu-profile {
+    width: 200vw;
   }
 
   .ledger-spread {
-    display: block;
-    max-width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    max-width: none;
+    width: 200vw;
+    margin: 0;
   }
 
   .ledger-spread img {
-    width: 100%;
-    max-width: 100%;
+    flex: 0 0 100vw;
+    width: 100vw;
+    max-width: none;
     height: auto;
   }
 
   .ledger-spread img:nth-child(2) {
-    display: none;
+    display: block;
   }
 }
