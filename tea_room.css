@@ -12,6 +12,60 @@ html, body {
   overflow: hidden;
 }
 
+.bookshelf-link {
+  position: absolute;
+  z-index: 15;
+  display: block;
+  color: transparent;
+  text-decoration: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+.bookshelf-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: rgba(255, 223, 138, 0.16);
+  box-shadow: 0 0 16px rgba(255, 211, 117, 0.34);
+  transition: opacity 0.2s ease;
+}
+
+.bookshelf-link:hover::after,
+.bookshelf-link:focus-visible::after {
+  opacity: 1;
+}
+
+.bookshelf-link--blog {
+  left: 74.7%;
+  top: 34.2%;
+  width: 5.2%;
+  height: 27.5%;
+}
+
+.bookshelf-link--contact {
+  left: 80.1%;
+  top: 34.2%;
+  width: 5.2%;
+  height: 27.5%;
+}
+
+.bookshelf-link--history {
+  left: 85.4%;
+  top: 34.2%;
+  width: 5.2%;
+  height: 27.5%;
+}
+
+.bookshelf-link--friends {
+  left: 91.2%;
+  top: 34.2%;
+  width: 5.3%;
+  height: 27.5%;
+}
+
 .mori-button {
   position: fixed;
   right: 4vw;
@@ -23,6 +77,34 @@ html, body {
 @media (max-width: 768px) {
   .tea-room {
     background-image: url("../assets/images/tea_room/tea_room_mobile_bg.webp");
+  }
+
+  .bookshelf-link--blog {
+    left: 66.7%;
+    top: 30.7%;
+    width: 6.7%;
+    height: 15.8%;
+  }
+
+  .bookshelf-link--contact {
+    left: 73.2%;
+    top: 30.7%;
+    width: 7.5%;
+    height: 15.8%;
+  }
+
+  .bookshelf-link--history {
+    left: 81.1%;
+    top: 30.7%;
+    width: 7.2%;
+    height: 15.8%;
+  }
+
+  .bookshelf-link--friends {
+    left: 68.1%;
+    top: 47.9%;
+    width: 7.6%;
+    height: 13.3%;
   }
 
   .mori-button {

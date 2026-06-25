@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="ledger.css" />
 </head>
 <body>
-  <main class="ledger-page">
+  <main class="ledger-page" id="ledger-top">
     <section class="ledger-book">
       <img
         class="ledger-bg"
@@ -56,6 +56,71 @@
           </a>
         </nav>
       </div>
+    </section>
+
+    <section class="resident-record" id="residents" aria-label="森の住民 記録書">
+      <div class="record-button-wrap">
+        <nav class="record-nav" aria-label="記録書ページ操作">
+          <img
+            class="record-button-image"
+            src="assets/images/record/kirokusyo_botun.webp"
+            alt="Tea Merry record book navigation button"
+          />
+
+          <button
+            class="record-nav-hit record-nav-hit--prev"
+            type="button"
+            aria-label="前ページへ"
+            disabled>
+          </button>
+
+          <a
+            class="record-nav-hit record-nav-hit--close"
+            href="#ledger-top"
+            aria-label="Close">
+          </a>
+
+          <button
+            class="record-nav-hit record-nav-hit--next"
+            type="button"
+            aria-label="次ページへ"
+            disabled>
+          </button>
+        </nav>
+      </div>
+
+      <div class="record-spread" aria-label="Lilu record book pages">
+        <div class="record-pages">
+          <figure class="record-page">
+            <img
+              src="assets/images/record/lilu_profile_left.webp"
+              alt="Lilu profile page from Tea Merry record book"
+            />
+          </figure>
+
+          <figure class="record-page">
+            <img
+              src="assets/images/record/lilu_profile_right.webp"
+              alt="Lilu notes page from Tea Merry record book"
+            />
+          </figure>
+        </div>
+      </div>
+
+      <nav class="record-side-links" aria-label="TeaMerry links">
+        <a
+          href="https://ratemaru88.wixsite.com/teamerry/contact-8"
+          target="_blank"
+          rel="noopener noreferrer">
+          お問い合わせ
+        </a>
+        <a
+          href="https://ratemaru88.wixsite.com/teamerry/blog"
+          target="_blank"
+          rel="noopener noreferrer">
+          ブログ
+        </a>
+      </nav>
     </section>
 
     <a class="back-link" href="cave.html">書を閉じる</a>

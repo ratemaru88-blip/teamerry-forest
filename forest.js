@@ -129,17 +129,17 @@
   ];
 
   const birdPerches = [
-    { x: 28, y: 42, scale: 0.84 },
-    { x: 44, y: 35, scale: 0.78 },
-    { x: 58, y: 47, scale: 0.82 },
-    { x: 74, y: 41, scale: 0.72 },
-    { x: 36, y: 61, scale: 0.76 },
+    { x: 79.5, y: 85.5, scale: 0.78 },
+    { x: 83.5, y: 86.5, scale: 0.84 },
+    { x: 87.2, y: 85.8, scale: 0.76 },
+    { x: 81.6, y: 91.2, scale: 0.82 },
+    { x: 85.8, y: 90.5, scale: 0.8 },
   ];
 
   const groundBirdSites = [
-    { area: "path", x: 980, y: 618, spreadX: 54, spreadY: 16, scale: 0.76 },
-    { area: "stairs", x: 1198, y: 646, spreadX: 48, spreadY: 14, scale: 0.82 },
-    { area: "stone-plaza", x: 1586, y: 794, spreadX: 86, spreadY: 28, scale: 0.94 },
+    { area: "e01-plaza-left", x: 1504, y: 944, spreadX: 72, spreadY: 24, scale: 0.86 },
+    { area: "e01-plaza-center", x: 1608, y: 936, spreadX: 96, spreadY: 30, scale: 0.94 },
+    { area: "e01-plaza-right", x: 1720, y: 946, spreadX: 78, spreadY: 24, scale: 0.9 },
   ];
 
   const bottleDesignWidth = 1920;
