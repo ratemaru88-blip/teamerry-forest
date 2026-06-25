@@ -1,116 +1,89 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Unforgotten Ledger | 忘れじの記録書</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Kurenaido&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="ledger.css" />
+  <link rel="stylesheet" href="./ledger.css">
 </head>
 <body>
-  <main class="ledger-page" id="ledger-top">
-    <section class="ledger-book">
-      <img
-        class="ledger-bg"
-        src="assets/images/cave/ledger_open.webp"
-        alt="開かれた忘れじの記録書"
-      />
+  <main class="ledger">
+    <section id="ledgerContents" class="ledger-contents" aria-label="記録書の目次">
+      <img class="ledger-contents-bg" src="./assets/images/cave/ledger_open.webp" alt="">
 
-      <div class="ledger-content">
-        <div class="ledger-left">
+      <div class="ledger-contents-layer">
+        <div class="ledger-contents-text">
           <p class="ledger-small">The Unforgotten Ledger</p>
           <h1>忘れじの記録書</h1>
           <p class="ledger-subtitle">CONTENTS / 目次</p>
         </div>
 
-        <nav class="ledger-right" aria-label="記録書の目次">
-          <a href="https://ratemaru88.wixsite.com/teamerry/about-5-1" class="chapter-card">
-            <span class="chapter-number">Ⅰ</span>
+        <nav class="ledger-menu" aria-label="記録書の目次">
+          <a href="https://ratemaru88.wixsite.com/teamerry/about-5-1" class="ledger-menu-card ledger-menu-card--maroudo">
+            <span class="ledger-menu-number">Ⅰ</span>
             <span>
               <strong>森のまろうど</strong>
               <small>TeaMerryの仲間たち</small>
-              <em>飲みものから生まれた小さな妖精たちの記録。</em>
             </span>
           </a>
 
-          <a href="#residents" class="chapter-card" data-ledger-jump="residents">
-            <span class="chapter-number">Ⅱ</span>
+          <button type="button" class="ledger-menu-card ledger-menu-card--residents" data-open="residents">
+            <span class="ledger-menu-number">Ⅱ</span>
             <span>
               <strong>森の住民</strong>
               <small>森に暮らす者たち</small>
-              <em>森に根づいて暮らす妖精や住人たちの記録。</em>
             </span>
-          </a>
+          </button>
 
-          <a href="#tales" class="chapter-card">
-            <span class="chapter-number">Ⅲ</span>
+          <button type="button" class="ledger-menu-card ledger-menu-card--tales" disabled>
+            <span class="ledger-menu-number">Ⅲ</span>
             <span>
               <strong>語り継がれしこと</strong>
-              <small>過去の出来事と言い伝え</small>
-              <em>洞窟、滝、森に残る古い出来事の記録。</em>
+              <small>古い出来事の記録</small>
             </span>
-          </a>
+          </button>
         </nav>
       </div>
     </section>
 
-    <section class="resident-record" id="residents" aria-label="森の住民 記録書">
-      <div class="record-button-wrap">
-        <nav class="record-nav" aria-label="記録書ページ操作">
-          <img
-            class="record-button-image"
-            src="./assets/images/record/kirokusyo_botun.webp"
-            alt=""
-          />
-
-          <button
-            class="record-nav-hit record-nav-hit--prev"
-            type="button"
-            aria-label="前ページへ"
-            disabled>
-          </button>
-
-          <a
-            class="record-nav-hit record-nav-hit--close"
-            href="#ledger-top"
-            aria-label="Close"
-            data-ledger-close>
-          </a>
-
-          <button
-            class="record-nav-hit record-nav-hit--next"
-            type="button"
-            aria-label="次ページへ"
-            disabled>
-          </button>
-        </nav>
-      </div>
-
-      <div class="record-spread ledger-spread" aria-label="Lilu record book pages">
-        <div class="record-pages">
-          <figure class="record-page ledger-record-page ledger-page-left">
-            <img
-              src="./assets/images/record/lilu_profile_left.webp"
-              alt=""
-            />
-          </figure>
-
-          <figure class="record-page ledger-record-page ledger-page-right right">
-            <img
-              src="./assets/images/record/lilu_profile_right.webp"
-              alt=""
-            />
-          </figure>
-        </div>
+    <section id="liluProfile" class="lilu-profile" hidden aria-label="リルの記録書">
+      <nav class="ledger-nav" aria-label="記録書ページ操作">
+        <img class="ledger-nav-img" src="./assets/images/record/kirokusyo_botun.webp" alt="">
+        <button class="ledger-nav-hit ledger-nav-hit--prev" type="button" aria-label="前ページへ" disabled></button>
+        <button class="ledger-nav-hit ledger-nav-hit--close" type="button" aria-label="目次へ戻る"></button>
+        <button class="ledger-nav-hit ledger-nav-hit--next" type="button" aria-label="次ページへ" disabled></button>
+      </nav>
+      <div class="ledger-spread">
+        <img src="./assets/images/record/lilu_profile_left.webp" alt="Lilu left page">
+        <img src="./assets/images/record/lilu_profile_right.webp" alt="Lilu right page">
       </div>
     </section>
-
-    <a class="back-link" href="cave.html">書を閉じる</a>
   </main>
 
+  <script>
+    const ledgerContents = document.getElementById("ledgerContents");
+    const liluProfile = document.getElementById("liluProfile");
+    const residentsLink = document.querySelector("[data-open='residents']");
+    const closeButton = document.querySelector(".ledger-nav-hit--close");
+
+    if (ledgerContents && liluProfile) {
+      ledgerContents.hidden = false;
+      liluProfile.hidden = true;
+    }
+
+    if (residentsLink && ledgerContents && liluProfile) {
+      residentsLink.addEventListener("click", () => {
+        ledgerContents.hidden = true;
+        liluProfile.hidden = false;
+      });
+    }
+
+    if (closeButton && ledgerContents && liluProfile) {
+      closeButton.addEventListener("click", () => {
+        liluProfile.hidden = true;
+        ledgerContents.hidden = false;
+      });
+    }
+  </script>
 </body>
 </html>
