@@ -16,7 +16,7 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-image: url("../ASSETS/images/observatory/observatory_day_pc.webp");
+  background-image: url("../assets/images/observatory/observatory_day_pc.webp");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -24,7 +24,7 @@ body {
 
 /* 夜モード */
 .observatory.is-night {
-  background-image: url("../ASSETS/images/observatory/observatory_night_pc.webp");
+  background-image: url("../assets/images/observatory/observatory_night_pc.webp");
 }
 
 /* 妖精エリア */
@@ -145,15 +145,15 @@ body {
 }
 
 /* スマホ */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .observatory {
     min-height: 100dvh;
-    background-image: url("../ASSETS/images/observatory/observatory_day_mobile.webp");
+    background-image: url("../assets/images/observatory/observatory_day_mobile.webp");
     background-position: center bottom;
   }
 
   .observatory.is-night {
-    background-image: url("../ASSETS/images/observatory/observatory_night_mobile.webp");
+    background-image: url("../assets/images/observatory/observatory_night_mobile.webp");
   }
 
   .fairy-area {

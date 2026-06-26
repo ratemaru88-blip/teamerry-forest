@@ -17,8 +17,13 @@
   const debugPanel = document.querySelector(".debug-panel");
   const mobileWalker = document.querySelector(".mobile-walker");
   const mobileWalkerBubble = document.querySelector(".mobile-walker__bubble");
+  const mobileObservatoryPortal = document.getElementById("mobileObservatoryPortal");
   const kakaoWalker = document.querySelector(".kakao-walker");
   const kakaoWalkerImage = document.querySelector(".kakao-walker__image");
+
+  if (mobileObservatoryPortal && mobileObservatoryPortal.parentElement !== document.body) {
+    document.body.append(mobileObservatoryPortal);
+  }
 
   if (!scene || !map) {
     return;
@@ -48,19 +53,19 @@
   const backgroundSlots = {
     day: {
       label: "昼",
-      src: "./ASSETS/backgrounds/決定稿_Webｍ/forest_day_v02.webm",
+      src: "./assets/backgrounds/決定稿_Webｍ/forest_day_v02.webm",
     },
     "evening-a": {
       label: "夕方前",
-      src: "./ASSETS/backgrounds/決定稿_Webｍ/forest_evening_A_v02..webm",
+      src: "./assets/backgrounds/決定稿_Webｍ/forest_evening_A_v02..webm",
     },
     "evening-b": {
       label: "夕焼け",
-      src: "./ASSETS/backgrounds/決定稿_Webｍ/forest_evening_B_v02.webm",
+      src: "./assets/backgrounds/決定稿_Webｍ/forest_evening_B_v02.webm",
     },
     night: {
       label: "夜",
-      src: "./ASSETS/backgrounds/決定稿_Webｍ/forest_night_v02.webm",
+      src: "./assets/backgrounds/決定稿_Webｍ/forest_night_v02.webm",
     },
   };
   let visibleBackgroundIndex = 0;
@@ -92,22 +97,22 @@
   };
   const moonPhases = {
     crescent: {
-      src: "./ASSETS/images/effects　/moon.small.crescent2.png",
+      src: "./assets/images/effects　/moon.small.crescent2.png",
       size: 66,
       opacity: 0.64,
     },
     half: {
-      src: "./ASSETS/images/effects　/moon.halt1.png",
+      src: "./assets/images/effects　/moon.halt1.png",
       size: 90,
       opacity: 0.68,
     },
     full: {
-      src: "./ASSETS/images/effects　/moon.hull.png",
+      src: "./assets/images/effects　/moon.hull.png",
       size: 108,
       opacity: 0.72,
     },
     super: {
-      src: "./ASSETS/images/effects　/moon.big.full.png",
+      src: "./assets/images/effects　/moon.big.full.png",
       size: 160,
       opacity: 0.78,
     },
@@ -211,31 +216,31 @@
   const kakaoWalkerAssets = {
     walk: {
       up: [
-        "./ASSETS/images/events/kakao_walk/kakao_back_A1.webp",
+        "./assets/images/events/kakao_walk/kakao_back_A1.webp",
       ],
       down: [
-        "./ASSETS/images/events/kakao_walk/kakao_front_A1.webp",
-        "./ASSETS/images/events/kakao_walk/kakao_front_left1.webp",
-        "./ASSETS/images/events/kakao_walk/kakao_front_A1.webp",
-        "./ASSETS/images/events/kakao_walk/kakao_front_right_1.webp",
+        "./assets/images/events/kakao_walk/kakao_front_A1.webp",
+        "./assets/images/events/kakao_walk/kakao_front_left1.webp",
+        "./assets/images/events/kakao_walk/kakao_front_A1.webp",
+        "./assets/images/events/kakao_walk/kakao_front_right_1.webp",
       ],
       left: [
-        "./ASSETS/images/events/kakao_walk/kakao_left_1.webp",
-        "./ASSETS/images/events/kakao_walk/kakao_left_2.webp",
+        "./assets/images/events/kakao_walk/kakao_left_1.webp",
+        "./assets/images/events/kakao_walk/kakao_left_2.webp",
       ],
       right: [
-        "./ASSETS/images/events/kakao_walk/kakao_right_1.webp",
-        "./ASSETS/images/events/kakao_walk/kakao_right_2.webp",
+        "./assets/images/events/kakao_walk/kakao_right_1.webp",
+        "./assets/images/events/kakao_walk/kakao_right_2.webp",
       ],
     },
     bento: [
-      "./ASSETS/images/events/kakao_walk/kakao_bentou_A1.webp",
-      "./ASSETS/images/events/kakao_walk/kakao_bentou_A2.webp",
+      "./assets/images/events/kakao_walk/kakao_bentou_A1.webp",
+      "./assets/images/events/kakao_walk/kakao_bentou_A2.webp",
     ],
     nap: [
-      "./ASSETS/images/events/kakao_walk/kakao_napping_A1.webp",
-      "./ASSETS/images/events/kakao_walk/kakao_napping_A2.webp",
-      "./ASSETS/images/events/kakao_walk/kakao_napping_A3.webp",
+      "./assets/images/events/kakao_walk/kakao_napping_A1.webp",
+      "./assets/images/events/kakao_walk/kakao_napping_A2.webp",
+      "./assets/images/events/kakao_walk/kakao_napping_A3.webp",
     ],
   };
 
@@ -645,8 +650,8 @@
     }
 
     soundscape = {
-      river: new Audio("./ASSETS/sounds/river_sound1.mp3"),
-      bird: new Audio("./ASSETS/sounds/カッコウの鳴き声.mp3"),
+      river: new Audio("./assets/sounds/river_sound1.mp3"),
+      bird: new Audio("./assets/sounds/カッコウの鳴き声.mp3"),
     };
     soundscape.river.loop = true;
     soundscape.river.preload = "auto";
@@ -1249,7 +1254,7 @@
   const setBirdFrame = (bird, frame) => {
     const image = bird.querySelector("img");
     if (image) {
-      image.src = `./ASSETS/images/events/birds/character/${frame}`;
+      image.src = `./assets/images/events/birds/character/${frame}`;
     }
   };
 
@@ -1295,7 +1300,7 @@
     bird.style.setProperty("--bird-x", `${perch.x}%`);
     bird.style.setProperty("--bird-y", `${perch.y}%`);
     bird.style.setProperty("--bird-scale", perch.scale);
-    image.src = "./ASSETS/images/events/birds/character/bird-idle.webp";
+    image.src = "./assets/images/events/birds/character/bird-idle.webp";
     image.alt = "";
     bird.append(image);
     creatures.append(bird);
@@ -1735,7 +1740,7 @@
   scene.addEventListener("pointerdown", (event) => {
     ensureAudio();
 
-    if (!state.enabled || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#observatoryLink") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
+    if (!state.enabled || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#observatoryLink") || event.target.closest("#mobileObservatoryPortal") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
       return;
     }
 

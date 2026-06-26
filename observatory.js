@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const fairyImage = document.getElementById("fairyImage");
   const fairyBalloon = document.getElementById("fairyBalloon");
 
+  const requestedTime = new URLSearchParams(window.location.search).get("time");
   const hour = new Date().getHours();
-  const isNight = hour < 6 || hour >= 18;
+  const isNight = requestedTime === "night" || (requestedTime !== "day" && (hour < 6 || hour >= 18));
 
   if (isNight) {
     observatory.classList.add("is-night");
@@ -13,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fairies = [
     {
       name: "リル",
-      image: "./ASSETS/images/observatory/Lilu_v01.webp",
+      image: "./assets/images/observatory/Lilu_v01.webp",
       alt: "リル",
       dayMessages: [
         "あれ？ なにか届いてるよ。",
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       name: "ベリー",
-      image: "./ASSETS/images/observatory/Berry_v01.webp",
+      image: "./assets/images/observatory/Berry_v01.webp",
       alt: "ベリー",
       dayMessages: [
         "面白そうな瓶があるよ！",
@@ -43,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       name: "レモン",
-      image: "./ASSETS/images/observatory/Lemon_v01.webp",
+      image: "./assets/images/observatory/Lemon_v01.webp",
       alt: "レモン",
       dayMessages: [
         "きっといい便りが届くよ。",

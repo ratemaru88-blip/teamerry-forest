@@ -321,30 +321,30 @@ a {
 }
 
 .ambient-particle--spark {
-  background-image: url("./ASSETS/images/effects　/ambient/spark.webp");
+  background-image: url("./assets/images/effects　/ambient/spark.webp");
   mix-blend-mode: screen;
   filter: brightness(calc(0.86 + var(--glow-boost)));
 }
 
 .ambient-particle--leaf {
-  background-image: url("./ASSETS/images/effects　/ambient/leaf-particle.webp");
+  background-image: url("./assets/images/effects　/ambient/leaf-particle.webp");
   animation-name: leafWander;
 }
 
 .ambient-particle--shimmer {
-  background-image: url("./ASSETS/images/effects　/ambient/water-shimmer.webp");
+  background-image: url("./assets/images/effects　/ambient/water-shimmer.webp");
   mix-blend-mode: screen;
   animation-name: waterShimmer;
 }
 
 .ambient-particle--ripple {
-  background-image: url("./ASSETS/images/effects　/ambient/lake-ripple.webp");
+  background-image: url("./assets/images/effects　/ambient/lake-ripple.webp");
   mix-blend-mode: screen;
   animation-name: lakeRipple;
 }
 
 .ambient-particle--glow {
-  background-image: url("./ASSETS/images/effects　/ambient/glow.webp");
+  background-image: url("./assets/images/effects　/ambient/glow.webp");
   mix-blend-mode: screen;
   filter: brightness(calc(0.92 + var(--glow-boost)));
 }
@@ -526,7 +526,7 @@ a {
   border: 0;
   padding: 0;
   border-radius: 0;
-  background: url("./ASSETS/images/events/BottleMail_vo2.webp") center / contain no-repeat;
+  background: url("./assets/images/events/BottleMail_vo2.webp") center / contain no-repeat;
   filter:
     drop-shadow(0 1px 1px rgba(15, 34, 26, 0.2))
     drop-shadow(0 3px 3px rgba(19, 56, 67, 0.14));
@@ -970,8 +970,35 @@ body:not(.intro-finished) .forest-hokora {
   filter: drop-shadow(0 0 14px rgba(255, 230, 150, 0.8));
 }
 
-.mobile-observatory-link {
+#mobileObservatoryPortal {
+  position: fixed !important;
+  left: auto !important;
+  top: clamp(92px, 16vh, 150px) !important;
+  right: 18px !important;
+  bottom: auto !important;
+  z-index: 1000 !important;
   display: none;
+  width: 64px !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  transform: none !important;
+  translate: none !important;
+  animation: none !important;
+  transition: none !important;
+  will-change: auto !important;
+  contain: layout paint style;
+  touch-action: manipulation;
+}
+
+#mobileObservatoryPortal img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.55));
 }
 
 @keyframes observatoryUiFadeIn {
@@ -986,6 +1013,16 @@ body:not(.intro-finished) .forest-hokora {
   }
 }
 
+@keyframes mobileObservatoryFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .hidden-drop {
   position: absolute;
   z-index: 3;
@@ -995,7 +1032,7 @@ body:not(.intro-finished) .forest-hokora {
   margin-top: -10px;
   border: 0;
   border-radius: 50%;
-  background: url("./ASSETS/images/effects　/events/hidden-drop.webp") center / contain no-repeat;
+  background: url("./assets/images/effects　/events/hidden-drop.webp") center / contain no-repeat;
   box-shadow: 0 0 13px rgba(178, 248, 255, 0.58), 0 0 24px rgba(223, 255, 214, 0.32);
   cursor: pointer;
   opacity: 0;
@@ -1064,7 +1101,7 @@ body.intro-finished .hidden-drop {
   height: 58px;
   margin-left: -29px;
   margin-top: -29px;
-  background-image: url("./ASSETS/images/effects　/events/ripple-expand.webp");
+  background-image: url("./assets/images/effects　/events/ripple-expand.webp");
   opacity: 0;
   animation: tapRipple 820ms ease-out forwards;
 }
@@ -1080,7 +1117,7 @@ body.intro-finished .hidden-drop {
   height: 86px;
   margin-left: -43px;
   margin-top: -43px;
-  background-image: url("./ASSETS/images/effects　/events/glow-expand.webp");
+  background-image: url("./assets/images/effects　/events/glow-expand.webp");
   animation: memoryGlowExpand 980ms ease-out forwards;
 }
 
@@ -1089,7 +1126,7 @@ body.intro-finished .hidden-drop {
   height: 82px;
   margin-left: -41px;
   margin-top: -41px;
-  background-image: url("./ASSETS/images/effects　/events/sparkle-burst.webp");
+  background-image: url("./assets/images/effects　/events/sparkle-burst.webp");
   animation: memorySparkleBurst 980ms ease-out forwards;
 }
 
@@ -1098,7 +1135,7 @@ body.intro-finished .hidden-drop {
   height: 102px;
   margin-left: -51px;
   margin-top: -51px;
-  background-image: url("./ASSETS/images/effects　/events/ripple-expand.webp");
+  background-image: url("./assets/images/effects　/events/ripple-expand.webp");
   animation: memoryRippleExpand 1200ms ease-out forwards;
 }
 
@@ -1107,7 +1144,7 @@ body.intro-finished .hidden-drop {
   height: 90px;
   margin-left: -64px;
   margin-top: -45px;
-  background-image: url("./ASSETS/images/effects　/events/memory-fog.webp");
+  background-image: url("./assets/images/effects　/events/memory-fog.webp");
   animation: memoryFog 1500ms ease-out forwards;
   mix-blend-mode: normal;
 }
@@ -2162,22 +2199,8 @@ body.debug-panel-hidden .debug-panel {
     display: none !important;
   }
 
-  .mobile-observatory-link {
-    position: fixed !important;
+  #mobileObservatoryPortal {
     display: block;
-    top: clamp(92px, 16vh, 150px) !important;
-    right: 18px !important;
-    width: 64px !important;
-    z-index: 80 !important;
-    animation: observatoryUiFadeIn 1.2s 1.2s ease both;
-    pointer-events: auto;
-  }
-
-  .mobile-observatory-link img {
-    display: block;
-    width: 100%;
-    height: auto;
-    filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.55));
   }
 
   .debug-panel {
