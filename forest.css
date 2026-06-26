@@ -970,6 +970,10 @@ body:not(.intro-finished) .forest-hokora {
   filter: drop-shadow(0 0 14px rgba(255, 230, 150, 0.8));
 }
 
+.mobile-observatory-link {
+  display: none;
+}
+
 @keyframes observatoryUiFadeIn {
   from {
     opacity: 0;
@@ -2152,6 +2156,28 @@ body.debug-panel-hidden .debug-panel {
     left: 20px;
     bottom: clamp(74px, 14vh, 118px);
     max-width: min(300px, calc(100vw - 40px));
+  }
+
+  #observatoryLink {
+    display: none !important;
+  }
+
+  .mobile-observatory-link {
+    position: fixed !important;
+    display: block;
+    top: clamp(92px, 16vh, 150px) !important;
+    right: 18px !important;
+    width: 64px !important;
+    z-index: 80 !important;
+    animation: observatoryUiFadeIn 1.2s 1.2s ease both;
+    pointer-events: auto;
+  }
+
+  .mobile-observatory-link img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.55));
   }
 
   .debug-panel {

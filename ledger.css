@@ -232,11 +232,18 @@ body {
   scroll-snap-align: start;
 }
 
-.resident-page {
-  display: block;
+.resident-page-frame {
+  display: flex;
   width: 50%;
   max-width: 600px;
+}
+
+.resident-page {
+  display: block;
+  width: 100%;
   height: auto;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 @media (max-width: 768px) {
@@ -254,6 +261,15 @@ body {
   .ledger.ledger--profile {
     width: 100vw;
     min-width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  html.is-profile-open,
+  body.is-profile-open {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   .ledger-close-button {
@@ -344,32 +360,71 @@ body {
 
   .residents-profile {
     width: 100vw;
+    height: 100vh;
     min-height: 100vh;
     padding-top: 74px;
     box-sizing: border-box;
+    overflow: hidden;
   }
 
   .ledger-residents-track {
     display: flex;
     justify-content: flex-start;
+    align-items: flex-start;
     gap: 0;
     max-width: none;
     width: 100vw;
+    height: calc(100vh - 74px);
     margin: 0;
-    overflow-x: auto;
+    overflow-x: scroll;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
     -webkit-overflow-scrolling: touch;
   }
 
   .resident-spread {
-    display: contents;
+    flex: 0 0 200vw;
+    justify-content: flex-start;
   }
 
-  .resident-page {
+  .resident-page-frame {
     flex: 0 0 100vw;
     width: 100vw;
     max-width: none;
-    height: auto;
+    height: 100%;
+    align-items: flex-start;
+    justify-content: center;
     scroll-snap-align: start;
+    touch-action: pan-x;
+  }
+
+  .resident-page {
+    width: min(84vw, calc((100vh - 150px) * 0.727));
+    max-width: 84vw;
+    max-height: calc(100vh - 150px);
+    height: auto;
+    object-fit: contain;
+    touch-action: pan-x;
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (max-width: 768px) {
+    .ledger.ledger--profile,
+    .residents-profile {
+      height: 100dvh;
+      min-height: 100dvh;
+    }
+
+    .ledger-residents-track {
+      height: calc(100dvh - 74px);
+    }
+
+    .resident-page {
+      width: min(84vw, calc((100dvh - 150px) * 0.727));
+      max-height: calc(100dvh - 150px);
+    }
   }
 }

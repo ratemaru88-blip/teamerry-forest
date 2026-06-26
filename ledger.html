@@ -72,6 +72,8 @@
     const ledgerCloseButton = document.getElementById("ledgerCloseButton");
     const residentsTrack = document.querySelector("[data-residents-track]");
     const pageOpenSound = new Audio("./assets/sounds/効果音素材/page_open.mp3");
+    pageOpenSound.preload = "auto";
+    let pageOpenSoundUnlocked = false;
     let lastSnapIndex = 0;
     let suppressScrollSoundUntil = 0;
 
@@ -86,32 +88,32 @@
       {
         id: "aco",
         name: "Aco",
-        left: "./assets/images/record/aco_profile_left.webp",
-        right: "./assets/images/record/aco_profile_right.webp"
+        left: "./ASSETS/images/record/aco_profile_left.webp",
+        right: "./ASSETS/images/record/aco_profile_right.webp"
       },
       {
         id: "berry",
         name: "Berry",
-        left: "./assets/images/record/berry_profile_left.webp",
-        right: "./assets/images/record/berry_profile_right.webp"
+        left: "./ASSETS/images/record/berry_profile_left.webp",
+        right: "./ASSETS/images/record/berry_profile_right.webp"
       },
       {
         id: "bunpy",
         name: "Bunpy",
-        left: "./assets/images/record/bunpy_profile_left.webp",
-        right: "./assets/images/record/bunpy_profile_right.webp"
+        left: "./ASSETS/images/record/bunpy_profile_left.webp",
+        right: "./ASSETS/images/record/bunpy_profile_right.webp"
       },
       {
         id: "lavi",
         name: "Lavi",
-        left: "./assets/images/record/lavi_profile_left.webp",
-        right: "./assets/images/record/lavi_profile_right.webp"
+        left: "./ASSETS/images/record/lavi_profile_left.webp",
+        right: "./ASSETS/images/record/lavi_profile_right.webp"
       },
       {
         id: "lemon",
         name: "Lemon",
-        left: "./assets/images/record/lemon_profile_left.webp",
-        right: "./assets/images/record/lemon_profile_right.webp"
+        left: "./ASSETS/images/record/lemon_profile_left.webp",
+        right: "./ASSETS/images/record/lemon_profile_right.webp"
       }
     ];
 
@@ -130,12 +132,17 @@
           ["left", resident.left],
           ["right", resident.right]
         ].forEach(([side, src]) => {
+          const frame = document.createElement("div");
+          frame.className = "resident-page-frame";
+
           const image = document.createElement("img");
           image.className = "resident-page";
           image.src = src;
           image.alt = `${resident.name} profile ${side} page`;
           image.loading = resident.id === "lilu" ? "eager" : "lazy";
-          spread.append(image);
+          image.draggable = false;
+          frame.append(image);
+          spread.append(frame);
         });
 
         residentsTrack.append(spread);
@@ -148,10 +155,11 @@
 
     const getSnapWidth = () => {
       if (!residentsTrack) return 1;
+      const firstFrame = residentsTrack.querySelector(".resident-page-frame");
       const firstPage = residentsTrack.querySelector(".resident-page");
       const firstSpread = residentsTrack.querySelector(".resident-spread");
       return isMobileProfile()
-        ? firstPage?.getBoundingClientRect().width || residentsTrack.clientWidth || 1
+        ? firstFrame?.getBoundingClientRect().width || firstPage?.getBoundingClientRect().width || residentsTrack.clientWidth || 1
         : firstSpread?.getBoundingClientRect().width || residentsTrack.clientWidth || 1;
     };
 
@@ -172,7 +180,28 @@
       if (nextButton) nextButton.disabled = currentIndex >= maxIndex;
     };
 
+    const setProfileOpen = (isOpen) => {
+      ledger?.classList.toggle("ledger--profile", isOpen);
+      document.documentElement.classList.toggle("is-profile-open", isOpen);
+      document.body.classList.toggle("is-profile-open", isOpen);
+    };
+
+    const unlockPageOpenSound = () => {
+      if (pageOpenSoundUnlocked) return;
+
+      pageOpenSound.muted = true;
+      pageOpenSound.play().then(() => {
+        pageOpenSound.pause();
+        pageOpenSound.currentTime = 0;
+        pageOpenSound.muted = false;
+        pageOpenSoundUnlocked = true;
+      }).catch(() => {
+        pageOpenSound.muted = false;
+      });
+    };
+
     const playPageOpenSound = () => {
+      pageOpenSound.muted = false;
       pageOpenSound.currentTime = 0;
       pageOpenSound.play().catch(() => {});
     };
@@ -198,15 +227,16 @@
     if (ledgerContents && residentsProfile) {
       ledgerContents.hidden = false;
       residentsProfile.hidden = true;
-      ledger?.classList.remove("ledger--profile");
+      setProfileOpen(false);
       updatePageButtons();
     }
 
     if (residentsLink && ledgerContents && residentsProfile) {
       residentsLink.addEventListener("click", () => {
+        unlockPageOpenSound();
         ledgerContents.hidden = true;
         residentsProfile.hidden = false;
-        ledger?.classList.add("ledger--profile");
+        setProfileOpen(true);
         residentsTrack?.scrollTo({ left: 0, top: 0 });
         lastSnapIndex = 0;
         updatePageButtons();
@@ -218,7 +248,7 @@
       closeButton.addEventListener("click", () => {
         residentsProfile.hidden = true;
         ledgerContents.hidden = false;
-        ledger?.classList.remove("ledger--profile");
+        setProfileOpen(false);
         residentsTrack?.scrollTo({ left: 0, top: 0 });
         lastSnapIndex = 0;
         updatePageButtons();
@@ -226,8 +256,17 @@
       });
     }
 
-    prevButton?.addEventListener("click", () => scrollToSnap(-1));
-    nextButton?.addEventListener("click", () => scrollToSnap(1));
+    prevButton?.addEventListener("click", () => {
+      unlockPageOpenSound();
+      scrollToSnap(-1);
+    });
+    nextButton?.addEventListener("click", () => {
+      unlockPageOpenSound();
+      scrollToSnap(1);
+    });
+
+    residentsTrack?.addEventListener("pointerdown", unlockPageOpenSound, { passive: true });
+    residentsTrack?.addEventListener("touchstart", unlockPageOpenSound, { passive: true });
 
     residentsTrack?.addEventListener("scroll", () => {
       updatePageButtons();

@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fairies = [
     {
       name: "リル",
-      image: "./assets/images/observatory/Lilu_v01.webp",
+      image: "./ASSETS/images/observatory/Lilu_v01.webp",
       alt: "リル",
       dayMessages: [
         "あれ？ なにか届いてるよ。",
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       name: "ベリー",
-      image: "./assets/images/observatory/Berry_v01.webp",
+      image: "./ASSETS/images/observatory/Berry_v01.webp",
       alt: "ベリー",
       dayMessages: [
         "面白そうな瓶があるよ！",
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       name: "レモン",
-      image: "./assets/images/observatory/Lemon_v01.webp",
+      image: "./ASSETS/images/observatory/Lemon_v01.webp",
       alt: "レモン",
       dayMessages: [
         "きっといい便りが届くよ。",
