@@ -50,51 +50,201 @@
       </button>
     </section>
 
-    <section id="liluProfile" class="lilu-profile" hidden aria-label="リルの記録書">
+    <section id="residentsProfile" class="residents-profile" hidden aria-label="森の住民の記録書">
       <nav class="ledger-nav" aria-label="記録書ページ操作">
         <img class="ledger-nav-img" src="./assets/images/record/kirokusyo_botun.webp" alt="">
-        <button class="ledger-nav-hit ledger-nav-hit--prev" type="button" aria-label="前ページへ" disabled></button>
+        <button class="ledger-nav-hit ledger-nav-hit--prev" type="button" aria-label="前ページへ"></button>
         <button class="ledger-nav-hit ledger-nav-hit--close" type="button" aria-label="目次へ戻る"></button>
-        <button class="ledger-nav-hit ledger-nav-hit--next" type="button" aria-label="次ページへ" disabled></button>
+        <button class="ledger-nav-hit ledger-nav-hit--next" type="button" aria-label="次ページへ"></button>
       </nav>
-      <div class="ledger-spread">
-        <img src="./assets/images/record/lilu_profile_left.webp" alt="Lilu left page">
-        <img src="./assets/images/record/lilu_profile_right.webp" alt="Lilu right page">
-      </div>
+      <div class="ledger-residents-track" data-residents-track></div>
     </section>
   </main>
 
   <script>
     const ledgerContents = document.getElementById("ledgerContents");
-    const liluProfile = document.getElementById("liluProfile");
+    const residentsProfile = document.getElementById("residentsProfile");
     const ledger = document.getElementById("ledger");
     const residentsLink = document.querySelector("[data-open='residents']");
     const closeButton = document.querySelector(".ledger-nav-hit--close");
+    const prevButton = document.querySelector(".ledger-nav-hit--prev");
+    const nextButton = document.querySelector(".ledger-nav-hit--next");
     const ledgerCloseButton = document.getElementById("ledgerCloseButton");
+    const residentsTrack = document.querySelector("[data-residents-track]");
+    const pageOpenSound = new Audio("./assets/sounds/効果音素材/page_open.mp3");
+    let lastSnapIndex = 0;
+    let suppressScrollSoundUntil = 0;
 
-    if (ledgerContents && liluProfile) {
+    // Add future forest residents here. Each object is one left/right profile spread.
+    const residents = [
+      {
+        id: "lilu",
+        name: "Lilu",
+        left: "./assets/images/record/lilu_profile_left.webp",
+        right: "./assets/images/record/lilu_profile_right.webp"
+      },
+      {
+        id: "aco",
+        name: "Aco",
+        left: "./assets/images/record/aco_profile_left.webp",
+        right: "./assets/images/record/aco_profile_right.webp"
+      },
+      {
+        id: "berry",
+        name: "Berry",
+        left: "./assets/images/record/berry_profile_left.webp",
+        right: "./assets/images/record/berry_profile_right.webp"
+      },
+      {
+        id: "bunpy",
+        name: "Bunpy",
+        left: "./assets/images/record/bunpy_profile_left.webp",
+        right: "./assets/images/record/bunpy_profile_right.webp"
+      },
+      {
+        id: "lavi",
+        name: "Lavi",
+        left: "./assets/images/record/lavi_profile_left.webp",
+        right: "./assets/images/record/lavi_profile_right.webp"
+      },
+      {
+        id: "lemon",
+        name: "Lemon",
+        left: "./assets/images/record/lemon_profile_left.webp",
+        right: "./assets/images/record/lemon_profile_right.webp"
+      }
+    ];
+
+    const renderResidents = () => {
+      if (!residentsTrack) return;
+
+      residentsTrack.replaceChildren();
+
+      residents.forEach((resident) => {
+        const spread = document.createElement("article");
+        spread.className = "resident-spread";
+        spread.id = `resident-${resident.id}`;
+        spread.setAttribute("aria-label", `${resident.name} profile`);
+
+        [
+          ["left", resident.left],
+          ["right", resident.right]
+        ].forEach(([side, src]) => {
+          const image = document.createElement("img");
+          image.className = "resident-page";
+          image.src = src;
+          image.alt = `${resident.name} profile ${side} page`;
+          image.loading = resident.id === "lilu" ? "eager" : "lazy";
+          spread.append(image);
+        });
+
+        residentsTrack.append(spread);
+      });
+    };
+
+    renderResidents();
+
+    const isMobileProfile = () => window.matchMedia("(max-width: 768px)").matches;
+
+    const getSnapWidth = () => {
+      if (!residentsTrack) return 1;
+      const firstPage = residentsTrack.querySelector(".resident-page");
+      const firstSpread = residentsTrack.querySelector(".resident-spread");
+      return isMobileProfile()
+        ? firstPage?.getBoundingClientRect().width || residentsTrack.clientWidth || 1
+        : firstSpread?.getBoundingClientRect().width || residentsTrack.clientWidth || 1;
+    };
+
+    const getMaxSnapIndex = () => {
+      if (!residentsTrack) return 0;
+      return Math.max(0, Math.round((residentsTrack.scrollWidth - residentsTrack.clientWidth) / getSnapWidth()));
+    };
+
+    const getCurrentSnapIndex = () => {
+      if (!residentsTrack) return 0;
+      return Math.round(residentsTrack.scrollLeft / getSnapWidth());
+    };
+
+    const updatePageButtons = () => {
+      const currentIndex = getCurrentSnapIndex();
+      const maxIndex = getMaxSnapIndex();
+      if (prevButton) prevButton.disabled = currentIndex <= 0;
+      if (nextButton) nextButton.disabled = currentIndex >= maxIndex;
+    };
+
+    const playPageOpenSound = () => {
+      pageOpenSound.currentTime = 0;
+      pageOpenSound.play().catch(() => {});
+    };
+
+    const scrollToSnap = (direction) => {
+      if (!residentsTrack) return;
+
+      const maxIndex = getMaxSnapIndex();
+      const nextIndex = Math.min(maxIndex, Math.max(0, getCurrentSnapIndex() + direction));
+      if (nextIndex === getCurrentSnapIndex()) return;
+
+      playPageOpenSound();
+      suppressScrollSoundUntil = Date.now() + 500;
+      residentsTrack.scrollTo({
+        left: nextIndex * getSnapWidth(),
+        top: 0,
+        behavior: "smooth"
+      });
+      lastSnapIndex = nextIndex;
+      updatePageButtons();
+    };
+
+    if (ledgerContents && residentsProfile) {
       ledgerContents.hidden = false;
-      liluProfile.hidden = true;
+      residentsProfile.hidden = true;
       ledger?.classList.remove("ledger--profile");
+      updatePageButtons();
     }
 
-    if (residentsLink && ledgerContents && liluProfile) {
+    if (residentsLink && ledgerContents && residentsProfile) {
       residentsLink.addEventListener("click", () => {
         ledgerContents.hidden = true;
-        liluProfile.hidden = false;
+        residentsProfile.hidden = false;
         ledger?.classList.add("ledger--profile");
+        residentsTrack?.scrollTo({ left: 0, top: 0 });
+        lastSnapIndex = 0;
+        updatePageButtons();
         window.scrollTo({ left: 0, top: 0 });
       });
     }
 
-    if (closeButton && ledgerContents && liluProfile) {
+    if (closeButton && ledgerContents && residentsProfile) {
       closeButton.addEventListener("click", () => {
-        liluProfile.hidden = true;
+        residentsProfile.hidden = true;
         ledgerContents.hidden = false;
         ledger?.classList.remove("ledger--profile");
+        residentsTrack?.scrollTo({ left: 0, top: 0 });
+        lastSnapIndex = 0;
+        updatePageButtons();
         window.scrollTo({ left: 0, top: 0 });
       });
     }
+
+    prevButton?.addEventListener("click", () => scrollToSnap(-1));
+    nextButton?.addEventListener("click", () => scrollToSnap(1));
+
+    residentsTrack?.addEventListener("scroll", () => {
+      updatePageButtons();
+
+      if (!isMobileProfile() || Date.now() < suppressScrollSoundUntil) return;
+
+      const currentIndex = getCurrentSnapIndex();
+      if (currentIndex === lastSnapIndex) return;
+
+      lastSnapIndex = currentIndex;
+      playPageOpenSound();
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      lastSnapIndex = getCurrentSnapIndex();
+      updatePageButtons();
+    });
 
     if (ledgerCloseButton) {
       ledgerCloseButton.addEventListener("click", () => {

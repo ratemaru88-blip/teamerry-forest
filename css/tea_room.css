@@ -97,6 +97,28 @@ body {
   content: none;
 }
 
+.notice-poster {
+  position: absolute;
+  z-index: 12;
+  display: block;
+  max-width: none;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.notice-poster--starwind {
+  left: 6.1%;
+  top: 13.2%;
+  width: 36%;
+  border-radius: 4px;
+  box-shadow:
+    0 3px 8px rgba(35, 18, 8, 0.36),
+    0 0 0 1px rgba(255, 237, 184, 0.16);
+  transform: rotate(-1.3deg);
+  transform-origin: 52% 48%;
+}
+
 .bookshelf-link {
   position: absolute;
   z-index: 15;
@@ -246,6 +268,17 @@ body {
     width: 42vw;
     font-size: clamp(0.64rem, 2.45vw, 0.76rem);
     line-height: 1.65;
+  }
+
+  .notice-poster--starwind {
+    left: 5.3%;
+    top: 12.7%;
+    width: 35.5%;
+    border-radius: 3px;
+    box-shadow:
+      0 2px 6px rgba(35, 18, 8, 0.34),
+      0 0 0 1px rgba(255, 237, 184, 0.14);
+    transform: rotate(-1deg);
   }
 
   .bookshelf-link--blog {

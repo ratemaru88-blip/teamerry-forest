@@ -208,15 +208,31 @@ body {
   cursor: default;
 }
 
-.ledger-spread {
-  display: flex;
-  justify-content: center;
-  gap: 0;
-  max-width: 1200px;
-  margin: 0 auto;
+.residents-profile {
+  min-height: calc(100vh - 40px);
 }
 
-.ledger-spread img {
+.ledger-residents-track {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0;
+  width: min(100%, 1200px);
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-color: rgba(255, 232, 170, 0.5) rgba(255, 232, 170, 0.08);
+}
+
+.resident-spread {
+  display: flex;
+  flex: 0 0 100%;
+  justify-content: center;
+  scroll-snap-align: start;
+}
+
+.resident-page {
   display: block;
   width: 50%;
   max-width: 600px;
@@ -236,7 +252,8 @@ body {
   }
 
   .ledger.ledger--profile {
-    width: 200vw;
+    width: 100vw;
+    min-width: 100vw;
   }
 
   .ledger-close-button {
@@ -305,30 +322,54 @@ body {
   }
 
   .ledger-nav {
+    position: fixed;
+    left: 50%;
+    top: 8px;
+    z-index: 5;
     width: 100vw;
-    margin: 12px 0 14px;
+    max-width: 360px;
+    margin: 0;
+    transform: translateX(-50%);
+    pointer-events: none;
   }
 
-  .lilu-profile {
-    width: 200vw;
+  .ledger-nav-hit--prev,
+  .ledger-nav-hit--close {
+    pointer-events: auto;
   }
 
-  .ledger-spread {
+  .ledger-nav-hit--next {
+    pointer-events: auto;
+  }
+
+  .residents-profile {
+    width: 100vw;
+    min-height: 100vh;
+    padding-top: 74px;
+    box-sizing: border-box;
+  }
+
+  .ledger-residents-track {
     display: flex;
     justify-content: flex-start;
+    gap: 0;
     max-width: none;
-    width: 200vw;
+    width: 100vw;
     margin: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .ledger-spread img {
+  .resident-spread {
+    display: contents;
+  }
+
+  .resident-page {
     flex: 0 0 100vw;
     width: 100vw;
     max-width: none;
     height: auto;
-  }
-
-  .ledger-spread img:nth-child(2) {
-    display: block;
+    scroll-snap-align: start;
   }
 }
