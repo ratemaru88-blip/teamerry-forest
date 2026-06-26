@@ -18,12 +18,37 @@
   const mobileWalker = document.querySelector(".mobile-walker");
   const mobileWalkerBubble = document.querySelector(".mobile-walker__bubble");
   const mobileObservatoryPortal = document.getElementById("mobileObservatoryPortal");
+  const observatoryLink = document.getElementById("observatoryLink");
   const kakaoWalker = document.querySelector(".kakao-walker");
   const kakaoWalkerImage = document.querySelector(".kakao-walker__image");
 
   if (mobileObservatoryPortal && mobileObservatoryPortal.parentElement !== document.body) {
     document.body.append(mobileObservatoryPortal);
   }
+
+  const syncMobileObservatoryPortal = () => {
+    if (!mobileObservatoryPortal) {
+      return;
+    }
+
+    const useFixedPortal = window.matchMedia("(max-width: 900px), (hover: none), (pointer: coarse)").matches;
+    mobileObservatoryPortal.style.position = "fixed";
+    mobileObservatoryPortal.style.left = "auto";
+    mobileObservatoryPortal.style.top = "clamp(92px, 16vh, 150px)";
+    mobileObservatoryPortal.style.right = "18px";
+    mobileObservatoryPortal.style.bottom = "auto";
+    mobileObservatoryPortal.style.transform = "none";
+    mobileObservatoryPortal.style.translate = "none";
+    mobileObservatoryPortal.style.display = useFixedPortal ? "block" : "";
+
+    if (observatoryLink) {
+      observatoryLink.style.display = useFixedPortal ? "none" : "";
+    }
+  };
+
+  syncMobileObservatoryPortal();
+  window.addEventListener("resize", syncMobileObservatoryPortal);
+  window.addEventListener("orientationchange", syncMobileObservatoryPortal);
 
   if (!scene || !map) {
     return;

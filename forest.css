@@ -2222,6 +2222,21 @@ body.debug-panel-hidden .debug-panel {
 }
 
 @media (hover: none), (pointer: coarse) {
+  #observatoryLink {
+    display: none !important;
+  }
+
+  #mobileObservatoryPortal {
+    position: fixed !important;
+    left: auto !important;
+    top: clamp(92px, 16vh, 150px) !important;
+    right: 18px !important;
+    bottom: auto !important;
+    display: block !important;
+    transform: none !important;
+    translate: none !important;
+  }
+
   .mint-guide {
     display: none;
   }
