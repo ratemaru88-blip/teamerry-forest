@@ -19,13 +19,13 @@
         </div>
 
         <nav class="ledger-menu" aria-label="記録書の目次">
-          <a href="https://ratemaru88.wixsite.com/teamerry/about-5-1" class="ledger-menu-card ledger-menu-card--maroudo">
+          <button type="button" class="ledger-menu-card ledger-menu-card--maroudo" data-open="maroudo">
             <span class="ledger-menu-number">Ⅰ</span>
             <span>
               <strong>森のまろうど</strong>
               <small>TeaMerryの仲間たち</small>
             </span>
-          </a>
+          </button>
 
           <button type="button" class="ledger-menu-card ledger-menu-card--residents" data-open="residents">
             <span class="ledger-menu-number">Ⅱ</span>
@@ -35,7 +35,7 @@
             </span>
           </button>
 
-          <button type="button" class="ledger-menu-card ledger-menu-card--tales" disabled>
+          <button type="button" class="ledger-menu-card ledger-menu-card--tales" data-tales-message>
             <span class="ledger-menu-number">Ⅲ</span>
             <span>
               <strong>語り継がれしこと</strong>
@@ -43,6 +43,8 @@
             </span>
           </button>
         </nav>
+
+        <p class="ledger-tales-message" id="ledgerTalesMessage" aria-live="polite"></p>
       </div>
 
       <button type="button" class="ledger-close-button" id="ledgerCloseButton" aria-label="記録書を閉じる">
@@ -65,97 +67,153 @@
     const ledgerContents = document.getElementById("ledgerContents");
     const residentsProfile = document.getElementById("residentsProfile");
     const ledger = document.getElementById("ledger");
-    const residentsLink = document.querySelector("[data-open='residents']");
+    const profileOpenButtons = document.querySelectorAll("[data-open]");
     const closeButton = document.querySelector(".ledger-nav-hit--close");
     const prevButton = document.querySelector(".ledger-nav-hit--prev");
     const nextButton = document.querySelector(".ledger-nav-hit--next");
     const ledgerCloseButton = document.getElementById("ledgerCloseButton");
     const residentsTrack = document.querySelector("[data-residents-track]");
+    const talesMessageButton = document.querySelector("[data-tales-message]");
+    const talesMessage = document.getElementById("ledgerTalesMessage");
     const pageOpenSound = new Audio("./assets/sounds/効果音素材/page_open.mp3");
     pageOpenSound.preload = "auto";
     let pageOpenSoundUnlocked = false;
     let lastSnapIndex = 0;
     let suppressScrollSoundUntil = 0;
+    let talesMessageTimer = 0;
 
-    // Add future forest residents here. Each object is one left/right profile spread.
-    const residents = [
-      {
-        id: "lilu",
-        name: "Lilu",
-        left: "./assets/images/record/lilu_profile_left.webp",
-        right: "./assets/images/record/lilu_profile_right.webp"
+    const profileCollections = {
+      maroudo: {
+        label: "森のまろうどの記録書",
+        pages: [
+          {
+            id: "kakao",
+            name: "Kakao",
+            left: "./assets/images/record/maroudo/kakao_profile_b_left_a.webp",
+            right: "./assets/images/record/maroudo/kakao_profile_b_right.webp"
+          },
+          {
+            id: "pac",
+            name: "Pac",
+            left: "./assets/images/record/maroudo/pac_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/pac_profile_b_right.webp"
+          },
+          {
+            id: "peapea",
+            name: "Peapea",
+            left: "./assets/images/record/maroudo/peapea_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/peapea_profile_b_right.webp"
+          },
+          {
+            id: "chocopa",
+            name: "Chocopa",
+            left: "./assets/images/record/maroudo/chocopa_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/chocopa_profile_b_right.webp"
+          },
+          {
+            id: "whip",
+            name: "Whip",
+            left: "./assets/images/record/maroudo/whip_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/whip_profile_b_right.webp"
+          },
+          {
+            id: "chachajii",
+            name: "Chachajii",
+            left: "./assets/images/record/maroudo/chachajii_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/chachajii_profile_b_right.webp"
+          },
+          {
+            id: "mint",
+            name: "Mint",
+            left: "./assets/images/record/maroudo/mint_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/mint_profile_b_right.webp"
+          }
+        ]
       },
-      {
-        id: "aco",
-        name: "Aco",
-        left: "./assets/images/record/aco_profile_left.webp",
-        right: "./assets/images/record/aco_profile_right.webp"
-      },
-      {
-        id: "berry",
-        name: "Berry",
-        left: "./assets/images/record/berry_profile_left.webp",
-        right: "./assets/images/record/berry_profile_right.webp"
-      },
-      {
-        id: "bunpy",
-        name: "Bunpy",
-        left: "./assets/images/record/bunpy_profile_left.webp",
-        right: "./assets/images/record/bunpy_profile_right.webp"
-      },
-      {
-        id: "lavi",
-        name: "Lavi",
-        left: "./assets/images/record/lavi_profile_left.webp",
-        right: "./assets/images/record/lavi_profile_right.webp"
-      },
-      {
-        id: "lemon",
-        name: "Lemon",
-        left: "./assets/images/record/lemon_profile_left.webp",
-        right: "./assets/images/record/lemon_profile_right.webp"
-      },
-      {
-        id: "miiru",
-        name: "Miiru",
-        left: "./assets/images/record/miiru_profile_left.webp",
-        right: "./assets/images/record/miiru_profile_right.webp"
-      },
-      {
-        id: "mint",
-        name: "Mint",
-        left: "./assets/images/record/mint_profile_left.webp",
-        right: "./assets/images/record/mint_profile_right.webp"
-      },
-      {
-        id: "tiara",
-        name: "Tiara",
-        left: "./assets/images/record/tiara_profile_left.webp",
-        right: "./assets/images/record/tiara_profile_right.webp"
-      },
-      {
-        id: "curly",
-        name: "Curly",
-        left: "./assets/images/record/curly_profile_left.webp",
-        right: "./assets/images/record/curly_profile_right.webp"
-      },
-      {
-        id: "elder",
-        name: "Elder",
-        left: "./assets/images/record/elder_profile_left.webp",
-        right: "./assets/images/record/elder_profile_right.webp"
+      residents: {
+        label: "森の住民の記録書",
+        pages: [
+          {
+            id: "lilu",
+            name: "Lilu",
+            left: "./assets/images/record/lilu_profile_left.webp",
+            right: "./assets/images/record/lilu_profile_right.webp"
+          },
+          {
+            id: "aco",
+            name: "Aco",
+            left: "./assets/images/record/aco_profile_left.webp",
+            right: "./assets/images/record/aco_profile_right.webp"
+          },
+          {
+            id: "berry",
+            name: "Berry",
+            left: "./assets/images/record/berry_profile_left.webp",
+            right: "./assets/images/record/berry_profile_right.webp"
+          },
+          {
+            id: "bunpy",
+            name: "Bunpy",
+            left: "./assets/images/record/bunpy_profile_left.webp",
+            right: "./assets/images/record/bunpy_profile_right.webp"
+          },
+          {
+            id: "lavi",
+            name: "Lavi",
+            left: "./assets/images/record/lavi_profile_left.webp",
+            right: "./assets/images/record/lavi_profile_right.webp"
+          },
+          {
+            id: "lemon",
+            name: "Lemon",
+            left: "./assets/images/record/lemon_profile_left.webp",
+            right: "./assets/images/record/lemon_profile_right.webp"
+          },
+          {
+            id: "miiru",
+            name: "Miiru",
+            left: "./assets/images/record/miiru_profile_left.webp",
+            right: "./assets/images/record/miiru_profile_right.webp"
+          },
+          {
+            id: "mint",
+            name: "Mint",
+            left: "./assets/images/record/mint_profile_left.webp",
+            right: "./assets/images/record/mint_profile_right.webp"
+          },
+          {
+            id: "tiara",
+            name: "Tiara",
+            left: "./assets/images/record/tiara_profile_left.webp",
+            right: "./assets/images/record/tiara_profile_right.webp"
+          },
+          {
+            id: "curly",
+            name: "Curly",
+            left: "./assets/images/record/curly_profile_left.webp",
+            right: "./assets/images/record/curly_profile_right.webp"
+          },
+          {
+            id: "elder",
+            name: "Elder",
+            left: "./assets/images/record/elder_profile_left.webp",
+            right: "./assets/images/record/elder_profile_right.webp"
+          }
+        ]
       }
-    ];
+    };
 
-    const renderResidents = () => {
+    const renderProfilePages = (collectionId) => {
       if (!residentsTrack) return;
 
+      const collection = profileCollections[collectionId] || profileCollections.residents;
       residentsTrack.replaceChildren();
+      residentsProfile?.setAttribute("aria-label", collection.label);
 
-      residents.forEach((resident) => {
+      collection.pages.forEach((resident, index) => {
         const spread = document.createElement("article");
         spread.className = "resident-spread";
-        spread.id = `resident-${resident.id}`;
+        spread.id = `${collectionId}-${resident.id}`;
         spread.setAttribute("aria-label", `${resident.name} profile`);
 
         [
@@ -169,7 +227,7 @@
           image.className = "resident-page";
           image.src = src;
           image.alt = `${resident.name} profile ${side} page`;
-          image.loading = resident.id === "lilu" ? "eager" : "lazy";
+          image.loading = index === 0 ? "eager" : "lazy";
           image.draggable = false;
           frame.append(image);
           spread.append(frame);
@@ -179,7 +237,7 @@
       });
     };
 
-    renderResidents();
+    renderProfilePages("residents");
 
     const isMobileProfile = () => window.matchMedia("(max-width: 768px)").matches;
 
@@ -261,18 +319,40 @@
       updatePageButtons();
     }
 
-    if (residentsLink && ledgerContents && residentsProfile) {
-      residentsLink.addEventListener("click", () => {
-        unlockPageOpenSound();
-        ledgerContents.hidden = true;
-        residentsProfile.hidden = false;
-        setProfileOpen(true);
-        residentsTrack?.scrollTo({ left: 0, top: 0 });
-        lastSnapIndex = 0;
-        updatePageButtons();
-        window.scrollTo({ left: 0, top: 0 });
+    const openProfile = (collectionId) => {
+      if (!ledgerContents || !residentsProfile) return;
+
+      renderProfilePages(collectionId);
+      unlockPageOpenSound();
+      ledgerContents.hidden = true;
+      residentsProfile.hidden = false;
+      setProfileOpen(true);
+      residentsTrack?.scrollTo({ left: 0, top: 0 });
+      lastSnapIndex = 0;
+      updatePageButtons();
+      window.scrollTo({ left: 0, top: 0 });
+    };
+
+    profileOpenButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const collectionId = button.dataset.open || "residents";
+        openProfile(collectionId);
       });
-    }
+    });
+
+    talesMessageButton?.addEventListener("click", () => {
+      if (!talesMessage) return;
+
+      window.clearTimeout(talesMessageTimer);
+      talesMessage.textContent = "話す時期が来たら　語ろうかのう…";
+      talesMessage.classList.remove("is-visible");
+      window.requestAnimationFrame(() => {
+        talesMessage.classList.add("is-visible");
+      });
+      talesMessageTimer = window.setTimeout(() => {
+        talesMessage.classList.remove("is-visible");
+      }, 3200);
+    });
 
     if (closeButton && ledgerContents && residentsProfile) {
       closeButton.addEventListener("click", () => {
