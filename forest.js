@@ -22,6 +22,7 @@
   const kakaoWalkerImage = document.querySelector(".kakao-walker__image");
   const nameModal = document.getElementById("nameModal");
   const forestNameInput = document.getElementById("forestNameInput");
+  const reuseForestNameButton = document.getElementById("reuseForestName");
   const saveForestNameButton = document.getElementById("saveForestName");
   const skipForestNameButton = document.getElementById("skipForestName");
 
@@ -48,14 +49,10 @@
   };
 
   function getForestDisplayName() {
-    return getStoredItem(TM_DISPLAY_NAME_KEY) || "おさんぽさん";
+    return getStoredItem(TM_DISPLAY_NAME_KEY) || "さんぽさん";
   }
 
-  function saveForestName(name) {
-    const trimmed = String(name || "").trim();
-    const forestName = trimmed || "おさんぽ";
-    const displayName = trimmed ? `${trimmed}さん` : "おさんぽさん";
-
+  function persistForestName(forestName, displayName) {
     setStoredItem(TM_NAME_KEY, forestName);
     setStoredItem(TM_DISPLAY_NAME_KEY, displayName);
     setStoredItem(TM_NAME_DONE_KEY, "true");
@@ -69,6 +66,18 @@
     }));
   }
 
+  function saveForestName(name) {
+    const trimmed = String(name || "").trim();
+    const forestName = trimmed || "おさんぽ";
+    const displayName = trimmed ? `${trimmed}さん` : "さんぽさん";
+
+    persistForestName(forestName, displayName);
+  }
+
+  function saveWalkOnlyName() {
+    persistForestName("おさんぽ", "さんぽさん");
+  }
+
   function updateWriterNames() {
     document.querySelectorAll("#writerName, .writer-name").forEach((element) => {
       element.textContent = getForestDisplayName();
@@ -79,18 +88,62 @@
     nameModal?.classList.add("hidden");
   }
 
+  function setNameModalMode(mode) {
+    const hasStoredName = Boolean(getStoredItem(TM_NAME_DONE_KEY) && getStoredItem(TM_DISPLAY_NAME_KEY));
+    const isConfirmMode = mode === "confirm" && hasStoredName;
+    const storedForestName = getStoredItem(TM_NAME_KEY) || "";
+
+    if (reuseForestNameButton) {
+      reuseForestNameButton.classList.toggle("hidden", !isConfirmMode);
+    }
+
+    if (nameModal) {
+      nameModal.dataset.mode = isConfirmMode ? "confirm" : "initial";
+    }
+
+    const title = document.getElementById("nameModalTitle");
+    const message = document.getElementById("nameModalMessage");
+
+    if (title) {
+      title.textContent = isConfirmMode ? `ようこそ。${getForestDisplayName()}` : "ようこそ、TeaMerryへ。";
+    }
+
+    if (message) {
+      message.innerHTML = "この森で呼んでほしい名前を<br>10文字以内で決めてね。";
+    }
+
+    if (forestNameInput) {
+      forestNameInput.value = isConfirmMode ? storedForestName : "";
+    }
+  }
+
+  function showNameModal(mode = "initial") {
+    if (!nameModal) {
+      return;
+    }
+
+    setNameModalMode(mode);
+    nameModal.classList.remove("hidden");
+    window.setTimeout(() => forestNameInput?.focus(), 80);
+  }
+
   function showNameModalIfNeeded() {
     if (!nameModal || getStoredItem(TM_NAME_DONE_KEY)) {
       return;
     }
 
-    nameModal.classList.remove("hidden");
-    window.setTimeout(() => forestNameInput?.focus(), 80);
+    showNameModal("initial");
   }
 
   function setupForestNameModal() {
     updateWriterNames();
     showNameModalIfNeeded();
+
+    reuseForestNameButton?.addEventListener("click", () => {
+      setStoredItem(TM_NAME_DONE_KEY, "true");
+      updateWriterNames();
+      closeNameModal();
+    });
 
     saveForestNameButton?.addEventListener("click", () => {
       saveForestName(forestNameInput?.value || "");
@@ -98,7 +151,7 @@
     });
 
     skipForestNameButton?.addEventListener("click", () => {
-      saveForestName("");
+      saveWalkOnlyName();
       closeNameModal();
     });
 
@@ -115,6 +168,7 @@
   window.TeaMerryForestName = {
     getDisplayName: getForestDisplayName,
     save: saveForestName,
+    showNameModal: () => showNameModal(getStoredItem(TM_NAME_DONE_KEY) ? "confirm" : "initial"),
     updateWriterNames,
   };
   window.getForestDisplayName = getForestDisplayName;

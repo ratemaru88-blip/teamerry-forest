@@ -2,9 +2,9 @@ const TM_DISPLAY_NAME_KEY = "teaMerryDisplayName";
 
 function getForestDisplayName() {
   try {
-    return window.localStorage.getItem(TM_DISPLAY_NAME_KEY) || "おさんぽさん";
+    return window.localStorage.getItem(TM_DISPLAY_NAME_KEY) || "さんぽさん";
   } catch (error) {
-    return "おさんぽさん";
+    return "さんぽさん";
   }
 }
 
