@@ -1,7 +1,31 @@
+const TM_DISPLAY_NAME_KEY = "teaMerryDisplayName";
+
+function getForestDisplayName() {
+  try {
+    return window.localStorage.getItem(TM_DISPLAY_NAME_KEY) || "おさんぽさん";
+  } catch (error) {
+    return "おさんぽさん";
+  }
+}
+
+function updateWriterNames() {
+  document.querySelectorAll("#writerName, .writer-name").forEach((element) => {
+    element.textContent = getForestDisplayName();
+  });
+}
+
+window.TeaMerryForestName = {
+  getDisplayName: getForestDisplayName,
+  updateWriterNames,
+};
+window.getForestDisplayName = getForestDisplayName;
+
 document.addEventListener("DOMContentLoaded", () => {
   const observatory = document.getElementById("observatory");
   const fairyImage = document.getElementById("fairyImage");
   const fairyBalloon = document.getElementById("fairyBalloon");
+
+  updateWriterNames();
 
   const requestedTime = new URLSearchParams(window.location.search).get("time");
   const hour = new Date().getHours();

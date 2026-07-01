@@ -21,6 +21,104 @@
   const observatoryLink = document.getElementById("observatoryLink");
   const kakaoWalker = document.querySelector(".kakao-walker");
   const kakaoWalkerImage = document.querySelector(".kakao-walker__image");
+  const nameModal = document.getElementById("nameModal");
+  const forestNameInput = document.getElementById("forestNameInput");
+  const saveForestNameButton = document.getElementById("saveForestName");
+  const skipForestNameButton = document.getElementById("skipForestName");
+
+  const TM_NAME_KEY = "teaMerryForestName";
+  const TM_DISPLAY_NAME_KEY = "teaMerryDisplayName";
+  const TM_NAME_DONE_KEY = "teaMerryNameDone";
+
+  const getStoredItem = (key) => {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const setStoredItem = (key, value) => {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (error) {
+      return false;
+    }
+
+    return true;
+  };
+
+  function getForestDisplayName() {
+    return getStoredItem(TM_DISPLAY_NAME_KEY) || "おさんぽさん";
+  }
+
+  function saveForestName(name) {
+    const trimmed = String(name || "").trim();
+    const forestName = trimmed || "おさんぽ";
+    const displayName = trimmed ? `${trimmed}さん` : "おさんぽさん";
+
+    setStoredItem(TM_NAME_KEY, forestName);
+    setStoredItem(TM_DISPLAY_NAME_KEY, displayName);
+    setStoredItem(TM_NAME_DONE_KEY, "true");
+    updateWriterNames();
+
+    window.dispatchEvent(new CustomEvent("teaMerryForestNameChange", {
+      detail: {
+        forestName,
+        displayName,
+      },
+    }));
+  }
+
+  function updateWriterNames() {
+    document.querySelectorAll("#writerName, .writer-name").forEach((element) => {
+      element.textContent = getForestDisplayName();
+    });
+  }
+
+  function closeNameModal() {
+    nameModal?.classList.add("hidden");
+  }
+
+  function showNameModalIfNeeded() {
+    if (!nameModal || getStoredItem(TM_NAME_DONE_KEY)) {
+      return;
+    }
+
+    nameModal.classList.remove("hidden");
+    window.setTimeout(() => forestNameInput?.focus(), 80);
+  }
+
+  function setupForestNameModal() {
+    updateWriterNames();
+    showNameModalIfNeeded();
+
+    saveForestNameButton?.addEventListener("click", () => {
+      saveForestName(forestNameInput?.value || "");
+      closeNameModal();
+    });
+
+    skipForestNameButton?.addEventListener("click", () => {
+      saveForestName("");
+      closeNameModal();
+    });
+
+    forestNameInput?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      saveForestName(forestNameInput.value);
+      closeNameModal();
+    });
+  }
+
+  window.TeaMerryForestName = {
+    getDisplayName: getForestDisplayName,
+    save: saveForestName,
+    updateWriterNames,
+  };
+  window.getForestDisplayName = getForestDisplayName;
 
   if (mobileObservatoryPortal && mobileObservatoryPortal.parentElement !== document.body) {
     document.body.append(mobileObservatoryPortal);
@@ -49,6 +147,7 @@
   syncMobileObservatoryPortal();
   window.addEventListener("resize", syncMobileObservatoryPortal);
   window.addEventListener("orientationchange", syncMobileObservatoryPortal);
+  setupForestNameModal();
 
   if (!scene || !map) {
     return;
@@ -1765,7 +1864,7 @@
   scene.addEventListener("pointerdown", (event) => {
     ensureAudio();
 
-    if (!state.enabled || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#observatoryLink") || event.target.closest("#mobileObservatoryPortal") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
+    if (!state.enabled || event.target.closest(".tm-name-modal") || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#observatoryLink") || event.target.closest("#mobileObservatoryPortal") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
       return;
     }
 

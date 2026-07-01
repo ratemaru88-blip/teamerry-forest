@@ -102,6 +102,17 @@ body {
   filter: brightness(1.08);
 }
 
+.writer-name {
+  position: absolute;
+  top: 28%;
+  right: 12%;
+  z-index: 30;
+  color: #5b3a22;
+  font-size: 18px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
 /* 森へ戻る */
 .forest-back {
   position: fixed;
