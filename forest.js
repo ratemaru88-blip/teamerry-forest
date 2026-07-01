@@ -17,7 +17,6 @@
   const debugPanel = document.querySelector(".debug-panel");
   const mobileWalker = document.querySelector(".mobile-walker");
   const mobileWalkerBubble = document.querySelector(".mobile-walker__bubble");
-  const mobileObservatoryPortal = document.getElementById("mobileObservatoryPortal");
   const observatoryLink = document.getElementById("observatoryLink");
   const kakaoWalker = document.querySelector(".kakao-walker");
   const kakaoWalkerImage = document.querySelector(".kakao-walker__image");
@@ -120,33 +119,25 @@
   };
   window.getForestDisplayName = getForestDisplayName;
 
-  if (mobileObservatoryPortal && mobileObservatoryPortal.parentElement !== document.body) {
-    document.body.append(mobileObservatoryPortal);
-  }
-
-  const syncMobileObservatoryPortal = () => {
-    if (!mobileObservatoryPortal) {
+  const mobileObservatoryQuery = window.matchMedia("(max-width: 900px), (hover: none), (pointer: coarse)");
+  const syncObservatoryLinkPlacement = () => {
+    if (!observatoryLink || !map) {
       return;
     }
 
-    const useFixedPortal = window.matchMedia("(max-width: 900px), (hover: none), (pointer: coarse)").matches;
-    mobileObservatoryPortal.style.position = "fixed";
-    mobileObservatoryPortal.style.left = "auto";
-    mobileObservatoryPortal.style.top = "clamp(92px, 16vh, 150px)";
-    mobileObservatoryPortal.style.right = "18px";
-    mobileObservatoryPortal.style.bottom = "auto";
-    mobileObservatoryPortal.style.transform = "none";
-    mobileObservatoryPortal.style.translate = "none";
-    mobileObservatoryPortal.style.display = useFixedPortal ? "block" : "";
+    const targetParent = mobileObservatoryQuery.matches ? document.body : map;
 
-    if (observatoryLink) {
-      observatoryLink.style.display = useFixedPortal ? "none" : "";
+    if (observatoryLink.parentElement !== targetParent) {
+      targetParent.append(observatoryLink);
     }
   };
 
-  syncMobileObservatoryPortal();
-  window.addEventListener("resize", syncMobileObservatoryPortal);
-  window.addEventListener("orientationchange", syncMobileObservatoryPortal);
+  syncObservatoryLinkPlacement();
+  if (typeof mobileObservatoryQuery.addEventListener === "function") {
+    mobileObservatoryQuery.addEventListener("change", syncObservatoryLinkPlacement);
+  } else {
+    mobileObservatoryQuery.addListener(syncObservatoryLinkPlacement);
+  }
   setupForestNameModal();
 
   if (!scene || !map) {
@@ -1864,7 +1855,7 @@
   scene.addEventListener("pointerdown", (event) => {
     ensureAudio();
 
-    if (!state.enabled || event.target.closest(".tm-name-modal") || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#observatoryLink") || event.target.closest("#mobileObservatoryPortal") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
+    if (!state.enabled || event.target.closest(".tm-name-modal") || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#observatoryLink") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
       return;
     }
 

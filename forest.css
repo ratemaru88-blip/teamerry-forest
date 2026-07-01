@@ -1074,48 +1074,12 @@ body:not(.intro-finished) .forest-hokora {
   height: auto !important;
   cursor: pointer;
   filter: drop-shadow(0 0 8px rgba(255, 220, 120, 0.45));
-  transition: transform 0.3s ease, filter 0.3s ease;
+  transition: transform 140ms ease, filter 140ms ease;
 }
 
-#observatoryLink:hover #observatoryUi {
-  transform: scale(1.08);
-  filter: drop-shadow(0 0 14px rgba(255, 230, 150, 0.8));
-}
-
-#mobileObservatoryPortal {
-  position: fixed !important;
-  left: auto !important;
-  top: clamp(92px, 16vh, 150px) !important;
-  right: 18px !important;
-  bottom: auto !important;
-  z-index: 1000 !important;
-  display: none;
-  width: 64px !important;
-  height: auto !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  pointer-events: none !important;
-  opacity: 0 !important;
-  transform: none !important;
-  translate: none !important;
-  animation: none !important;
-  transition: opacity 360ms ease !important;
-  will-change: auto !important;
-  contain: layout paint style;
-  touch-action: manipulation;
-}
-
-body.intro-finished #mobileObservatoryPortal {
-  pointer-events: auto !important;
-  opacity: 1 !important;
-}
-
-#mobileObservatoryPortal img {
-  display: block;
-  width: 100%;
-  height: auto;
-  pointer-events: none;
-  filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.55));
+#observatoryLink:active #observatoryUi {
+  transform: scale(0.96);
+  filter: drop-shadow(0 0 12px rgba(255, 230, 150, 0.72));
 }
 
 @keyframes observatoryUiFadeIn {
@@ -1127,16 +1091,6 @@ body.intro-finished #mobileObservatoryPortal {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes mobileObservatoryFadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
   }
 }
 
@@ -2327,11 +2281,22 @@ body.debug-panel-hidden .debug-panel {
   }
 
   #observatoryLink {
-    display: none !important;
-  }
-
-  #mobileObservatoryPortal {
-    display: block;
+    position: fixed !important;
+    left: auto !important;
+    top: clamp(92px, 16vh, 150px) !important;
+    right: 18px !important;
+    bottom: auto !important;
+    width: 64px !important;
+    z-index: 500 !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    translate: none !important;
+    animation: none !important;
+    touch-action: manipulation;
+    contain: layout paint style;
   }
 
   .debug-panel {
@@ -2354,18 +2319,22 @@ body.debug-panel-hidden .debug-panel {
 
 @media (hover: none), (pointer: coarse) {
   #observatoryLink {
-    display: none !important;
-  }
-
-  #mobileObservatoryPortal {
     position: fixed !important;
     left: auto !important;
     top: clamp(92px, 16vh, 150px) !important;
     right: 18px !important;
     bottom: auto !important;
+    width: 64px !important;
+    z-index: 500 !important;
     display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
     transform: none !important;
     translate: none !important;
+    animation: none !important;
+    touch-action: manipulation;
+    contain: layout paint style;
   }
 
   .mint-guide {
