@@ -1082,6 +1082,41 @@ body:not(.intro-finished) .forest-hokora {
   filter: drop-shadow(0 0 12px rgba(255, 230, 150, 0.72));
 }
 
+#mobileObservatoryPortal {
+  position: fixed !important;
+  left: auto !important;
+  top: clamp(92px, 16vh, 150px) !important;
+  right: 18px !important;
+  bottom: auto !important;
+  z-index: 500 !important;
+  display: none !important;
+  width: 64px !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 1 !important;
+  transform: none !important;
+  translate: none !important;
+  animation: none !important;
+  transition: none !important;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  contain: layout paint style;
+}
+
+#mobileObservatoryPortal img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.55));
+}
+
+#mobileObservatoryPortal:active img {
+  transform: scale(0.96);
+  filter: drop-shadow(0 0 12px rgba(255, 230, 150, 0.72));
+}
+
 @keyframes observatoryUiFadeIn {
   from {
     opacity: 0;
@@ -2281,22 +2316,11 @@ body.debug-panel-hidden .debug-panel {
   }
 
   #observatoryLink {
-    position: fixed !important;
-    left: auto !important;
-    top: clamp(92px, 16vh, 150px) !important;
-    right: 18px !important;
-    bottom: auto !important;
-    width: 64px !important;
-    z-index: 500 !important;
+    display: none !important;
+  }
+
+  #mobileObservatoryPortal {
     display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    opacity: 1 !important;
-    transform: none !important;
-    translate: none !important;
-    animation: none !important;
-    touch-action: manipulation;
-    contain: layout paint style;
   }
 
   .debug-panel {
@@ -2319,22 +2343,11 @@ body.debug-panel-hidden .debug-panel {
 
 @media (hover: none), (pointer: coarse) {
   #observatoryLink {
-    position: fixed !important;
-    left: auto !important;
-    top: clamp(92px, 16vh, 150px) !important;
-    right: 18px !important;
-    bottom: auto !important;
-    width: 64px !important;
-    z-index: 500 !important;
+    display: none !important;
+  }
+
+  #mobileObservatoryPortal {
     display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    opacity: 1 !important;
-    transform: none !important;
-    translate: none !important;
-    animation: none !important;
-    touch-action: manipulation;
-    contain: layout paint style;
   }
 
   .mint-guide {
