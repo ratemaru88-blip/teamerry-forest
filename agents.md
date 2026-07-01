@@ -21,7 +21,7 @@ Use the current asset layout below for new references:
 - Effect images: `ASSETS/images/effects　/`
 - Event images: `ASSETS/images/events/`
 - Bird images: `ASSETS/images/events/birds/`
-- Forest fairy images: `ASSETS/images/Forest Fairy（森の妖精画像）/`
+- Forest fairy images: `assets/images/forest_fairy/`
 - Current background videos: `ASSETS/backgrounds/決定稿_Webｍ/`
 - Background master images and maps: `ASSETS/backgrounds/`
 - Documents: `DOCUMENT/`

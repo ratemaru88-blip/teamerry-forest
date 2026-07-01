@@ -17,6 +17,7 @@
   const debugPanel = document.querySelector(".debug-panel");
   const mobileWalker = document.querySelector(".mobile-walker");
   const mobileWalkerBubble = document.querySelector(".mobile-walker__bubble");
+  const fixedObservatoryPortal = document.getElementById("fixedObservatoryPortal");
   const kakaoWalker = document.querySelector(".kakao-walker");
   const kakaoWalkerImage = document.querySelector(".kakao-walker__image");
   const nameModal = document.getElementById("nameModal");
@@ -136,6 +137,35 @@
     startY: 0,
     originX: 0,
     originY: 0,
+  };
+
+  const observatoryPortalAnchor = {
+    x: 1560,
+    y: 220,
+    width: 44,
+  };
+
+  const syncFixedObservatoryPortal = () => {
+    if (!fixedObservatoryPortal) {
+      return;
+    }
+
+    const size = getViewportSize();
+    const portalWidth = Math.max(34, Math.min(48, observatoryPortalAnchor.width * stageScale));
+    const left = state.x + observatoryPortalAnchor.x * stageScale;
+    const top = state.y + observatoryPortalAnchor.y * stageScale;
+    const isVisible = (
+      left >= 0 &&
+      left + portalWidth <= size.width &&
+      top >= 0 &&
+      top <= size.height
+    );
+
+    fixedObservatoryPortal.style.setProperty("display", isVisible ? "block" : "none", "important");
+    fixedObservatoryPortal.style.setProperty("left", `${left}px`, "important");
+    fixedObservatoryPortal.style.setProperty("top", `${top}px`, "important");
+    fixedObservatoryPortal.style.setProperty("right", "auto", "important");
+    fixedObservatoryPortal.style.setProperty("width", `${portalWidth}px`, "important");
   };
 
   const isCoarsePointer = window.matchMedia("(hover: none), (pointer: coarse)").matches;
@@ -407,6 +437,7 @@
 
     document.documentElement.style.setProperty("--camera-x", cameraX);
     document.documentElement.style.setProperty("--camera-y", cameraY);
+    syncFixedObservatoryPortal();
   };
 
   const resizeStage = () => {

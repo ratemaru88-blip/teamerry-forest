@@ -1004,37 +1004,6 @@ body:not(.intro-finished) .forest-hokora {
   z-index: 4;
 }
 
-.forest-portal--character {
-  --portal-size: 124px;
-  --portal-opacity: 0.88;
-  left: 561px;
-  top: 373px;
-}
-
-.forest-portal--character::before {
-  content: "";
-  position: absolute;
-  left: -20%;
-  top: -22%;
-  z-index: 0;
-  width: 140%;
-  height: 160%;
-  border-radius: 48%;
-  background:
-    radial-gradient(circle at 50% 16%, rgba(255, 236, 145, 0.34), transparent 18%),
-    linear-gradient(180deg, rgba(255, 226, 118, 0.28), rgba(255, 226, 118, 0.08) 42%, transparent 74%);
-  filter: blur(2px);
-  opacity: 0.74;
-  pointer-events: none;
-}
-
-.forest-portal--artwork {
-  --portal-size: 102px;
-  --portal-opacity: 0.88;
-  left: 1332px;
-  top: 542px;
-}
-
 .forest-portal--blog {
   --portal-size: 110px;
   --portal-opacity: 0.9;
@@ -1054,8 +1023,8 @@ body:not(.intro-finished) .forest-hokora {
 /* 星風のテラスUI */
 #fixedObservatoryPortal {
   position: fixed !important;
-  right: max(14px, env(safe-area-inset-right)) !important;
-  top: max(14px, env(safe-area-inset-top)) !important;
+  right: max(92px, calc(env(safe-area-inset-right) + 92px)) !important;
+  top: max(18px, env(safe-area-inset-top)) !important;
   left: auto !important;
   bottom: auto !important;
   transform: none !important;
@@ -1063,24 +1032,15 @@ body:not(.intro-finished) .forest-hokora {
   rotate: 0deg !important;
   scale: 1 !important;
   z-index: 2147483647 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 56px !important;
-  height: 56px !important;
+  display: block !important;
+  width: clamp(64px, 7vw, 88px) !important;
+  height: auto !important;
   margin: 0 !important;
   padding: 0 !important;
-  border: 1px solid rgba(255, 244, 196, 0.76) !important;
-  border-radius: 50% !important;
-  background: rgba(45, 31, 18, 0.82) !important;
-  color: #fff3c4 !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  line-height: 1.05 !important;
-  letter-spacing: 0 !important;
-  text-align: center !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
   text-decoration: none !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32), 0 0 12px rgba(255, 219, 120, 0.42) !important;
   opacity: 1 !important;
   pointer-events: auto !important;
   cursor: pointer;
@@ -1090,14 +1050,16 @@ body:not(.intro-finished) .forest-hokora {
   will-change: auto !important;
 }
 
-#fixedObservatoryPortal span {
+#fixedObservatoryPortal img {
   display: block !important;
-  width: min-content !important;
-  max-width: 40px !important;
-  pointer-events: none;
+  width: 100% !important;
+  height: auto !important;
+  max-width: none !important;
+  pointer-events: none !important;
   transform: none !important;
   translate: none !important;
   animation: none !important;
+  filter: drop-shadow(0 6px 12px rgba(7, 18, 12, 0.36)) !important;
 }
 
 #fixedObservatoryPortal:active {
@@ -2291,7 +2253,10 @@ body.debug-panel-hidden .debug-panel {
   }
 
   #fixedObservatoryPortal {
-    display: flex !important;
+    right: max(82px, calc(env(safe-area-inset-right) + 82px)) !important;
+    top: max(14px, env(safe-area-inset-top)) !important;
+    width: clamp(58px, 16vw, 74px) !important;
+    display: block !important;
   }
 
   .debug-panel {
@@ -2314,7 +2279,10 @@ body.debug-panel-hidden .debug-panel {
 
 @media (hover: none), (pointer: coarse) {
   #fixedObservatoryPortal {
-    display: flex !important;
+    right: max(82px, calc(env(safe-area-inset-right) + 82px)) !important;
+    top: max(14px, env(safe-area-inset-top)) !important;
+    width: clamp(58px, 16vw, 74px) !important;
+    display: block !important;
   }
 
   .mint-guide {
