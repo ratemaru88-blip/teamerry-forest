@@ -1835,7 +1835,7 @@
   scene.addEventListener("pointerdown", (event) => {
     ensureAudio();
 
-    if (!state.enabled || event.target.closest(".tm-name-modal") || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#observatoryLink") || event.target.closest("#mobileObservatoryPortal") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
+    if (!state.enabled || event.target.closest(".tm-name-modal") || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#fixedObservatoryPortal") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
       return;
     }
 

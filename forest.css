@@ -1052,81 +1052,56 @@ body:not(.intro-finished) .forest-hokora {
 }
 
 /* 星風のテラスUI */
-#observatoryLink {
-  position: absolute !important;
-  left: 1566px !important;
-  top: 207px !important;
-  right: auto !important;
-  width: 50px !important;
-  z-index: 60 !important;
-  display: block !important;
-  cursor: pointer;
-  visibility: visible !important;
-  pointer-events: auto !important;
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  animation: observatoryUiFadeIn 1.2s 1.8s ease both;
-}
-
-#observatoryUi {
-  display: block !important;
-  width: 100% !important;
-  height: auto !important;
-  cursor: pointer;
-  filter: drop-shadow(0 0 8px rgba(255, 220, 120, 0.45));
-  transition: transform 140ms ease, filter 140ms ease;
-}
-
-#observatoryLink:active #observatoryUi {
-  transform: scale(0.96);
-  filter: drop-shadow(0 0 12px rgba(255, 230, 150, 0.72));
-}
-
-#mobileObservatoryPortal {
+#fixedObservatoryPortal {
   position: fixed !important;
+  right: max(14px, env(safe-area-inset-right)) !important;
+  top: max(14px, env(safe-area-inset-top)) !important;
   left: auto !important;
-  top: clamp(92px, 16vh, 150px) !important;
-  right: 18px !important;
   bottom: auto !important;
-  z-index: 500 !important;
-  display: none !important;
-  width: 64px !important;
-  height: auto !important;
+  transform: none !important;
+  translate: none !important;
+  rotate: 0deg !important;
+  scale: 1 !important;
+  z-index: 2147483647 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 56px !important;
+  height: 56px !important;
   margin: 0 !important;
   padding: 0 !important;
+  border: 1px solid rgba(255, 244, 196, 0.76) !important;
+  border-radius: 50% !important;
+  background: rgba(45, 31, 18, 0.82) !important;
+  color: #fff3c4 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.05 !important;
+  letter-spacing: 0 !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32), 0 0 12px rgba(255, 219, 120, 0.42) !important;
   opacity: 1 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+  touch-action: manipulation !important;
+  contain: layout paint style !important;
+  isolation: isolate !important;
+  will-change: auto !important;
+}
+
+#fixedObservatoryPortal span {
+  display: block !important;
+  width: min-content !important;
+  max-width: 40px !important;
+  pointer-events: none;
   transform: none !important;
   translate: none !important;
   animation: none !important;
-  transition: none !important;
-  pointer-events: auto !important;
-  touch-action: manipulation;
-  contain: layout paint style;
 }
 
-#mobileObservatoryPortal img {
-  display: block;
-  width: 100%;
-  height: auto;
-  pointer-events: none;
-  filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.55));
-}
-
-#mobileObservatoryPortal:active img {
-  transform: scale(0.96);
-  filter: drop-shadow(0 0 12px rgba(255, 230, 150, 0.72));
-}
-
-@keyframes observatoryUiFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.92);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+#fixedObservatoryPortal:active {
+  transform: translateY(2px) !important;
 }
 
 .hidden-drop {
@@ -2315,12 +2290,8 @@ body.debug-panel-hidden .debug-panel {
     font-size: 0.94rem;
   }
 
-  #observatoryLink {
-    display: none !important;
-  }
-
-  #mobileObservatoryPortal {
-    display: block !important;
+  #fixedObservatoryPortal {
+    display: flex !important;
   }
 
   .debug-panel {
@@ -2342,12 +2313,8 @@ body.debug-panel-hidden .debug-panel {
 }
 
 @media (hover: none), (pointer: coarse) {
-  #observatoryLink {
-    display: none !important;
-  }
-
-  #mobileObservatoryPortal {
-    display: block !important;
+  #fixedObservatoryPortal {
+    display: flex !important;
   }
 
   .mint-guide {

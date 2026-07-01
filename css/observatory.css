@@ -204,27 +204,3 @@ body {
     font-size: 13px;
   }
 }
-/* 星風のテラスUI 最終固定 */
-#observatoryLink {
-  position: absolute !important;
-  top: 12% !important;
-  right: 6% !important;
-  width: 55px !important;
-  height: auto !important;
-  z-index: 999 !important;
-  display: block !important;
-  cursor: pointer !important;
-}
-
-#observatoryUi {
-  display: block !important;
-  width: 100% !important;
-  height: auto !important;
-  pointer-events: none !important;
-  filter: drop-shadow(0 0 8px rgba(255, 220, 120, 0.45));
-}
-
-#observatoryLink:hover #observatoryUi {
-  transform: scale(1.08);
-  filter: drop-shadow(0 0 14px rgba(255, 230, 150, 0.8));
-}
