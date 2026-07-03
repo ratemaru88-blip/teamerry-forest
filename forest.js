@@ -49,7 +49,8 @@
   };
 
   function getForestDisplayName() {
-    return getStoredItem(TM_DISPLAY_NAME_KEY) || "さんぽさん";
+    const displayName = getStoredItem(TM_DISPLAY_NAME_KEY);
+    return displayName && displayName !== "さんぽさん" ? displayName : "おさんぽさん";
   }
 
   function persistForestName(forestName, displayName) {
@@ -69,13 +70,13 @@
   function saveForestName(name) {
     const trimmed = String(name || "").trim();
     const forestName = trimmed || "おさんぽ";
-    const displayName = trimmed ? `${trimmed}さん` : "さんぽさん";
+    const displayName = trimmed ? `${trimmed}さん` : "おさんぽさん";
 
     persistForestName(forestName, displayName);
   }
 
   function saveWalkOnlyName() {
-    persistForestName("おさんぽ", "さんぽさん");
+    persistForestName("おさんぽ", "おさんぽさん");
   }
 
   function updateWriterNames() {
@@ -118,17 +119,49 @@
     }
   }
 
-  function setNameModalMode(mode) {
-    const hasStoredName = Boolean(getStoredItem(TM_NAME_DONE_KEY) && getStoredItem(TM_DISPLAY_NAME_KEY));
-    const isConfirmMode = mode === "confirm" && hasStoredName;
+  function getStoredForestNameForInput() {
     const storedForestName = getStoredItem(TM_NAME_KEY) || "";
+    const storedDisplayName = getStoredItem(TM_DISPLAY_NAME_KEY) || "";
+
+    if (storedForestName === "おさんぽ" && (storedDisplayName === "おさんぽさん" || storedDisplayName === "さんぽさん")) {
+      return "";
+    }
+
+    return storedForestName;
+  }
+
+  function placeCaretAtNameEnd() {
+    if (!forestNameInput) {
+      return;
+    }
+
+    forestNameInput.focus();
+    const end = forestNameInput.value.length;
+    forestNameInput.setSelectionRange(end, end);
+  }
+
+  function updateSaveForestNameButton() {
+    if (!saveForestNameButton || !forestNameInput) {
+      return;
+    }
+
+    const currentName = forestNameInput.value.trim();
+    const canSave = Boolean(currentName);
+
+    saveForestNameButton.disabled = !canSave;
+  }
+
+  function setNameModalMode(mode) {
+    const hasStoredName = Boolean(getStoredItem(TM_NAME_DONE_KEY));
+    const isConfirmMode = mode === "confirm" && hasStoredName;
+    const storedForestName = getStoredForestNameForInput();
 
     if (reuseForestNameButton) {
       reuseForestNameButton.classList.toggle("hidden", !isConfirmMode);
     }
 
     if (saveForestNameButton) {
-      saveForestNameButton.textContent = isConfirmMode ? "新しい呼び名を決める" : "呼び名を決める";
+      saveForestNameButton.textContent = "この名前で決まり";
     }
 
     if (nameModal) {
@@ -139,18 +172,19 @@
     const message = document.getElementById("nameModalMessage");
 
     if (title) {
-      title.textContent = isConfirmMode ? `ようこそ。${getForestDisplayName()}` : "ようこそ、TeaMerryへ。";
+      title.textContent = "ようこそ、TeaMerryへ。";
     }
 
     if (message) {
-      message.innerHTML = isConfirmMode
-        ? "前回と同じ呼び名にする？<br>新しい呼び名にもできるよ。"
-        : "この森で呼んでほしい名前を<br>10文字以内で決めてね。";
+      message.innerHTML = "この森で呼んでほしい名前を教えてね。<br>（あとからいつでも変えられるよ。）";
     }
 
     if (forestNameInput) {
-      forestNameInput.value = isConfirmMode ? "" : storedForestName;
+      forestNameInput.placeholder = "";
+      forestNameInput.value = isConfirmMode ? storedForestName : "";
     }
+
+    updateSaveForestNameButton();
   }
 
   function showNameModal(mode = "initial") {
@@ -160,7 +194,7 @@
 
     setNameModalMode(mode);
     nameModal.classList.remove("hidden");
-    window.setTimeout(() => forestNameInput?.focus(), 80);
+    window.setTimeout(placeCaretAtNameEnd, 80);
   }
 
   function showNameModalIfNeeded() {
@@ -176,15 +210,17 @@
     showNameModalIfNeeded();
 
     reuseForestNameButton?.addEventListener("click", () => {
-      setStoredItem(TM_NAME_DONE_KEY, "true");
-      updateWriterNames();
+      if (!getStoredForestNameForInput()) {
+        saveWalkOnlyName();
+      } else {
+        setStoredItem(TM_NAME_DONE_KEY, "true");
+        updateWriterNames();
+      }
       closeNameModal();
     });
 
     saveForestNameButton?.addEventListener("click", () => {
-      if (nameModal?.dataset.mode === "confirm") {
-        setNameModalMode("initial");
-        window.setTimeout(() => forestNameInput?.focus(), 80);
+      if (saveForestNameButton.disabled) {
         return;
       }
 
@@ -197,8 +233,10 @@
       closeNameModal();
     });
 
+    forestNameInput?.addEventListener("input", updateSaveForestNameButton);
+
     forestNameInput?.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter") {
+      if (event.key !== "Enter" || saveForestNameButton?.disabled) {
         return;
       }
 
