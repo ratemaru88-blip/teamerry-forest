@@ -84,8 +84,38 @@
     });
   }
 
-  function closeNameModal() {
+  function getForestWelcomeMessage() {
+    return `ようこそ、${getForestDisplayName()}。一緒に森をお散歩しましょう。`;
+  }
+
+  function announceForestWelcome() {
+    const message = getForestWelcomeMessage();
+
+    if (narration) {
+      narration.textContent = message;
+      narration.classList.add("is-visible");
+      window.clearTimeout(announceForestWelcome.narrationTimer);
+      announceForestWelcome.narrationTimer = window.setTimeout(() => {
+        narration.classList.remove("is-visible");
+      }, 6200);
+    }
+
+    if (mobileWalker && mobileWalkerBubble) {
+      mobileWalkerBubble.textContent = message;
+      mobileWalker.classList.add("has-speech");
+      window.clearTimeout(announceForestWelcome.walkerTimer);
+      announceForestWelcome.walkerTimer = window.setTimeout(() => {
+        mobileWalker.classList.remove("has-speech");
+      }, 6200);
+    }
+  }
+
+  function closeNameModal({ announceWelcome = true } = {}) {
     nameModal?.classList.add("hidden");
+
+    if (announceWelcome) {
+      window.setTimeout(announceForestWelcome, 220);
+    }
   }
 
   function setNameModalMode(mode) {
@@ -95,6 +125,10 @@
 
     if (reuseForestNameButton) {
       reuseForestNameButton.classList.toggle("hidden", !isConfirmMode);
+    }
+
+    if (saveForestNameButton) {
+      saveForestNameButton.textContent = isConfirmMode ? "新しい呼び名を決める" : "呼び名を決める";
     }
 
     if (nameModal) {
@@ -109,11 +143,13 @@
     }
 
     if (message) {
-      message.innerHTML = "この森で呼んでほしい名前を<br>10文字以内で決めてね。";
+      message.innerHTML = isConfirmMode
+        ? "前回と同じ呼び名にする？<br>新しい呼び名にもできるよ。"
+        : "この森で呼んでほしい名前を<br>10文字以内で決めてね。";
     }
 
     if (forestNameInput) {
-      forestNameInput.value = isConfirmMode ? storedForestName : "";
+      forestNameInput.value = isConfirmMode ? "" : storedForestName;
     }
   }
 
@@ -128,11 +164,11 @@
   }
 
   function showNameModalIfNeeded() {
-    if (!nameModal || getStoredItem(TM_NAME_DONE_KEY)) {
+    if (!nameModal) {
       return;
     }
 
-    showNameModal("initial");
+    showNameModal(getStoredItem(TM_NAME_DONE_KEY) ? "confirm" : "initial");
   }
 
   function setupForestNameModal() {
@@ -146,6 +182,12 @@
     });
 
     saveForestNameButton?.addEventListener("click", () => {
+      if (nameModal?.dataset.mode === "confirm") {
+        setNameModalMode("initial");
+        window.setTimeout(() => forestNameInput?.focus(), 80);
+        return;
+      }
+
       saveForestName(forestNameInput?.value || "");
       closeNameModal();
     });

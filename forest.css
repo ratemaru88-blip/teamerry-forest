@@ -710,6 +710,10 @@ a {
     inset 0 2px 5px rgba(98, 62, 33, 0.08);
 }
 
+.tm-name-modal[data-mode="confirm"] .tm-name-input {
+  display: none;
+}
+
 .tm-name-buttons {
   display: flex;
   flex-direction: column;

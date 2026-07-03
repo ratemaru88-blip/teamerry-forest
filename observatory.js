@@ -35,7 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const bottleWriterName = document.getElementById("bottleWriterName");
   const bottlePrivacyModal = document.getElementById("bottlePrivacyModal");
   const bottleMessageInput = document.getElementById("bottleMessageInput");
+  const bottleLimitMessage = document.getElementById("bottleLimitMessage");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, bottleFlushView].filter(Boolean);
+  const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
 
   updateWriterNames();
 
@@ -196,6 +198,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
     bottleMessageInput.value = "";
     updateCounter(bottleMessageInput);
+    hideBottleLimitMessage();
+  }
+
+  function showBottleLimitMessage() {
+    if (!bottleLimitMessage) {
+      return;
+    }
+
+    bottleLimitMessage.textContent = bottleLimitText;
+    bottleLimitMessage.classList.add("is-visible");
+    window.clearTimeout(showBottleLimitMessage.timer);
+    showBottleLimitMessage.timer = window.setTimeout(hideBottleLimitMessage, 5200);
+  }
+
+  function hideBottleLimitMessage() {
+    if (!bottleLimitMessage) {
+      return;
+    }
+
+    bottleLimitMessage.classList.remove("is-visible");
+  }
+
+  function getNextBottleValue(input, insertedText) {
+    const start = input.selectionStart || 0;
+    const end = input.selectionEnd || start;
+    return `${input.value.slice(0, start)}${insertedText}${input.value.slice(end)}`;
+  }
+
+  function enforceBottleLimit(event) {
+    if (!bottleMessageInput || event.target !== bottleMessageInput) {
+      return;
+    }
+
+    const maxLength = Number(bottleMessageInput.maxLength) || 100;
+    const insertedText = event.data || "";
+    if (!insertedText || getNextBottleValue(bottleMessageInput, insertedText).length <= maxLength) {
+      return;
+    }
+
+    event.preventDefault();
+    showBottleLimitMessage();
+  }
+
+  function enforceBottlePasteLimit(event) {
+    if (!bottleMessageInput || event.target !== bottleMessageInput) {
+      return;
+    }
+
+    const pastedText = event.clipboardData && event.clipboardData.getData("text");
+    if (!pastedText) {
+      return;
+    }
+
+    const maxLength = Number(bottleMessageInput.maxLength) || 100;
+    const nextValue = getNextBottleValue(bottleMessageInput, pastedText);
+    if (nextValue.length <= maxLength) {
+      return;
+    }
+
+    event.preventDefault();
+    const start = bottleMessageInput.selectionStart || 0;
+    const end = bottleMessageInput.selectionEnd || start;
+    const availableLength = Math.max(0, maxLength - (bottleMessageInput.value.length - (end - start)));
+    const clippedText = pastedText.slice(0, availableLength);
+    bottleMessageInput.value = `${bottleMessageInput.value.slice(0, start)}${clippedText}${bottleMessageInput.value.slice(end)}`;
+    bottleMessageInput.setSelectionRange(start + clippedText.length, start + clippedText.length);
+    updateCounter(bottleMessageInput);
+    showBottleLimitMessage();
   }
 
   function startBottleFlush() {
@@ -227,6 +297,16 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCounter(input);
     input.addEventListener("input", () => updateCounter(input));
   });
+
+  if (bottleMessageInput) {
+    bottleMessageInput.addEventListener("beforeinput", enforceBottleLimit);
+    bottleMessageInput.addEventListener("paste", enforceBottlePasteLimit);
+    bottleMessageInput.addEventListener("input", () => {
+      if (bottleMessageInput.value.length < bottleMessageInput.maxLength) {
+        hideBottleLimitMessage();
+      }
+    });
+  }
 
   if (bottleMailButton) {
     bottleMailButton.addEventListener("click", () => showView(bottleWriteView));
