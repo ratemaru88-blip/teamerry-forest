@@ -16,7 +16,7 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-image: url("../assets/images/observatory/backgrounds/observatory_day_pc.webp");
+  background-image: url("../assets/images/observatory/backgrounds/observatory_day_pc_v02.webp");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -24,7 +24,7 @@ body {
 
 /* 夜モード */
 .observatory.is-night {
-  background-image: url("../assets/images/observatory/backgrounds/observatory_night_pc.webp");
+  background-image: url("../assets/images/observatory/backgrounds/observatory_night_pc_v02.webp");
 }
 
 /* 妖精エリア */
@@ -59,13 +59,21 @@ body {
 }
 
 /* 昼夜パネル */
-.day-panel,
 .night-panel {
   position: absolute;
   z-index: 25;
   left: 50%;
   bottom: 7vh;
   transform: translateX(-50%);
+}
+
+.day-panel {
+  position: absolute;
+  z-index: 25;
+  left: 7%;
+  top: 32%;
+  width: 36%;
+  height: 38%;
 }
 
 .night-panel {
@@ -78,6 +86,22 @@ body {
 
 .observatory.is-night .night-panel {
   display: block;
+}
+
+.bottle-mail-hotspot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+}
+
+.bottle-mail-hotspot:focus-visible {
+  outline: 3px solid rgba(255, 244, 188, 0.9);
+  outline-offset: 4px;
+  border-radius: 18px;
 }
 
 /* メイン操作ボタン */
@@ -136,6 +160,262 @@ body {
   background: rgba(130, 92, 42, 0.9);
 }
 
+.observatory-view {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  min-height: 100dvh;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.observatory-view.is-active {
+  display: block;
+}
+
+.observatory-view--bottle-write {
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 10, 8, 0.78);
+}
+
+.observatory-view--wish-write {
+  background-image: url("../assets/images/observatory/backgrounds/bg_wish_mobile.webp");
+}
+
+.observatory-view--bottle-hokkori {
+  background-image: url("../assets/images/observatory/backgrounds/bg_bottle_hokkori_mobile.webp");
+}
+
+.observatory-view--wish-hokkori {
+  background-image: url("../assets/images/observatory/backgrounds/bg_wish_hokkori_mobile.webp");
+}
+
+.observatory-view--bottle-flush {
+  align-items: center;
+  justify-content: center;
+  background: #070504;
+}
+
+.observatory-view--bottle-write.is-active,
+.observatory-view--bottle-flush.is-active {
+  display: flex;
+}
+
+.bottle-write-card {
+  position: relative;
+  width: min(420px, 100vw, 56.25vh);
+  aspect-ratio: 9 / 16;
+  max-height: 100vh;
+  overflow: hidden;
+  background-image: url("../assets/images/observatory/backgrounds/bg_bottle_mobile.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bottle-flush-video {
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: min(100vh, calc(100vw * 9 / 16));
+  object-fit: contain;
+}
+
+.observatory-view__back,
+.observatory-view__submit {
+  position: absolute;
+  z-index: 2;
+  border: 0;
+  cursor: pointer;
+  border-radius: 999px;
+  color: #4a3218;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  background: rgba(255, 240, 184, 0.9);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.24);
+}
+
+.observatory-view__back {
+  top: max(18px, env(safe-area-inset-top));
+  left: 18px;
+  padding: 0.72em 1.2em;
+}
+
+.observatory-view__submit {
+  left: 50%;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  min-width: min(76vw, 280px);
+  padding: 0.86em 1.5em;
+  transform: translateX(-50%);
+}
+
+.observatory-view__text {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 48%;
+  width: min(72vw, 520px);
+  min-height: 150px;
+  padding: 18px 20px 46px;
+  border: 1px solid rgba(119, 87, 45, 0.28);
+  border-radius: 18px;
+  resize: none;
+  color: #4a3218;
+  background: rgba(255, 250, 230, 0.78);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+  font: inherit;
+  line-height: 1.7;
+  transform: translate(-50%, -50%);
+}
+
+.bottle-textarea,
+.bottle-textarea:focus {
+  left: 16%;
+  top: 40%;
+  width: 68%;
+  height: 34%;
+  min-height: 0;
+  padding: 0;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0;
+  color: #5a3a22;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: clamp(15px, 2.4vw, 20px);
+  line-height: 1.9;
+  transform: none;
+  overflow: hidden;
+}
+
+.bottle-writer-name {
+  position: absolute;
+  z-index: 3;
+  right: 17%;
+  top: 36%;
+  color: #6a4225;
+  font-size: clamp(12px, 1.65vw, 15px);
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.observatory-view__counter {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: calc(48% + 96px);
+  width: min(72vw, 520px);
+  color: #5b3a22;
+  font-size: 13px;
+  text-align: right;
+  transform: translateX(-50%);
+}
+
+.bottle-counter {
+  left: auto;
+  right: 14%;
+  top: auto;
+  bottom: 19%;
+  width: auto;
+  color: #6b4427;
+  transform: none;
+}
+
+.bottle-insert-hotspot {
+  position: absolute;
+  z-index: 4;
+  right: 9%;
+  top: 17%;
+  width: 32%;
+  height: 12%;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+}
+
+.bottle-insert-hotspot:focus-visible {
+  outline: 3px solid rgba(255, 244, 188, 0.86);
+  outline-offset: 2px;
+  border-radius: 14px;
+}
+
+.bottle-privacy-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(25, 18, 12, 0.36);
+}
+
+.bottle-privacy-modal.is-active {
+  display: flex;
+}
+
+.bottle-privacy-dialog {
+  width: min(88%, 340px);
+  padding: 22px 20px;
+  border-radius: 16px;
+  background: rgba(255, 244, 211, 0.96);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
+}
+
+.bottle-privacy-title {
+  margin: 0 0 15px;
+  color: #55361f;
+  font-size: 17px;
+  font-weight: bold;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.bottle-privacy-choice,
+.bottle-privacy-cancel {
+  display: block;
+  width: 100%;
+  border: 0;
+  cursor: pointer;
+  color: #4f331f;
+  background: rgba(255, 255, 255, 0.48);
+  font: inherit;
+  text-align: left;
+}
+
+.bottle-privacy-choice {
+  margin-top: 10px;
+  padding: 13px 14px;
+  border-radius: 12px;
+}
+
+.bottle-privacy-choice span,
+.bottle-privacy-choice small {
+  display: block;
+}
+
+.bottle-privacy-choice span {
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.bottle-privacy-choice small {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.bottle-privacy-cancel {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  text-align: center;
+  background: rgba(124, 90, 52, 0.16);
+}
+
 /* アニメーション */
 @keyframes fairyFloat {
   0%, 100% {
@@ -159,12 +439,12 @@ body {
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .observatory {
     min-height: 100dvh;
-    background-image: url("../assets/images/observatory/backgrounds/observatory_day_mobile.webp");
+    background-image: url("../assets/images/observatory/backgrounds/observatory_day_mobile_v02.webp");
     background-position: center bottom;
   }
 
   .observatory.is-night {
-    background-image: url("../assets/images/observatory/backgrounds/observatory_night_mobile.webp");
+    background-image: url("../assets/images/observatory/backgrounds/observatory_night_mobile_v02.webp");
   }
 
   .fairy-area {
@@ -184,10 +464,16 @@ body {
     line-height: 1.6;
   }
 
-  .day-panel,
   .night-panel {
     bottom: max(24px, env(safe-area-inset-bottom));
     width: min(86vw, 340px);
+  }
+
+  .day-panel {
+    left: 4%;
+    top: 35%;
+    width: 46%;
+    height: 34%;
   }
 
   .action-button {
@@ -202,5 +488,55 @@ body {
     bottom: auto;
     padding: 0.65em 1em;
     font-size: 13px;
+  }
+
+  .observatory-view {
+    background-position: center center;
+    background-size: cover;
+  }
+
+  .bottle-write-card {
+    width: min(100vw, 56.25vh);
+    max-height: 100dvh;
+  }
+
+  .observatory-view__text {
+    top: 50%;
+    width: min(80vw, 360px);
+    min-height: 128px;
+    padding: 15px 16px 42px;
+    border-radius: 14px;
+    font-size: 15px;
+  }
+
+  .observatory-view__counter {
+    top: calc(50% + 82px);
+    width: min(80vw, 360px);
+  }
+
+  .bottle-textarea,
+  .bottle-textarea:focus {
+    left: 16%;
+    top: 40%;
+    width: 68%;
+    height: 34%;
+    min-height: 0;
+    padding: 0;
+    font-size: clamp(15px, 4.2vw, 19px);
+    transform: none;
+  }
+
+  .bottle-counter {
+    left: auto;
+    right: 14%;
+    top: auto;
+    bottom: 19%;
+    width: auto;
+  }
+
+  .bottle-writer-name {
+    right: 17%;
+    top: 36%;
+    font-size: clamp(12px, 3.4vw, 15px);
   }
 }

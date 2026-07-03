@@ -35,12 +35,10 @@
             class="day-panel">
 
             <button
-                class="action-button"
-                id="bottleMailButton">
-
-                📮 ボトルメールを書く
-
-            </button>
+                type="button"
+                class="bottle-mail-hotspot"
+                id="bottleMailButton"
+                aria-label="ボトルメールを書く"></button>
 
         </section>
 
@@ -68,6 +66,189 @@
             🌲 森へ戻る
 
         </a>
+
+        <section
+            id="bottleWriteView"
+            class="observatory-view observatory-view--bottle-write"
+            aria-hidden="true">
+
+            <div class="bottle-write-card">
+
+                <button
+                    type="button"
+                    class="observatory-view__back"
+                    data-observatory-back>
+
+                    戻る
+
+                </button>
+
+                <textarea
+                    id="bottleMessageInput"
+                    class="observatory-view__text bottle-textarea"
+                    maxlength="100"
+                    aria-label="ボトルメールを書く"></textarea>
+
+                <div
+                    id="bottleWriterName"
+                    class="bottle-writer-name"></div>
+
+                <div
+                    class="observatory-view__counter bottle-counter"
+                    data-counter-for="bottleMessageInput">
+
+                    0/100
+
+                </div>
+
+                <button
+                    type="button"
+                    class="bottle-insert-hotspot"
+                    aria-label="ボトルに入れる"
+                    data-bottle-flush>
+                </button>
+
+                <div
+                    id="bottlePrivacyModal"
+                    class="bottle-privacy-modal"
+                    aria-hidden="true">
+
+                    <div
+                        class="bottle-privacy-dialog"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="bottlePrivacyTitle">
+
+                        <p
+                            id="bottlePrivacyTitle"
+                            class="bottle-privacy-title">
+
+                            選んでください。
+
+                        </p>
+
+                        <button
+                            type="button"
+                            class="bottle-privacy-choice"
+                            data-bottle-public="true">
+
+                            <span>森の掲示板に貼ってもいいよ。</span>
+                            <small>今日のほっこりに選ばれることがあります。</small>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="bottle-privacy-choice"
+                            data-bottle-public="false">
+
+                            <span>ただの独り言。</span>
+                            <small>森にひっそり流します。</small>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="bottle-privacy-cancel"
+                            data-bottle-privacy-cancel>
+
+                            やっぱりやめる
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section
+            id="wishWriteView"
+            class="observatory-view observatory-view--wish-write"
+            aria-hidden="true">
+
+            <button
+                type="button"
+                class="observatory-view__back"
+                data-observatory-back>
+
+                戻る
+
+            </button>
+
+            <textarea
+                id="wishMessageInput"
+                class="observatory-view__text"
+                maxlength="140"
+                aria-label="願いごとを書く"></textarea>
+
+            <div
+                class="observatory-view__counter"
+                data-counter-for="wishMessageInput">
+
+                0 / 140
+
+            </div>
+
+            <button
+                type="button"
+                class="observatory-view__submit"
+                data-wish-send>
+
+                星へ届ける
+
+            </button>
+
+        </section>
+
+        <section
+            id="bottleHokkoriView"
+            class="observatory-view observatory-view--bottle-hokkori"
+            aria-hidden="true">
+
+            <button
+                type="button"
+                class="observatory-view__back"
+                data-observatory-back>
+
+                戻る
+
+            </button>
+
+        </section>
+
+        <section
+            id="wishHokkoriView"
+            class="observatory-view observatory-view--wish-hokkori"
+            aria-hidden="true">
+
+            <button
+                type="button"
+                class="observatory-view__back"
+                data-observatory-back>
+
+                戻る
+
+            </button>
+
+        </section>
+
+        <section
+            id="bottleFlushView"
+            class="observatory-view observatory-view--bottle-flush"
+            aria-hidden="true">
+
+            <video
+                id="bottleFlushVideo"
+                class="bottle-flush-video"
+                src="./assets/images/observatory/animations/bottle_flush_v02.mp4"
+                playsinline
+                muted
+                preload="auto"></video>
+
+        </section>
 
     </main>
 

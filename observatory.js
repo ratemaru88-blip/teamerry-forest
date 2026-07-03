@@ -24,6 +24,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const observatory = document.getElementById("observatory");
   const fairyImage = document.getElementById("fairyImage");
   const fairyBalloon = document.getElementById("fairyBalloon");
+  const bottleMailButton = document.getElementById("bottleMailButton");
+  const wishStarButton = document.getElementById("wishStarButton");
+  const bottleWriteView = document.getElementById("bottleWriteView");
+  const wishWriteView = document.getElementById("wishWriteView");
+  const bottleHokkoriView = document.getElementById("bottleHokkoriView");
+  const wishHokkoriView = document.getElementById("wishHokkoriView");
+  const bottleFlushView = document.getElementById("bottleFlushView");
+  const bottleFlushVideo = document.getElementById("bottleFlushVideo");
+  const bottleWriterName = document.getElementById("bottleWriterName");
+  const bottlePrivacyModal = document.getElementById("bottlePrivacyModal");
+  const bottleMessageInput = document.getElementById("bottleMessageInput");
+  const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, bottleFlushView].filter(Boolean);
 
   updateWriterNames();
 
@@ -90,4 +102,165 @@ document.addEventListener("DOMContentLoaded", () => {
   fairyImage.src = selectedFairy.image;
   fairyImage.alt = selectedFairy.alt;
   fairyBalloon.textContent = selectedMessage;
+
+  if (bottleWriterName) {
+    let displayName = (
+      window.TeaMerryForestName &&
+      typeof window.TeaMerryForestName.getDisplayName === "function" &&
+      window.TeaMerryForestName.getDisplayName()
+    ) || "おさんぽさん";
+
+    try {
+      if (!window.localStorage.getItem(TM_DISPLAY_NAME_KEY) && displayName === "さんぽさん") {
+        displayName = "おさんぽさん";
+      }
+    } catch (error) {
+      displayName = displayName || "おさんぽさん";
+    }
+
+    bottleWriterName.textContent = displayName;
+  }
+
+  function showView(targetView) {
+    views.forEach((view) => {
+      const isActive = view === targetView;
+      view.classList.toggle("is-active", isActive);
+      view.setAttribute("aria-hidden", String(!isActive));
+    });
+
+    const textInput = targetView && targetView.querySelector(".observatory-view__text");
+    if (textInput) {
+      textInput.focus();
+    }
+  }
+
+  function closeViews() {
+    closeBottlePrivacyModal();
+    showView(null);
+  }
+
+  function openBottlePrivacyModal() {
+    if (!bottlePrivacyModal) {
+      startBottleFlush();
+      return;
+    }
+
+    bottlePrivacyModal.classList.add("is-active");
+    bottlePrivacyModal.setAttribute("aria-hidden", "false");
+  }
+
+  function closeBottlePrivacyModal() {
+    if (!bottlePrivacyModal) {
+      return;
+    }
+
+    bottlePrivacyModal.classList.remove("is-active");
+    bottlePrivacyModal.setAttribute("aria-hidden", "true");
+  }
+
+  function saveBottleMessage(isPublic) {
+    const senderName = (bottleWriterName && bottleWriterName.textContent.trim()) || "おさんぽさん";
+    const entry = {
+      text: bottleMessageInput ? bottleMessageInput.value : "",
+      public: isPublic,
+      writer: senderName,
+      sender: senderName,
+      author: senderName,
+      displayName: senderName,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const key = "teaMerryBottleMessages";
+      const messages = JSON.parse(window.localStorage.getItem(key) || "[]").map((message) => {
+        const existingSender = message.sender || message.writer || message.author || message.displayName || "おさんぽさん";
+        return {
+          ...message,
+          writer: message.writer || existingSender,
+          sender: message.sender || existingSender,
+          author: message.author || existingSender,
+          displayName: message.displayName || existingSender,
+        };
+      });
+      messages.push(entry);
+      window.localStorage.setItem(key, JSON.stringify(messages));
+    } catch (error) {
+      window.TeaMerryLastBottleMessage = entry;
+    }
+  }
+
+  function resetBottleMessageInput() {
+    if (!bottleMessageInput) {
+      return;
+    }
+
+    bottleMessageInput.value = "";
+    updateCounter(bottleMessageInput);
+  }
+
+  function startBottleFlush() {
+    closeBottlePrivacyModal();
+    showView(bottleFlushView);
+
+    if (!bottleFlushVideo) {
+      closeViews();
+      return;
+    }
+
+    bottleFlushVideo.currentTime = 0;
+    const playPromise = bottleFlushVideo.play();
+    if (playPromise) {
+      playPromise.catch(closeViews);
+    }
+  }
+
+  function updateCounter(input) {
+    const counter = document.querySelector(`[data-counter-for="${input.id}"]`);
+    if (!counter) {
+      return;
+    }
+
+    counter.textContent = `${input.value.length}/${input.maxLength}`;
+  }
+
+  document.querySelectorAll(".observatory-view__text").forEach((input) => {
+    updateCounter(input);
+    input.addEventListener("input", () => updateCounter(input));
+  });
+
+  if (bottleMailButton) {
+    bottleMailButton.addEventListener("click", () => showView(bottleWriteView));
+  }
+
+  if (wishStarButton) {
+    wishStarButton.addEventListener("click", () => showView(wishWriteView));
+  }
+
+  document.querySelectorAll("[data-observatory-back]").forEach((button) => {
+    button.addEventListener("click", closeViews);
+  });
+
+  document.querySelectorAll("[data-bottle-flush]").forEach((button) => {
+    button.addEventListener("click", openBottlePrivacyModal);
+  });
+
+  document.querySelectorAll("[data-bottle-public]").forEach((button) => {
+    button.addEventListener("click", () => {
+      saveBottleMessage(button.dataset.bottlePublic === "true");
+      resetBottleMessageInput();
+      startBottleFlush();
+    });
+  });
+
+  document.querySelectorAll("[data-bottle-privacy-cancel]").forEach((button) => {
+    button.addEventListener("click", closeBottlePrivacyModal);
+  });
+
+  document.querySelectorAll("[data-wish-send]").forEach((button) => {
+    button.addEventListener("click", closeViews);
+  });
+
+  if (bottleFlushVideo) {
+    bottleFlushVideo.addEventListener("ended", closeViews);
+  }
 });
