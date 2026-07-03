@@ -48,12 +48,10 @@
             class="night-panel">
 
             <button
-                class="action-button"
-                id="wishStarButton">
-
-                ⭐ 願いごとを書く
-
-            </button>
+                type="button"
+                class="wish-star-hotspot"
+                id="wishStarButton"
+                aria-label="願いごとを書く"></button>
 
         </section>
 
@@ -185,12 +183,16 @@
 
             <textarea
                 id="wishMessageInput"
-                class="observatory-view__text"
+                class="observatory-view__text wish-textarea"
                 maxlength="140"
                 aria-label="願いごとを書く"></textarea>
 
             <div
-                class="observatory-view__counter"
+                id="wishWriterName"
+                class="wish-writer-name"></div>
+
+            <div
+                class="observatory-view__counter wish-counter"
                 data-counter-for="wishMessageInput">
 
                 0 / 140

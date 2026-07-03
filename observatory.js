@@ -2,14 +2,14 @@ const TM_DISPLAY_NAME_KEY = "teaMerryDisplayName";
 
 function getForestDisplayName() {
   try {
-    return window.localStorage.getItem(TM_DISPLAY_NAME_KEY) || "さんぽさん";
+    return window.localStorage.getItem(TM_DISPLAY_NAME_KEY) || "おさんぽさん";
   } catch (error) {
-    return "さんぽさん";
+    return "おさんぽさん";
   }
 }
 
 function updateWriterNames() {
-  document.querySelectorAll("#writerName, .writer-name").forEach((element) => {
+  document.querySelectorAll("#writerName, #bottleWriterName, #wishWriterName, .writer-name").forEach((element) => {
     element.textContent = getForestDisplayName();
   });
 }
@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const bottleFlushView = document.getElementById("bottleFlushView");
   const bottleFlushVideo = document.getElementById("bottleFlushVideo");
   const bottleWriterName = document.getElementById("bottleWriterName");
+  const wishWriterName = document.getElementById("wishWriterName");
   const bottlePrivacyModal = document.getElementById("bottlePrivacyModal");
   const bottleMessageInput = document.getElementById("bottleMessageInput");
   const bottleLimitMessage = document.getElementById("bottleLimitMessage");
@@ -105,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fairyImage.alt = selectedFairy.alt;
   fairyBalloon.textContent = selectedMessage;
 
-  if (bottleWriterName) {
+  function getObservatoryDisplayName() {
     let displayName = (
       window.TeaMerryForestName &&
       typeof window.TeaMerryForestName.getDisplayName === "function" &&
@@ -120,8 +121,14 @@ document.addEventListener("DOMContentLoaded", () => {
       displayName = displayName || "おさんぽさん";
     }
 
-    bottleWriterName.textContent = displayName;
+    return displayName || "おさんぽさん";
   }
+
+  [bottleWriterName, wishWriterName].forEach((element) => {
+    if (element) {
+      element.textContent = getObservatoryDisplayName();
+    }
+  });
 
   function showView(targetView) {
     views.forEach((view) => {
