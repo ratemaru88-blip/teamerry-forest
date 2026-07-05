@@ -1248,6 +1248,64 @@ body.intro-finished .mint-guide.is-active {
   opacity: 1;
 }
 
+.mint-guide__bubble {
+  position: absolute;
+  left: calc(100% - 4px);
+  top: 50%;
+  width: max-content;
+  min-width: min(268px, calc(100vw - 112px));
+  max-width: min(380px, calc(100vw - 112px));
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 244, 202, 0.42);
+  border-radius: 12px;
+  background: rgba(24, 36, 27, 0.76);
+  box-shadow: 0 10px 24px rgba(4, 10, 7, 0.3);
+  color: rgba(255, 248, 222, 0.92);
+  font-size: clamp(0.84rem, 1.1vw, 0.98rem);
+  font-weight: 700;
+  line-height: 1.7;
+  text-shadow: 0 2px 8px rgba(6, 13, 10, 0.62);
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  text-align: left;
+  opacity: 0;
+  translate: 8px -50%;
+  transition: opacity 220ms ease, translate 220ms ease;
+}
+
+.mint-guide__bubble::after {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: 12px;
+  height: 14px;
+  background: rgba(24, 36, 27, 0.76);
+  clip-path: polygon(100% 0, 0 50%, 100% 100%);
+  translate: 1px -50%;
+}
+
+.mint-guide.speech-left .mint-guide__bubble {
+  right: calc(100% - 4px);
+  left: auto;
+  translate: -8px -50%;
+}
+
+.mint-guide.speech-left .mint-guide__bubble::after {
+  right: auto;
+  left: 100%;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  translate: -1px -50%;
+}
+
+.mint-guide.has-speech .mint-guide__bubble {
+  opacity: 1;
+  translate: 0 -50%;
+}
+
 .mobile-walker {
   position: fixed;
   left: 50%;
@@ -1359,16 +1417,23 @@ body.intro-finished .mint-guide.is-active {
   position: absolute;
   left: 50%;
   bottom: calc(100% - 6px);
-  max-width: min(180px, calc(100vw - 44px));
-  padding: 8px 11px;
+  width: max-content;
+  min-width: min(248px, calc(100vw - 36px));
+  max-width: min(330px, calc(100vw - 36px));
+  padding: 10px 13px;
   border-radius: 12px;
   background: rgba(255, 250, 225, 0.94);
   box-shadow: 0 8px 18px rgba(6, 13, 9, 0.22);
   color: #5a442b;
-  font-size: 0.78rem;
+  font-size: 0.86rem;
   font-weight: 700;
-  line-height: 1.35;
-  white-space: nowrap;
+  line-height: 1.55;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  text-align: left;
   opacity: 0;
   translate: -50% 6px;
   transition: opacity 220ms ease, translate 220ms ease;
@@ -1455,15 +1520,19 @@ body.mobile-walker-disabled .mobile-walker {
 
 .forest-narration {
   position: absolute;
-  right: clamp(18px, 8vw, 94px);
-  bottom: clamp(72px, 15vh, 138px);
+  right: clamp(78px, 12vw, 150px);
+  bottom: clamp(116px, 22vh, 230px);
   z-index: 6;
-  max-width: min(300px, calc(100vw - 36px));
+  max-width: min(360px, calc(100vw - 36px));
   margin: 0;
   color: rgba(255, 248, 222, 0.84);
   font-size: clamp(0.82rem, 2.3vw, 1rem);
-  line-height: 1.9;
+  line-height: 1.7;
   text-shadow: 0 2px 12px rgba(6, 13, 10, 0.68);
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   opacity: 0;
   transform: translateY(8px);
   pointer-events: none;
@@ -2239,10 +2308,17 @@ body.debug-panel-hidden .debug-panel {
   }
 
   .forest-narration {
-    left: 20px;
+    left: 50%;
     right: auto;
-    bottom: clamp(86px, 18vh, 150px);
-    max-width: min(280px, calc(100vw - 40px));
+    bottom: clamp(142px, 24vh, 220px);
+    width: max-content;
+    max-width: min(330px, calc(100vw - 36px));
+    text-align: left;
+    transform: translate(-50%, 8px);
+  }
+
+  .forest-narration.is-visible {
+    transform: translate(-50%, 0);
   }
 
   .forest-letter {

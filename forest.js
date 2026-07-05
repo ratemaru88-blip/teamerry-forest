@@ -8,6 +8,7 @@
   const narration = document.querySelector(".forest-narration");
   const tapEffects = document.querySelector(".tap-effects");
   const mintGuide = document.querySelector(".mint-guide");
+  const mintGuideBubble = document.querySelector(".mint-guide__bubble");
   const mapAtmosphere = document.querySelector(".map-atmosphere");
   const creatures = document.querySelector(".forest-creatures");
   const driftLayer = document.querySelector(".forest-drift");
@@ -92,23 +93,7 @@
   function announceForestWelcome() {
     const message = getForestWelcomeMessage();
 
-    if (narration) {
-      narration.textContent = message;
-      narration.classList.add("is-visible");
-      window.clearTimeout(announceForestWelcome.narrationTimer);
-      announceForestWelcome.narrationTimer = window.setTimeout(() => {
-        narration.classList.remove("is-visible");
-      }, 6200);
-    }
-
-    if (mobileWalker && mobileWalkerBubble) {
-      mobileWalkerBubble.textContent = message;
-      mobileWalker.classList.add("has-speech");
-      window.clearTimeout(announceForestWelcome.walkerTimer);
-      announceForestWelcome.walkerTimer = window.setTimeout(() => {
-        mobileWalker.classList.remove("has-speech");
-      }, 6200);
-    }
+    showMintSpeech(message, 6200);
   }
 
   function closeNameModal({ announceWelcome = true } = {}) {
@@ -414,8 +399,8 @@
     x: x * bottleMapWidth / bottleDesignWidth,
     y: y * bottleMapHeight / bottleDesignHeight,
   });
-  const bottleRouteStart = toBottleMapPoint(1180, 650);
-  const bottleRouteEnd = toBottleMapPoint(1165, 710);
+  const bottleRouteStart = toBottleMapPoint(1200, 700);
+  const bottleRouteEnd = toBottleMapPoint(1211, 727);
   const bottleRoutes = [
     {
       name: "waterline",
@@ -471,6 +456,60 @@
     guideTimers: [],
     raf: 0,
   };
+
+  function keepMintGuideOnstage() {
+    if (!mintGuide || mintGuide.classList.contains("is-active")) {
+      return;
+    }
+
+    const x = Math.max(90, window.innerWidth - 190);
+    const y = Math.max(92, window.innerHeight * 0.34);
+    mintGuide.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    mintGuide.classList.add("is-active");
+  }
+
+  function showMintSpeech(message, duration = 5200) {
+    if (!message) {
+      return;
+    }
+
+    if (narration) {
+      narration.textContent = message;
+      narration.classList.remove("is-visible");
+    }
+
+    const shouldUseMobileWalker = mobileWalker && mobileWalkerBubble && mobileWalkerQuery.matches && debugState.toggles.walker;
+
+    if (shouldUseMobileWalker) {
+      mobileWalkerBubble.textContent = message;
+      mobileWalker.classList.add("has-speech");
+      window.clearTimeout(walkerState.speechTimer);
+      walkerState.speechTimer = window.setTimeout(() => {
+        mobileWalker.classList.remove("has-speech");
+      }, duration);
+      return;
+    }
+
+    if (!mintGuide || !mintGuideBubble || mobileWalkerQuery.matches) {
+      if (narration) {
+        narration.classList.add("is-visible");
+        window.clearTimeout(showMintSpeech.narrationTimer);
+        showMintSpeech.narrationTimer = window.setTimeout(() => {
+          narration.classList.remove("is-visible");
+        }, duration);
+      }
+      return;
+    }
+
+    keepMintGuideOnstage();
+    mintGuideBubble.textContent = message;
+    mintGuide.classList.toggle("speech-left", mintGuide.getBoundingClientRect().left > window.innerWidth * 0.58);
+    mintGuide.classList.add("has-speech", "is-active");
+    window.clearTimeout(showMintSpeech.timer);
+    showMintSpeech.timer = window.setTimeout(() => {
+      mintGuide.classList.remove("has-speech");
+    }, duration);
+  }
 
   const kakaoWalkerAssets = {
     walk: {
@@ -1001,16 +1040,7 @@
   };
 
   const showNarration = (message = pick(narrationLines)) => {
-    if (!narration) {
-      return;
-    }
-
-    narration.textContent = message;
-    narration.classList.add("is-visible");
-    window.clearTimeout(showNarration.timer);
-    showNarration.timer = window.setTimeout(() => {
-      narration.classList.remove("is-visible");
-    }, 5200);
+    showMintSpeech(message, 5200);
   };
 
   const mintGuideLines = {
@@ -1059,16 +1089,7 @@
   const isMobileWalkerActive = () => Boolean(mobileWalker && mobileWalkerQuery.matches && debugState.toggles.walker);
 
   const setMintGuideSpeech = (message) => {
-    if (!mobileWalker || !mobileWalkerBubble) {
-      return;
-    }
-
-    mobileWalkerBubble.textContent = message;
-    mobileWalker.classList.add("has-speech");
-    window.clearTimeout(walkerState.speechTimer);
-    walkerState.speechTimer = window.setTimeout(() => {
-      mobileWalker.classList.remove("has-speech");
-    }, reduceMotion ? 1400 : 2300);
+    showMintSpeech(message, reduceMotion ? 1400 : 2300);
   };
 
   const setWalkerClass = (name, active) => {

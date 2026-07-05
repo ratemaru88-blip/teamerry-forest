@@ -30,7 +30,7 @@ body {
 /* 妖精エリア */
 .fairy-area {
   position: absolute;
-  left: 25vw;
+  left: 36vw;
   bottom: 8vh;
   z-index: 20;
   display: flex;
@@ -80,6 +80,10 @@ body {
 
 .night-panel {
   display: none;
+  left: 16%;
+  top: 70%;
+  width: 30%;
+  height: 28%;
 }
 
 .observatory.is-night .day-panel {
@@ -488,7 +492,7 @@ body {
   }
 
   .fairy-area {
-    left: 30vw;
+    left: 36vw;
     bottom: 12vh;
     gap: 8px;
   }
@@ -505,10 +509,10 @@ body {
   }
 
   .night-panel {
-    left: 4%;
-    top: 35%;
-    width: 46%;
-    height: 34%;
+    left: 14%;
+    top: 66%;
+    width: 58%;
+    height: 30%;
   }
 
   .day-panel {
