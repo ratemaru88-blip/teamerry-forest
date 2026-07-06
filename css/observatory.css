@@ -301,11 +301,11 @@ body {
 
 .wish-textarea,
 .wish-textarea:focus {
-  left: 20%;
-  top: 47%;
-  width: 60%;
-  height: 27%;
-  font-size: clamp(14px, 2.1vw, 18px);
+  left: 22%;
+  top: 53%;
+  width: 56%;
+  height: 22%;
+  font-size: clamp(14px, 2vw, 17px);
   line-height: 1.75;
 }
 
@@ -336,8 +336,8 @@ body {
 .wish-writer-name {
   position: absolute;
   z-index: 3;
-  right: 22%;
-  top: 43%;
+  right: 24%;
+  top: 48%;
   color: #6a4225;
   font-size: clamp(12px, 1.65vw, 15px);
   line-height: 1.4;
@@ -357,8 +357,8 @@ body {
 }
 
 .wish-counter {
-  right: 19%;
-  bottom: 20%;
+  right: 22%;
+  bottom: 16%;
 }
 
 .bottle-limit-message {
@@ -591,12 +591,12 @@ body {
 
   .wish-textarea,
   .wish-textarea:focus {
-    left: 20%;
-    top: 46%;
-    width: 60%;
-    height: 28%;
-    font-size: clamp(13px, 3.7vw, 17px);
-    line-height: 1.75;
+    left: 22%;
+    top: 52%;
+    width: 56%;
+    height: 23%;
+    font-size: clamp(13px, 3.4vw, 16px);
+    line-height: 1.7;
   }
 
 
@@ -610,8 +610,8 @@ body {
   }
 
   .wish-counter {
-    right: 19%;
-    bottom: 21%;
+    right: 22%;
+    bottom: 17%;
   }
 
   .bottle-limit-message {
@@ -628,10 +628,11 @@ body {
   }
 
   .wish-writer-name {
-    right: 21%;
-    top: 42%;
-    font-size: clamp(12px, 3.4vw, 15px);
+    right: 23%;
+    top: 47%;
+    font-size: clamp(12px, 3.2vw, 14px);
   }
 }
+
 
 
