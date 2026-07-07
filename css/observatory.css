@@ -47,6 +47,10 @@ body {
 }
 
 .fairy-balloon {
+  box-sizing: border-box;
+  flex: 0 1 auto;
+  width: max-content;
+  min-width: 220px;
   max-width: 280px;
   padding: 13px 17px;
   border-radius: 18px;
@@ -55,7 +59,63 @@ body {
   font-size: 15px;
   line-height: 1.7;
   letter-spacing: 0.04em;
+  white-space: normal;
+  word-break: normal;
+  word-break: auto-phrase;
+  overflow-wrap: break-word;
+  line-break: strict;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+
+.forest-whisper {
+  position: fixed;
+  top: max(18px, calc(env(safe-area-inset-top) + 16px));
+  left: 50%;
+  z-index: 55;
+  box-sizing: border-box;
+  width: min(86vw, 520px);
+  padding: 12px 18px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(58, 63, 54, 0.62), rgba(25, 22, 18, 0.52));
+  color: #fff6dc;
+  text-align: center;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.72),
+    0 0 10px rgba(255, 246, 210, 0.24);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.28),
+    inset 0 0 18px rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -8px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.forest-whisper.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.forest-whisper__label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+}
+
+.forest-whisper__text {
+  display: block;
+  font-size: 15px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  white-space: normal;
+  word-break: normal;
+  word-break: auto-phrase;
+  overflow-wrap: break-word;
+  line-break: strict;
 }
 
 /* 昼夜パネル */
@@ -190,7 +250,9 @@ body {
 }
 
 .observatory-view--wish-write {
-  background-image: url("../assets/images/observatory/backgrounds/bg_wish_mobile.webp");
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 10, 8, 0.78);
 }
 
 .observatory-view--bottle-hokkori {
@@ -201,6 +263,12 @@ body {
   background-image: url("../assets/images/observatory/backgrounds/bg_wish_hokkori_mobile.webp");
 }
 
+.observatory-view--wish-lantern {
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 6, 11, 0.88);
+}
+
 .observatory-view--bottle-flush {
   align-items: center;
   justify-content: center;
@@ -208,20 +276,31 @@ body {
 }
 
 .observatory-view--bottle-write.is-active,
+.observatory-view--wish-write.is-active,
+.observatory-view--wish-lantern.is-active,
 .observatory-view--bottle-flush.is-active {
   display: flex;
 }
 
-.bottle-write-card {
+.bottle-write-card,
+.wish-write-card {
   position: relative;
   width: min(420px, 100vw, 56.25vh);
   aspect-ratio: 9 / 16;
   max-height: 100vh;
   overflow: hidden;
-  background-image: url("../assets/images/observatory/backgrounds/bg_bottle_mobile.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.bottle-write-card {
+  background-image: url("../assets/images/observatory/backgrounds/bg_bottle_mobile.webp");
+}
+
+.wish-write-card {
+  background-image: url("../assets/images/observatory/backgrounds/bg_wish_mobile.webp");
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.34);
 }
 
 .bottle-flush-video {
@@ -230,8 +309,7 @@ body {
   object-fit: contain;
 }
 
-.observatory-view__back,
-.observatory-view__submit {
+.observatory-view__back {
   position: absolute;
   z-index: 2;
   border: 0;
@@ -248,14 +326,6 @@ body {
   top: max(18px, env(safe-area-inset-top));
   left: 18px;
   padding: 0.72em 1.2em;
-}
-
-.observatory-view__submit {
-  left: 50%;
-  bottom: max(28px, env(safe-area-inset-bottom));
-  min-width: min(76vw, 280px);
-  padding: 0.86em 1.5em;
-  transform: translateX(-50%);
 }
 
 .observatory-view__text {
@@ -401,7 +471,27 @@ body {
   border-radius: 14px;
 }
 
-.bottle-privacy-modal {
+.wish-lantern-hotspot {
+  position: absolute;
+  z-index: 4;
+  left: 6%;
+  top: 28%;
+  width: 27%;
+  height: 14%;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+}
+
+.wish-lantern-hotspot:focus-visible {
+  outline: 3px solid rgba(255, 244, 188, 0.86);
+  outline-offset: 2px;
+  border-radius: 18px;
+}
+
+.bottle-privacy-modal,
+.wish-privacy-modal {
   position: absolute;
   inset: 0;
   z-index: 8;
@@ -412,11 +502,13 @@ body {
   background: rgba(25, 18, 12, 0.36);
 }
 
-.bottle-privacy-modal.is-active {
+.bottle-privacy-modal.is-active,
+.wish-privacy-modal.is-active {
   display: flex;
 }
 
-.bottle-privacy-dialog {
+.bottle-privacy-dialog,
+.wish-privacy-dialog {
   width: min(88%, 340px);
   padding: 22px 20px;
   border-radius: 16px;
@@ -424,7 +516,8 @@ body {
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28);
 }
 
-.bottle-privacy-title {
+.bottle-privacy-title,
+.wish-privacy-title {
   margin: 0 0 15px;
   color: #55361f;
   font-size: 17px;
@@ -434,7 +527,9 @@ body {
 }
 
 .bottle-privacy-choice,
-.bottle-privacy-cancel {
+.bottle-privacy-cancel,
+.wish-privacy-choice,
+.wish-privacy-cancel {
   display: block;
   width: 100%;
   border: 0;
@@ -445,7 +540,8 @@ body {
   text-align: left;
 }
 
-.bottle-privacy-choice {
+.bottle-privacy-choice,
+.wish-privacy-choice {
   margin-top: 10px;
   padding: 13px 14px;
   border-radius: 12px;
@@ -467,12 +563,81 @@ body {
   line-height: 1.5;
 }
 
-.bottle-privacy-cancel {
+.bottle-privacy-cancel,
+.wish-privacy-cancel {
   margin-top: 12px;
   padding: 10px 14px;
   border-radius: 999px;
   text-align: center;
   background: rgba(124, 90, 52, 0.16);
+}
+
+.wish-lantern-scene {
+  position: relative;
+  width: min(430px, 92vw);
+  min-height: min(680px, 92vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wish-lantern-character {
+  position: relative;
+  width: min(280px, 64vw);
+  filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.42));
+}
+
+.wish-lantern-lilu {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.wish-lantern-item {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  width: 82%;
+  height: auto;
+  transform: translateX(-50%) rotate(-3deg);
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.34));
+}
+
+.wish-lantern-message {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: min(82vw, 340px);
+  box-sizing: border-box;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(255, 248, 220, 0.92);
+  color: #4a341d;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 1.7;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+  transform: translateX(-50%);
+}
+
+.wish-lantern-video {
+  position: absolute;
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #020307;
+}
+
+.wish-lantern-scene.is-playing .wish-lantern-character,
+.wish-lantern-scene.is-playing .wish-lantern-message {
+  display: none;
+}
+
+.wish-lantern-scene.is-playing .wish-lantern-video {
+  display: block;
 }
 
 /* アニメーション */
@@ -507,9 +672,13 @@ body {
   }
 
   .fairy-area {
-    left: 36vw;
-    bottom: 12vh;
+    left: 50%;
+    bottom: 10vh;
+    width: min(92vw, 360px);
+    flex-direction: column;
+    align-items: center;
     gap: 8px;
+    transform: translateX(-50%);
   }
 
   .fairy {
@@ -517,10 +686,29 @@ body {
   }
 
   .fairy-balloon {
-    max-width: 190px;
+    width: min(84vw, 320px);
+    min-width: min(72vw, 260px);
+    max-width: 320px;
     padding: 11px 14px;
     font-size: 13px;
     line-height: 1.6;
+    text-align: left;
+  }
+
+  .forest-whisper {
+    top: max(64px, calc(env(safe-area-inset-top) + 58px));
+    width: min(88vw, 340px);
+    padding: 10px 14px 12px;
+    border-radius: 16px;
+  }
+
+  .forest-whisper__label {
+    font-size: 11px;
+  }
+
+  .forest-whisper__text {
+    font-size: 13px;
+    line-height: 1.65;
   }
 
   .night-panel {
@@ -556,7 +744,8 @@ body {
     background-size: cover;
   }
 
-  .bottle-write-card {
+  .bottle-write-card,
+  .wish-write-card {
     width: min(100vw, 56.25vh);
     max-height: 100dvh;
   }

@@ -24,20 +24,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const observatory = document.getElementById("observatory");
   const fairyImage = document.getElementById("fairyImage");
   const fairyBalloon = document.getElementById("fairyBalloon");
+  const forestWhisper = document.getElementById("forestWhisper");
+  const forestWhisperText = document.getElementById("forestWhisperText");
   const bottleMailButton = document.getElementById("bottleMailButton");
   const wishStarButton = document.getElementById("wishStarButton");
   const bottleWriteView = document.getElementById("bottleWriteView");
   const wishWriteView = document.getElementById("wishWriteView");
   const bottleHokkoriView = document.getElementById("bottleHokkoriView");
   const wishHokkoriView = document.getElementById("wishHokkoriView");
+  const wishLanternView = document.getElementById("wishLanternView");
+  const wishLanternVideo = document.getElementById("wishLanternVideo");
   const bottleFlushView = document.getElementById("bottleFlushView");
   const bottleFlushVideo = document.getElementById("bottleFlushVideo");
   const bottleWriterName = document.getElementById("bottleWriterName");
   const wishWriterName = document.getElementById("wishWriterName");
   const bottlePrivacyModal = document.getElementById("bottlePrivacyModal");
+  const wishPrivacyModal = document.getElementById("wishPrivacyModal");
   const bottleMessageInput = document.getElementById("bottleMessageInput");
+  const wishMessageInput = document.getElementById("wishMessageInput");
   const bottleLimitMessage = document.getElementById("bottleLimitMessage");
-  const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, bottleFlushView].filter(Boolean);
+  const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
 
   updateWriterNames();
@@ -101,10 +107,41 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedFairy = fairies[Math.floor(Math.random() * fairies.length)];
   const messages = isNight ? selectedFairy.nightMessages : selectedFairy.dayMessages;
   const selectedMessage = messages[Math.floor(Math.random() * messages.length)];
+  const forestWhispers = isNight
+    ? [
+      "星のあいだを、静かな願いが流れていきます。",
+      "夜風が、テラスの灯りをそっと揺らしています。",
+      "遠い星にも、小さな声は届くかもしれません。"
+    ]
+    : [
+      "風が、星風テラスの小さな便りを運んでいます。",
+      "雲のすきまから、森の光がこぼれています。",
+      "ここでは、書きかけの気持ちも風に預けられます。"
+    ];
 
   fairyImage.src = selectedFairy.image;
   fairyImage.alt = selectedFairy.alt;
   fairyBalloon.textContent = selectedMessage;
+
+  function showForestWhisper(message) {
+    if (!forestWhisper || !forestWhisperText) {
+      return;
+    }
+
+    forestWhisperText.textContent = message;
+    forestWhisper.classList.add("is-visible");
+    forestWhisper.setAttribute("aria-hidden", "false");
+    window.clearTimeout(showForestWhisper.timer);
+    showForestWhisper.timer = window.setTimeout(() => {
+      forestWhisper.classList.remove("is-visible");
+      forestWhisper.setAttribute("aria-hidden", "true");
+    }, 5200);
+  }
+
+  window.setTimeout(() => {
+    const whisper = forestWhispers[Math.floor(Math.random() * forestWhispers.length)];
+    showForestWhisper(whisper);
+  }, 900);
 
   function getObservatoryDisplayName() {
     let displayName = (
@@ -145,6 +182,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function closeViews() {
     closeBottlePrivacyModal();
+    closeWishPrivacyModal();
+    stopWishLanternSequence();
     showView(null);
   }
 
@@ -165,6 +204,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     bottlePrivacyModal.classList.remove("is-active");
     bottlePrivacyModal.setAttribute("aria-hidden", "true");
+  }
+
+  function openWishPrivacyModal() {
+    if (!wishPrivacyModal) {
+      startWishLanternSequence();
+      return;
+    }
+
+    wishPrivacyModal.classList.add("is-active");
+    wishPrivacyModal.setAttribute("aria-hidden", "false");
+  }
+
+  function closeWishPrivacyModal() {
+    if (!wishPrivacyModal) {
+      return;
+    }
+
+    wishPrivacyModal.classList.remove("is-active");
+    wishPrivacyModal.setAttribute("aria-hidden", "true");
   }
 
   function saveBottleMessage(isPublic) {
@@ -206,6 +264,46 @@ document.addEventListener("DOMContentLoaded", () => {
     bottleMessageInput.value = "";
     updateCounter(bottleMessageInput);
     hideBottleLimitMessage();
+  }
+
+  function saveWishMessage(isPublic) {
+    const senderName = (wishWriterName && wishWriterName.textContent.trim()) || "おさんぽさん";
+    const entry = {
+      text: wishMessageInput ? wishMessageInput.value : "",
+      public: isPublic,
+      writer: senderName,
+      sender: senderName,
+      author: senderName,
+      displayName: senderName,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const key = "teaMerryWishMessages";
+      const messages = JSON.parse(window.localStorage.getItem(key) || "[]").map((message) => {
+        const existingSender = message.sender || message.writer || message.author || message.displayName || "おさんぽさん";
+        return {
+          ...message,
+          writer: message.writer || existingSender,
+          sender: message.sender || existingSender,
+          author: message.author || existingSender,
+          displayName: message.displayName || existingSender,
+        };
+      });
+      messages.push(entry);
+      window.localStorage.setItem(key, JSON.stringify(messages));
+    } catch (error) {
+      window.TeaMerryLastWishMessage = entry;
+    }
+  }
+
+  function resetWishMessageInput() {
+    if (!wishMessageInput) {
+      return;
+    }
+
+    wishMessageInput.value = "";
+    updateCounter(wishMessageInput);
   }
 
   function showBottleLimitMessage() {
@@ -291,6 +389,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function stopWishLanternSequence() {
+    window.clearTimeout(startWishLanternSequence.timer);
+
+    const scene = wishLanternView && wishLanternView.querySelector(".wish-lantern-scene");
+    if (scene) {
+      scene.classList.remove("is-playing");
+    }
+
+    if (wishLanternVideo) {
+      wishLanternVideo.pause();
+      wishLanternVideo.currentTime = 0;
+    }
+  }
+
+  function startWishLanternSequence() {
+    closeWishPrivacyModal();
+    showView(wishLanternView);
+    stopWishLanternSequence();
+
+    startWishLanternSequence.timer = window.setTimeout(() => {
+      const scene = wishLanternView && wishLanternView.querySelector(".wish-lantern-scene");
+      if (scene) {
+        scene.classList.add("is-playing");
+      }
+
+      if (!wishLanternVideo) {
+        return;
+      }
+
+      wishLanternVideo.currentTime = 0;
+      const playPromise = wishLanternVideo.play();
+      if (playPromise) {
+        playPromise.catch(() => {});
+      }
+    }, 3000);
+  }
+
   function updateCounter(input) {
     const counter = document.querySelector(`[data-counter-for="${input.id}"]`);
     if (!counter) {
@@ -339,15 +474,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  document.querySelectorAll("[data-wish-lantern]").forEach((button) => {
+    button.addEventListener("click", openWishPrivacyModal);
+  });
+
+  document.querySelectorAll("[data-wish-public]").forEach((button) => {
+    button.addEventListener("click", () => {
+      saveWishMessage(button.dataset.wishPublic === "true");
+      resetWishMessageInput();
+      startWishLanternSequence();
+    });
+  });
+
   document.querySelectorAll("[data-bottle-privacy-cancel]").forEach((button) => {
     button.addEventListener("click", closeBottlePrivacyModal);
   });
 
-  document.querySelectorAll("[data-wish-send]").forEach((button) => {
-    button.addEventListener("click", closeViews);
+  document.querySelectorAll("[data-wish-privacy-cancel]").forEach((button) => {
+    button.addEventListener("click", closeWishPrivacyModal);
   });
 
   if (bottleFlushVideo) {
     bottleFlushVideo.addEventListener("ended", closeViews);
+  }
+
+  if (wishLanternVideo) {
+    wishLanternVideo.addEventListener("ended", closeViews);
   }
 });
