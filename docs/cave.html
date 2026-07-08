@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>忘れ時の洞窟 | The Unforgotten Ledger</title>
+
+  <link rel="stylesheet" href="cave.css" />
+</head>
+<body>
+  <main class="cave-scene">
+    <div class="cave-stage">
+      <picture>
+        <source
+          media="(max-width: 768px)"
+          srcset="assets/images/cave/cave_mobile_bg.webp"
+        />
+        <img
+          class="cave-bg"
+          src="assets/images/cave/cave_pc_bg.webp"
+          alt="忘れ時の洞窟"
+        />
+      </picture>
+
+      <img
+        id="elder"
+        class="elder"
+        src="assets/images/cave/elder_idle.webp"
+        alt="エルダー"
+      />
+
+      <div id="elderBubble" class="elder-bubble" aria-live="polite">
+        よう、客人。<br />
+        この書には、森の者たちと<br />
+        忘れられぬ出来事が記されておる。
+      </div>
+
+      <button id="ledgerButton" class="ledger-button" aria-label="記録書を開く">
+        <img
+          id="ledgerImage"
+          src="assets/images/cave/ledger_cave_idle.webp"
+          alt="The Unforgotten Ledger 忘れじの記録書"
+        />
+      </button>
+    </div>
+  </main>
+
+  <script src="cave.js"></script>
+</body>
+</html>

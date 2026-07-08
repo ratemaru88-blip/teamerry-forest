@@ -1,0 +1,317 @@
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #120f0a;
+}
+
+.tea-room {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../assets/images/tea_room/tea_room_pc_bg.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.coffee-steam {
+  position: absolute;
+  left: 57.8%;
+  top: 32.8%;
+  z-index: 8;
+  width: clamp(32px, 3.2vw, 52px);
+  height: clamp(76px, 7.2vw, 112px);
+  pointer-events: none;
+  filter: blur(0.2px);
+  opacity: 1;
+}
+
+.coffee-steam span {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 9px;
+  height: 68px;
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse at center, rgba(255, 252, 234, 0.9) 0%, rgba(255, 241, 205, 0.52) 46%, transparent 74%);
+  filter: blur(4px);
+  transform-origin: center bottom;
+  animation: steamRise 6.8s ease-in-out infinite;
+}
+
+.coffee-steam span:nth-child(1) {
+  margin-left: -12px;
+  animation-delay: 0s;
+}
+
+.coffee-steam span:nth-child(2) {
+  height: 78px;
+  margin-left: -1px;
+  animation-delay: 1.5s;
+}
+
+.coffee-steam span:nth-child(3) {
+  margin-left: 10px;
+  animation-delay: 3s;
+}
+
+.master-speech {
+  position: absolute;
+  left: calc(82.4vh - ((133.333vh - 100vw) / 2));
+  top: 28.8vh;
+  z-index: 14;
+  max-width: 220px;
+  width: max-content;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 235, 188, 0.82);
+  font-family: "Shippori Mincho", "Yuji Syuku", "Yu Mincho", serif;
+  font-size: clamp(0.72rem, 0.88vw, 0.84rem);
+  font-weight: 700;
+  line-height: 1.75;
+  text-align: center;
+  white-space: pre-line;
+  text-shadow:
+    0 0 8px rgba(255, 190, 94, 0.22),
+    0 2px 8px rgba(30, 18, 8, 0.32);
+  box-shadow: none;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 6px));
+  animation: masterSpeechFade 2.4s ease forwards;
+}
+
+.master-speech::before {
+  content: none;
+}
+
+.master-speech::after {
+  content: none;
+}
+
+.notice-poster {
+  position: absolute;
+  z-index: 12;
+  display: block;
+  max-width: none;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.notice-poster--starwind {
+  left: 6.1%;
+  top: 13.2%;
+  width: 36%;
+  border-radius: 4px;
+  box-shadow:
+    0 3px 8px rgba(35, 18, 8, 0.36),
+    0 0 0 1px rgba(255, 237, 184, 0.16);
+  transform: rotate(-1.3deg);
+  transform-origin: 52% 48%;
+}
+
+.bookshelf-link {
+  position: absolute;
+  z-index: 15;
+  display: block;
+  color: transparent;
+  text-decoration: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+.bookshelf-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: rgba(255, 223, 138, 0.16);
+  box-shadow: 0 0 16px rgba(255, 211, 117, 0.34);
+  transition: opacity 0.2s ease;
+}
+
+.bookshelf-link:hover::after,
+.bookshelf-link:focus-visible::after {
+  opacity: 1;
+}
+
+.bookshelf-link--blog {
+  left: 74.7%;
+  top: 34.2%;
+  width: 5.2%;
+  height: 27.5%;
+}
+
+.bookshelf-link--contact {
+  left: 80.1%;
+  top: 34.2%;
+  width: 5.2%;
+  height: 27.5%;
+}
+
+.bookshelf-link--history {
+  left: 85.4%;
+  top: 34.2%;
+  width: 5.2%;
+  height: 27.5%;
+}
+
+.bookshelf-link--friends {
+  left: 91.2%;
+  top: 34.2%;
+  width: 5.3%;
+  height: 27.5%;
+}
+
+.mori-link {
+  position: fixed;
+  right: 3.5vw;
+  bottom: 4vh;
+  z-index: 20;
+  display: block;
+  width: clamp(120px, 13vw, 210px);
+  animation: floatMoriButton 3.8s ease-in-out infinite;
+}
+
+.mori-button {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter:
+    drop-shadow(0 0 8px rgba(255, 220, 130, 0.45))
+    drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.mori-link:hover .mori-button,
+.mori-link:focus-visible .mori-button {
+  transform: scale(1.04);
+  filter:
+    drop-shadow(0 0 14px rgba(255, 225, 150, 0.7))
+    drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+}
+
+@keyframes floatMoriButton {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes steamRise {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) translateX(0) scaleX(0.72) scaleY(0.72);
+  }
+
+  22% {
+    opacity: 0.72;
+  }
+
+  58% {
+    opacity: 0.54;
+    transform: translateY(-20px) translateX(5px) scaleX(1.1) scaleY(1.28);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-48px) translateX(-4px) scaleX(1.34) scaleY(1.62);
+  }
+}
+
+@keyframes masterSpeechFade {
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (min-aspect-ratio: 4 / 3) {
+  .master-speech {
+    left: 61.8vw;
+    top: calc(21.6vw - ((75vw - 100vh) / 2));
+  }
+}
+
+@media (max-width: 768px) {
+  .tea-room {
+    background-image: url("../assets/images/tea_room/tea_room_mobile_bg.webp");
+    background-position: center top;
+  }
+
+  .coffee-steam {
+    left: 62.7%;
+    top: 28.6%;
+    width: 40px;
+    height: 92px;
+    opacity: 0.96;
+  }
+
+  .master-speech {
+    left: 53.8%;
+    top: 26.6%;
+    max-width: 180px;
+    width: 42vw;
+    font-size: clamp(0.64rem, 2.45vw, 0.76rem);
+    line-height: 1.65;
+  }
+
+  .notice-poster--starwind {
+    left: 5.3%;
+    top: 12.7%;
+    width: 35.5%;
+    border-radius: 3px;
+    box-shadow:
+      0 2px 6px rgba(35, 18, 8, 0.34),
+      0 0 0 1px rgba(255, 237, 184, 0.14);
+    transform: rotate(-1deg);
+  }
+
+  .bookshelf-link--blog {
+    left: 66.7%;
+    top: 30.7%;
+    width: 6.7%;
+    height: 15.8%;
+  }
+
+  .bookshelf-link--contact {
+    left: 73.2%;
+    top: 30.7%;
+    width: 7.5%;
+    height: 15.8%;
+  }
+
+  .bookshelf-link--history {
+    left: 81.1%;
+    top: 30.7%;
+    width: 7.2%;
+    height: 15.8%;
+  }
+
+  .bookshelf-link--friends {
+    left: 68.1%;
+    top: 47.9%;
+    width: 7.6%;
+    height: 13.3%;
+  }
+
+  .mori-link {
+    right: 4vw;
+    bottom: 3vh;
+    width: clamp(105px, 30vw, 150px);
+  }
+}

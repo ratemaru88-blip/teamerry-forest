@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>星風のテラス | TeaMerry Forest</title>
+
+    <link rel="stylesheet" href="./css/observatory.css">
+</head>
+
+<body>
+
+    <main class="observatory" id="observatory">
+
+        <!-- 妖精エリア -->
+        <div class="fairy-area">
+
+            <img
+                id="fairyImage"
+                class="fairy"
+                src=""
+                alt="妖精">
+
+            <div
+                id="fairyBalloon"
+                class="fairy-balloon">
+            </div>
+
+        </div>
+
+        <div
+            id="forestWhisper"
+            class="forest-whisper"
+            role="status"
+            aria-live="polite"
+            aria-hidden="true">
+
+            <span class="forest-whisper__label">🌿 森のささやき</span>
+            <span id="forestWhisperText" class="forest-whisper__text"></span>
+
+        </div>
+
+        <!-- 昼モード -->
+        <section
+            id="dayPanel"
+            class="day-panel">
+
+            <button
+                type="button"
+                class="bottle-mail-hotspot"
+                id="bottleMailButton"
+                aria-label="ボトルメールを書く"></button>
+
+        </section>
+
+        <!-- 夜モード -->
+        <section
+            id="nightPanel"
+            class="night-panel">
+
+            <button
+                type="button"
+                class="wish-star-hotspot"
+                id="wishStarButton"
+                aria-label="願いごとを書く"></button>
+
+        </section>
+
+        <!-- 森へ戻る -->
+
+        <a
+            href="./index.html"
+            class="forest-back">
+
+            🌲 森へ戻る
+
+        </a>
+
+        <section
+            id="bottleWriteView"
+            class="observatory-view observatory-view--bottle-write"
+            aria-hidden="true">
+
+            <div class="bottle-write-card">
+
+                <button
+                    type="button"
+                    class="observatory-view__back"
+                    data-observatory-back>
+
+                    戻る
+
+                </button>
+
+                <textarea
+                    id="bottleMessageInput"
+                    class="observatory-view__text bottle-textarea"
+                    maxlength="100"
+                    aria-label="ボトルメールを書く"></textarea>
+
+                <div
+                    id="bottleWriterName"
+                    class="bottle-writer-name"></div>
+
+                <div
+                    class="observatory-view__counter bottle-counter"
+                    data-counter-for="bottleMessageInput">
+
+                    0/100
+
+                </div>
+
+                <div
+                    id="bottleLimitMessage"
+                    class="bottle-limit-message"
+                    aria-live="polite"></div>
+
+                <button
+                    type="button"
+                    class="bottle-insert-hotspot"
+                    aria-label="ボトルに入れる"
+                    data-bottle-flush>
+                </button>
+
+                <div
+                    id="bottlePrivacyModal"
+                    class="bottle-privacy-modal"
+                    aria-hidden="true">
+
+                    <div
+                        class="bottle-privacy-dialog"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="bottlePrivacyTitle">
+
+                        <p
+                            id="bottlePrivacyTitle"
+                            class="bottle-privacy-title">
+
+                            選んでください。
+
+                        </p>
+
+                        <button
+                            type="button"
+                            class="bottle-privacy-choice"
+                            data-bottle-public="true">
+
+                            <span>森の掲示板に貼ってもいいよ。</span>
+                            <small>今日のほっこりに選ばれることがあります。</small>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="bottle-privacy-choice"
+                            data-bottle-public="false">
+
+                            <span>ただの独り言。</span>
+                            <small>森にひっそり流します。</small>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="bottle-privacy-cancel"
+                            data-bottle-privacy-cancel>
+
+                            やっぱりやめる
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section
+            id="wishWriteView"
+            class="observatory-view observatory-view--wish-write"
+            aria-hidden="true">
+
+            <div class="wish-write-card">
+
+                <button
+                    type="button"
+                    class="observatory-view__back"
+                    data-observatory-back>
+
+                    戻る
+
+                </button>
+
+                <textarea
+                    id="wishMessageInput"
+                    class="observatory-view__text wish-textarea"
+                    maxlength="60"
+                    aria-label="願いごとを書く"></textarea>
+
+                <div
+                    id="wishWriterName"
+                    class="wish-writer-name"></div>
+
+                <div
+                    class="observatory-view__counter wish-counter"
+                    data-counter-for="wishMessageInput">
+
+                    0 / 60
+
+                </div>
+
+                <button
+                    type="button"
+                    class="wish-lantern-hotspot"
+                    aria-label="ランタンに入れる"
+                    data-wish-lantern>
+                </button>
+
+                <div
+                    id="wishPrivacyModal"
+                    class="wish-privacy-modal"
+                    aria-hidden="true">
+
+                    <div
+                        class="wish-privacy-dialog"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="wishPrivacyTitle">
+
+                        <p
+                            id="wishPrivacyTitle"
+                            class="wish-privacy-title">
+
+                            願い星をどう届けますか？
+
+                        </p>
+
+                        <button
+                            type="button"
+                            class="wish-privacy-choice"
+                            data-wish-public="true">
+
+                            掲示板に表示してもいい。
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="wish-privacy-choice"
+                            data-wish-public="false">
+
+                            ただ夜空にとばす
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="wish-privacy-cancel"
+                            data-wish-privacy-cancel>
+
+                            やめる
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+        <section
+            id="wishLanternView"
+            class="observatory-view observatory-view--wish-lantern"
+            aria-hidden="true">
+
+            <div class="wish-lantern-scene">
+
+                <div class="wish-lantern-character">
+                    <img
+                        class="wish-lantern-lilu"
+                        src="./assets/images/lilu/present/lilu_full_present_normal.webp"
+                        alt="ランタンを持つリル">
+
+                    <img
+                        class="wish-lantern-item"
+                        src="./assets/images/observatory/rantan/lantern_wood_closed.webp"
+                        alt="">
+                </div>
+
+                <div
+                    id="wishLanternMessage"
+                    class="wish-lantern-message">
+
+                    木星のランタンが出た。<br>
+                    ミントが好きなやつ
+
+                </div>
+
+                <video
+                    id="wishLanternVideo"
+                    class="wish-lantern-video"
+                    src="./assets/images/observatory/animations/wishing_Star_v01.webm"
+                    playsinline
+                    muted
+                    preload="auto"></video>
+
+            </div>
+
+        </section>
+
+        <section
+            id="bottleHokkoriView"
+            class="observatory-view observatory-view--bottle-hokkori"
+            aria-hidden="true">
+
+            <button
+                type="button"
+                class="observatory-view__back"
+                data-observatory-back>
+
+                戻る
+
+            </button>
+
+        </section>
+
+        <section
+            id="wishHokkoriView"
+            class="observatory-view observatory-view--wish-hokkori"
+            aria-hidden="true">
+
+            <button
+                type="button"
+                class="observatory-view__back"
+                data-observatory-back>
+
+                戻る
+
+            </button>
+
+        </section>
+
+        <section
+            id="bottleFlushView"
+            class="observatory-view observatory-view--bottle-flush"
+            aria-hidden="true">
+
+            <video
+                id="bottleFlushVideo"
+                class="bottle-flush-video"
+                src="./assets/images/observatory/animations/bottle_flush_v02.mp4"
+                playsinline
+                muted
+                preload="auto"></video>
+
+        </section>
+
+    </main>
+
+    <script src="./js/dialogueEngine.js"></script>
+    <script src="./observatory.js"></script>
+
+</body>
+</html>

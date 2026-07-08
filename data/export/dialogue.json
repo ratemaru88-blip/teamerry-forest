@@ -1,0 +1,8668 @@
+{
+  "version": "1.0",
+  "source": "TeaMerry_Dialogue_Spreadsheet_Template.xlsx",
+  "updatedAt": "2026-07-09T00:28:46+09:00",
+  "dialogues": [
+    {
+      "id": "M001",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "明るい",
+      "priority": 100,
+      "text": "ようこそ、TeaMerryの森へ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M002",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "はじめての森って、少しどきどきするよね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M003",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "呼び名あり"
+      ],
+      "tone": "明るい",
+      "priority": 90,
+      "text": "{name}さん、今日も来てくれてうれしいな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M004",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "呼び名なし"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "今日は、ただのおさんぽだね。ゆっくり歩こう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M005",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "久しぶり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "久しぶりだね。森も待っていたみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M006",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "こんにちは。今日はどこへ行こうか。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M007",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "会えてうれしいな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M008",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "今日も森を歩いてみる？",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M009",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "急がなくて大丈夫だよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M010",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "森の空気、今日も気持ちいいね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M011",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "気になる場所があったら、そっと近づいてみてね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M012",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "小さな道ほど、すてきな場所につながっていたりするんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M013",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日はのんびり歩くのがよさそう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M014",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "森の音、聞こえる？",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M015",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "ちょっと立ち止まるのも、おさんぽのうちだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M016",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "どこから行っても大丈夫。森はちゃんとつながっているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M017",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日は何か見つかるかもしれないね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M018",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "森って、静かな日ほどいろんな音がするんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M019",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "あとでティールームにも寄ってみる？",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M020",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "ゆっくり深呼吸してみよう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M021",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "朝の森って、葉っぱまで目を覚ましているみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M022",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "朝露がきらきらしてるね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M023",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日はいい一日になりそう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M024",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "お昼の森は、光がいっぱいだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M025",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "木陰で少し休むのもいいかも。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M026",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "遠くまで歩けそうな明るさだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M027",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "そろそろ夕方だね。森の色が変わってきたよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M028",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "夕暮れの森って、少しやさしい顔になるんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M029",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "少し寂しい",
+      "priority": 70,
+      "text": "鳥たちも帰り道を探しているみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M030",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "夜の森は、昼とは少し違うんだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M031",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "星が見える場所へ行ってみる？",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M032",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "夜は足元に気をつけて、ゆっくりね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M033",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日は空がきれいだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M034",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "こんな日は、少し遠くまで歩きたくなるね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M035",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "雨音も、森の音楽みたいだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M036",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "濡れた葉っぱが、いつもよりきれいに見えるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M037",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "今日は霧が深いね。ゆっくり歩こう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M038",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "不思議",
+      "priority": 80,
+      "text": "霧の日は、森が少し秘密めいて見えるんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M039",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "風"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "風が元気だね。葉っぱたちも楽しそう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M040",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雪"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "雪の日の森は、声までやさしくなるね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M041",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "春の森は、新しい匂いがするね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M042",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "若葉が小さく手を振っているみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M043",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "夏の森は、緑が元気いっぱいだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M044",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "木陰に入ると、少し涼しいよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M045",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "秋の葉っぱ、きれいな色になってきたね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M046",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "落ち葉を踏む音って、ちょっと楽しいよね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M047",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "冬の森は、ゆっくり眠っているみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M048",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "寒い日は、あたたかい場所へ寄っていこう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M049",
+      "type": "character",
+      "character": "ミント",
+      "place": "森の入口",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 60,
+      "text": "ここが森の入口だよ。ゆっくり入ってね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M050",
+      "type": "character",
+      "character": "ミント",
+      "place": "森の入口",
+      "section": "場所案内",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "はじめてなら、まずは気になる灯りを探してみよう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M051",
+      "type": "character",
+      "character": "ミント",
+      "place": "星風テラス",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "あそこが星風テラスだよ。星の風が通る場所なんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M052",
+      "type": "character",
+      "character": "ミント",
+      "place": "星風テラス",
+      "section": "場所案内",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "昼の星風テラスでは、ボトルメールを流せるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M053",
+      "type": "character",
+      "character": "ミント",
+      "place": "星風テラス",
+      "section": "場所案内",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "夜の星風テラスでは、願い星を飛ばせるんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M054",
+      "type": "character",
+      "character": "ミント",
+      "place": "星風テラス",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "詳しいことは、リルに聞いてみてね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M055",
+      "type": "character",
+      "character": "ミント",
+      "place": "まろうどティールーム",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "まろうどティールームから、お茶の香りがするね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M056",
+      "type": "character",
+      "character": "ミント",
+      "place": "まろうどティールーム",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 60,
+      "text": "少し休みたい時は、ティールームがぴったりだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M057",
+      "type": "character",
+      "character": "ミント",
+      "place": "まろうどティールーム",
+      "section": "場所案内",
+      "conditions": [
+        "お知らせあり"
+      ],
+      "tone": "明るい",
+      "priority": 80,
+      "text": "掲示板に新しいお知らせがあるみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M058",
+      "type": "character",
+      "character": "ミント",
+      "place": "忘れじの洞窟",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 60,
+      "text": "あの洞窟には、大切な思い出が眠っているんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M059",
+      "type": "character",
+      "character": "ミント",
+      "place": "忘れじの洞窟",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "洞窟のことは、エルダーがよく知っているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M060",
+      "type": "character",
+      "character": "ミント",
+      "place": "展望ハウス",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "展望ハウスからは、森を遠くまで見渡せるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M061",
+      "type": "character",
+      "character": "ミント",
+      "place": "展望ハウス",
+      "section": "場所案内",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "夕方の展望ハウスは、光がとてもきれいなんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M062",
+      "type": "character",
+      "character": "ミント",
+      "place": "丸広場",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 60,
+      "text": "丸広場は、森のみんなが集まる場所だよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M063",
+      "type": "character",
+      "character": "ミント",
+      "place": "丸広場",
+      "section": "場所案内",
+      "conditions": [
+        "ランタン祭り"
+      ],
+      "tone": "お祝い",
+      "priority": 80,
+      "text": "今日は丸広場がにぎやかになりそう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M064",
+      "type": "character",
+      "character": "ミント",
+      "place": "湖",
+      "section": "場所案内",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "湖の水面を見ていると、気持ちが静かになるね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M065",
+      "type": "character",
+      "character": "ミント",
+      "place": "観測所",
+      "section": "場所案内",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "夜の観測所では、星が近く見えるかもしれないよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M066",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ボトルメール未送信"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "よかったら、ボトルメールを書いてみる？",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M067",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "返信待ち"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "お返事は、まだ旅の途中みたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M068",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "返信あり"
+      ],
+      "tone": "明るい",
+      "priority": 100,
+      "text": "ボトルメールのお返事が届いているみたいだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M069",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "願い星未送信",
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "今夜は願い星を飛ばせそうだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M070",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "願い星送信済み",
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "さっきの願い星、きっと空で光っているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M071",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "お知らせあり"
+      ],
+      "tone": "明るい",
+      "priority": 80,
+      "text": "森からのお知らせが届いているみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M072",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ランタン祭り"
+      ],
+      "tone": "お祝い",
+      "priority": 80,
+      "text": "ランタン祭りの日は、森も少しそわそわしているんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M073",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ホタル"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "今夜はホタルに会えるかもしれないね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M074",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "流星群",
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "流星群の夜は、空を見上げるのを忘れないでね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M075",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "季節イベント"
+      ],
+      "tone": "明るい",
+      "priority": 80,
+      "text": "今日は森の様子が少し違うみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M076",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "分からないことがあったら、ゆっくり歩きながら覚えていこう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M077",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "呼び名あり"
+      ],
+      "tone": "明るい",
+      "priority": 90,
+      "text": "{name}さんって呼べるの、うれしいな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M078",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "呼び名なし"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "名前がなくても大丈夫。今日はただのおさんぽだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M079",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "久しぶり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "少し久しぶりでも、森はちゃんと覚えているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M080",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "100回訪問"
+      ],
+      "tone": "お祝い",
+      "priority": 100,
+      "text": "たくさん歩いてくれてありがとう。森も喜んでいるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M081",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "誕生日"
+      ],
+      "tone": "お祝い",
+      "priority": 100,
+      "text": "今日は特別な日だね。森のみんなもお祝いしているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M082",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "記念日"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "大切な日に来てくれてありがとう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M083",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "迷い中"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "迷ったら、明るい方へ歩いてみよう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M084",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "操作なし"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "のんびりしていても大丈夫だよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M085",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "疲れ"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "少し休んでいこう。森は逃げないからね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M086",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "大丈夫。ゆっくりでいいよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M087",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "一歩ずつ歩けば、ちゃんと森は広がっていくよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M088",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日はお茶を飲むのにもいい日だね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M089",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "静かな時間も、森の楽しみ方のひとつだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M090",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "次はどんな場所に行ってみようか。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M091",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "気持ちが少し軽くなる場所、見つかるといいね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M092",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "小さな発見って、うれしいよね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M093",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "森には、急がないと見つからないものもあるんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M094",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "耳をすませると、遠くの水音が聞こえるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M095",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "今日はどんな出会いがあるかな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M096",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "いつでも戻ってきていいからね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M097",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "森のみんなも、きっとどこかで待っているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M098",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "ふふ、風がくすぐったそうにしてる。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M099",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "また少し、森のことを好きになってくれたらうれしいな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "M100",
+      "type": "character",
+      "character": "ミント",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日のおさんぽが、やさしい時間になりますように。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI001",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "明るい",
+      "priority": 100,
+      "text": "ようこそ、星風テラスへ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI002",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "こんばんは。今日も星を見に来たの？",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI003",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "久しぶり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "また会えたね。星たちも喜んでるみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI004",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "呼び名あり"
+      ],
+      "tone": "嬉しい",
+      "priority": 90,
+      "text": "{name}さん、待ってたよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI005",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "今日は星空がとてもきれいだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI006",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "流星群"
+      ],
+      "tone": "わくわく",
+      "priority": 90,
+      "text": "今日は空を見上げるのが楽しみだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI007",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "ゆっくり星を眺めていこう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI008",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "今日も会えてうれしいな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI009",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "星の風が気持ちいいね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI010",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "ここは時間がゆっくり流れる場所なんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI011",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日はどんな星に会えるかな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI012",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 50,
+      "text": "星は静かだけど、いろんなお話を知ってるんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI013",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "風がやさしい夜だね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI014",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "上を見上げると、少し気持ちが軽くなるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI015",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "星は急がないから、ゆっくりでいいんだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI016",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "静かな夜も好きなんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI017",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 50,
+      "text": "小さな光も、夜空では大切な星なんだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI018",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "星の風って、不思議な匂いがするんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI019",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "今日はどこから星を眺めようか。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI020",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "雲が流れるのを見ているだけでも楽しいよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI021",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "満月"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "満月の日は、星たちも少し照れちゃうみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI022",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "新月"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "新月の夜は、小さな星がよく見えるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI023",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日は星空がお散歩日和だね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI024",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "今日は星がお休みしてるのかもしれないね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI025",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "霧の向こうにも、ちゃんと星はいるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI026",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "耳をすますと、星の声が聞こえそう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI027",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "空は毎日少しずつ違う顔を見せてくれるね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI028",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 50,
+      "text": "星空にもお気に入りの場所があるのかな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI029",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日はゆっくり空を見上げよう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI030",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "また新しい星を見つけられるといいね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI031",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "ここは星風テラス。星たちが一番近く感じられる場所なんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI032",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "夜になると、星たちも少しおしゃべりになるみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI033",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日は空が澄んでいるから、遠くの星まで見えそうだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI034",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "満月"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "満月の夜は、星も少し照れくさそうなんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI035",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "流星群"
+      ],
+      "tone": "わくわく",
+      "priority": 90,
+      "text": "流れ星に会えたら、そっと手を振ってみてね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI036",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "風が運ぶ星の光って、とてもきれいなんだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI037",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "今日も星たちは静かに森を見守っているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI038",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "少し休んでから空を見上げるのもいいね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI039",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 60,
+      "text": "夜風って、星のお便りを運んでいるみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI040",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "星風テラス",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "今日の星空も、きっと昨日とは少し違うよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI041",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "ボトルメール未送信"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "ボトルメールを書いてみる？",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI042",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "ボトルメール未送信"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "思いついた言葉を、そのまま流しても大丈夫だよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI043",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "ボトルメール送信済み"
+      ],
+      "tone": "明るい",
+      "priority": 90,
+      "text": "ボトルメール、元気に旅へ出発したよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI044",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "返信待ち"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "まだ旅の途中みたい。ゆっくり待ってみよう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI045",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "返信待ち"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "海も風も長い旅をしているからね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI046",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "返信あり"
+      ],
+      "tone": "嬉しい",
+      "priority": 100,
+      "text": "お返事が届いているみたい。一緒に見に行こう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI047",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "返信あり"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "誰かの想いが帰ってきたみたいだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI048",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "返信あり"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "今日は風が、うれしい知らせを運んできたね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI049",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "手紙って、不思議だね。遠くの誰かとつながれるんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI050",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "急がなくても、想いはちゃんと旅を続けるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI051",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "返事を待つ時間も、大切な時間なんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI052",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "どんなお返事が届くのか、楽しみだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI053",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "星の風も、お手紙の旅を応援しているみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI054",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "ときどき、お手紙も寄り道することがあるんだって。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI055",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "大切な言葉ほど、ゆっくり届くのかもしれないね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI056",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "今日も誰かが、空の下で手紙を書いているのかな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI057",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "風と星は、お手紙の道しるべなんだ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI058",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "想いを書いたぶんだけ、旅もあたたかくなるね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI059",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日も誰かに笑顔が届くといいな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI060",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "ボトルメール",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "また新しいお手紙が旅立つ日を楽しみにしているね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI061",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "願い星未送信",
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "今夜は願い星を飛ばしてみる？",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI062",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "願い星未送信",
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "星たちが静かに待っているみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI063",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "願い星送信済み",
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "願い星、きれいに夜空へ飛んでいったね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI064",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "願い星送信済み",
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "星たちも、そっと見守ってくれているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI065",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "願い星送信済み",
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "願いは急がなくても大丈夫だからね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI066",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "夜空を見上げるだけでも、素敵な時間だね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI067",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "小さな願いも、星にはちゃんと見えているのかも。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI068",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "願いを書いたら、少し心が軽くなることもあるよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI069",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "願いは、人それぞれ違っていていいんだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI070",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "願い星",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "星は今日も静かに夜空を旅しているね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI071",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "満月"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "満月って、少しだけ森を明るくしてくれるね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI072",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "新月"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "新月の夜は、小さな星まで見つけられそう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI073",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "流星群"
+      ],
+      "tone": "わくわく",
+      "priority": 90,
+      "text": "流れ星を見つけたら、心の中でそっと願ってみてね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI074",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日は星たちがよく笑っているみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI075",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "曇り"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "雲の向こうでも、星はちゃんと輝いているよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI076",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "霧の夜は、星も少しかくれんぼしてるのかな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI077",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 60,
+      "text": "夜風が星の歌を運んでいるみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI078",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "星空は毎日少しずつ違うんだよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI079",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "今日はどの星が一番輝いて見えるかな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI080",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "夜空",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "空を見上げる時間って、大切だね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI081",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "歓迎",
+      "priority": 100,
+      "text": "また星を見に来てくれたらうれしいな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI082",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "久しぶり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "おかえり。星たちも待っていたみたい。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI083",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "呼び名あり"
+      ],
+      "tone": "嬉しい",
+      "priority": 90,
+      "text": "{name}さんと見る星空、今日もきれいだね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI084",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "誕生日"
+      ],
+      "tone": "祝福",
+      "priority": 100,
+      "text": "お誕生日おめでとう。今夜の星は少し特別だよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI085",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "記念日"
+      ],
+      "tone": "祝福",
+      "priority": 100,
+      "text": "記念の日を星たちも見守っているね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI086",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "100回訪問"
+      ],
+      "tone": "感謝",
+      "priority": 100,
+      "text": "こんなにたくさん星を見に来てくれてありがとう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI087",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "眠る前に星を見上げるのもいいかもしれないね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI088",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "流星群"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "今夜は忘れられない空になるかもしれないね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI089",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "また星を見に来てね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "LI090",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "特殊条件",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 60,
+      "text": "次の夜空も、一緒に見られるといいな。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA001",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "いらっしゃいませ。TeaMerryへようこそ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA002",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "お帰りなさい。今日もお待ちしておりました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA003",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "久しぶり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "またお会いできて嬉しく思います。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA004",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "呼び名あり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "{name}様、本日もどうぞごゆっくり。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA005",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "雨の日は、お茶の香りがいっそう引き立ちます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA006",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "夜のティールームも、なかなか良いものですよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA007",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "あたたかい",
+      "priority": 70,
+      "text": "暖炉をご用意しております。どうぞ温まってください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA008",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "お好きなお席で、ごゆっくりお過ごしください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA009",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "あたたかい",
+      "priority": 50,
+      "text": "今日も静かな時間をご用意しております。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA010",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お迎え",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "お茶がちょうど飲み頃になりました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA011",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日のおすすめは、香りをゆっくり楽しめる一杯です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA012",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "急がず、ゆっくりお過ごしください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA013",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "窓の外をご覧になるだけでも、心が落ち着きますよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA014",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "森の香りも、お茶のごちそうの一つです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA015",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "あたたかい",
+      "priority": 50,
+      "text": "一息つく時間は、大切ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA016",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日は静かな時間が流れています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA017",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "お気に入りのお茶は見つかりましたか。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA018",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "香りは、その日の気分でも変わって感じられます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA019",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "外の風の音も、今日は穏やかですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA020",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "あたたかい",
+      "priority": 50,
+      "text": "どうぞ肩の力を抜いてお過ごしください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA021",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "お茶は待つ時間も楽しみの一つです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA022",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "森を歩いた後のお茶は、また格別ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA023",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "今日はゆっくり本でも読みたくなる日です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA024",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "窓辺のお席は、木漏れ日がきれいですよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA025",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "あたたかい",
+      "priority": 50,
+      "text": "甘い香りのお菓子も焼き上がりました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA026",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "どんな一日でしたか。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA027",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "森のお話を聞きながら飲むお茶も素敵ですよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA028",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "お帰りの前に、もう一杯いかがでしょう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA029",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "あたたかい",
+      "priority": 50,
+      "text": "今日という日が、穏やかな思い出になりますように。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA030",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "またいつでも、お立ち寄りください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA031",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "朝のお茶は、一日の始まりをやさしく整えてくれます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA032",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "あたたかい",
+      "priority": 70,
+      "text": "朝の森は、まだ静かな目覚めの時間ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA033",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "窓から差し込む朝日も、ごちそうのひとつです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA034",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日も良い香りで一日が始まりそうです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA035",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "お昼のひと休みには、香りのやさしい一杯がおすすめです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA036",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "森を歩いた後のお茶は、格別ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA037",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "窓辺にも、やわらかな光が届いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA038",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "あたたかい",
+      "priority": 70,
+      "text": "どうぞ、ごゆっくりお過ごしください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA039",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "夕暮れは、温かい紅茶が恋しくなる時間ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA040",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "夕日に染まる森を眺めながら、一息いかがでしょう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA041",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "今日という日を振り返るには、良い時間です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA042",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "あたたかい",
+      "priority": 70,
+      "text": "少しずつ灯りをともす頃になりました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA043",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "夜は香りも、少し落ち着いて感じられます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA044",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "星空を眺めた後のお茶も、また格別です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA045",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "暖炉の火をご覧になりながら、おくつろぎください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA046",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "静かな夜ほど、お茶の香りがゆっくり広がります。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA047",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "春の香りを閉じ込めたようなお茶をご用意しております。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA048",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "窓の外にも、小さな花が咲き始めました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA049",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "あたたかい",
+      "priority": 70,
+      "text": "春風も、お茶のお供になってくれますね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA050",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "やさしい季節には、軽やかな香りがよく似合います。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA051",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "夏は爽やかな香りのお茶も人気です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA052",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "木陰を渡る風が心地よい季節ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA053",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "暑い日ほど、ゆっくり休む時間を大切になさってください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA054",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "蝉の声も、この季節ならではの音楽ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA055",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "秋は香ばしい焼き菓子がよく合います。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA056",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "あたたかい",
+      "priority": 70,
+      "text": "紅葉を眺めながらのお茶は格別です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA057",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "落ち葉の音も、秋だけの贈りものですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA058",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "あたたかい",
+      "priority": 70,
+      "text": "寒い日は、温かいカップを手にするだけでほっとします。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA059",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "暖炉の火も、今日は少し嬉しそうに揺れています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA060",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "雪景色を眺めながら過ごす時間も、冬ならではですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA061",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "今日は焼き菓子も、ちょうど焼き上がりました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA062",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "あたたかい",
+      "priority": 60,
+      "text": "窓際のお席は、森の景色がよく見えますよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA063",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "お好きな香りが見つかりましたら幸いです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA064",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "今日は少し甘めのお菓子をご用意しております。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA065",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 60,
+      "text": "暖炉のそばのお席も空いております。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA066",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "お茶の香りは、心までゆっくり温めてくれます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA067",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "森を眺めながらの一杯は、格別ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA068",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "あたたかい",
+      "priority": 60,
+      "text": "今日は静かな時間をお楽しみいただけそうです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA069",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "香りが変わる瞬間も、お茶の楽しみのひとつです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA070",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "ティールーム",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 60,
+      "text": "どうぞ、時間を忘れてお過ごしください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA071",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お知らせ",
+      "conditions": [
+        "お知らせあり"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "掲示板に新しいお知らせが届いております。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA072",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お知らせ",
+      "conditions": [
+        "イベント開催中"
+      ],
+      "tone": "明るい",
+      "priority": 80,
+      "text": "今日は森で催しが開かれているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA073",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お知らせ",
+      "conditions": [
+        "ボトルメール返信あり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "ボトルメールのお返事が届いているようですよ。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA074",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お知らせ",
+      "conditions": [
+        "願い星開催中"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "今夜は願い星を見上げるのに良い夜ですね。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA075",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お知らせ",
+      "conditions": [
+        "ランタン祭り"
+      ],
+      "tone": "お祝い",
+      "priority": 80,
+      "text": "ランタンの灯りが、森をやさしく照らしています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA076",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "お知らせ",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "森では毎日、小さな出来事が生まれています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA077",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "歓迎",
+      "priority": 100,
+      "text": "TeaMerryでの時間が、心安らぐものになりますように。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA078",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "久しぶり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "またお迎えできる日を楽しみにしておりました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA079",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "呼び名あり"
+      ],
+      "tone": "あたたかい",
+      "priority": 90,
+      "text": "{name}様、いつものお席をご用意しております。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA080",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "誕生日"
+      ],
+      "tone": "祝福",
+      "priority": 100,
+      "text": "お誕生日、おめでとうございます。素敵な一年になりますように。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA081",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "記念日"
+      ],
+      "tone": "祝福",
+      "priority": 100,
+      "text": "記念の日を、このティールームで過ごしていただき光栄です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA082",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "100回訪問"
+      ],
+      "tone": "感謝",
+      "priority": 100,
+      "text": "長くこの森を愛してくださり、ありがとうございます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA083",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "返信待ち"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "お返事は、きっと良い風に乗って届くことでしょう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA084",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "願い星送信済み"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "願いは、星空のどこかで静かに輝いていることでしょう。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA085",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "あたたかい",
+      "priority": 80,
+      "text": "雨宿りだけでも、どうぞご遠慮なく。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA086",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "雪"
+      ],
+      "tone": "あたたかい",
+      "priority": 80,
+      "text": "冷えた手を、温かいカップで温めてください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA087",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 80,
+      "text": "お帰りの道も、どうぞお気をつけて。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA088",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "閉店前"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "今日も穏やかな時間を、ありがとうございました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA089",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "感謝",
+      "priority": 60,
+      "text": "またお会いできる日を、楽しみにしております。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "MA090",
+      "type": "character",
+      "character": "マスター",
+      "place": "まろうどティールーム",
+      "section": "特殊条件",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "あたたかい",
+      "priority": 60,
+      "text": "どうぞ、いつでもお帰りください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F001",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "朝露が、葉っぱの上できらりと光っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F002",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "森が少しずつ目を覚ましはじめました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F003",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "木漏れ日が、道の上に小さな模様を描いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F004",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "いちばんあたたかい光が、森に降りています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F005",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "そろそろ夕方です。木々の影が少し長くなりました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F006",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "少し寂しい",
+      "priority": 70,
+      "text": "帰り道を知っている鳥たちが、空を横切っていきます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F007",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "夜の森に、最初の星が灯りました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F008",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "森は静かに、夜の支度をはじめています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F009",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日は空が高く、風まで透き通っているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F010",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "雨粒が、葉っぱをやさしく叩いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F011",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "霧が少しずつ、森の奥を隠していきます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F012",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "不思議",
+      "priority": 80,
+      "text": "今日は霧が深いようです。何か不思議なことが起こるかもしれません。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F013",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "若い葉っぱが、光の中で小さく揺れています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F014",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "深い緑の匂いが、森いっぱいに広がっています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F015",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "色づいた葉が、足元にそっと降りてきました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F016",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "森は少しだけ、息をひそめているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F017",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "森",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 60,
+      "text": "向こうの小道で、何かがきらりと光りました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F018",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "森",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "わくわく",
+      "priority": 60,
+      "text": "金色のどんぐりが、どこかへ転がっていったようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F019",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "森",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 60,
+      "text": "小さな足あとが、草むらの先へ続いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F020",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "森",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "風が、見えない道をそっと教えてくれています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F021",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "場所案内",
+      "conditions": [
+        "星風テラス"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "星風テラスのほうで、小さな光がまたたきました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F022",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "イベント",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "夜空へ向かう風が、星風テラスに集まっています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F023",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "イベント",
+      "conditions": [
+        "ボトルメール返信あり"
+      ],
+      "tone": "わくわく",
+      "priority": 90,
+      "text": "星風テラスに、新しいボトルが流れ着いたようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F024",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "イベント",
+      "conditions": [
+        "ボトルメール返信待ち"
+      ],
+      "tone": "静か",
+      "priority": 80,
+      "text": "前のボトルメールは、まだ水の道を旅しているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F025",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "イベント",
+      "conditions": [
+        "願い星未送信",
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "今夜は、願い星が空へ上がるのを待っているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F026",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "イベント",
+      "conditions": [
+        "願い星送信済み",
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "さっきの願い星が、夜空のどこかでまたたいています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F027",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "まろうどティールーム",
+      "section": "場所案内",
+      "conditions": [
+        "まろうどティールーム"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "ティールームから、あたたかいお茶の香りが流れてきます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F028",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "まろうどティールーム",
+      "section": "イベント",
+      "conditions": [
+        "お知らせあり"
+      ],
+      "tone": "明るい",
+      "priority": 80,
+      "text": "掲示板に、新しい紙が一枚貼られたようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F029",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "忘れじの洞窟",
+      "section": "場所案内",
+      "conditions": [
+        "忘れじの洞窟"
+      ],
+      "tone": "静か",
+      "priority": 60,
+      "text": "洞窟の奥で、古い記憶が静かに眠っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F030",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "展望ハウス",
+      "section": "場所案内",
+      "conditions": [
+        "展望ハウス"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "展望ハウスの窓に、遠くの光が映っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F031",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "丸広場",
+      "section": "場所案内",
+      "conditions": [
+        "丸広場"
+      ],
+      "tone": "明るい",
+      "priority": 60,
+      "text": "丸広場に、やわらかな風が集まっています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F032",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "丸広場",
+      "section": "イベント",
+      "conditions": [
+        "ランタン祭り"
+      ],
+      "tone": "お祝い",
+      "priority": 80,
+      "text": "丸広場では、ランタンたちが出番を待っているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F033",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ホタル"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "草むらの奥で、小さな光がふわりと浮かびました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F034",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "流星群",
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "今夜は、空を見上げる時間が少し長くなりそうです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F035",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "流星群",
+        "夜"
+      ],
+      "tone": "わくわく",
+      "priority": 90,
+      "text": "星たちが、いつもより近くで息をしているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F036",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日は、森の音が少しやわらかく聞こえます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F037",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "急がなくても大丈夫。森はここで待っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F038",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "小さな葉っぱが、そっと道をゆずってくれました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F039",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 50,
+      "text": "どこかで、木の実がひとつ笑ったような音がしました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F040",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "遠くの水音が、森の奥から届いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F041",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "はじめての足音を、森はそっと聞いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F042",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "呼び名あり"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "その呼び名を、風がやさしく覚えたようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F043",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "呼び名なし"
+      ],
+      "tone": "静か",
+      "priority": 80,
+      "text": "名前のないおさんぽも、森はちゃんと覚えています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F044",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特殊条件",
+      "conditions": [
+        "久しぶり"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "少し久しぶりの足音に、森が耳をすませています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F045",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雨",
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 80,
+      "text": "雨の夜は、ランタンの光がいつもより深く見えます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F046",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "霧",
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "霧の夜には、知らない道が少しだけ近づくことがあります。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F047",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夕方",
+        "晴れ"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "夕日の色が、葉っぱのふちを金色に染めています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F048",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "秋",
+        "夕方"
+      ],
+      "tone": "静か",
+      "priority": 80,
+      "text": "秋の夕暮れは、森の声が少し低くなります。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F049",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "冬",
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 80,
+      "text": "冬の夜は、星の音まで聞こえそうです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F050",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "通常",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "森のどこかで、今日も小さな物語が始まっています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F051",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "朝の空気が森いっぱいに広がっています。",
+      "enabled": true,
+      "note": "時間帯"
+    },
+    {
+      "id": "F052",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "昼"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "木漏れ日が森をやさしく照らしています。",
+      "enabled": true,
+      "note": "時間帯"
+    },
+    {
+      "id": "F053",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "木々の影が少しずつ長くなってきました。",
+      "enabled": true,
+      "note": "時間帯"
+    },
+    {
+      "id": "F054",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "時間帯",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "夜風が森をゆっくり包み始めました。",
+      "enabled": true,
+      "note": "時間帯"
+    },
+    {
+      "id": "F055",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "葉っぱたちも気持ちよさそうに揺れています。",
+      "enabled": true,
+      "note": "天候"
+    },
+    {
+      "id": "F056",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "しっとり",
+      "priority": 70,
+      "text": "雨音に耳をすませると、小さな歌が聞こえてきそうです。",
+      "enabled": true,
+      "note": "天候"
+    },
+    {
+      "id": "F057",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "今日は少しだけ森が秘密を隠しているようです。",
+      "enabled": true,
+      "note": "天候"
+    },
+    {
+      "id": "F058",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雪"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "足音までやさしくなる雪の日です。",
+      "enabled": true,
+      "note": "天候"
+    },
+    {
+      "id": "F059",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "新しい芽が今日も顔を出しました。",
+      "enabled": true,
+      "note": "季節"
+    },
+    {
+      "id": "F060",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "元気",
+      "priority": 70,
+      "text": "夏の風が森いっぱいを駆け抜けています。",
+      "enabled": true,
+      "note": "季節"
+    },
+    {
+      "id": "F061",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "色づいた葉がゆっくり舞い始めました。",
+      "enabled": true,
+      "note": "季節"
+    },
+    {
+      "id": "F062",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "冬の森は静かな時間を大切にしています。",
+      "enabled": true,
+      "note": "季節"
+    },
+    {
+      "id": "F063",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [],
+      "tone": "やさしい",
+      "priority": 60,
+      "text": "どこかで小さなどんぐりが転がったようです。",
+      "enabled": true,
+      "note": "発見"
+    },
+    {
+      "id": "F064",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [],
+      "tone": "やさしい",
+      "priority": 60,
+      "text": "葉っぱの向こうで誰かが笑った気がしました。",
+      "enabled": true,
+      "note": "発見"
+    },
+    {
+      "id": "F065",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "風が新しい道を教えてくれています。",
+      "enabled": true,
+      "note": "発見"
+    },
+    {
+      "id": "F066",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "今日は森が少しだけ不思議そうです。",
+      "enabled": true,
+      "note": "発見"
+    },
+    {
+      "id": "F067",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "足元にも小さな宝物が眠っているかもしれません。",
+      "enabled": true,
+      "note": "発見"
+    },
+    {
+      "id": "F068",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "少し寄り道すると、新しい景色に出会えるかもしれません。",
+      "enabled": true,
+      "note": "発見"
+    },
+    {
+      "id": "F069",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [],
+      "tone": "明るい",
+      "priority": 60,
+      "text": "小鳥たちが今日はにぎやかです。",
+      "enabled": true,
+      "note": "発見"
+    },
+    {
+      "id": "F070",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [],
+      "tone": "静か",
+      "priority": 60,
+      "text": "耳をすませると、木々のおしゃべりが聞こえてきます。",
+      "enabled": true,
+      "note": "発見"
+    },
+    {
+      "id": "F071",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "場所",
+      "conditions": [],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "今夜は星たちが近く感じられそうです。",
+      "enabled": true,
+      "note": "星風テラス"
+    },
+    {
+      "id": "F072",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "場所",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "願いを空へ届けるには良い夜です。",
+      "enabled": true,
+      "note": "星風テラス"
+    },
+    {
+      "id": "F073",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "場所",
+      "conditions": [],
+      "tone": "静か",
+      "priority": 80,
+      "text": "星風テラスには今日もやさしい風が吹いています。",
+      "enabled": true,
+      "note": "星風テラス"
+    },
+    {
+      "id": "F074",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "星風テラス",
+      "section": "場所",
+      "conditions": [],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "夜空を見上げる時間を忘れずに。",
+      "enabled": true,
+      "note": "星風テラス"
+    },
+    {
+      "id": "F075",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ボトルメール",
+      "conditions": [
+        "ボトルメール未送信"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "今日もボトルメールは静かに波を待っています。",
+      "enabled": true,
+      "note": "状態"
+    },
+    {
+      "id": "F076",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ボトルメール",
+      "conditions": [
+        "返信待ち"
+      ],
+      "tone": "やさしい",
+      "priority": 90,
+      "text": "森のみんなも返事を楽しみにしています。",
+      "enabled": true,
+      "note": "状態"
+    },
+    {
+      "id": "F077",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ボトルメール",
+      "conditions": [
+        "返信あり"
+      ],
+      "tone": "嬉しい",
+      "priority": 100,
+      "text": "どうやら森からお返事が届いたようです。",
+      "enabled": true,
+      "note": "状態"
+    },
+    {
+      "id": "F078",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "願い星",
+      "conditions": [
+        "願い星未送信"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "願いはいつでも空を見上げた時に。",
+      "enabled": true,
+      "note": "状態"
+    },
+    {
+      "id": "F079",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "願い星",
+      "conditions": [
+        "願い星送信済み"
+      ],
+      "tone": "やさしい",
+      "priority": 90,
+      "text": "あなたの願いは星たちが大切に預かっています。",
+      "enabled": true,
+      "note": "状態"
+    },
+    {
+      "id": "F080",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日のほっこり",
+      "conditions": [],
+      "tone": "明るい",
+      "priority": 60,
+      "text": "今日もどこかで誰かが笑顔になりました。",
+      "enabled": true,
+      "note": "ほっこり"
+    },
+    {
+      "id": "F081",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "まろうどティールーム",
+      "section": "場所",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "今日はお茶のいい香りが流れてきます。",
+      "enabled": true,
+      "note": "場所"
+    },
+    {
+      "id": "F082",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "まろうどティールーム",
+      "section": "場所",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "少し休憩していきませんか。",
+      "enabled": true,
+      "note": "場所"
+    },
+    {
+      "id": "F083",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "森の入口",
+      "section": "場所",
+      "conditions": [],
+      "tone": "明るい",
+      "priority": 60,
+      "text": "今日も森はあなたを歓迎しています。",
+      "enabled": true,
+      "note": "場所"
+    },
+    {
+      "id": "F084",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "展望ハウス",
+      "section": "場所",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "遠くまで見渡せる気持ちのいい景色です。",
+      "enabled": true,
+      "note": "場所"
+    },
+    {
+      "id": "F085",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "忘れじの洞窟",
+      "section": "場所",
+      "conditions": [],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "静かに歩けば、小さな発見があるかもしれません。",
+      "enabled": true,
+      "note": "場所"
+    },
+    {
+      "id": "F086",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ランタン祭り"
+      ],
+      "tone": "嬉しい",
+      "priority": 80,
+      "text": "ランタンの灯りが森をやさしく照らしています。",
+      "enabled": true,
+      "note": "イベント"
+    },
+    {
+      "id": "F087",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ホタル"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "小さな光が夜の森を彩っています。",
+      "enabled": true,
+      "note": "イベント"
+    },
+    {
+      "id": "F088",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "流星群"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "願いを届ける夜がやってきました。",
+      "enabled": true,
+      "note": "イベント"
+    },
+    {
+      "id": "F089",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "クリスマス"
+      ],
+      "tone": "あたたかい",
+      "priority": 80,
+      "text": "森のみんなも冬支度を始めています。",
+      "enabled": true,
+      "note": "イベント"
+    },
+    {
+      "id": "F090",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "春祭り"
+      ],
+      "tone": "明るい",
+      "priority": 80,
+      "text": "春の訪れを森中がお祝いしています。",
+      "enabled": true,
+      "note": "イベント"
+    },
+    {
+      "id": "F091",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日は少しゆっくり歩いてみませんか。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F092",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "静か",
+      "priority": 50,
+      "text": "深呼吸すると森の香りが届きます。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F093",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "新しい発見は意外と近くにあるものです。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F094",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "やさしい",
+      "priority": 50,
+      "text": "焦らなくても大丈夫。森はいつでもここにあります。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F095",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日も素敵な一日になりますように。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F096",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "神秘的",
+      "priority": 50,
+      "text": "森は今日も静かにあなたを見守っています。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F097",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "やさしい",
+      "priority": 50,
+      "text": "少し立ち止まると見える景色があります。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F098",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日という日は一度きりです。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F099",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "静か",
+      "priority": 50,
+      "text": "また森でお会いしましょう。",
+      "enabled": true,
+      "note": "ランダム"
+    },
+    {
+      "id": "F100",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ランダム",
+      "conditions": [],
+      "tone": "あたたかい",
+      "priority": 50,
+      "text": "あなたの今日が、ほっとできる一日になりますように。",
+      "enabled": true,
+      "note": "締め"
+    },
+    {
+      "id": "F101",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 60,
+      "text": "風が、見慣れない葉っぱを運んできました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F102",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "木漏れ日の中で、小さな光が踊っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F103",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "どこかで木の実が一つ、ころんと転がりました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F104",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 60,
+      "text": "葉っぱの陰に、小さな足あとが残っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F105",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "風が今日の行き先を知っているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F106",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "誰かが森に、小さな贈りものを置いていったようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F107",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "鳥たちが同じ方向を見つめています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F108",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 60,
+      "text": "草花が静かに揺れて、何かを知らせているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F109",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 60,
+      "text": "木の根元に、小さなきらめきが見えました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F110",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "今日は森の音が少し近く聞こえます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F111",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "金色のどんぐり"
+      ],
+      "tone": "わくわく",
+      "priority": 90,
+      "text": "金色のどんぐりが、どこかへ転がっていったようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F112",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "金色のどんぐり"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "きらりと光るものが木陰へ隠れました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F113",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "レアランタン"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "見慣れないランタンの灯りが揺れています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F114",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "レアランタン"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "今夜だけの灯りが、森を照らしているようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F115",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "妖精"
+      ],
+      "tone": "不思議",
+      "priority": 90,
+      "text": "妖精たちの笑い声が、風に乗って届きました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F116",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "妖精"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "誰かがそっと手を振ったような気がしました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F117",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "満月"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "満月の光が森を銀色に染めています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F118",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "満月"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "月明かりの道が、今日は少し長く続いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F119",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "流れ星"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "流れ星が、夜空を静かに横切りました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F120",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "流れ星"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "願いが空へ届いたようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F121",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "霧の向こうで、誰かが小さく微笑んだ気がしました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F122",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "不思議",
+      "priority": 100,
+      "text": "今日はいつもより道が一本多いようです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F123",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "夜の森は、昼には見えない景色を知っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F124",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "眠っている木々も、星を見上げています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F125",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "夕暮れは、昼と夜がそっと挨拶を交わす時間です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F126",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "朝露は、森からの小さな贈りものです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F127",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "森は急ぐ人も、ゆっくり歩く人も歓迎しています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F128",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "今日は木々がいつもより楽しそうです。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F129",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "風は、まだ誰にも話していない物語を運んできます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F130",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 90,
+      "text": "小枝が一本、道しるべになっていました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F131",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日は森ものんびりしています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F132",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "今日は木漏れ日がいつもより元気です。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F133",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "今日は風が静かに歩いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F134",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "葉っぱたちも楽しそうに揺れています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F135",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "鳥たちが今日も元気に歌っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F136",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "小川のせせらぎが心地よく響いています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F137",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "森は今日も変わらずここにあります。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F138",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "ゆっくり歩くと、小さな発見に出会えるかもしれません。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F139",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "風が今日も森中を旅しています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F140",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "今日の森",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "森は今日もあなたを迎えています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F141",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日も森へ来てくれて、ありがとうございます。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F142",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "また森でお会いできる日を楽しみにしています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F143",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "今日の思い出が、やさしい時間になりますように。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F144",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 50,
+      "text": "帰り道にも、小さな幸せが見つかりますように。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F145",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "森はいつでも、ここで待っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F146",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "また新しい物語を見つけに来てください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F147",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 50,
+      "text": "今日という日も、森の記憶にそっと刻まれました。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F148",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "風があなたをやさしく見送っています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F149",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 50,
+      "text": "今日もどこかで、小さな奇跡が生まれています。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F150",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "締め",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 50,
+      "text": "またいつでも、森へ遊びに来てください。",
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "F151",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 60,
+      "text": "青い羽根が一枚、風に乗って舞っていきました。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F152",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "誰かが小さな花束を置いていったようです。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F153",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "木の根元で、小さな光がきらりと瞬きました。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F154",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 60,
+      "text": "見慣れないキノコが顔を出しています。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F155",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "風がどこかから甘い香りを運んできました。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F156",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 60,
+      "text": "小さな葉っぱが、あなたを待っていたようです。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F157",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "遠くで木の実がひとつ転がる音がしました。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F158",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 60,
+      "text": "誰かの笑い声が風に溶けていきました。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F159",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 60,
+      "text": "小鳥が一枚の葉っぱをくわえて飛んでいきました。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F160",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 60,
+      "text": "今日は森が少しだけ賑やかな気がします。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F161",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "春風が新しい季節を運んできました。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F162",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "花びらが森をゆっくり旅しています。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F163",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "春"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "若葉が太陽へ向かって背伸びをしています。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F164",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "夏の風が葉っぱを元気よく揺らしています。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F165",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "木陰は今日も気持ちよさそうです。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F166",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "夏"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "小川の音がいつもより涼しく聞こえます。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F167",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "落ち葉がゆっくり季節を運んでいます。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F168",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "秋"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "秋の香りが森いっぱいに広がっています。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F169",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "冬の空気は今日も澄んでいます。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F170",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "季節",
+      "conditions": [
+        "冬"
+      ],
+      "tone": "神秘的",
+      "priority": 70,
+      "text": "白い息まで森の景色になっています。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F171",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "青空の向こうまで見渡せそうです。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F172",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "晴れ"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "木漏れ日が今日も優しく降りそそいでいます。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F173",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "雨粒が葉っぱの上で小さく踊っています。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F174",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "雨の日は森も少し静かになります。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F175",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "霧の向こうで何かが動いたようです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F176",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "不思議",
+      "priority": 80,
+      "text": "今日は知らない道が一本増えた気がします。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F177",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "風"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "風が森中を楽しそうに走っています。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F178",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "風"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "葉っぱたちが風と遊んでいます。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F179",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雪"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "雪が森をやさしく包み込んでいます。",
+      "enabled": true,
+      "note": "★"
+    },
+    {
+      "id": "F180",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "天候",
+      "conditions": [
+        "雪"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "雪の日は森の音まで白くなるようです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F181",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "わくわく",
+      "priority": 80,
+      "text": "小さな宝物がどこかに隠れているようです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F182",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "草むらが何かを隠しているみたいです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F183",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "光る葉っぱを見かけた気がしました。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F184",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "小さな足あとが森の奥へ続いています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F185",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 80,
+      "text": "今日は木々が何か相談しているようです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F186",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 80,
+      "text": "遠くで鈴のような音が聞こえました。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F187",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "花たちが同じ方向を向いています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F188",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "小さな光が草の間を通り抜けました。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F189",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "わくわく",
+      "priority": 80,
+      "text": "誰かが通ったばかりの気配が残っています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F190",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "今日は寄り道をしてみるのも良さそうです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F191",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "金色のどんぐり"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "金色のどんぐりが木陰へ転がっていきました。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F192",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "妖精"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "妖精たちがどこかで歌っているようです。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F193",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "森が今日は少し嬉しそうです。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F194",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "木々が静かにあなたを見送っています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F195",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "今日は森もゆっくり歩いています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F196",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "風が新しい物語を運んできました。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F197",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "今日という日も森の思い出になりました。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F198",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "夕暮れが森を優しい色に染めています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F199",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "今日はいつもより星が近く感じられそうです。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F200",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "森は今日も、小さな奇跡をそっと育てています。",
+      "enabled": true,
+      "note": "★★★★"
+    },
+    {
+      "id": "F201",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ランタン祭り"
+      ],
+      "tone": "お祝い",
+      "priority": 80,
+      "text": "ランタンたちが、夜を待ちながら静かに揺れています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F202",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ランタン祭り"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "ひとつ灯るたびに、森が少しあたたかくなります。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F203",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ホタル"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "草むらの奥で、小さな光がゆっくり舞っています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F204",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "ホタル"
+      ],
+      "tone": "静か",
+      "priority": 80,
+      "text": "ホタルたちは今夜も森を優しく照らしています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F205",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "流星群"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "空を見上げるには、とても良い夜になりそうです。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F206",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "流星群"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "流れ星は、願いを探しながら旅をしています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F207",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "クリスマス"
+      ],
+      "tone": "あたたかい",
+      "priority": 80,
+      "text": "森にも冬の贈りものが届き始めました。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F208",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "お正月"
+      ],
+      "tone": "穏やか",
+      "priority": 80,
+      "text": "新しい一年の風が森をゆっくり歩いています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F209",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "春祭り"
+      ],
+      "tone": "明るい",
+      "priority": 80,
+      "text": "春を迎える準備が森のあちこちで始まっています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F210",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "イベント",
+      "conditions": [
+        "TeaMerry記念日"
+      ],
+      "tone": "嬉しい",
+      "priority": 90,
+      "text": "今日は森にとって大切な記念の日です。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F211",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "古い切り株が、何か思い出しているようです。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F212",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "森は今日、新しい秘密をひとつ覚えました。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F213",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "風はまだ誰にも話していない物語を知っています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F214",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "木々は時々、星とおしゃべりをしています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F215",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "不思議",
+      "priority": 90,
+      "text": "今日だけ見える小道があるのかもしれません。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F216",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "森は急がない人にだけ見せる景色があります。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F217",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "葉っぱは風から毎日新しい話を聞いています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F218",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "古い木は、何百もの物語を覚えています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F219",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "森の静けさにも、小さな音が隠れています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F220",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "今日の風は少しだけ遠い国の香りがします。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F221",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "夜になると、森は昼とは違う夢を見ています。",
+      "enabled": true,
+      "note": "★★★★"
+    },
+    {
+      "id": "F222",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "星明かりが木々の足元まで届いています。",
+      "enabled": true,
+      "note": "★★★★"
+    },
+    {
+      "id": "F223",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "満月"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "満月の夜だけ聞こえる歌があるそうです。",
+      "enabled": true,
+      "note": "★★★★"
+    },
+    {
+      "id": "F224",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "霧"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "霧の日には、森の秘密が少し近づきます。",
+      "enabled": true,
+      "note": "★★★★"
+    },
+    {
+      "id": "F225",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "雨"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "雨粒は森の思い出を静かに集めています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F226",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "朝"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "朝露は夜空から届いた贈りものです。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F227",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "夕方"
+      ],
+      "tone": "静か",
+      "priority": 90,
+      "text": "夕暮れは森が一番静かに微笑む時間です。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F228",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "森は今日も誰かの帰りを待っています。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F229",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 90,
+      "text": "誰にも気づかれず花がひとつ咲きました。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F230",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 90,
+      "text": "小川は今日も森の歌を運んでいます。",
+      "enabled": true,
+      "note": "★★★"
+    },
+    {
+      "id": "F231",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "風が小さな葉っぱを一枚届けてくれました。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F232",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 70,
+      "text": "今日の森は少しだけ賑やかです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F233",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "木漏れ日の形がいつもと少し違います。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F234",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "鳥たちが今日は高い空を飛んでいます。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F235",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "木陰に小さな光が隠れていました。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F236",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "風が道案内をしてくれているようです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F237",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 70,
+      "text": "小さな種が旅に出る準備をしています。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F238",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "葉っぱたちが何か相談しているようです。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F239",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 80,
+      "text": "森の奥で、きらりと何かが光りました。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F240",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "発見",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 70,
+      "text": "少し寄り道すると新しい景色が待っているかもしれません。",
+      "enabled": true,
+      "note": "★★"
+    },
+    {
+      "id": "F241",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "今日は森も、あなたに会えるのを楽しみにしていました。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F242",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "森がそっと「おかえり」と言った気がしました。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F243",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "今日は時間が少しだけゆっくり流れています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F244",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "森のどこかで、小さなお祝いが開かれているようです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F245",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "木々が今日は特別に優しく揺れています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F246",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "星たちが、いつもより近く感じられます。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F247",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "森は今日という日を大切に覚えておくでしょう。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F248",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "風も今日は少し嬉しそうです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F249",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "小さな奇跡は、いつも静かに始まります。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F250",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "レア",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "また今日も、この森でお会いできましたね。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F251",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "今日は森も、少し嬉しそうです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F252",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "小さな幸せは、気づいた人のところへやってきます。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F253",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "風が、今日だけの物語を運んできました。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F254",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "森は今日という日を、きっと忘れません。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F255",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "葉っぱたちも、今日は少し楽しそうです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F256",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "今日見つけた景色は、今日だけの宝物です。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F257",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "誰かの願いが、そっと空へ届いたようです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F258",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "今日の風は、やさしい思い出を運んでいます。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F259",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "森は、またあなたに会える日を楽しみにしています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F260",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "一期一会",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "木々の間を、小さな光が通り抜けました。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F261",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "夜空には、まだ名前のない星が輝いています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F262",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "眠る森にも、小さな夢があるそうです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F263",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "月あかりが、帰り道をやさしく照らしています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F264",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "満月"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "満月の夜は、森の時間が少しだけゆっくり流れます。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F265",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "流れ星"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "流れ星は、誰かの願いを大切に抱いて旅をしています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F266",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "夢は、森のどこかで静かに育っています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F267",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "目を閉じると、森の歌が聞こえてくるかもしれません。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F268",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "今夜は星たちも、ゆっくりおしゃべりをしています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F269",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "風も今日は静かに眠りたそうです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F270",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "夢",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "森は今日も優しい夢を見ています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F271",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "森の奥には、まだ誰も知らない景色があります。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F272",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "今日は古い木が、小さく微笑んだ気がしました。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F273",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "木の年輪には、たくさんの思い出が眠っています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F274",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "風は昔のお話も覚えているそうです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F275",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "森の静けさも、大切な贈りもののひとつです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F276",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "小さな奇跡は、いつも静かに始まります。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F277",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "森は急がない人にだけ、小さな秘密を教えてくれます。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F278",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "今日は風が何かを思い出しているようです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F279",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "鳥たちも森の秘密を知っているのかもしれません。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F280",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "秘密",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "森は今日も、新しい物語を育てています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F281",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "今日も森へ来てくださって、ありがとうございます。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F282",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "またお会いできて、とても嬉しいです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F283",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "今日も森で、ゆっくり過ごしてくださいね。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F284",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "明るい",
+      "priority": 100,
+      "text": "あなたの一日が、やさしい時間になりますように。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F285",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "帰り道にも、小さな幸せがありますように。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F286",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "今日という日が、素敵な思い出になりますように。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F287",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "森はいつでも、ここで待っています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F288",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "また新しい発見を探しに来てください。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F289",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "風があなたを優しく見送っています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F290",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "ありがとう",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "また森でお会いしましょう。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F291",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "初回訪問"
+      ],
+      "tone": "歓迎",
+      "priority": 100,
+      "text": "はじめまして。この森へようこそ。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F292",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "久しぶり"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "おかえりなさい。森はずっと覚えていました。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F293",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "呼び名あり"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "その呼び名も、森は大切に覚えています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F294",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "100回訪問"
+      ],
+      "tone": "感動",
+      "priority": 100,
+      "text": "今日も会えて、とても嬉しいです。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F295",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "365日訪問"
+      ],
+      "tone": "感謝",
+      "priority": 100,
+      "text": "一年分の思い出を、森も大切にしています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F296",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "誕生日"
+      ],
+      "tone": "祝福",
+      "priority": 100,
+      "text": "今日は特別な一日。森のみんなもお祝いしています。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F297",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "記念日"
+      ],
+      "tone": "祝福",
+      "priority": 100,
+      "text": "記念の日に、この森へ来てくださってありがとうございます。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F298",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "今日という日は、二度と同じ形では訪れません。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F299",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "あなたが歩いた道も、森の大切な思い出です。",
+      "enabled": true,
+      "note": "★★★★★"
+    },
+    {
+      "id": "F300",
+      "type": "forest_whisper",
+      "character": "Forest",
+      "place": "",
+      "section": "特別",
+      "conditions": [
+        "通常"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "またいつでも、お帰りをお待ちしています。",
+      "enabled": true,
+      "note": "★★★★★"
+    }
+  ]
+}

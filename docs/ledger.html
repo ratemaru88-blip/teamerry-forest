@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Unforgotten Ledger | 忘れじの記録書</title>
+  <link rel="stylesheet" href="./ledger.css">
+</head>
+<body>
+  <main class="ledger" id="ledger">
+    <section id="ledgerContents" class="ledger-contents" aria-label="記録書の目次">
+      <img class="ledger-contents-bg" src="./assets/images/cave/ledger_open.webp" alt="">
+
+      <div class="ledger-contents-layer">
+        <div class="ledger-contents-text">
+          <p class="ledger-small">The Unforgotten Ledger</p>
+          <h1>忘れじの記録書</h1>
+          <p class="ledger-subtitle">CONTENTS / 目次</p>
+        </div>
+
+        <nav class="ledger-menu" aria-label="記録書の目次">
+          <button type="button" class="ledger-menu-card ledger-menu-card--maroudo" data-open="maroudo">
+            <span class="ledger-menu-number">Ⅰ</span>
+            <span>
+              <strong>森のまろうど</strong>
+              <small>TeaMerryの仲間たち</small>
+            </span>
+          </button>
+
+          <button type="button" class="ledger-menu-card ledger-menu-card--residents" data-open="residents">
+            <span class="ledger-menu-number">Ⅱ</span>
+            <span>
+              <strong>森の住民</strong>
+              <small>森に暮らす者たち</small>
+            </span>
+          </button>
+
+          <button type="button" class="ledger-menu-card ledger-menu-card--tales" data-tales-message>
+            <span class="ledger-menu-number">Ⅲ</span>
+            <span>
+              <strong>語り継がれしこと</strong>
+              <small>古い出来事の記録</small>
+            </span>
+          </button>
+        </nav>
+
+        <p class="ledger-tales-message" id="ledgerTalesMessage" aria-live="polite"></p>
+      </div>
+
+      <button type="button" class="ledger-close-button" id="ledgerCloseButton" aria-label="記録書を閉じる">
+        <img src="./assets/images/record/ledger_close_botan.webp" alt="">
+      </button>
+    </section>
+
+    <section id="residentsProfile" class="residents-profile" hidden aria-label="森の住民の記録書">
+      <nav class="ledger-nav" aria-label="記録書ページ操作">
+        <img class="ledger-nav-img" src="./assets/images/record/kirokusyo_botun.webp" alt="">
+        <button class="ledger-nav-hit ledger-nav-hit--prev" type="button" aria-label="前ページへ"></button>
+        <button class="ledger-nav-hit ledger-nav-hit--close" type="button" aria-label="目次へ戻る"></button>
+        <button class="ledger-nav-hit ledger-nav-hit--next" type="button" aria-label="次ページへ"></button>
+      </nav>
+      <div class="ledger-residents-track" data-residents-track></div>
+    </section>
+  </main>
+
+  <script>
+    const ledgerContents = document.getElementById("ledgerContents");
+    const residentsProfile = document.getElementById("residentsProfile");
+    const ledger = document.getElementById("ledger");
+    const profileOpenButtons = document.querySelectorAll("[data-open]");
+    const closeButton = document.querySelector(".ledger-nav-hit--close");
+    const prevButton = document.querySelector(".ledger-nav-hit--prev");
+    const nextButton = document.querySelector(".ledger-nav-hit--next");
+    const ledgerCloseButton = document.getElementById("ledgerCloseButton");
+    const residentsTrack = document.querySelector("[data-residents-track]");
+    const talesMessageButton = document.querySelector("[data-tales-message]");
+    const talesMessage = document.getElementById("ledgerTalesMessage");
+    const pageOpenSound = new Audio("./assets/sounds/効果音素材/page_open.mp3");
+    pageOpenSound.preload = "auto";
+    let pageOpenSoundUnlocked = false;
+    let lastSnapIndex = 0;
+    let suppressScrollSoundUntil = 0;
+    let talesMessageTimer = 0;
+
+    const profileCollections = {
+      maroudo: {
+        label: "森のまろうどの記録書",
+        pages: [
+          {
+            id: "kakao",
+            name: "Kakao",
+            left: "./assets/images/record/maroudo/kakao_profile_b_left_a.webp",
+            right: "./assets/images/record/maroudo/kakao_profile_b_right.webp"
+          },
+          {
+            id: "pac",
+            name: "Pac",
+            left: "./assets/images/record/maroudo/pac_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/pac_profile_b_right.webp"
+          },
+          {
+            id: "peapea",
+            name: "Peapea",
+            left: "./assets/images/record/maroudo/peapea_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/peapea_profile_b_right.webp"
+          },
+          {
+            id: "chocopa",
+            name: "Chocopa",
+            left: "./assets/images/record/maroudo/chocopa_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/chocopa_profile_b_right.webp"
+          },
+          {
+            id: "whip",
+            name: "Whip",
+            left: "./assets/images/record/maroudo/whip_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/whip_profile_b_right.webp"
+          },
+          {
+            id: "chachajii",
+            name: "Chachajii",
+            left: "./assets/images/record/maroudo/chachajii_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/chachajii_profile_b_right.webp"
+          },
+          {
+            id: "mint",
+            name: "Mint",
+            left: "./assets/images/record/maroudo/mint_profile_b_left.webp",
+            right: "./assets/images/record/maroudo/mint_profile_b_right.webp"
+          }
+        ]
+      },
+      residents: {
+        label: "森の住民の記録書",
+        pages: [
+          {
+            id: "lilu",
+            name: "Lilu",
+            left: "./assets/images/record/lilu_profile_left.webp",
+            right: "./assets/images/record/lilu_profile_right.webp"
+          },
+          {
+            id: "aco",
+            name: "Aco",
+            left: "./assets/images/record/aco_profile_left.webp",
+            right: "./assets/images/record/aco_profile_right.webp"
+          },
+          {
+            id: "berry",
+            name: "Berry",
+            left: "./assets/images/record/berry_profile_left.webp",
+            right: "./assets/images/record/berry_profile_right.webp"
+          },
+          {
+            id: "bunpy",
+            name: "Bunpy",
+            left: "./assets/images/record/bunpy_profile_left.webp",
+            right: "./assets/images/record/bunpy_profile_right.webp"
+          },
+          {
+            id: "lavi",
+            name: "Lavi",
+            left: "./assets/images/record/lavi_profile_left.webp",
+            right: "./assets/images/record/lavi_profile_right.webp"
+          },
+          {
+            id: "lemon",
+            name: "Lemon",
+            left: "./assets/images/record/lemon_profile_left.webp",
+            right: "./assets/images/record/lemon_profile_right.webp"
+          },
+          {
+            id: "miiru",
+            name: "Miiru",
+            left: "./assets/images/record/miiru_profile_left.webp",
+            right: "./assets/images/record/miiru_profile_right.webp"
+          },
+          {
+            id: "mint",
+            name: "Mint",
+            left: "./assets/images/record/mint_profile_left.webp",
+            right: "./assets/images/record/mint_profile_right.webp"
+          },
+          {
+            id: "tiara",
+            name: "Tiara",
+            left: "./assets/images/record/tiara_profile_left.webp",
+            right: "./assets/images/record/tiara_profile_right.webp"
+          },
+          {
+            id: "curly",
+            name: "Curly",
+            left: "./assets/images/record/curly_profile_left.webp",
+            right: "./assets/images/record/curly_profile_right.webp"
+          },
+          {
+            id: "elder",
+            name: "Elder",
+            left: "./assets/images/record/elder_profile_left.webp",
+            right: "./assets/images/record/elder_profile_right.webp"
+          }
+        ]
+      }
+    };
+
+    const renderProfilePages = (collectionId) => {
+      if (!residentsTrack) return;
+
+      const collection = profileCollections[collectionId] || profileCollections.residents;
+      residentsTrack.replaceChildren();
+      residentsProfile?.setAttribute("aria-label", collection.label);
+
+      collection.pages.forEach((resident, index) => {
+        const spread = document.createElement("article");
+        spread.className = "resident-spread";
+        spread.id = `${collectionId}-${resident.id}`;
+        spread.setAttribute("aria-label", `${resident.name} profile`);
+
+        [
+          ["left", resident.left],
+          ["right", resident.right]
+        ].forEach(([side, src]) => {
+          const frame = document.createElement("div");
+          frame.className = "resident-page-frame";
+
+          const image = document.createElement("img");
+          image.className = "resident-page";
+          image.src = src;
+          image.alt = `${resident.name} profile ${side} page`;
+          image.loading = index === 0 ? "eager" : "lazy";
+          image.draggable = false;
+          frame.append(image);
+          spread.append(frame);
+        });
+
+        residentsTrack.append(spread);
+      });
+    };
+
+    renderProfilePages("residents");
+
+    const isMobileProfile = () => window.matchMedia("(max-width: 768px)").matches;
+
+    const getSnapWidth = () => {
+      if (!residentsTrack) return 1;
+      const firstFrame = residentsTrack.querySelector(".resident-page-frame");
+      const firstPage = residentsTrack.querySelector(".resident-page");
+      const firstSpread = residentsTrack.querySelector(".resident-spread");
+      return isMobileProfile()
+        ? firstFrame?.getBoundingClientRect().width || firstPage?.getBoundingClientRect().width || residentsTrack.clientWidth || 1
+        : firstSpread?.getBoundingClientRect().width || residentsTrack.clientWidth || 1;
+    };
+
+    const getMaxSnapIndex = () => {
+      if (!residentsTrack) return 0;
+      return Math.max(0, Math.round((residentsTrack.scrollWidth - residentsTrack.clientWidth) / getSnapWidth()));
+    };
+
+    const getCurrentSnapIndex = () => {
+      if (!residentsTrack) return 0;
+      return Math.round(residentsTrack.scrollLeft / getSnapWidth());
+    };
+
+    const updatePageButtons = () => {
+      const currentIndex = getCurrentSnapIndex();
+      const maxIndex = getMaxSnapIndex();
+      if (prevButton) prevButton.disabled = currentIndex <= 0;
+      if (nextButton) nextButton.disabled = currentIndex >= maxIndex;
+    };
+
+    const setProfileOpen = (isOpen) => {
+      ledger?.classList.toggle("ledger--profile", isOpen);
+      document.documentElement.classList.toggle("is-profile-open", isOpen);
+      document.body.classList.toggle("is-profile-open", isOpen);
+    };
+
+    const unlockPageOpenSound = () => {
+      if (pageOpenSoundUnlocked) return;
+
+      pageOpenSound.muted = true;
+      pageOpenSound.play().then(() => {
+        pageOpenSound.pause();
+        pageOpenSound.currentTime = 0;
+        pageOpenSound.muted = false;
+        pageOpenSoundUnlocked = true;
+      }).catch(() => {
+        pageOpenSound.muted = false;
+      });
+    };
+
+    const playPageOpenSound = () => {
+      pageOpenSound.muted = false;
+      pageOpenSound.currentTime = 0;
+      pageOpenSound.play().catch(() => {});
+    };
+
+    const scrollToSnap = (direction) => {
+      if (!residentsTrack) return;
+
+      const maxIndex = getMaxSnapIndex();
+      const nextIndex = Math.min(maxIndex, Math.max(0, getCurrentSnapIndex() + direction));
+      if (nextIndex === getCurrentSnapIndex()) return;
+
+      playPageOpenSound();
+      suppressScrollSoundUntil = Date.now() + 500;
+      residentsTrack.scrollTo({
+        left: nextIndex * getSnapWidth(),
+        top: 0,
+        behavior: "smooth"
+      });
+      lastSnapIndex = nextIndex;
+      updatePageButtons();
+    };
+
+    if (ledgerContents && residentsProfile) {
+      ledgerContents.hidden = false;
+      residentsProfile.hidden = true;
+      setProfileOpen(false);
+      updatePageButtons();
+    }
+
+    const openProfile = (collectionId) => {
+      if (!ledgerContents || !residentsProfile) return;
+
+      renderProfilePages(collectionId);
+      unlockPageOpenSound();
+      ledgerContents.hidden = true;
+      residentsProfile.hidden = false;
+      setProfileOpen(true);
+      residentsTrack?.scrollTo({ left: 0, top: 0 });
+      lastSnapIndex = 0;
+      updatePageButtons();
+      window.scrollTo({ left: 0, top: 0 });
+    };
+
+    profileOpenButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const collectionId = button.dataset.open || "residents";
+        openProfile(collectionId);
+      });
+    });
+
+    talesMessageButton?.addEventListener("click", () => {
+      if (!talesMessage) return;
+
+      window.clearTimeout(talesMessageTimer);
+      talesMessage.textContent = "話す時期が来たら　語ろうかのう…";
+      talesMessage.classList.remove("is-visible");
+      window.requestAnimationFrame(() => {
+        talesMessage.classList.add("is-visible");
+      });
+      talesMessageTimer = window.setTimeout(() => {
+        talesMessage.classList.remove("is-visible");
+      }, 3200);
+    });
+
+    if (closeButton && ledgerContents && residentsProfile) {
+      closeButton.addEventListener("click", () => {
+        residentsProfile.hidden = true;
+        ledgerContents.hidden = false;
+        setProfileOpen(false);
+        residentsTrack?.scrollTo({ left: 0, top: 0 });
+        lastSnapIndex = 0;
+        updatePageButtons();
+        window.scrollTo({ left: 0, top: 0 });
+      });
+    }
+
+    prevButton?.addEventListener("click", () => {
+      unlockPageOpenSound();
+      scrollToSnap(-1);
+    });
+    nextButton?.addEventListener("click", () => {
+      unlockPageOpenSound();
+      scrollToSnap(1);
+    });
+
+    residentsTrack?.addEventListener("pointerdown", unlockPageOpenSound, { passive: true });
+    residentsTrack?.addEventListener("touchstart", unlockPageOpenSound, { passive: true });
+
+    residentsTrack?.addEventListener("scroll", () => {
+      updatePageButtons();
+
+      if (!isMobileProfile() || Date.now() < suppressScrollSoundUntil) return;
+
+      const currentIndex = getCurrentSnapIndex();
+      if (currentIndex === lastSnapIndex) return;
+
+      lastSnapIndex = currentIndex;
+      playPageOpenSound();
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      lastSnapIndex = getCurrentSnapIndex();
+      updatePageButtons();
+    });
+
+    if (ledgerCloseButton) {
+      ledgerCloseButton.addEventListener("click", () => {
+        if (window.history.length > 1) {
+          window.history.back();
+          return;
+        }
+
+        window.location.href = "cave.html";
+      });
+    }
+  </script>
+</body>
+</html>
