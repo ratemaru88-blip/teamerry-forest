@@ -148,7 +148,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fairyImage.src = selectedFairy.image;
   fairyImage.alt = selectedFairy.alt;
-  fairyBalloon.textContent = selectedMessage;
+
+  async function setInitialFairyMessage() {
+    if (!fairyBalloon) {
+      return;
+    }
+
+    if (typeof window.pickCharacterDialogue !== "function") {
+      fairyBalloon.textContent = selectedMessage;
+      return;
+    }
+
+    try {
+      const dialogueText = await window.pickCharacterDialogue({
+        character: selectedFairy.name,
+        place: "星風テラス",
+        time: isNight ? "夜" : "昼"
+      });
+      fairyBalloon.textContent = dialogueText || selectedMessage;
+    } catch (error) {
+      console.warn("[TeaMerry Observatory] Dialogue Engine character dialogue failed:", error);
+      fairyBalloon.textContent = selectedMessage;
+    }
+  }
+
+  setInitialFairyMessage();
 
   function showForestWhisper(message) {
     if (!forestWhisper || !forestWhisperText) {
@@ -165,9 +189,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 5200);
   }
 
-  window.setTimeout(() => {
-    const whisper = forestWhispers[Math.floor(Math.random() * forestWhispers.length)];
-    showForestWhisper(whisper);
+  function getFallbackWhisper() {
+    return forestWhispers[Math.floor(Math.random() * forestWhispers.length)];
+  }
+
+  async function pickDialogueEngineForestWhisper() {
+    if (typeof window.pickForestWhisper !== "function") {
+      return null;
+    }
+
+    try {
+      return await window.pickForestWhisper({
+        place: "星風テラス",
+        time: isNight ? "夜" : "昼"
+      });
+    } catch (error) {
+      console.warn("[TeaMerry Observatory] Dialogue Engine whisper failed:", error);
+      return null;
+    }
+  }
+
+  async function showEventReaction(eventContext) {
+    if (typeof window.pickForestWhisper !== "function") {
+      return;
+    }
+
+    try {
+      const text = await window.pickForestWhisper({
+        place: "星風テラス",
+        time: isNight ? "夜" : "昼",
+        eventContext,
+        eventOnly: true
+      });
+
+      if (text) {
+        showForestWhisper(text);
+      }
+    } catch (error) {
+      console.warn("[TeaMerry Observatory] Dialogue Engine event reaction failed:", error);
+    }
+  }
+
+  window.setTimeout(async () => {
+    const text = await pickDialogueEngineForestWhisper();
+
+    if (text) {
+      showForestWhisper(text);
+    } else {
+      showForestWhisper(getFallbackWhisper());
+    }
   }, 900);
 
   function getObservatoryDisplayName() {
@@ -521,7 +591,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll("[data-bottle-public]").forEach((button) => {
     button.addEventListener("click", () => {
-      saveBottleMessage(button.dataset.bottlePublic === "true");
+      const isPublic = button.dataset.bottlePublic === "true";
+      saveBottleMessage(isPublic);
+      showEventReaction({
+        event: "bottle_mail_sent",
+        public: String(isPublic)
+      });
       resetBottleMessageInput();
       startBottleFlush();
     });
@@ -533,7 +608,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll("[data-wish-public]").forEach((button) => {
     button.addEventListener("click", () => {
-      saveWishMessage(button.dataset.wishPublic === "true");
+      const isPublic = button.dataset.wishPublic === "true";
+      saveWishMessage(isPublic);
+      showEventReaction({
+        event: "wish_star_sent",
+        public: String(isPublic)
+      });
       resetWishMessageInput();
       startWishLanternSequence();
     });
