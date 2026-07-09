@@ -1,4 +1,6 @@
 const TM_DISPLAY_NAME_KEY = "teaMerryDisplayName";
+const TM_RETURN_SOURCE_KEY = "teaMerryReturnSource";
+const TM_RETURN_SOURCE_OBSERVATORY = "observatory";
 
 function getForestDisplayName() {
   try {
@@ -43,10 +45,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const bottleMessageInput = document.getElementById("bottleMessageInput");
   const wishMessageInput = document.getElementById("wishMessageInput");
   const bottleLimitMessage = document.getElementById("bottleLimitMessage");
+  const forestBackLink = document.querySelector(".forest-back");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
 
   updateWriterNames();
+
+  forestBackLink?.addEventListener("click", () => {
+    try {
+      window.sessionStorage.setItem(TM_RETURN_SOURCE_KEY, TM_RETURN_SOURCE_OBSERVATORY);
+    } catch (error) {
+      // The URL marker still handles the return when session storage is unavailable.
+    }
+  });
 
   const requestedTime = new URLSearchParams(window.location.search).get("time");
   const hour = new Date().getHours();
