@@ -162,10 +162,10 @@ body.is-ledger-transition::before {
 
 .forest-go-button {
   position: absolute;
-  right: 3.2%;
-  bottom: 3.4%;
+  right: 1.2%;
+  bottom: 1.2%;
   z-index: 8;
-  width: 13%;
+  width: 10%;
   display: block;
   line-height: 0;
   filter:
@@ -236,8 +236,8 @@ body.is-ledger-transition::before {
   }
 
   .forest-go-button {
-    right: 4%;
-    bottom: 2.5%;
-    width: 30%;
+    right: 2%;
+    bottom: 1.2%;
+    width: 24%;
   }
 }
