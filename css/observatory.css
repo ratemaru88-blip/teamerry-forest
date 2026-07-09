@@ -208,24 +208,29 @@ body {
 /* 森へ戻る */
 .forest-back {
   position: fixed;
-  right: 4vw;
-  bottom: 4vh;
+  right: clamp(72px, 7vw, 112px);
+  bottom: clamp(72px, 8vh, 104px);
   z-index: 40;
-  padding: 0.75em 1.5em;
-  border-radius: 999px;
-  background: rgba(90, 64, 30, 0.78);
-  color: #f5e4b3;
-  text-decoration: none;
-  font-weight: bold;
-  letter-spacing: 0.1em;
+  width: clamp(168px, 14vw, 224px);
+  display: block;
+  line-height: 0;
   box-shadow:
-    0 0 10px rgba(255, 220, 130, 0.35),
-    0 6px 14px rgba(0, 0, 0, 0.35);
+    0 12px 14px rgba(0, 0, 0, 0.36),
+    0 0 12px rgba(255, 220, 130, 0.28);
   animation: buttonFloat 3.8s ease-in-out infinite;
+  transition: transform 0.24s ease, filter 0.24s ease;
 }
 
-.forest-back:hover {
-  background: rgba(130, 92, 42, 0.9);
+.forest-back img {
+  width: 100%;
+  display: block;
+}
+
+.forest-back:hover,
+.forest-back:focus-visible {
+  transform: translateY(-3%) scale(1.04);
+  filter: drop-shadow(0 0 16px rgba(255, 210, 118, 0.72));
+  outline: none;
 }
 
 .observatory-view {
@@ -732,11 +737,10 @@ body {
   }
 
   .forest-back {
-    right: 14px;
-    top: max(14px, env(safe-area-inset-top));
+    right: max(18px, env(safe-area-inset-right));
+    top: max(18px, env(safe-area-inset-top));
     bottom: auto;
-    padding: 0.65em 1em;
-    font-size: 13px;
+    width: clamp(132px, 36vw, 168px);
   }
 
   .observatory-view {

@@ -208,10 +208,10 @@ body {
 /* 森へ戻る */
 .forest-back {
   position: fixed;
-  right: 4vw;
-  bottom: 4vh;
+  right: clamp(72px, 7vw, 112px);
+  bottom: clamp(72px, 8vh, 104px);
   z-index: 40;
-  width: clamp(120px, 12vw, 184px);
+  width: clamp(168px, 14vw, 224px);
   display: block;
   line-height: 0;
   box-shadow:
@@ -737,10 +737,10 @@ body {
   }
 
   .forest-back {
-    right: 14px;
-    top: max(14px, env(safe-area-inset-top));
+    right: max(18px, env(safe-area-inset-right));
+    top: max(18px, env(safe-area-inset-top));
     bottom: auto;
-    width: clamp(104px, 30vw, 148px);
+    width: clamp(132px, 36vw, 168px);
   }
 
   .observatory-view {
