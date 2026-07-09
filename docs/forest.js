@@ -467,8 +467,8 @@
     x: x * bottleMapWidth / bottleDesignWidth,
     y: y * bottleMapHeight / bottleDesignHeight,
   });
-  const bottleRouteStart = toBottleMapPoint(1200, 700);
-  const bottleRouteEnd = toBottleMapPoint(1211, 727);
+  const bottleRouteStart = toBottleMapPoint(1434, 724);
+  const bottleRouteEnd = toBottleMapPoint(1452, 748);
   const bottleRoutes = [
     {
       name: "waterline",
