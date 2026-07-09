@@ -90,13 +90,29 @@
     return `ようこそ、${getForestDisplayName()}。一緒に森をお散歩しましょう。`;
   }
 
+  function getForestReturnMessage() {
+    const messages = [
+      "風が少し向きを変えました。",
+      "森の小道が、また静かにひらいています。",
+      "次はどこへ行きましょう。",
+      "木々のあいだから、やわらかい光がこぼれています。",
+      "少しだけ、森の音を聞いていきましょう。",
+    ];
+
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+
   function announceForestWelcome() {
     const message = getForestWelcomeMessage();
 
     showMintSpeech(message, 6200);
   }
 
-  function closeNameModal({ announceWelcome = true } = {}) {
+  function announceForestReturn() {
+    showMintSpeech(getForestReturnMessage(), 5200);
+  }
+
+  function closeNameModal({ announceWelcome = false } = {}) {
     nameModal?.classList.add("hidden");
 
     if (announceWelcome) {
@@ -187,7 +203,15 @@
       return;
     }
 
-    showNameModal(getStoredItem(TM_NAME_DONE_KEY) ? "confirm" : "initial");
+    const done = getStoredItem(TM_NAME_DONE_KEY);
+    const display = getStoredItem(TM_DISPLAY_NAME_KEY);
+
+    if (done && display) {
+      window.setTimeout(announceForestReturn, 220);
+      return;
+    }
+
+    showNameModal("initial");
   }
 
   function setupForestNameModal() {
@@ -209,13 +233,15 @@
         return;
       }
 
+      const isInitialNameRegistration = !getStoredItem(TM_NAME_DONE_KEY);
       saveForestName(forestNameInput?.value || "");
-      closeNameModal();
+      closeNameModal({ announceWelcome: isInitialNameRegistration });
     });
 
     skipForestNameButton?.addEventListener("click", () => {
+      const isInitialNameRegistration = !getStoredItem(TM_NAME_DONE_KEY);
       saveWalkOnlyName();
-      closeNameModal();
+      closeNameModal({ announceWelcome: isInitialNameRegistration });
     });
 
     forestNameInput?.addEventListener("input", updateSaveForestNameButton);
@@ -225,15 +251,16 @@
         return;
       }
 
+      const isInitialNameRegistration = !getStoredItem(TM_NAME_DONE_KEY);
       saveForestName(forestNameInput.value);
-      closeNameModal();
+      closeNameModal({ announceWelcome: isInitialNameRegistration });
     });
   }
 
   window.TeaMerryForestName = {
     getDisplayName: getForestDisplayName,
     save: saveForestName,
-    showNameModal: () => showNameModal(getStoredItem(TM_NAME_DONE_KEY) ? "confirm" : "initial"),
+    showNameModal: () => showNameModal("confirm"),
     updateWriterNames,
   };
   window.getForestDisplayName = getForestDisplayName;
