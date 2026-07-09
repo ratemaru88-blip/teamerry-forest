@@ -208,28 +208,25 @@ body {
 /* 森へ戻る */
 .forest-back {
   position: fixed;
-  right: clamp(72px, 7vw, 112px);
-  bottom: clamp(72px, 8vh, 104px);
+  right: clamp(18px, 2.8vw, 42px);
+  top: clamp(18px, 3vh, 36px);
+  bottom: auto;
   z-index: 40;
-  width: clamp(168px, 14vw, 224px);
+  width: clamp(96px, 8vw, 128px);
   display: block;
   line-height: 0;
-  box-shadow:
-    0 12px 14px rgba(0, 0, 0, 0.36),
-    0 0 12px rgba(255, 220, 130, 0.28);
-  animation: buttonFloat 3.8s ease-in-out infinite;
-  transition: transform 0.24s ease, filter 0.24s ease;
+  transition: filter 0.2s ease;
 }
 
 .forest-back img {
   width: 100%;
   display: block;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.32));
 }
 
 .forest-back:hover,
 .forest-back:focus-visible {
-  transform: translateY(-3%) scale(1.04);
-  filter: drop-shadow(0 0 16px rgba(255, 210, 118, 0.72));
+  filter: brightness(1.08);
   outline: none;
 }
 
@@ -737,10 +734,9 @@ body {
   }
 
   .forest-back {
-    right: max(18px, env(safe-area-inset-right));
-    top: max(18px, env(safe-area-inset-top));
-    bottom: auto;
-    width: clamp(132px, 36vw, 168px);
+    right: max(12px, env(safe-area-inset-right));
+    top: max(12px, env(safe-area-inset-top));
+    width: clamp(82px, 23vw, 104px);
   }
 
   .observatory-view {
