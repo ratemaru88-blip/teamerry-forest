@@ -145,10 +145,12 @@ html, body {
 
 .mori-button {
   position: fixed;
-  right: 4vw;
-  bottom: 4vh;
-  width: 180px;
-  animation: floatLeaf 3s ease-in-out infinite;
+  right: 1.2vw;
+  bottom: 1.2vh;
+  z-index: 20;
+  width: clamp(96px, 10vw, 128px);
+  display: block;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.32));
 }
 
 @media (max-width: 768px) {
@@ -202,13 +204,10 @@ html, body {
   }
 
   .mori-button {
-    width: 130px;
+    right: 2vw;
+    bottom: 1.2vh;
+    width: clamp(82px, 24vw, 104px);
   }
-}
-
-@keyframes floatLeaf {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
 }
 
 @keyframes steamRise {
