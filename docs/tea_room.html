@@ -16,11 +16,51 @@
 
     <div class="master-speech" id="masterSpeech" aria-live="polite"></div>
 
-    <img
-      src="./assets/images/広告_お知らせ/星風テラス_お知らせ.webp"
-      alt="星風テラスのお知らせ"
-      class="notice-poster notice-poster--starwind"
-    >
+    <section class="tea-notice-board" aria-labelledby="teaNoticeTitle">
+      <div class="tea-notice-board__inner">
+        <p class="tea-notice-board__brand">Tea Merry Forest</p>
+        <h1 class="tea-notice-board__title" id="teaNoticeTitle">森のお知らせ</h1>
+
+        <div
+          class="tea-notice-board__grid"
+          id="teaNoticeGrid"
+          aria-label="森のお知らせ一覧">
+        </div>
+
+        <div class="tea-notice-board__memos" aria-hidden="true">
+          <div class="tea-notice-memo">今日もお茶が<br>おいしく<br>入りました。</div>
+          <div class="tea-notice-memo">森ねこが<br>ソファで<br>お昼寝中…zz</div>
+          <div class="tea-notice-memo">今日の木の実<br>のこり3つ</div>
+          <div class="tea-notice-memo">葉っぱ<br>募集中です♪</div>
+        </div>
+
+        <p class="tea-notice-board__guide">
+          <span>NEW 新着のお知らせ</span>
+          <span>1〜5 タップで詳細を表示</span>
+          <span>メモ風カードは飾りです</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="tea-mobile-notices" aria-labelledby="teaMobileNoticeTitle">
+      <div class="tea-mobile-notices__inner">
+        <p class="tea-mobile-notices__brand">Tea Merry Forest</p>
+        <h1 class="tea-mobile-notices__title" id="teaMobileNoticeTitle">森のお知らせ</h1>
+        <div
+          class="tea-mobile-notices__list"
+          id="teaMobileNoticeList"
+          aria-label="森のお知らせ一覧">
+        </div>
+        <div class="tea-mobile-notices__ribbon">
+          今日もお茶がおいしく入りました。
+        </div>
+        <div class="tea-mobile-notices__dots" aria-hidden="true">
+          <span class="is-active"></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </section>
 
     <a
       href="https://ratemaru88.wixsite.com/teamerry/blog"
@@ -65,6 +105,33 @@
         class="mori-button"
       >
     </a>
+
+    <div
+      class="tea-notice-modal"
+      id="teaNoticeModal"
+      aria-hidden="true">
+      <div
+        class="tea-notice-modal__dialog"
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby="teaNoticeModalTitle">
+        <button
+          type="button"
+          class="tea-notice-modal__close"
+          id="teaNoticeModalClose"
+          aria-label="お知らせを閉じる">
+          ×
+        </button>
+        <p class="tea-notice-modal__number" id="teaNoticeModalNumber"></p>
+        <h2 class="tea-notice-modal__title" id="teaNoticeModalTitle"></h2>
+        <img
+          class="tea-notice-modal__image"
+          id="teaNoticeModalImage"
+          src=""
+          alt="">
+        <p class="tea-notice-modal__body" id="teaNoticeModalBody"></p>
+      </div>
+    </div>
   </main>
 
   <script>
@@ -85,5 +152,6 @@
         masterMessages[Math.floor(Math.random() * masterMessages.length)];
     }
   </script>
+  <script src="./tea_room.js?v=20260711-notice-board"></script>
 </body>
 </html>
