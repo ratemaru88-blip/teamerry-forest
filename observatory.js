@@ -45,6 +45,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const bottleLimitMessage = document.getElementById("bottleLimitMessage");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
+  const wishLanternTypes = [
+    {
+      src: "./assets/images/observatory/rantan/lantern_wood_closed.webp",
+      message: "木星のランタンが出た。<br>ミントが好きなやつ",
+      weight: 60,
+    },
+    {
+      src: "./assets/images/observatory/rantan/lantern_mercury_closed.webp",
+      message: "水星ランタンが出た。<br>小さな願いがすばやく届きそう",
+      weight: 22,
+    },
+    {
+      src: "./assets/images/observatory/rantan/lantern_neptune_closed.webp",
+      message: "海王星ランタンが出た。<br>深い青の願いが静かに光る",
+      weight: 14,
+    },
+    {
+      src: "./assets/images/observatory/rantan/lantern_niji_closed.webp",
+      message: "虹色ランタンが出た。<br>めったに出ない特別な光",
+      weight: 2,
+    },
+    {
+      src: "./assets/images/observatory/rantan/lantern_saturn_closed.webp",
+      message: "土星ランタンが出た。<br>輪っかの星が願いを守ってくれる",
+      weight: 2,
+    },
+  ];
 
   updateWriterNames();
 
@@ -403,6 +430,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function pickWishLanternType() {
+    const totalWeight = wishLanternTypes.reduce((sum, lantern) => sum + lantern.weight, 0);
+    let roll = Math.random() * totalWeight;
+
+    for (const lantern of wishLanternTypes) {
+      roll -= lantern.weight;
+      if (roll <= 0) {
+        return lantern;
+      }
+    }
+
+    return wishLanternTypes[0];
+  }
+
   function startWishLanternSequence() {
     closeWishPrivacyModal();
     showView(wishLanternView);
@@ -410,6 +451,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     startWishLanternSequence.timer = window.setTimeout(() => {
       const scene = wishLanternView && wishLanternView.querySelector(".wish-lantern-scene");
+      const lanternItem = wishLanternView && wishLanternView.querySelector(".wish-lantern-item");
+      const lanternMessage = document.getElementById("wishLanternMessage");
+      const lantern = pickWishLanternType();
+
+      if (lanternItem) {
+        lanternItem.src = lantern.src;
+      }
+
+      if (lanternMessage) {
+        lanternMessage.innerHTML = lantern.message;
+      }
+
       if (scene) {
         scene.classList.add("is-playing");
       }
