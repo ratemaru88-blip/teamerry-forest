@@ -119,6 +119,386 @@ body {
   transform-origin: 52% 48%;
 }
 
+.tea-notice-board,
+.tea-mobile-notices {
+  position: absolute;
+  z-index: 12;
+  color: #3f2a15;
+  font-family: "Shippori Mincho", "Yuji Syuku", "Yu Mincho", serif;
+}
+
+.tea-notice-board {
+  left: clamp(24px, 3.4vw, 64px);
+  top: clamp(26px, 5.4vh, 64px);
+  width: min(64vw, 980px);
+  height: min(78vh, 650px);
+}
+
+.tea-notice-board__inner {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: clamp(46px, 5.1vw, 72px) clamp(26px, 3vw, 44px) clamp(48px, 4.8vw, 62px);
+  border: clamp(12px, 1.7vw, 24px) solid #5b3218;
+  border-radius: 22px;
+  background:
+    linear-gradient(90deg, rgba(96, 52, 22, 0.22), transparent 12%, transparent 88%, rgba(96, 52, 22, 0.22)),
+    radial-gradient(circle at 20% 18%, rgba(255, 244, 190, 0.72), transparent 28%),
+    #e7c99a;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 236, 179, 0.48),
+    inset 0 0 34px rgba(88, 45, 16, 0.28),
+    0 18px 36px rgba(18, 10, 5, 0.45);
+  overflow: hidden;
+}
+
+.tea-notice-board__inner::before,
+.tea-notice-board__inner::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.tea-notice-board__inner::before {
+  inset: 14px;
+  border: 1px solid rgba(92, 54, 22, 0.25);
+  border-radius: 12px;
+  box-shadow: inset 0 0 20px rgba(255, 250, 218, 0.28);
+}
+
+.tea-notice-board__inner::after {
+  left: 4%;
+  right: 4%;
+  top: 18px;
+  height: 20px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 8% 50%, #6d8b32 0 8px, transparent 9px),
+    radial-gradient(circle at 92% 50%, #6d8b32 0 8px, transparent 9px),
+    linear-gradient(90deg, transparent, rgba(74, 95, 38, 0.42), transparent);
+  opacity: 0.86;
+}
+
+.tea-notice-board__brand,
+.tea-mobile-notices__brand {
+  margin: 0;
+  color: rgba(67, 39, 16, 0.86);
+  font-size: clamp(0.78rem, 1vw, 1rem);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.tea-notice-board__title,
+.tea-mobile-notices__title {
+  margin: 0.28em 0 0.62em;
+  color: #3c260f;
+  font-size: clamp(1.6rem, 3.1vw, 3.2rem);
+  line-height: 1.08;
+  text-align: center;
+  letter-spacing: 0;
+  text-shadow: 0 2px 0 rgba(255, 240, 194, 0.5);
+}
+
+.tea-notice-board__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.04fr 1fr 1.1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: clamp(12px, 1.3vw, 20px);
+  height: calc(100% - clamp(92px, 9vw, 132px));
+  padding-right: 27%;
+}
+
+.tea-notice-card {
+  position: relative;
+  display: grid;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background:
+    linear-gradient(140deg, rgba(255, 252, 228, 0.9), rgba(230, 196, 137, 0.82)),
+    #efd6a5;
+  box-shadow:
+    0 8px 14px rgba(54, 28, 9, 0.28),
+    inset 0 0 0 1px rgba(116, 72, 31, 0.2);
+  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tea-notice-card:hover,
+.tea-notice-card:focus-visible {
+  filter: brightness(1.04);
+  transform: translateY(-2px) rotate(0deg);
+  outline: none;
+  box-shadow:
+    0 12px 18px rgba(54, 28, 9, 0.34),
+    0 0 0 3px rgba(255, 228, 139, 0.32),
+    inset 0 0 0 1px rgba(116, 72, 31, 0.2);
+}
+
+.tea-notice-card__pin {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50% 50% 48% 8%;
+  background: linear-gradient(135deg, #7e9537, #3f6327);
+  box-shadow: 0 2px 4px rgba(48, 26, 8, 0.35);
+  transform: rotate(-38deg);
+}
+
+.tea-notice-card__new {
+  position: absolute;
+  left: -8px;
+  top: -10px;
+  z-index: 2;
+  padding: 4px 10px;
+  border-radius: 4px 10px 10px 4px;
+  background: #6f7d2d;
+  color: #fff7ce;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.68rem, 0.9vw, 0.9rem);
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 4px 7px rgba(41, 25, 8, 0.28);
+}
+
+.tea-notice-card__number {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 1.55em;
+  height: 1.55em;
+  border: 1px solid #5f3d1d;
+  border-radius: 50%;
+  color: #2e1d0d;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tea-notice-card__copy {
+  position: relative;
+  z-index: 1;
+  display: block;
+  min-width: 0;
+}
+
+.tea-notice-card__copy strong {
+  display: block;
+  margin-bottom: 0.52em;
+  font-size: clamp(1rem, 1.15vw, 1.35rem);
+  line-height: 1.32;
+}
+
+.tea-notice-card__copy span {
+  display: block;
+  font-size: clamp(0.78rem, 0.88vw, 0.98rem);
+  font-weight: 700;
+  line-height: 1.72;
+}
+
+.tea-notice-card__image {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: min(38%, 150px);
+  max-height: 56%;
+  object-fit: cover;
+  border-radius: 8px;
+  filter: saturate(0.88) sepia(0.08) drop-shadow(0 4px 4px rgba(59, 31, 10, 0.22));
+}
+
+.tea-notice-card--board {
+  min-height: 0;
+  padding: clamp(18px, 1.7vw, 26px) clamp(16px, 1.5vw, 24px);
+  border-radius: 8px;
+  grid-template-columns: auto 1fr;
+  gap: 0.65em;
+  overflow: hidden;
+  transform: rotate(-0.6deg);
+}
+
+.tea-notice-card--board .tea-notice-card__copy span {
+  display: -webkit-box;
+  padding-right: min(36%, 132px);
+  overflow: hidden;
+  font-size: clamp(0.72rem, 0.78vw, 0.88rem);
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.tea-notice-card--board:nth-child(2) {
+  transform: rotate(0.8deg);
+}
+
+.tea-notice-card--board:nth-child(3) {
+  transform: rotate(-0.2deg);
+}
+
+.tea-notice-card--board:nth-child(4) {
+  grid-column: span 2;
+  transform: rotate(0.4deg);
+}
+
+.tea-notice-card--board:nth-child(5) {
+  transform: rotate(-0.8deg);
+}
+
+.tea-notice-board__memos {
+  position: absolute;
+  right: clamp(20px, 2.2vw, 34px);
+  bottom: clamp(58px, 5.6vw, 78px);
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(8px, 0.8vw, 12px);
+  width: 23%;
+}
+
+.tea-notice-memo {
+  min-height: clamp(58px, 6vw, 92px);
+  box-sizing: border-box;
+  padding: clamp(8px, 0.8vw, 12px);
+  border-radius: 6px;
+  background: rgba(245, 220, 169, 0.86);
+  color: #493017;
+  font-size: clamp(0.66rem, 0.78vw, 0.82rem);
+  font-weight: 700;
+  line-height: 1.55;
+  box-shadow: 0 5px 9px rgba(61, 33, 12, 0.22);
+  transform: rotate(1deg);
+  pointer-events: none;
+}
+
+.tea-notice-memo:nth-child(2n) {
+  transform: rotate(-1.2deg);
+}
+
+.tea-notice-board__guide {
+  position: absolute;
+  left: clamp(18px, 2vw, 32px);
+  right: clamp(18px, 2vw, 32px);
+  bottom: clamp(14px, 1.4vw, 22px);
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: clamp(14px, 2.2vw, 34px);
+  margin: 0;
+  padding: 0;
+  color: #fff1bd;
+  font-size: clamp(0.72rem, 0.9vw, 0.96rem);
+  font-weight: 700;
+  line-height: 1.4;
+  text-shadow: 0 2px 6px rgba(31, 17, 7, 0.76);
+}
+
+.tea-mobile-notices {
+  display: none;
+}
+
+.tea-notice-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(18px, 4vw, 52px);
+  box-sizing: border-box;
+  background: rgba(21, 13, 7, 0.48);
+  backdrop-filter: blur(2px);
+}
+
+.tea-notice-modal.is-active {
+  display: flex;
+}
+
+.tea-notice-modal__dialog {
+  position: relative;
+  box-sizing: border-box;
+  width: min(520px, 92vw);
+  max-height: min(760px, 88vh);
+  overflow: auto;
+  padding: clamp(28px, 4vw, 44px);
+  border: 2px solid rgba(113, 70, 31, 0.34);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 251, 220, 0.88), transparent 30%),
+    linear-gradient(145deg, #f5dfb4, #e4be82);
+  color: #3b2510;
+  font-family: "Shippori Mincho", "Yuji Syuku", "Yu Mincho", serif;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 247, 213, 0.5),
+    0 22px 48px rgba(16, 9, 4, 0.52);
+}
+
+.tea-notice-modal__close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(92, 55, 24, 0.38);
+  border-radius: 50%;
+  background: rgba(255, 238, 195, 0.72);
+  color: #3b2510;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.tea-notice-modal__close:focus-visible,
+.tea-notice-modal__close:hover {
+  outline: none;
+  filter: brightness(1.07);
+  box-shadow: 0 0 0 3px rgba(114, 126, 49, 0.28);
+}
+
+.tea-notice-modal__number {
+  display: inline-grid;
+  place-items: center;
+  width: 1.8em;
+  height: 1.8em;
+  margin: 0 0 8px;
+  border: 1px solid #5f3d1d;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+.tea-notice-modal__title {
+  margin: 0 40px 18px 0;
+  color: #2e1d0d;
+  font-size: clamp(1.25rem, 3vw, 1.8rem);
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.tea-notice-modal__image {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  margin: 0 0 20px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 10px 18px rgba(59, 31, 10, 0.26);
+}
+
+.tea-notice-modal__body {
+  margin: 0;
+  font-size: clamp(0.94rem, 2vw, 1.08rem);
+  font-weight: 700;
+  line-height: 1.9;
+  white-space: pre-line;
+}
+
 .bookshelf-link {
   position: absolute;
   z-index: 15;
@@ -239,6 +619,125 @@ body {
   .tea-room {
     background-image: url("../assets/images/tea_room/tea_room_mobile_bg.webp");
     background-position: center top;
+  }
+
+  .tea-notice-board {
+    display: none;
+  }
+
+  .tea-mobile-notices {
+    left: 5vw;
+    top: 7vh;
+    display: block;
+    width: min(90vw, 430px);
+    height: min(72vh, 680px);
+  }
+
+  .tea-mobile-notices__inner {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 22px 16px 54px;
+    border: 10px solid #6b3f20;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255, 249, 215, 0.78), transparent 30%),
+      #ead0a2;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 244, 207, 0.56),
+      inset 0 0 28px rgba(88, 45, 16, 0.22),
+      0 18px 34px rgba(18, 10, 5, 0.42);
+  }
+
+  .tea-mobile-notices__title {
+    margin-bottom: 12px;
+    font-size: clamp(1.45rem, 8vw, 2.3rem);
+  }
+
+  .tea-mobile-notices__list {
+    height: calc(100% - 116px);
+    overflow-y: auto;
+    padding: 4px 3px 8px;
+    overscroll-behavior: contain;
+  }
+
+  .tea-notice-card--mobile {
+    width: 100%;
+    min-height: 86px;
+    margin: 0 0 10px;
+    padding: 13px 90px 13px 14px;
+    border-radius: 10px;
+    grid-template-columns: auto 1fr;
+    gap: 0.58em;
+  }
+
+  .tea-notice-card--mobile .tea-notice-card__copy strong {
+    margin-bottom: 0.12em;
+    font-size: clamp(0.92rem, 4vw, 1.06rem);
+  }
+
+  .tea-notice-card--mobile .tea-notice-card__copy span {
+    display: none;
+  }
+
+  .tea-notice-card--mobile .tea-notice-card__image {
+    right: 10px;
+    top: 50%;
+    bottom: auto;
+    width: 72px;
+    height: 58px;
+    transform: translateY(-50%);
+  }
+
+  .tea-notice-card--mobile .tea-notice-card__new {
+    left: 10px;
+    top: -7px;
+    font-size: 0.68rem;
+  }
+
+  .tea-notice-card--mobile .tea-notice-card__pin {
+    right: 8px;
+    top: 8px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .tea-mobile-notices__ribbon {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 28px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(246, 224, 181, 0.94);
+    color: #4c3217;
+    font-size: clamp(0.72rem, 3.2vw, 0.86rem);
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
+    box-shadow: inset 0 0 0 1px rgba(120, 76, 34, 0.15);
+  }
+
+  .tea-mobile-notices__dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 9px;
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+  }
+
+  .tea-mobile-notices__dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(92, 61, 26, 0.28);
+  }
+
+  .tea-mobile-notices__dots .is-active {
+    background: rgba(92, 61, 26, 0.72);
   }
 
   .coffee-steam {
