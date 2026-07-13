@@ -46,8 +46,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const wishMessageInput = document.getElementById("wishMessageInput");
   const bottleLimitMessage = document.getElementById("bottleLimitMessage");
   const forestBackLink = document.querySelector(".forest-back");
+  const driftBottleArrival = document.getElementById("driftBottleArrival");
+  const driftBottleButton = document.getElementById("driftBottleButton");
+  const driftBottleNotice = document.getElementById("driftBottleNotice");
+  const driftBottleModal = document.getElementById("driftBottleModal");
+  const driftBottleDialog = driftBottleModal && driftBottleModal.querySelector(".drift-bottle-dialog");
+  const driftBottleSender = document.getElementById("driftBottleSender");
+  const driftBottleBody = document.getElementById("driftBottleBody");
+  const driftBottleClose = document.getElementById("driftBottleClose");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
+  const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
+  const driftBottleSeenKey = "teaMerryDriftBottleSeen";
+  const driftBottleMessageIdKey = "teaMerryDriftBottleMessageId";
+  const driftBottleRecentKey = "teaMerryDriftBottleRecentIds";
+  const driftBottleArrivalChance = 0.4;
   const wishLanternTalkDuration = 2800;
   const wishLanternPauseDuration = 350;
   const wishLanternLiluFrames = [
@@ -249,6 +262,191 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function normalizeDriftBottleMessage(message = {}) {
+    return {
+      id: String(message.id || "").trim(),
+      displayName: String(message.displayName || "おさんぽさん").trim() || "おさんぽさん",
+      text: String(message.text || "").trim(),
+      enabled: message.enabled === true,
+    };
+  }
+
+  async function loadDriftBottleMessages() {
+    try {
+      const response = await fetch(driftBottleJsonPath);
+      if (!response.ok) {
+        throw new Error(`Drift bottle JSON load failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return Array.isArray(data && data.messages)
+        ? data.messages.map(normalizeDriftBottleMessage).filter((message) => message.enabled && message.text)
+        : [];
+    } catch (error) {
+      console.warn("[TeaMerry Observatory] Drift bottle messages failed:", error);
+      return [];
+    }
+  }
+
+  function readSessionJson(key, fallback) {
+    try {
+      const parsed = JSON.parse(window.sessionStorage.getItem(key) || "null");
+      return parsed == null ? fallback : parsed;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function writeSessionJson(key, value) {
+    try {
+      window.sessionStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      // Session memory is optional.
+    }
+  }
+
+  function getRecentDriftBottleIds() {
+    const ids = readSessionJson(driftBottleRecentKey, []);
+    return Array.isArray(ids) ? ids.map(String).filter(Boolean) : [];
+  }
+
+  function rememberDriftBottleId(id) {
+    if (!id) {
+      return;
+    }
+
+    const recentIds = getRecentDriftBottleIds().filter((recentId) => recentId !== id);
+    recentIds.unshift(id);
+    writeSessionJson(driftBottleRecentKey, recentIds.slice(0, 12));
+
+    try {
+      window.sessionStorage.setItem(driftBottleMessageIdKey, id);
+    } catch (error) {
+      // Session memory is optional.
+    }
+  }
+
+  async function pickDriftBottleMessage() {
+    const messages = await loadDriftBottleMessages();
+    if (!messages.length) {
+      return null;
+    }
+
+    const recentIds = new Set(getRecentDriftBottleIds());
+    const freshMessages = messages.filter((message) => !recentIds.has(message.id));
+    return (freshMessages.length ? freshMessages : messages)[Math.floor(Math.random() * (freshMessages.length || messages.length))];
+  }
+
+  function hideDriftBottleArrival() {
+    if (!driftBottleArrival) {
+      return;
+    }
+
+    driftBottleArrival.hidden = true;
+    driftBottleArrival.classList.remove("is-visible");
+  }
+
+  function markDriftBottleSeen() {
+    try {
+      window.sessionStorage.setItem(driftBottleSeenKey, "true");
+    } catch (error) {
+      // Session memory is optional.
+    }
+  }
+
+  function openDriftBottleMessage() {
+    if (!openDriftBottleMessage.current || !driftBottleModal) {
+      return;
+    }
+
+    openDriftBottleMessage.lastFocus = document.activeElement;
+    const message = openDriftBottleMessage.current;
+
+    if (driftBottleSender) {
+      driftBottleSender.textContent = message.displayName || "おさんぽさん";
+    }
+
+    if (driftBottleBody) {
+      driftBottleBody.textContent = message.text;
+    }
+
+    driftBottleModal.classList.add("is-active");
+    driftBottleModal.setAttribute("aria-hidden", "false");
+    hideDriftBottleArrival();
+    markDriftBottleSeen();
+    window.setTimeout(() => {
+      if (driftBottleDialog) {
+        driftBottleDialog.focus();
+      }
+    }, 0);
+  }
+
+  function closeDriftBottleMessage() {
+    if (!driftBottleModal) {
+      return;
+    }
+
+    const wasActive = driftBottleModal.classList.contains("is-active");
+    driftBottleModal.classList.remove("is-active");
+    driftBottleModal.setAttribute("aria-hidden", "true");
+
+    if (wasActive && openDriftBottleMessage.lastFocus && typeof openDriftBottleMessage.lastFocus.focus === "function") {
+      openDriftBottleMessage.lastFocus.focus();
+    }
+  }
+
+  function showDriftBottleArrival(message) {
+    if (!driftBottleArrival || !driftBottleButton || !message) {
+      return;
+    }
+
+    openDriftBottleMessage.current = message;
+    rememberDriftBottleId(message.id);
+    driftBottleArrival.hidden = false;
+    driftBottleArrival.classList.add("is-visible");
+
+    if (driftBottleNotice) {
+      driftBottleNotice.textContent = "ボトルメールが届いたよ";
+    }
+  }
+
+  async function scheduleDriftBottleArrival() {
+    if (isNight || !driftBottleArrival || !driftBottleButton) {
+      return;
+    }
+
+    try {
+      if (window.sessionStorage.getItem(driftBottleSeenKey) === "true") {
+        return;
+      }
+    } catch (error) {
+      // Session memory is optional.
+    }
+
+    const forceArrival = new URLSearchParams(window.location.search).get("driftBottle") === "1";
+    if (!forceArrival && Math.random() >= driftBottleArrivalChance) {
+      return;
+    }
+
+    const delay = forceArrival ? 800 : 3000 + Math.floor(Math.random() * 3000);
+    window.setTimeout(async () => {
+      if (views.some((view) => view.classList.contains("is-active"))) {
+        return;
+      }
+
+      const message = await pickDriftBottleMessage();
+      showDriftBottleArrival(message);
+    }, delay);
+  }
+
+  window.TeaMerryObservatoryDriftBottle = {
+    loadDriftBottleMessages,
+    pickDriftBottleMessage,
+    showDriftBottleArrival,
+    hideDriftBottleArrival,
+    openDriftBottleMessage,
+  };
+
   window.setTimeout(async () => {
     const text = await pickDialogueEngineForestWhisper();
 
@@ -299,6 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function closeViews() {
     closeBottlePrivacyModal();
     closeWishPrivacyModal();
+    closeDriftBottleMessage();
     stopWishLanternSequence();
     showView(null);
   }
@@ -635,6 +834,28 @@ document.addEventListener("DOMContentLoaded", () => {
     wishStarButton.addEventListener("click", () => showView(wishWriteView));
   }
 
+  if (driftBottleButton) {
+    driftBottleButton.addEventListener("click", openDriftBottleMessage);
+  }
+
+  if (driftBottleClose) {
+    driftBottleClose.addEventListener("click", closeDriftBottleMessage);
+  }
+
+  if (driftBottleModal) {
+    driftBottleModal.addEventListener("click", (event) => {
+      if (event.target === driftBottleModal) {
+        closeDriftBottleMessage();
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && driftBottleModal && driftBottleModal.classList.contains("is-active")) {
+      closeDriftBottleMessage();
+    }
+  });
+
   document.querySelectorAll("[data-observatory-back]").forEach((button) => {
     button.addEventListener("click", closeViews);
   });
@@ -688,4 +909,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (wishLanternVideo) {
     wishLanternVideo.addEventListener("ended", closeViews);
   }
+
+  scheduleDriftBottleArrival();
 });

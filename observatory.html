@@ -67,10 +67,87 @@
 
         </section>
 
+        <div
+            id="driftBottleArrival"
+            class="drift-bottle-arrival"
+            hidden>
+
+            <button
+                type="button"
+                id="driftBottleButton"
+                class="drift-bottle-button"
+                aria-label="流れ着いたボトルメールを読む">
+
+                <span class="drift-bottle-ripple" aria-hidden="true"></span>
+                <span class="drift-bottle-glow" aria-hidden="true"></span>
+
+                <img
+                    src="./assets/images/observatory/bottle_water_landing.png"
+                    alt=""
+                    class="drift-bottle-image">
+
+            </button>
+
+            <div
+                id="driftBottleNotice"
+                class="drift-bottle-notice"
+                aria-live="polite">
+
+                ボトルメールが届いたよ
+
+            </div>
+
+        </div>
+
+        <div
+            id="driftBottleModal"
+            class="drift-bottle-modal"
+            aria-hidden="true">
+
+            <div
+                class="drift-bottle-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="driftBottleTitle"
+                tabindex="-1">
+
+                <p
+                    id="driftBottleTitle"
+                    class="drift-bottle-title">
+
+                    流れ着いたボトルメール
+
+                </p>
+
+                <p
+                    id="driftBottleSender"
+                    class="drift-bottle-sender">
+
+                    おさんぽさん
+
+                </p>
+
+                <p
+                    id="driftBottleBody"
+                    class="drift-bottle-body"></p>
+
+                <button
+                    type="button"
+                    id="driftBottleClose"
+                    class="drift-bottle-close">
+
+                    閉じる
+
+                </button>
+
+            </div>
+
+        </div>
+
         <!-- 森へ戻る -->
 
         <a
-            href="./index.html"
+            href="./index.html?from=observatory"
             class="forest-back">
 
             <img
@@ -367,7 +444,7 @@
     </main>
 
     <script src="./js/dialogueEngine.js"></script>
-    <script src="./observatory.js"></script>
+    <script src="./observatory.js?v=20260711-wish-lantern-sequence"></script>
 
 </body>
 </html>
