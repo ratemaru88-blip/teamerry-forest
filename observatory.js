@@ -48,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const forestBackLink = document.querySelector(".forest-back");
   const driftBottleArrival = document.getElementById("driftBottleArrival");
   const driftBottleButton = document.getElementById("driftBottleButton");
-  const driftBottleNotice = document.getElementById("driftBottleNotice");
   const driftBottleModal = document.getElementById("driftBottleModal");
   const driftBottleDialog = driftBottleModal && driftBottleModal.querySelector(".drift-bottle-dialog");
   const driftBottleSender = document.getElementById("driftBottleSender");
@@ -57,10 +56,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
   const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
+  const driftBottleArrivalSePath = "./assets/audio/sfx/bottle_water_landing_v01.mp3";
+  const driftBottleArrivalText = "あっ、ボトルメールが流れ着いたみたい！";
   const driftBottleSeenKey = "teaMerryDriftBottleSeen";
   const driftBottleMessageIdKey = "teaMerryDriftBottleMessageId";
   const driftBottleRecentKey = "teaMerryDriftBottleRecentIds";
   const driftBottleArrivalChance = 0.4;
+  const driftBottleArrivalAudio = typeof Audio === "function" ? new Audio(driftBottleArrivalSePath) : null;
   const wishLanternTalkDuration = 2800;
   const wishLanternPauseDuration = 350;
   const wishLanternLiluFrames = [
@@ -96,6 +98,11 @@ document.addEventListener("DOMContentLoaded", () => {
       weight: 2,
     },
   ];
+
+  if (driftBottleArrivalAudio) {
+    driftBottleArrivalAudio.volume = 0.45;
+    driftBottleArrivalAudio.preload = "auto";
+  }
 
   updateWriterNames();
 
@@ -346,6 +353,39 @@ document.addEventListener("DOMContentLoaded", () => {
     driftBottleArrival.classList.remove("is-visible");
   }
 
+  function playDriftBottleArrivalSe() {
+    if (!driftBottleArrivalAudio) {
+      return;
+    }
+
+    try {
+      driftBottleArrivalAudio.pause();
+      driftBottleArrivalAudio.currentTime = 0;
+      const playPromise = driftBottleArrivalAudio.play();
+      if (playPromise) {
+        playPromise.catch(() => {});
+      }
+    } catch (error) {
+      // Browser autoplay rules may block this before a user gesture.
+    }
+  }
+
+  function showLilDriftBottleArrivalMessage() {
+    if (!fairyBalloon) {
+      return;
+    }
+
+    window.clearTimeout(showLilDriftBottleArrivalMessage.timer);
+    const previousMessage = fairyBalloon.textContent || selectedMessage;
+    fairyBalloon.textContent = driftBottleArrivalText;
+
+    showLilDriftBottleArrivalMessage.timer = window.setTimeout(() => {
+      if (fairyBalloon.textContent === driftBottleArrivalText) {
+        fairyBalloon.textContent = previousMessage || selectedMessage;
+      }
+    }, 4600);
+  }
+
   function markDriftBottleSeen() {
     try {
       window.sessionStorage.setItem(driftBottleSeenKey, "true");
@@ -404,10 +444,8 @@ document.addEventListener("DOMContentLoaded", () => {
     rememberDriftBottleId(message.id);
     driftBottleArrival.hidden = false;
     driftBottleArrival.classList.add("is-visible");
-
-    if (driftBottleNotice) {
-      driftBottleNotice.textContent = "ボトルメールが届いたよ";
-    }
+    playDriftBottleArrivalSe();
+    showLilDriftBottleArrivalMessage();
   }
 
   async function scheduleDriftBottleArrival() {

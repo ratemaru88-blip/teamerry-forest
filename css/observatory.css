@@ -174,10 +174,10 @@ body {
 
 .drift-bottle-arrival {
   position: absolute;
-  left: clamp(28px, 4.2vw, 72px);
-  bottom: clamp(96px, 15vh, 164px);
+  left: 1.8%;
+  bottom: 15%;
   z-index: 28;
-  width: clamp(72px, 6.2vw, 112px);
+  width: clamp(42px, 5vw, 76px);
   pointer-events: none;
 }
 
@@ -207,65 +207,11 @@ body {
 
 .drift-bottle-image {
   position: relative;
-  z-index: 2;
   display: block;
-  width: 76%;
+  width: 100%;
   height: auto;
-  margin: 10% auto 0;
-  filter:
-    drop-shadow(0 10px 12px rgba(0, 35, 45, 0.48))
-    drop-shadow(0 0 14px rgba(178, 252, 255, 0.42));
+  margin: 0;
   transform: rotate(-18deg);
-}
-
-.drift-bottle-ripple,
-.drift-bottle-glow {
-  position: absolute;
-  left: 50%;
-  top: 58%;
-  border-radius: 999px;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-}
-
-.drift-bottle-ripple {
-  z-index: 1;
-  width: 118%;
-  height: 48%;
-  border: 2px solid rgba(174, 245, 255, 0.46);
-  box-shadow:
-    0 0 16px rgba(95, 228, 255, 0.32),
-    inset 0 0 18px rgba(214, 255, 255, 0.28);
-  animation: driftBottleRipple 3.2s ease-in-out infinite;
-}
-
-.drift-bottle-glow {
-  z-index: 0;
-  width: 88%;
-  height: 58%;
-  background: radial-gradient(circle, rgba(189, 255, 246, 0.56) 0%, rgba(65, 195, 210, 0.22) 44%, rgba(65, 195, 210, 0) 72%);
-  filter: blur(2px);
-  animation: driftBottleGlow 3.8s ease-in-out infinite;
-}
-
-.drift-bottle-notice {
-  position: absolute;
-  left: 72%;
-  bottom: 8%;
-  width: max-content;
-  max-width: 180px;
-  box-sizing: border-box;
-  padding: 8px 12px;
-  border: 1px solid rgba(255, 249, 220, 0.44);
-  border-radius: 13px;
-  background: rgba(72, 54, 34, 0.72);
-  color: #fff7dc;
-  font-size: 13px;
-  font-weight: bold;
-  line-height: 1.45;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.62);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
-  pointer-events: none;
 }
 
 .drift-bottle-modal {
@@ -845,26 +791,6 @@ body {
   }
 }
 
-@keyframes driftBottleRipple {
-  0%, 100% {
-    opacity: 0.68;
-    transform: translate(-50%, -50%) scale(0.94);
-  }
-  50% {
-    opacity: 0.36;
-    transform: translate(-50%, -50%) scale(1.08);
-  }
-}
-
-@keyframes driftBottleGlow {
-  0%, 100% {
-    opacity: 0.68;
-  }
-  50% {
-    opacity: 0.42;
-  }
-}
-
 /* スマホ */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .observatory {
@@ -944,17 +870,9 @@ body {
   }
 
   .drift-bottle-arrival {
-    left: max(8px, env(safe-area-inset-left));
-    bottom: clamp(205px, 29vh, 260px);
-    width: clamp(68px, 20vw, 88px);
-  }
-
-  .drift-bottle-notice {
-    left: 78%;
-    bottom: 0;
-    max-width: 132px;
-    padding: 7px 10px;
-    font-size: 12px;
+    left: 2%;
+    bottom: 26%;
+    width: clamp(34px, 10vw, 58px);
   }
 
   .drift-bottle-dialog {
@@ -1052,9 +970,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .drift-bottle-button,
-  .drift-bottle-ripple,
-  .drift-bottle-glow {
+  .drift-bottle-button {
     animation: none;
   }
 }
