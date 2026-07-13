@@ -1,0 +1,4807 @@
+{
+  "version": "1.0",
+  "source": "TeaMerry 漂着ボトルメールマスター Ver.1.xlsx",
+  "updatedAt": "2026-07-13T17:19:44+09:00",
+  "messages": [
+    {
+      "id": "BM001",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "今日は目覚ましより少し早く起きました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "朝",
+        "生活"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM002",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "洗濯物が一度で全部乾きました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "家事",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM003",
+      "displayName": "こむぎさん",
+      "category": "日常",
+      "text": "帰り道に、いつもと違う道を歩いてみました。知らない家の庭に、小さな黄色い花が咲いていました。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "散歩",
+        "花"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM004",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "今日は特に何もありませんでした。何もなかったことを、少しだけうれしく思いました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "穏やか",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM005",
+      "displayName": "ねむねこさん",
+      "category": "日常",
+      "text": "靴を左右反対に履きかけました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "失敗",
+        "朝"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM006",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "郵便受けに何も入っていませんでした。でも、のぞいた時の風が気持ちよかったです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "風",
+        "生活"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM007",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "昨日なくしたと思ったペンが、普通に机の上にありました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "発見",
+        "生活"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM008",
+      "displayName": "みずたまさん",
+      "category": "日常",
+      "text": "少し早く家を出たら、駅までゆっくり歩けました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "散歩",
+        "朝"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM009",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "今日やろうと思っていたことを、半分だけできました。半分できたので、よしとします。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "達成",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM010",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "窓を開けたら、知らない鳥の声がしました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 0,
+      "tags": [
+        "鳥",
+        "朝"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM011",
+      "displayName": "はなまるさん",
+      "category": "日常",
+      "text": "新しいタオルを使いました。思ったよりふわふわでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "生活",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM012",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "買い物に行ったのに、一番必要なものを買い忘れました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "買い物",
+        "失敗"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM013",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "今日は階段を使いました。途中で少し後悔しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "運動",
+        "生活"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM014",
+      "displayName": "くるみさん",
+      "category": "日常",
+      "text": "久しぶりに手紙を書きました。字が前より少し丸くなっていました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "手紙",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM015",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "夕方の空が明るかったので、帰る前に少しだけ立ち止まりました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 0,
+      "tags": [
+        "夕方",
+        "空"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM016",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "今日の予定は三つでした。二つ終わって、一つは明日に引っ越しました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "予定",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM017",
+      "displayName": "まめさん",
+      "category": "日常",
+      "text": "古い上着のポケットから、去年の飴が出てきました。食べるのはやめました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "発見",
+        "食べ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM018",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "電車で座れました。今日はそれだけで少し助かりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "移動",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM019",
+      "displayName": "おさんぽさん",
+      "category": "日常",
+      "text": "机の上を片づけたら、机が思っていたより広かったです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "掃除",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM020",
+      "displayName": "そらまめさん",
+      "category": "日常",
+      "text": "今日という日を説明しようとしたけれど、普通の日だったので、普通の日と書いておきます。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 1,
+      "tags": [
+        "生活",
+        "つぶやき"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM021",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "朝のトーストが、ちょうど好きな色に焼けました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "朝食",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM022",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "プリンを買いました。冷蔵庫を開けるたびに、まだあることを確認しています。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "プリン",
+        "楽しみ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM023",
+      "displayName": "あんこさん",
+      "category": "食べ物",
+      "text": "今日のおにぎりは少し塩が多かったです。でも、それも悪くありませんでした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "昼食",
+        "日常"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM024",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "コーヒーを入れたのに、飲むのを忘れて冷たくなりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "飲み物",
+        "失敗"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM025",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "久しぶりにカレーを作りました。二日目の分まで作ったのに、ほとんど食べてしまいました。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "料理",
+        "カレー"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM026",
+      "displayName": "こはくさん",
+      "category": "食べ物",
+      "text": "小さなクッキーを一枚だけ食べるつもりでした。予定とは変わるものですね。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "お菓子",
+        "予定変更"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM027",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "スーパーで好きなパンが最後の一個でした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "パン",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM028",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "温かいスープを飲んだら、思っていたよりおなかが安心しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "スープ",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM029",
+      "displayName": "しろたまさん",
+      "category": "食べ物",
+      "text": "目玉焼きがきれいな丸になりました。写真は撮りませんでしたが、心の中では撮りました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "朝食",
+        "料理"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM030",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "今日のりんごは、音までおいしかったです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "果物",
+        "音"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM031",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "冷蔵庫の奥に、忘れていたゼリーがいました。賞味期限は大丈夫でした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 2,
+      "tags": [
+        "ゼリー",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM032",
+      "displayName": "ゆずさん",
+      "category": "食べ物",
+      "text": "お茶を入れている間だけ、何も考えずに湯気を見ていました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "お茶",
+        "穏やか"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM033",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "今日はお味噌汁がちょうどよい濃さでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "食事",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM034",
+      "displayName": "おさんぽさん",
+      "category": "食べ物",
+      "text": "パンを少し焦がしました。焦げたところが、知らない島の形に見えました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "パン",
+        "地図"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM035",
+      "displayName": "ことりさん",
+      "category": "食べ物",
+      "text": "誰にも見られていないので、最後の一口をゆっくり食べました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "食事",
+        "満足"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM036",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "犬が散歩の途中で、同じ葉っぱを二回見に戻りました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 1,
+      "tags": [
+        "犬",
+        "散歩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM037",
+      "displayName": "ねこやまさん",
+      "category": "動物",
+      "text": "猫に椅子を取られました。交渉しましたが、返してもらえませんでした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "猫",
+        "生活"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM038",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "駅の近くで鳩が一羽、ずっと同じ方向を見ていました。何があったのかは分かりません。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 1,
+      "tags": [
+        "鳩",
+        "不思議"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM039",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "小さな犬が、大きな犬の後ろを一生懸命歩いていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 0,
+      "tags": [
+        "犬",
+        "散歩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM040",
+      "displayName": "すずさん",
+      "category": "動物",
+      "text": "ベランダに鳥が来ました。こちらを見てから、何も言わずに帰りました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 1,
+      "tags": [
+        "鳥",
+        "訪問"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM041",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "猫が空の箱に入り、しばらく店長の顔をしていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 2,
+      "tags": [
+        "猫",
+        "箱"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM042",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "散歩中の犬と目が合いました。たぶん、少し笑っていたと思います。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 1,
+      "tags": [
+        "犬",
+        "笑顔"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM043",
+      "displayName": "もこさん",
+      "category": "動物",
+      "text": "家の近くで、リスのような何かを見ました。リスではなかったかもしれません。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "動物",
+        "不明"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM044",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "金魚が一匹だけ、こちらを待っていたように近づいてきました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 0,
+      "tags": [
+        "金魚",
+        "癒し"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM045",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "カラスが何かを落として、拾わずに飛んでいきました。潔かったです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "カラス",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM046",
+      "displayName": "ぽんずさん",
+      "category": "動物",
+      "text": "うちの猫は、私が忙しい時だけキーボードの上に座ります。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 1,
+      "tags": [
+        "猫",
+        "仕事"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM047",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "道の端を、てんとう虫が急いで歩いていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 0,
+      "tags": [
+        "虫",
+        "散歩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM048",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "犬がくしゃみをして、自分で驚いていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "犬",
+        "くしゃみ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM049",
+      "displayName": "つきみさん",
+      "category": "動物",
+      "text": "公園の鳩が、今日は会議をしているように丸く集まっていました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "鳩",
+        "会議"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM050",
+      "displayName": "おさんぽさん",
+      "category": "動物",
+      "text": "名前を知らない鳥が、名前を知らない歌を歌っていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 1,
+      "tags": [
+        "鳥",
+        "音"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM051",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "雨が降りそうで降りませんでした。傘だけ一日いっしょでした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "天気",
+      "oddity": 0,
+      "tags": [
+        "雨",
+        "傘"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM052",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "風が強くて、髪型について考えるのをやめました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "風",
+        "生活"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM053",
+      "displayName": "あおさん",
+      "category": "天気",
+      "text": "朝は寒かったのに、昼は少し暑くて、服が迷っていました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "天気",
+      "oddity": 1,
+      "tags": [
+        "気温",
+        "服"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM054",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "雨上がりの道路に、空が二つありました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 0,
+      "tags": [
+        "雨",
+        "水たまり"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM055",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "今日は雲が速かったです。少し急いでいるように見えました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 1,
+      "tags": [
+        "雲",
+        "空"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM056",
+      "displayName": "ひなたさん",
+      "category": "天気",
+      "text": "日なたの椅子が温かかったので、少しだけ座りました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "天気",
+      "oddity": 0,
+      "tags": [
+        "日差し",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM057",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "洗濯物を干したら雨が降り、取り込んだら晴れました。空と相談が必要です。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "雨",
+        "洗濯"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM058",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "夕方の風に、少しだけ秋の匂いがしました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "風",
+        "秋"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM059",
+      "displayName": "くもりさん",
+      "category": "天気",
+      "text": "曇っていたけれど、雲の隙間だけ明るかったです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 0,
+      "tags": [
+        "曇り",
+        "光"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM060",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "今日の空は、青というより薄い水色でした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 0,
+      "tags": [
+        "空",
+        "色"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM061",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "雷が鳴ったので数を数えました。途中で何を数えていたか忘れました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 2,
+      "tags": [
+        "雷",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM062",
+      "displayName": "しずくさん",
+      "category": "天気",
+      "text": "傘に雨粒が当たる音を、今日は少し長く聞いていました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 0,
+      "tags": [
+        "雨音",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM063",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "風が冷たかったので、ポケットの中で手を握りました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "寒さ",
+        "冬"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM064",
+      "displayName": "おさんぽさん",
+      "category": "天気",
+      "text": "暑かったので、冷たい床に足を置いていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "夏",
+        "暑さ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM065",
+      "displayName": "そよさん",
+      "category": "天気",
+      "text": "今日は空が近かった気がします。理由は分かりません。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "不思議",
+      "oddity": 1,
+      "tags": [
+        "空",
+        "感覚"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM066",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "今日は、帰ってきてからしばらく座ったままでした。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "疲れ",
+        "帰宅"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM067",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "やることは残っているけれど、今日はもう終わりにします。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "疲れ",
+        "休息"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM068",
+      "displayName": "やすみさん",
+      "category": "疲れ",
+      "text": "朝から忙しくて、気づいたら夕方でした。今、お茶を飲んでいます。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "忙しい",
+        "お茶"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM069",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "何もしていない気がするのに疲れました。そういう日もあることにします。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "疲れ",
+        "受容"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM070",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "今日は少しだけ静かな場所にいたいです。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "静か",
+        "疲れ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM071",
+      "displayName": "つむぎさん",
+      "category": "疲れ",
+      "text": "帰り道、コンビニの明かりを見て少し安心しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "帰宅",
+        "光"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM072",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "頑張ったかどうかは分からないけれど、今日を終えました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "一日",
+        "達成"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM073",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "眠いので、文章が途中で終わるかもしれま",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 2,
+      "tags": [
+        "眠い",
+        "途中"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM074",
+      "displayName": "まくらさん",
+      "category": "疲れ",
+      "text": "布団に入った時のことだけを考えて一日を乗り切りました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "睡眠",
+        "疲れ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM075",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "今日は返事をする元気がありませんでした。明日返します。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "疲れ",
+        "連絡"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM076",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "休憩しようと思ってスマホを見たら、休憩がずいぶん長くなりました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "休憩",
+        "スマホ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM077",
+      "displayName": "ゆっくりさん",
+      "category": "疲れ",
+      "text": "一日中急いでいたので、今だけはゆっくり歩いています。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "散歩",
+        "疲れ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM078",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "今日は早く寝ると決めました。今のところ、その予定です。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "睡眠",
+        "予定"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM079",
+      "displayName": "おさんぽさん",
+      "category": "疲れ",
+      "text": "深呼吸したら、思っていたより息を止めていたことに気づきました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "深呼吸",
+        "気づき"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM080",
+      "displayName": "こもれびさん",
+      "category": "疲れ",
+      "text": "疲れていたけれど、帰りに見た夕焼けだけは覚えています。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 0,
+      "tags": [
+        "夕焼け",
+        "疲れ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM081",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "探していた本が見つかりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "本",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM082",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "久しぶりの人から連絡が来ました。短い文章でしたが、うれしかったです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "連絡",
+        "再会"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM083",
+      "displayName": "にじさん",
+      "category": "嬉しい",
+      "text": "うまくできなかったことが、今日は少しだけできました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "達成",
+        "成長"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM084",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "席を譲ったら、笑顔でありがとうと言ってもらえました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "親切",
+        "感謝"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM085",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "欲しかった色の靴下がありました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "買い物",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM086",
+      "displayName": "はっぱさん",
+      "category": "嬉しい",
+      "text": "小さな花が咲きました。毎日見ていたので、少し自分のことのようです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 0,
+      "tags": [
+        "花",
+        "成長"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM087",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "今日の写真に、偶然きれいな光が入りました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "写真",
+        "光"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM088",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "苦手だった電話を、今日はちゃんとかけられました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "達成",
+        "勇気"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM089",
+      "displayName": "ふわりさん",
+      "category": "嬉しい",
+      "text": "好きな曲が、ちょうどラジオから流れてきました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "音楽",
+        "偶然"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM090",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "信号が三回続けて青でした。少し歓迎されている気がしました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "移動",
+        "偶然"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM091",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "昨日より少しだけ元気です。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "体調",
+        "回復"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM092",
+      "displayName": "まろんさん",
+      "category": "嬉しい",
+      "text": "新しいマグカップを使いました。飲み物の味は同じなのに、少し特別でした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "カップ",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM093",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "予定より早く仕事が終わりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "仕事",
+        "時間"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM094",
+      "displayName": "おさんぽさん",
+      "category": "嬉しい",
+      "text": "道を聞かれて答えられました。合っていたことを願います。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "親切",
+        "道案内"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM095",
+      "displayName": "ほしさん",
+      "category": "嬉しい",
+      "text": "今日は、自分の好きなものを好きだと思えました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "気持ち",
+        "自己肯定"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM096",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "誰かと話したかったけれど、何を話したいのか分かりませんでした。",
+      "lengthClass": "中",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "寂しい",
+        "会話"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM097",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "部屋が静かすぎたので、音楽を小さく流しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "静か",
+        "音楽"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM098",
+      "displayName": "つきさん",
+      "category": "寂しい",
+      "text": "昔の写真を見ていたら、時間が少し遠くなりました。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "思い出",
+        "寂しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM099",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "会いたい人がいます。今は、それだけ書いておきます。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "会いたい",
+        "気持ち"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM100",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "ひとりで食べるごはんにも慣れました。でも今日は、少しだけ誰かと食べたかったです。",
+      "lengthClass": "長",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "食事",
+        "寂しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM101",
+      "displayName": "しろさん",
+      "category": "寂しい",
+      "text": "外で誰かの笑い声がして、少しだけ安心しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "声",
+        "安心"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM102",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "連絡をしようと思って、やめました。明日はできるかもしれません。",
+      "lengthClass": "中",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "連絡",
+        "迷い"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM103",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "夜が長いので、温かい飲み物を作りました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "夜",
+        "飲み物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM104",
+      "displayName": "あかりさん",
+      "category": "寂しい",
+      "text": "帰る場所の明かりが見えた時、少しほっとしました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "帰宅",
+        "光"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM105",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "言葉にしたら余計に寂しくなりそうで、でも少し書きたくなりました。",
+      "lengthClass": "中",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "気持ち",
+        "文章"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM106",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "今日は人の声が恋しい日でした。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "寂しい",
+        "声"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM107",
+      "displayName": "ゆきさん",
+      "category": "寂しい",
+      "text": "ひとりで歩いていたら、同じ方向へ歩く人がいて少し安心しました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "散歩",
+        "安心"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM108",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "遠くにいる人も、今ごろ何か飲んでいるのかなと思いました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "遠く",
+        "飲み物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM109",
+      "displayName": "おさんぽさん",
+      "category": "寂しい",
+      "text": "静かな夜です。静かすぎるので、冷蔵庫の音まで聞こえます。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "夜",
+        "生活音"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM110",
+      "displayName": "こえさん",
+      "category": "寂しい",
+      "text": "誰かに届くか分からないけれど、書いてみました。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "手紙",
+        "気持ち"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM111",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "今日の仕事を終えました。終わっていない部分もありますが、今日は終わりです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "仕事",
+        "区切り"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM112",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "分からなかった問題が、一度寝たら少し分かりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "勉強",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM113",
+      "displayName": "えんぴつさん",
+      "category": "仕事・勉強",
+      "text": "机に向かっただけで、今日は半分成功ということにします。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "勉強",
+        "開始"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM114",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "会議で一度だけ発言しました。声は少し震えました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "達成",
+      "oddity": 0,
+      "tags": [
+        "仕事",
+        "勇気"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM115",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "宿題を始めるまでに、机の掃除がずいぶん進みました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "勉強",
+        "掃除"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM116",
+      "displayName": "ふせんさん",
+      "category": "仕事・勉強",
+      "text": "付箋を貼りすぎて、どれが大事なのか分からなくなりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "仕事",
+        "整理"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM117",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "今日は覚えたことより、忘れたことの方が多い気がします。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "勉強",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM118",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "一つ終わるたびに、別の用事が生まれました。用事は増える生き物かもしれません。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "仕事",
+        "用事"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM119",
+      "displayName": "ノートさん",
+      "category": "仕事・勉強",
+      "text": "書き直した文字の方が、最初より少し読みやすくなりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "達成",
+      "oddity": 0,
+      "tags": [
+        "勉強",
+        "成長"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM120",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "今日は集中できませんでした。椅子には長く座っていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "勉強",
+        "集中"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM121",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "提出できました。中身については、今は考えないことにします。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "提出",
+        "達成"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM122",
+      "displayName": "とけいさん",
+      "category": "仕事・勉強",
+      "text": "五分だけやるつもりが、二十分できました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "達成",
+      "oddity": 0,
+      "tags": [
+        "勉強",
+        "時間"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM123",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "説明を読んでも分からなかったけれど、図を見たら少し分かりました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "発見",
+      "oddity": 0,
+      "tags": [
+        "勉強",
+        "理解"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM124",
+      "displayName": "おさんぽさん",
+      "category": "仕事・勉強",
+      "text": "今日は失敗しました。でも、失敗した場所は分かりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "達成",
+      "oddity": 0,
+      "tags": [
+        "失敗",
+        "学び"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM125",
+      "displayName": "すみれさん",
+      "category": "仕事・勉強",
+      "text": "明日の自分へ、やることを一つだけ残しておきました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "予定",
+        "明日"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM126",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "家族と同じテレビを見て、同じところで笑いました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "家族",
+        "笑い"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM127",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "友達から、特に用事のないメッセージが来ました。そういうのがうれしいです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "友達",
+        "連絡"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM128",
+      "displayName": "りんさん",
+      "category": "家族・友人",
+      "text": "母が果物を切ってくれました。いつもより少し大きめでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "家族",
+        "果物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM129",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "久しぶりに電話をしました。話すことはあまりなかったけれど、声を聞けてよかったです。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "電話",
+        "再会"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM130",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "友達と待ち合わせをして、二人とも少し遅れました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "友達",
+        "待ち合わせ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM131",
+      "displayName": "つばきさん",
+      "category": "家族・友人",
+      "text": "昔の話をしていたら、覚えているところが少しずつ違いました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "思い出",
+        "会話"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM132",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "家族から送られてきた写真が、少しぶれていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "写真",
+        "家族"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM133",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "言いすぎたかもしれません。次に会ったら、普通に話したいです。",
+      "lengthClass": "中",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "友達",
+        "反省"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM134",
+      "displayName": "ゆらさん",
+      "category": "家族・友人",
+      "text": "一緒に食べたものは、ひとりで食べる時より少しおいしく感じました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "食事",
+        "友達"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM135",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "友達が笑ってくれたので、同じ話をもう一回しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "友達",
+        "笑い"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM136",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "短い時間だったけれど、会えてよかったです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "再会",
+        "友達"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM137",
+      "displayName": "たんぽぽさん",
+      "category": "家族・友人",
+      "text": "祖父の昔話は、聞くたびに少し内容が変わります。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "家族",
+        "昔話"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM138",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "誰かのためにお土産を選ぶ時間が好きです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "贈り物",
+        "友達"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM139",
+      "displayName": "おさんぽさん",
+      "category": "家族・友人",
+      "text": "今日は「ありがとう」を言えました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "感謝",
+        "家族"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM140",
+      "displayName": "ふたばさん",
+      "category": "家族・友人",
+      "text": "会話が途切れても、気まずくない人がいるのはいいことだと思いました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "友達",
+        "安心"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM141",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "桜が一輪だけ先に咲いていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "春",
+        "花"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM142",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "夏の夕方の匂いがしました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "夏",
+        "夕方"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM143",
+      "displayName": "もみじさん",
+      "category": "季節",
+      "text": "落ち葉を踏んだ音が、思っていたより大きかったです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "秋",
+        "音"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM144",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "息が白くなったので、何度か試しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "冬",
+        "息"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM145",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "衣替えをしたら、去年探していたハンカチが出てきました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "季節",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM146",
+      "displayName": "さくらさん",
+      "category": "季節",
+      "text": "花びらが一枚、鞄の中までついてきました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "春",
+        "花"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM147",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "今年初めて蝉の声を聞きました。夏が始まった感じがします。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "夏",
+        "蝉"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM148",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "どんぐりを一つ拾いました。持って帰る理由は特にありません。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 1,
+      "tags": [
+        "秋",
+        "どんぐり"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM149",
+      "displayName": "こなゆきさん",
+      "category": "季節",
+      "text": "雪が少しだけ降りました。積もらなかったので、空からの試作品だったのかもしれません。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "冬",
+        "雪"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM150",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "新しいカレンダーをめくる時、少し緊張しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "新年",
+        "時間"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM151",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "春の上着を着たら、ポケットから去年の花びらが出ました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "春",
+        "思い出"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM152",
+      "displayName": "なつさん",
+      "category": "季節",
+      "text": "アイスが溶ける方が、私が食べるより少し速かったです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "夏",
+        "アイス"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM153",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "秋の空は高いと聞きますが、今日は本当に少し遠く見えました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 0,
+      "tags": [
+        "秋",
+        "空"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM154",
+      "displayName": "おさんぽさん",
+      "category": "季節",
+      "text": "手袋を片方だけ見つけました。もう片方は冬のどこかにいます。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "冬",
+        "手袋"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM155",
+      "displayName": "うぐいすさん",
+      "category": "季節",
+      "text": "季節が変わる時の、まだ名前がない気温が好きです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "季節",
+      "oddity": 1,
+      "tags": [
+        "季節の変わり目",
+        "気温"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM156",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "昔よく通った道を、久しぶりに歩きました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "道",
+        "昔"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM157",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "子どもの頃に好きだったお菓子を見つけました。前より小さく感じました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "お菓子",
+        "子ども"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM158",
+      "displayName": "あさひさん",
+      "category": "思い出",
+      "text": "古いノートに、覚えていない予定が書いてありました。ちゃんと終わったのでしょうか。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "不思議",
+      "oddity": 1,
+      "tags": [
+        "ノート",
+        "過去"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM159",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "昔の写真の中で、みんな今より少し若かったです。当然ですが、不思議でした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "写真",
+        "時間"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM160",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "懐かしい匂いがしたけれど、何の匂いだったか思い出せませんでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 1,
+      "tags": [
+        "匂い",
+        "記憶"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM161",
+      "displayName": "ともしびさん",
+      "category": "思い出",
+      "text": "前に住んでいた町の天気を、なんとなく調べました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "町",
+        "天気"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM162",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "昔好きだった曲を聞いたら、歌詞より先に景色を思い出しました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "音楽",
+        "景色"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM163",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "引き出しの奥から、使いかけの消しゴムが出てきました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "文房具",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM164",
+      "displayName": "なぎさん",
+      "category": "思い出",
+      "text": "忘れていた出来事を、別の人が覚えていてくれました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "記憶",
+        "人"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM165",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "昔の自分に会ったら、何を話すか少し考えました。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "過去",
+        "自分"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM166",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "古い服を捨てようと思ったけれど、今日はたたんで戻しました。",
+      "lengthClass": "中",
+      "todayHokkori": false,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "服",
+        "迷い"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM167",
+      "displayName": "つくしさん",
+      "category": "思い出",
+      "text": "子どもの頃は大きく見えた坂が、今日は短く見えました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "道",
+        "成長"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM168",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "昔もらった手紙を読み返しました。文字の癖まで懐かしかったです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "手紙",
+        "記憶"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM169",
+      "displayName": "おさんぽさん",
+      "category": "思い出",
+      "text": "覚えていたはずのことを忘れ、忘れていたことを急に思い出しました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "不思議",
+      "oddity": 1,
+      "tags": [
+        "記憶",
+        "時間"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM170",
+      "displayName": "みちさん",
+      "category": "思い出",
+      "text": "いつか今日のことも、何でもない思い出になるのかもしれません。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "今日",
+        "未来"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM171",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "TeaMerryに初めて来ました。どこを押せばいいか少し迷いました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "初訪問",
+        "分かりにくい"
+      ],
+      "enabled": true,
+      "note": "率直な感想"
+    },
+    {
+      "id": "BM172",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "森の音が落ち着きました。しばらく画面を見たままでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "音",
+        "癒し"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM173",
+      "displayName": "ミルクティーさん",
+      "category": "TeaMerry感想",
+      "text": "星風テラスを見つけるまで少しかかりました。でも見つけた時はうれしかったです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "星風テラス",
+        "探索"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM174",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "TeaMerry、ちょっと分かりにくいです。でも、たぶんまだ知らない場所があります。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "分かりにくい",
+        "探索"
+      ],
+      "enabled": true,
+      "note": "率直な感想"
+    },
+    {
+      "id": "BM175",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "ティールームの背景が好きです。お茶が飲めたらもっといいです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "ティールーム",
+        "要望"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM176",
+      "displayName": "ほたるさん",
+      "category": "TeaMerry感想",
+      "text": "森へ戻るボタンを見つけるまで、少し探しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "操作",
+        "分かりにくい"
+      ],
+      "enabled": true,
+      "note": "率直な感想"
+    },
+    {
+      "id": "BM177",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "ミントが歩いているところをずっと見ていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "ミント",
+        "キャラクター"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM178",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "何をする場所なのか最初は分からなかったけれど、歩いているうちに少し分かりました。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "初訪問",
+        "探索"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM179",
+      "displayName": "きいろさん",
+      "category": "TeaMerry感想",
+      "text": "願い星を飛ばすところが好きです。動画をもう一度見たくなりました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "願い星",
+        "演出"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM180",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "ボトルメールに何を書けばいいか迷って、迷ったことを書きました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 1,
+      "tags": [
+        "ボトルメール",
+        "迷い"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM181",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "忘れじの洞窟が少しこわくて、少し好きです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "洞窟",
+        "感想"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM182",
+      "displayName": "おちゃさん",
+      "category": "TeaMerry感想",
+      "text": "背景を動かしていたら、目的地を通り過ぎました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 1,
+      "tags": [
+        "操作",
+        "ユーモア"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM183",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "音が出ることに途中で気づきました。最初から聞けばよかったです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "音",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM184",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "全部見つけたつもりですが、たぶん見つけていません。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 1,
+      "tags": [
+        "探索",
+        "不思議"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM185",
+      "displayName": "ほしのこさん",
+      "category": "TeaMerry感想",
+      "text": "また来ました。前に来た時と少し違う気がします。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "再訪",
+        "変化"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM186",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "森を動かせることに気づくまで、画面を何度も押しました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "操作",
+        "初訪問"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM187",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "キャラクターの名前をまだ全部覚えていません。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "キャラクター",
+        "初訪問"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM188",
+      "displayName": "くろまめさん",
+      "category": "TeaMerry感想",
+      "text": "少し迷うけれど、森なので迷ってもいいような気がしました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "探索",
+        "感想"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM189",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "ボタンなのか飾りなのか分からないものを、だいたい全部押しました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 1,
+      "tags": [
+        "操作",
+        "ユーモア"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM190",
+      "displayName": "おさんぽさん",
+      "category": "TeaMerry感想",
+      "text": "今日も少しだけ見に来ました。何もしないで帰ります。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "再訪",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM191",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "今日は赤い四角が勝ちました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "意味不明",
+        "色"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM192",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "たぶん靴下が何か知っています。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "意味不明",
+        "靴下"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM193",
+      "displayName": "まるさん",
+      "category": "不思議",
+      "text": "朝起きたら、机が昨日より少し机でした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "意味不明",
+        "机"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM194",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "冷蔵庫を開けたら、昨日の続きが入っていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "意味不明",
+        "冷蔵庫"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM195",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "青い火曜日でした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "意味不明",
+        "曜日"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM196",
+      "displayName": "しかくさん",
+      "category": "不思議",
+      "text": "曲がり角を曲がったら、曲がる前のことを忘れました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "道",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM197",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "どんぐりは右から読んでも、たぶんどんぐりです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "どんぐり",
+        "言葉"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM198",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "今日は机の下に、まだ使っていない午後が落ちていました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "意味不明",
+        "時間"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM199",
+      "displayName": "ななめさん",
+      "category": "不思議",
+      "text": "まっすぐ帰ったのに、気持ちは少し斜めでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "帰宅",
+        "感覚"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM200",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "昨日の雲と、たぶん同じ雲を見ました。向こうは気づいていませんでした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "雲",
+        "再会"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM201",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "スプーンが一つ、話の途中みたいに置いてありました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "スプーン",
+        "不明"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM202",
+      "displayName": "まよいさん",
+      "category": "不思議",
+      "text": "玄関を出た時は水曜日でした。帰った時も水曜日でした。少し安心しました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "曜日",
+        "安心"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM203",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "今日の影は、いつもより半歩遅れていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "影",
+        "不思議"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM204",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "誰もいないのに、ティッシュが一枚だけ急いでいました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "意味不明",
+        "風"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM205",
+      "displayName": "うずまきさん",
+      "category": "不思議",
+      "text": "考えごとをしていたら、考えごとの方が先に帰りました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "思考",
+        "意味不明"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM206",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "丸いものを探していたら、一日が丸く終わりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "丸",
+        "一日"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM207",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "棚の隅に、小さい木曜日がありました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "曜日",
+        "棚"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM208",
+      "displayName": "ひだりさん",
+      "category": "不思議",
+      "text": "右へ行くつもりでしたが、左がこちらを見ていたので左へ行きました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "方向",
+        "道"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM209",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "何を書こうとしたか忘れました。たぶん大事ではありません。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 1,
+      "tags": [
+        "忘れ物",
+        "文章"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM210",
+      "displayName": "おさんぽさん",
+      "category": "不思議",
+      "text": "今日は何も起きなかったので、それを記念日にしました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "何もない",
+        "記念日"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM211",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "目覚ましを止めた記憶だけは、とてもはっきりあります。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "朝",
+        "睡眠"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM212",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "片づけを始めたら、昔の写真を見る時間になりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "掃除",
+        "思い出"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM213",
+      "displayName": "ぷりんさん",
+      "category": "ユーモア",
+      "text": "プリンを食べるためにスプーンを出し、プリンを出すのを忘れました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 2,
+      "tags": [
+        "プリン",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM214",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "傘を持って出た日は晴れます。持たない日は、空が思い出します。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 2,
+      "tags": [
+        "雨",
+        "傘"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM215",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "冷蔵庫を開けて、目的を忘れて、閉めてから思い出しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "冷蔵庫",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM216",
+      "displayName": "もちさん",
+      "category": "ユーモア",
+      "text": "靴下が片方ありません。もう片方は落ち着いています。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 2,
+      "tags": [
+        "靴下",
+        "紛失"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM217",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "今日は早く寝ます。この文章を書いている時点で少し遅いです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "夜",
+        "睡眠"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM218",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "料理中に味見をしすぎて、完成前に少し満足しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "料理",
+        "味見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM219",
+      "displayName": "たまごさん",
+      "category": "ユーモア",
+      "text": "卵を割ったら黄身が二つでした。少し得をした気持ちです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "卵",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM220",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "買い物袋を持って出かけ、買い物袋を買って帰りました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "買い物",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM221",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "猫に話しかけたら、聞いていない顔をされました。いつものことです。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "猫",
+        "会話"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM222",
+      "displayName": "ふくろさん",
+      "category": "ユーモア",
+      "text": "ゴミを捨てに行き、ゴミを持ったまま帰ってきました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "生活",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM223",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "今日の私は、昨日の私が置いた物をずっと探していました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "探し物",
+        "自分"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM224",
+      "displayName": "おさんぽさん",
+      "category": "ユーモア",
+      "text": "エレベーターのボタンを押してから、階段を使いました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "移動",
+        "選択"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM225",
+      "displayName": "ころんさん",
+      "category": "ユーモア",
+      "text": "何もないところでつまずきました。何かはあったのだと思います。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 2,
+      "tags": [
+        "転ぶ",
+        "不思議"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM226",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "眠いです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "睡眠",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM227",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "今日はカレーでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "食事",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM228",
+      "displayName": "しおさん",
+      "category": "短文",
+      "text": "海を見たいです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "海",
+        "願い"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM229",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "やっと終わりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "達成",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM230",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "少し寒いです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "天気",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM231",
+      "displayName": "あめさん",
+      "category": "短文",
+      "text": "傘を忘れました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "雨",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM232",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "今日も来ました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "再訪",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM233",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "猫がかわいいです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "猫",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM234",
+      "displayName": "いちごさん",
+      "category": "短文",
+      "text": "おなかがすきました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "食事",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM235",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "何を書こう。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 1,
+      "tags": [
+        "迷い",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM236",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "まあ、いいか。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "受容",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM237",
+      "displayName": "まるさん",
+      "category": "短文",
+      "text": "今日は丸でした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 3,
+      "tags": [
+        "意味不明",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM238",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "また明日。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "明日",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM239",
+      "displayName": "おさんぽさん",
+      "category": "短文",
+      "text": "お茶がおいしい。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "短文",
+      "oddity": 0,
+      "tags": [
+        "お茶",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM240",
+      "displayName": "ねむりさん",
+      "category": "短文",
+      "text": "もう寝ます。たぶん。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "睡眠",
+        "一言"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM241",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "最近、忙しくて空を見る時間がありませんでした。今日は少し早く帰れたので、橋の上で立ち止まりました。風が思ったより気持ちよくて、それだけで少し元気になりました。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "空",
+        "帰宅"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM242",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "朝からうまくいかないことが続いて、今日はだめな日だと思っていました。でも帰りに買ったパンがとてもおいしかったので、全部だめな日ではなかったことにします。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "失敗",
+        "パン"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM243",
+      "displayName": "かえでさん",
+      "category": "長文",
+      "text": "久しぶりに友達と会いました。何か特別な話をしたわけではないけれど、別れたあとに少し心が軽くなっていました。また普通に会えたらいいです。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "友達",
+        "再会"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM244",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "ずっと後回しにしていた場所を片づけました。昔の手紙や写真が出てきて、片づけより読む時間の方が長くなりました。でも、今日はそれでよかったと思います。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "掃除",
+        "手紙"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM245",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "仕事で失敗しました。帰ってからも何度も思い出しましたが、お風呂に入って少しだけ薄くなりました。明日は同じ失敗をしないように、今日はもう寝ます。",
+      "lengthClass": "長",
+      "todayHokkori": false,
+      "hokkoriSlot": "寄り添い",
+      "oddity": 0,
+      "tags": [
+        "仕事",
+        "失敗"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM246",
+      "displayName": "こむぎさん",
+      "category": "長文",
+      "text": "スーパーで小さな子が落とした手袋を、お母さんらしい人に渡しました。何も言われなかったけれど、ちゃんと届いたのでよかったです。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "親切",
+        "手袋"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM247",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "今日は特にいいことも悪いこともありませんでした。朝ごはんを食べて、用事をして、少し疲れて帰りました。こういう日も、あとから大切に思うのでしょうか。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "生活",
+        "一日"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM248",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "家を出た時は雨でした。途中で晴れて、傘が邪魔になりました。帰りにまた雨が降ったので、最後には持ってきてよかったと思いました。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "天気",
+      "oddity": 0,
+      "tags": [
+        "雨",
+        "傘"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM249",
+      "displayName": "すずらんさん",
+      "category": "長文",
+      "text": "昔好きだった曲を偶然聞きました。曲そのものより、その頃に使っていた鞄や駅の景色を先に思い出しました。記憶は変な順番で戻ってくるものですね。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "思い出",
+      "oddity": 0,
+      "tags": [
+        "音楽",
+        "記憶"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM250",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "今日は何をしても少し遅れていました。信号、電車、待ち合わせ。最後には急ぐのをやめて、ゆっくり歩いて帰りました。その方が風の匂いが分かりました。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "遅刻",
+        "風"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM251",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "TeaMerryに来たけれど、最初は何をすればいいのかよく分かりませんでした。あちこち押していたら星風テラスに着きました。少し迷ったけれど、見つけた時はうれしかったです。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "初訪問",
+        "分かりにくい"
+      ],
+      "enabled": true,
+      "note": "率直な感想"
+    },
+    {
+      "id": "BM252",
+      "displayName": "ぽんさん",
+      "category": "長文",
+      "text": "猫が窓の外をずっと見ていたので、隣に座って一緒に見ました。特に何もいませんでした。猫には何か見えていたのかもしれません。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "動物",
+      "oddity": 1,
+      "tags": [
+        "猫",
+        "窓"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM253",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "夕食を作る気力がなくて、簡単なものにしました。食べ始めたら思っていたよりおいしくて、ちゃんと食べられたことに少し安心しました。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "夕食",
+        "疲れ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM254",
+      "displayName": "おさんぽさん",
+      "category": "長文",
+      "text": "今日は誰とも話さないまま一日が終わりそうでした。帰りに店員さんと「ありがとうございます」だけ言い合いました。それだけでも人の声を聞けてよかったです。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "会話",
+        "買い物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM255",
+      "displayName": "ひかりさん",
+      "category": "長文",
+      "text": "ずっと欲しかったものを買いました。使うのがもったいなくて、まだ箱から出していません。買った意味については、明日考えます。",
+      "lengthClass": "長",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "買い物",
+        "箱"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM256",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "明日は今日より、少しだけ落ち着いて過ごせますように。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "明日",
+        "穏やか"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM257",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "大切な人が元気でいますように。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "家族",
+        "健康"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM258",
+      "displayName": "ひよりさん",
+      "category": "願い",
+      "text": "今考えていることが、少しずつ形になりますように。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "夢",
+        "未来"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM259",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "ちゃんと眠れますように。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "睡眠",
+        "夜"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM260",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "また笑って話せる日が来ますように。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "友達",
+        "再会"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM261",
+      "displayName": "つきのさん",
+      "category": "願い",
+      "text": "次に会う時は、素直にありがとうと言えますように。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "感謝",
+        "再会"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM262",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "新しいことを始める勇気が出ますように。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "挑戦",
+        "勇気"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM263",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "なくした鍵が見つかりますように。できれば早めに。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "鍵",
+        "探し物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM264",
+      "displayName": "ねがいさん",
+      "category": "願い",
+      "text": "今年は一度くらい、流れ星を見られますように。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "星",
+        "空"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM265",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "明日の朝、目覚ましに一回で気づけますように。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "朝",
+        "睡眠"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM266",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "うまく言葉にできない気持ちが、いつか伝わりますように。",
+      "lengthClass": "中",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "言葉",
+        "気持ち"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM267",
+      "displayName": "ほしみさん",
+      "category": "願い",
+      "text": "好きなものを、これからも好きでいられますように。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "好き",
+        "未来"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM268",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "今日より少し、自分にやさしくできますように。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "自分",
+        "優しさ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM269",
+      "displayName": "おさんぽさん",
+      "category": "願い",
+      "text": "冷蔵庫のプリンが、帰るまで残っていますように。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "プリン",
+        "帰宅"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM270",
+      "displayName": "ことさん",
+      "category": "願い",
+      "text": "迷っている道のどちらかが、やさしい場所へ続いていますように。",
+      "lengthClass": "中",
+      "todayHokkori": false,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "道",
+        "迷い"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM271",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "窓を拭いたら、外が少し新しくなりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "掃除",
+        "窓"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM272",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "今日は髪がうまくまとまりました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "朝",
+        "嬉しい"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM273",
+      "displayName": "みかんさん",
+      "category": "ランダム",
+      "text": "みかんの皮が、途中で切れずにむけました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "みかん",
+        "達成"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM274",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "ペンのインクが最後まで使い切れました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "文房具",
+        "達成"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM275",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "知らない人と同じタイミングで道を譲り合いました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "道",
+        "親切"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM276",
+      "displayName": "くじらさん",
+      "category": "ランダム",
+      "text": "雲が大きな魚に見えました。しばらくすると普通の雲になりました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 1,
+      "tags": [
+        "雲",
+        "魚"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM277",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "今日はコップを割りませんでした。昨日は割りました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "生活",
+        "コップ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM278",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "道端の看板が少し傾いていました。誰かに話しかけているようでした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 2,
+      "tags": [
+        "看板",
+        "道"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM279",
+      "displayName": "いとさん",
+      "category": "ランダム",
+      "text": "ボタンが一つ取れました。なくさずにポケットへ入れました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "服",
+        "小物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM280",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "今日の月は、少し眠そうでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "自然",
+      "oddity": 1,
+      "tags": [
+        "月",
+        "夜"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM281",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "自動販売機に、知らない飲み物が増えていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "発見",
+      "oddity": 0,
+      "tags": [
+        "飲み物",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM282",
+      "displayName": "こえださん",
+      "category": "ランダム",
+      "text": "木の枝が一本だけ、風と違う方向へ揺れていました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "不思議",
+      "oddity": 2,
+      "tags": [
+        "木",
+        "風"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM283",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "今日は靴の中に小石が入りませんでした。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "靴",
+        "散歩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM284",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "信号待ちの間に、好きな歌の一番だけ聞けました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "嬉しい",
+      "oddity": 0,
+      "tags": [
+        "音楽",
+        "移動"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM285",
+      "displayName": "はるさん",
+      "category": "ランダム",
+      "text": "棚の上のほこりを拭いたら、小さな達成感がありました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "掃除",
+        "達成"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM286",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "今日は一度も傘を忘れませんでした。傘を使う日ではありませんでした。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "傘",
+        "日常"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM287",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "知らない番号から電話が来ました。出ませんでした。",
+      "lengthClass": "短",
+      "todayHokkori": false,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "電話",
+        "生活"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM288",
+      "displayName": "こよみさん",
+      "category": "ランダム",
+      "text": "カレンダーを一枚めくったら、部屋の時間が少し進みました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 1,
+      "tags": [
+        "時間",
+        "カレンダー"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM289",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "昨日より爪が少し伸びています。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 1,
+      "tags": [
+        "身体",
+        "発見"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM290",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "ドアを開けたら風が入り、紙が一枚だけ旅立ちました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 1,
+      "tags": [
+        "風",
+        "紙"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM291",
+      "displayName": "しずかさん",
+      "category": "ランダム",
+      "text": "何も聞こえない時間が、少しだけありました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "休憩",
+      "oddity": 0,
+      "tags": [
+        "静か",
+        "時間"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM292",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "夕方、家々の明かりが一つずつ増えていきました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "夕方",
+        "光"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM293",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "今日は右足から靴を履きました。たぶん昨日もです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "奇抜",
+      "oddity": 1,
+      "tags": [
+        "靴",
+        "習慣"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM294",
+      "displayName": "つぶさん",
+      "category": "ランダム",
+      "text": "小さな石を拾い、少し歩いてから元の場所へ戻しました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 1,
+      "tags": [
+        "石",
+        "散歩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM295",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "冷たい水が、思っていたよりおいしかったです。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "食べ物",
+      "oddity": 0,
+      "tags": [
+        "水",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM296",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "一日が終わる頃に、今日が何曜日だったか思い出しました。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "ユーモア",
+      "oddity": 1,
+      "tags": [
+        "曜日",
+        "夜"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM297",
+      "displayName": "きなこさん",
+      "category": "ランダム",
+      "text": "新しい消しゴムの角を、まだ使わずに残しています。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 0,
+      "tags": [
+        "文房具",
+        "小さな幸せ"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM298",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "今日見た夢を覚えていたのに、朝ごはんの途中で忘れました。",
+      "lengthClass": "中",
+      "todayHokkori": true,
+      "hokkoriSlot": "日常",
+      "oddity": 1,
+      "tags": [
+        "夢",
+        "忘れ物"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM299",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "これを読んでいる人が、今日は少しゆっくりできますように。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "願い",
+      "oddity": 0,
+      "tags": [
+        "誰か",
+        "休憩"
+      ],
+      "enabled": true,
+      "note": ""
+    },
+    {
+      "id": "BM300",
+      "displayName": "おさんぽさん",
+      "category": "ランダム",
+      "text": "また何か書きたくなったら、ここに流しに来ます。",
+      "lengthClass": "短",
+      "todayHokkori": true,
+      "hokkoriSlot": "TeaMerry",
+      "oddity": 0,
+      "tags": [
+        "ボトルメール",
+        "再訪"
+      ],
+      "enabled": true,
+      "note": ""
+    }
+  ]
+}

@@ -17,47 +17,25 @@
     <div class="master-speech" id="masterSpeech" aria-live="polite"></div>
 
     <section class="tea-notice-board" aria-labelledby="teaNoticeTitle">
-      <div class="tea-notice-board__inner">
-        <p class="tea-notice-board__brand">Tea Merry Forest</p>
-        <h1 class="tea-notice-board__title" id="teaNoticeTitle">森のお知らせ</h1>
-
+      <h1 class="tea-notice-board__heading" id="teaNoticeTitle">森のお知らせ</h1>
+      <div class="tea-notice-board__stage">
+        <picture class="tea-notice-board__picture">
+          <source
+            media="(max-width: 768px)"
+            srcset="./assets/images/tea_room/notice_board_mobile.webp"
+            type="image/webp">
+          <source
+            srcset="./assets/images/tea_room/notice_board_pc.webp"
+            type="image/webp">
+          <img
+            class="tea-notice-board__image"
+            src="./assets/images/tea_room/notice_board_pc.png"
+            alt="森のお知らせ掲示板。1から5までのお知らせカードが並んでいます。">
+        </picture>
         <div
-          class="tea-notice-board__grid"
-          id="teaNoticeGrid"
+          class="tea-notice-board__hotspots"
+          id="teaNoticeHotspots"
           aria-label="森のお知らせ一覧">
-        </div>
-
-        <div class="tea-notice-board__memos" aria-hidden="true">
-          <div class="tea-notice-memo">今日もお茶が<br>おいしく<br>入りました。</div>
-          <div class="tea-notice-memo">森ねこが<br>ソファで<br>お昼寝中…zz</div>
-          <div class="tea-notice-memo">今日の木の実<br>のこり3つ</div>
-          <div class="tea-notice-memo">葉っぱ<br>募集中です♪</div>
-        </div>
-
-        <p class="tea-notice-board__guide">
-          <span>NEW 新着のお知らせ</span>
-          <span>1〜5 タップで詳細を表示</span>
-          <span>メモ風カードは飾りです</span>
-        </p>
-      </div>
-    </section>
-
-    <section class="tea-mobile-notices" aria-labelledby="teaMobileNoticeTitle">
-      <div class="tea-mobile-notices__inner">
-        <p class="tea-mobile-notices__brand">Tea Merry Forest</p>
-        <h1 class="tea-mobile-notices__title" id="teaMobileNoticeTitle">森のお知らせ</h1>
-        <div
-          class="tea-mobile-notices__list"
-          id="teaMobileNoticeList"
-          aria-label="森のお知らせ一覧">
-        </div>
-        <div class="tea-mobile-notices__ribbon">
-          今日もお茶がおいしく入りました。
-        </div>
-        <div class="tea-mobile-notices__dots" aria-hidden="true">
-          <span class="is-active"></span>
-          <span></span>
-          <span></span>
         </div>
       </div>
     </section>
@@ -152,6 +130,6 @@
         masterMessages[Math.floor(Math.random() * masterMessages.length)];
     }
   </script>
-  <script src="./tea_room.js?v=20260711-notice-board-root"></script>
+  <script src="./tea_room.js?v=20260711-notice-image-map"></script>
 </body>
 </html>

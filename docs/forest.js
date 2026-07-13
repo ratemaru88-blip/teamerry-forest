@@ -444,6 +444,175 @@
     "作者からのお知らせが届いています。\n本文DATAはこれから入ります。",
     "妖精からのお手紙が届いています。\n本文DATAはこれから入ります。",
   ];
+  const driftBottleMessagesJsonPath = "./data/export/drift_bottle_messages.json";
+  const driftBottleRecentKey = "teaMerryRecentDriftBottleMessageIds";
+  let driftBottleMessages = [];
+  let driftBottleMessagesPromise = null;
+
+  const normalizeDriftBottleMessage = (message = {}) => ({
+    id: String(message.id || "").trim(),
+    displayName: String(message.displayName || "おさんぽさん").trim() || "おさんぽさん",
+    category: String(message.category || "").trim(),
+    text: String(message.text || "").trim(),
+    lengthClass: String(message.lengthClass || "").trim(),
+    todayHokkori: message.todayHokkori === true,
+    hokkoriSlot: String(message.hokkoriSlot || "").trim(),
+    oddity: Number.isFinite(Number(message.oddity)) ? Number(message.oddity) : 0,
+    tags: Array.isArray(message.tags) ? message.tags.map((tag) => String(tag).trim()).filter(Boolean) : [],
+    enabled: message.enabled === true,
+    note: String(message.note || "").trim(),
+  });
+
+  async function loadDriftBottleMessages() {
+    if (driftBottleMessagesPromise) {
+      return driftBottleMessagesPromise;
+    }
+
+    driftBottleMessagesPromise = fetch(driftBottleMessagesJsonPath)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Drift bottle JSON load failed: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        driftBottleMessages = Array.isArray(data && data.messages)
+          ? data.messages.map(normalizeDriftBottleMessage).filter((message) => message.enabled && message.text)
+          : [];
+        return driftBottleMessages;
+      })
+      .catch((error) => {
+        console.warn("[TeaMerry Forest] Drift bottle messages failed:", error);
+        driftBottleMessages = [];
+        return driftBottleMessages;
+      });
+
+    return driftBottleMessagesPromise;
+  }
+
+  const readRecentDriftBottleIds = () => {
+    try {
+      const value = JSON.parse(window.localStorage.getItem(driftBottleRecentKey) || "[]");
+      return Array.isArray(value) ? value.map(String).filter(Boolean) : [];
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const rememberDriftBottleId = (id) => {
+    if (!id) {
+      return;
+    }
+
+    try {
+      const recent = readRecentDriftBottleIds().filter((item) => item !== id);
+      recent.unshift(id);
+      window.localStorage.setItem(driftBottleRecentKey, JSON.stringify(recent.slice(0, 12)));
+    } catch (error) {
+      // Recent-message memory is optional.
+    }
+  };
+
+  async function pickDriftBottleMessage() {
+    const messages = await loadDriftBottleMessages();
+    const candidates = messages.filter((message) => message.enabled && message.text);
+
+    if (!candidates.length) {
+      return pick(bottleMessages);
+    }
+
+    const recentIds = new Set(readRecentDriftBottleIds());
+    const freshCandidates = candidates.filter((message) => !recentIds.has(message.id));
+    const selected = pick(freshCandidates.length ? freshCandidates : candidates);
+
+    rememberDriftBottleId(selected.id);
+    return selected.text || pick(bottleMessages);
+  }
+
+  const getJstDateKey = (date = new Date()) => {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(date).reduce((result, part) => {
+      result[part.type] = part.value;
+      return result;
+    }, {});
+
+    return `${parts.year}-${parts.month}-${parts.day}`;
+  };
+
+  const hashString = (value) => {
+    let hash = 2166136261;
+    for (let index = 0; index < value.length; index += 1) {
+      hash ^= value.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  };
+
+  const createSeededRandom = (seedText) => {
+    let seed = hashString(seedText) || 1;
+    return () => {
+      seed = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      seed ^= seed + Math.imul(seed ^ (seed >>> 7), 61 | seed);
+      return ((seed ^ (seed >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+
+  const shuffleWithSeed = (items, seedText) => {
+    const random = createSeededRandom(seedText);
+    const shuffled = [...items];
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const nextIndex = Math.floor(random() * (index + 1));
+      [shuffled[index], shuffled[nextIndex]] = [shuffled[nextIndex], shuffled[index]];
+    }
+    return shuffled;
+  };
+
+  async function pickDailyHokkoriMessages(count = 3) {
+    const messages = await loadDriftBottleMessages();
+    const candidates = shuffleWithSeed(
+      messages.filter((message) => message.enabled && message.todayHokkori && message.text),
+      `hokkori-${getJstDateKey()}`
+    );
+    const selected = [];
+    const usedSlots = new Set();
+    const usedLengths = new Set();
+
+    const canUse = (message, strict) => {
+      if (message.oddity >= 3 && selected.some((item) => item.oddity >= 3)) {
+        return false;
+      }
+      if (!strict) {
+        return true;
+      }
+      return !usedSlots.has(message.hokkoriSlot) && !usedLengths.has(message.lengthClass);
+    };
+
+    for (const strict of [true, false]) {
+      for (const message of candidates) {
+        if (selected.length >= count) {
+          return selected;
+        }
+        if (selected.some((item) => item.id === message.id) || !canUse(message, strict)) {
+          continue;
+        }
+        selected.push(message);
+        usedSlots.add(message.hokkoriSlot);
+        usedLengths.add(message.lengthClass);
+      }
+    }
+
+    return selected;
+  }
+
+  window.TeaMerryDriftBottleMail = {
+    loadDriftBottleMessages,
+    pickDriftBottleMessage,
+    pickDailyHokkoriMessages,
+  };
 
   const birdPerches = [
     { x: 79.5, y: 85.5, scale: 0.78 },
@@ -1916,7 +2085,7 @@
         return;
       }
       bottle.classList.add("is-opening");
-      showBottleLetter(pick(bottleMessages));
+      pickDriftBottleMessage().then(showBottleLetter);
       playSoftTone(660, 0.2, 0.012);
       window.setTimeout(() => bottle.remove(), 780);
     });
