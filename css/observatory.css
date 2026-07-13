@@ -244,6 +244,29 @@ body {
   transform: rotate(-18deg);
 }
 
+.drift-bottle-receive {
+  position: absolute;
+  inset: 0;
+  z-index: 70;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: rgba(10, 8, 6, 0.18);
+  pointer-events: none;
+}
+
+.drift-bottle-receive.is-active {
+  display: flex;
+}
+
+.drift-bottle-receive-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .drift-bottle-modal {
   position: fixed;
   inset: 0;

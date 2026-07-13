@@ -53,6 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const driftBottleSender = document.getElementById("driftBottleSender");
   const driftBottleBody = document.getElementById("driftBottleBody");
   const driftBottleClose = document.getElementById("driftBottleClose");
+  const driftBottleReceive = document.getElementById("driftBottleReceive");
+  const driftBottleReceiveVideo = document.getElementById("driftBottleReceiveVideo");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
   const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
@@ -394,12 +396,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function openDriftBottleMessage() {
+  function showDriftBottleMessageModal() {
     if (!openDriftBottleMessage.current || !driftBottleModal) {
       return;
     }
 
-    openDriftBottleMessage.lastFocus = document.activeElement;
     const message = openDriftBottleMessage.current;
 
     if (driftBottleSender) {
@@ -412,13 +413,86 @@ document.addEventListener("DOMContentLoaded", () => {
 
     driftBottleModal.classList.add("is-active");
     driftBottleModal.setAttribute("aria-hidden", "false");
-    hideDriftBottleArrival();
-    markDriftBottleSeen();
     window.setTimeout(() => {
       if (driftBottleDialog) {
         driftBottleDialog.focus();
       }
     }, 0);
+  }
+
+  function stopDriftBottleReceiveAnimation() {
+    if (driftBottleReceiveVideo) {
+      driftBottleReceiveVideo.pause();
+      driftBottleReceiveVideo.currentTime = 0;
+    }
+
+    if (driftBottleReceive) {
+      driftBottleReceive.hidden = true;
+      driftBottleReceive.classList.remove("is-active");
+      driftBottleReceive.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  function playDriftBottleReceiveAnimation(onComplete) {
+    if (!driftBottleReceive || !driftBottleReceiveVideo) {
+      onComplete();
+      return;
+    }
+
+    if (playDriftBottleReceiveAnimation.isPlaying) {
+      return;
+    }
+
+    playDriftBottleReceiveAnimation.isPlaying = true;
+
+    let isFinished = false;
+    let fallbackTimer = null;
+
+    const finish = () => {
+      if (isFinished) {
+        return;
+      }
+
+      isFinished = true;
+      window.clearTimeout(fallbackTimer);
+      driftBottleReceiveVideo.removeEventListener("ended", finish);
+      driftBottleReceiveVideo.removeEventListener("error", finish);
+      playDriftBottleReceiveAnimation.isPlaying = false;
+      stopDriftBottleReceiveAnimation();
+      onComplete();
+    };
+
+    driftBottleReceive.hidden = false;
+    driftBottleReceive.classList.add("is-active");
+    driftBottleReceive.setAttribute("aria-hidden", "false");
+
+    driftBottleReceiveVideo.removeEventListener("ended", finish);
+    driftBottleReceiveVideo.removeEventListener("error", finish);
+    driftBottleReceiveVideo.addEventListener("ended", finish, { once: true });
+    driftBottleReceiveVideo.addEventListener("error", finish, { once: true });
+
+    try {
+      driftBottleReceiveVideo.currentTime = 0;
+      const playPromise = driftBottleReceiveVideo.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(finish);
+      }
+    } catch (error) {
+      finish();
+    }
+
+    fallbackTimer = window.setTimeout(finish, 12000);
+  }
+
+  function openDriftBottleMessage() {
+    if (!openDriftBottleMessage.current || !driftBottleModal) {
+      return;
+    }
+
+    openDriftBottleMessage.lastFocus = document.activeElement;
+    hideDriftBottleArrival();
+    markDriftBottleSeen();
+    playDriftBottleReceiveAnimation(showDriftBottleMessageModal);
   }
 
   function closeDriftBottleMessage() {
