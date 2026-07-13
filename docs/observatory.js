@@ -48,6 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const forestBackLink = document.querySelector(".forest-back");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
+  const wishLanternTalkDuration = 2800;
+  const wishLanternPauseDuration = 350;
+  const wishLanternLiluFrames = [
+    "./assets/images/lilu/present/lilu_full_present_normal.webp",
+    "./assets/images/lilu/present/lilu_full_present_mouth_open.webp",
+    "./assets/images/lilu/present/lilu_full_present_mouth_round.webp",
+    "./assets/images/lilu/present/lilu_full_present_mouth_smaile.webp",
+  ];
   const wishLanternTypes = [
     {
       src: "./assets/images/observatory/rantan/lantern_wood_closed.webp",
@@ -100,14 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
       image: "./assets/images/observatory/fairies/Lilu_v01.webp",
       alt: "リル",
       dayMessages: [
-        "あれ？ なにか届いてるよ。",
-        "風が瓶を運んできたみたい。",
-        "小さな便り、読んでみる？"
+        "ここでは、ボトルメールを書いて森へ流せるんだよ。"
       ],
       nightMessages: [
-        "星が少し増えた気がする。",
-        "今日は空がよく見えるね。",
-        "願いごと、そっと書いてみる？"
+        "夜の星風テラスでは、願い星を書いて空へ届けられるんだよ。"
       ]
     },
     {
@@ -142,9 +146,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 
-  const selectedFairy = fairies[Math.floor(Math.random() * fairies.length)];
+  const selectedFairy = fairies.find((fairy) => fairy.name === "リル") || fairies[0];
   const messages = isNight ? selectedFairy.nightMessages : selectedFairy.dayMessages;
-  const selectedMessage = messages[Math.floor(Math.random() * messages.length)];
+  const selectedMessage = isNight
+    ? "夜の星風テラスでは、願い星を書いて空へ届けられるんだよ。"
+    : "ここでは、ボトルメールを書いて森へ流せるんだよ。";
   const forestWhispers = isNight
     ? [
       "星のあいだを、静かな願いが流れていきます。",
@@ -172,8 +178,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const dialogueText = await window.pickCharacterDialogue({
-        character: selectedFairy.name,
+        character: "リル",
         place: "星風テラス",
+        section: "導入",
+        conditionTags: ["入室", isNight ? "夜" : "昼"],
         time: isNight ? "夜" : "昼"
       });
       fairyBalloon.textContent = dialogueText || selectedMessage;
@@ -499,10 +507,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function stopWishLanternSequence() {
     window.clearTimeout(startWishLanternSequence.timer);
+    window.clearTimeout(startWishLanternSequence.videoTimer);
+    window.clearInterval(startWishLanternSequence.mouthTimer);
 
     const scene = wishLanternView && wishLanternView.querySelector(".wish-lantern-scene");
+    const liluImage = wishLanternView && wishLanternView.querySelector(".wish-lantern-lilu");
     if (scene) {
-      scene.classList.remove("is-playing");
+      scene.classList.remove("is-speaking", "is-pausing", "is-playing");
+    }
+
+    if (liluImage) {
+      liluImage.src = wishLanternLiluFrames[0];
     }
 
     if (wishLanternVideo) {
@@ -530,34 +545,62 @@ document.addEventListener("DOMContentLoaded", () => {
     showView(wishLanternView);
     stopWishLanternSequence();
 
+    const scene = wishLanternView && wishLanternView.querySelector(".wish-lantern-scene");
+    const liluImage = wishLanternView && wishLanternView.querySelector(".wish-lantern-lilu");
+    const lanternItem = wishLanternView && wishLanternView.querySelector(".wish-lantern-item");
+    const lanternMessage = document.getElementById("wishLanternMessage");
+    const lantern = pickWishLanternType();
+
+    if (lanternItem) {
+      lanternItem.src = lantern.src;
+    }
+
+    if (lanternMessage) {
+      lanternMessage.innerHTML = lantern.message;
+    }
+
+    if (scene) {
+      scene.classList.add("is-speaking");
+    }
+
+    if (liluImage) {
+      let frameIndex = 0;
+      liluImage.src = wishLanternLiluFrames[frameIndex];
+      startWishLanternSequence.mouthTimer = window.setInterval(() => {
+        frameIndex = (frameIndex + 1) % wishLanternLiluFrames.length;
+        liluImage.src = wishLanternLiluFrames[frameIndex];
+      }, 260);
+    }
+
     startWishLanternSequence.timer = window.setTimeout(() => {
-      const scene = wishLanternView && wishLanternView.querySelector(".wish-lantern-scene");
-      const lanternItem = wishLanternView && wishLanternView.querySelector(".wish-lantern-item");
-      const lanternMessage = document.getElementById("wishLanternMessage");
-      const lantern = pickWishLanternType();
+      window.clearInterval(startWishLanternSequence.mouthTimer);
 
-      if (lanternItem) {
-        lanternItem.src = lantern.src;
-      }
-
-      if (lanternMessage) {
-        lanternMessage.innerHTML = lantern.message;
+      if (liluImage) {
+        liluImage.src = "./assets/images/lilu/present/lilu_full_present_mouth_smaile.webp";
       }
 
       if (scene) {
-        scene.classList.add("is-playing");
+        scene.classList.remove("is-speaking");
+        scene.classList.add("is-pausing");
       }
 
-      if (!wishLanternVideo) {
-        return;
-      }
+      startWishLanternSequence.videoTimer = window.setTimeout(() => {
+        if (scene) {
+          scene.classList.remove("is-pausing");
+          scene.classList.add("is-playing");
+        }
 
-      wishLanternVideo.currentTime = 0;
-      const playPromise = wishLanternVideo.play();
-      if (playPromise) {
-        playPromise.catch(() => {});
-      }
-    }, 3000);
+        if (!wishLanternVideo) {
+          return;
+        }
+
+        wishLanternVideo.currentTime = 0;
+        const playPromise = wishLanternVideo.play();
+        if (playPromise) {
+          playPromise.catch(() => {});
+        }
+      }, wishLanternPauseDuration);
+    }, wishLanternTalkDuration);
   }
 
   function updateCounter(input) {

@@ -14,14 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INPUT_XLSX = ROOT / "data" / "dialogue" / "TeaMerry_Dialogue_Spreadsheet_Template.xlsx"
 OUTPUT_JSON = ROOT / "data" / "export" / "dialogue.json"
 OUTPUT_REPORT = ROOT / "data" / "export" / "dialogue_export_report.md"
-WEBSITE_JSON = (
-    ROOT
-    / "WEBSITE（ホームページ）"
-    / "新HP_Tea Merry Forest"
-    / "data"
-    / "export"
-    / "dialogue.json"
-)
+DOCS_JSON = ROOT / "docs" / "data" / "export" / "dialogue.json"
 
 TARGET_SHEETS = ["Mint", "Lil", "Elder", "Maroud", "Forest", "Other"]
 EXPECTED_HEADERS = [
@@ -180,8 +173,8 @@ def write_json(dialogues: list[dict]) -> None:
     }
 
     OUTPUT_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    WEBSITE_JSON.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(OUTPUT_JSON, WEBSITE_JSON)
+    DOCS_JSON.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(OUTPUT_JSON, DOCS_JSON)
 
 
 def write_report(
@@ -201,7 +194,7 @@ def write_report(
         f"- Export日時: {datetime.now().astimezone().isoformat(timespec='seconds')}",
         f"- 入力ファイル: `{INPUT_XLSX.relative_to(ROOT)}`",
         f"- 出力ファイル: `{OUTPUT_JSON.relative_to(ROOT)}`",
-        f"- WEBSITEコピー: `{WEBSITE_JSON.relative_to(ROOT)}`",
+        f"- docs公開用コピー: `{DOCS_JSON.relative_to(ROOT)}`",
         f"- 総出力件数: {len(dialogues)}",
         f"- Export結果: {'成功' if success else '失敗'}",
         "",
@@ -272,7 +265,7 @@ def main() -> int:
         workbook.close()
 
     print(f"Exported {len(dialogues)} dialogues to {OUTPUT_JSON}")
-    print(f"Copied dialogue JSON to {WEBSITE_JSON}")
+    print(f"Copied dialogue JSON to {DOCS_JSON}")
     print(f"Wrote report to {OUTPUT_REPORT}")
     return 0
 

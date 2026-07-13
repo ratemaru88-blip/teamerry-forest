@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "source": "TeaMerry_Dialogue_Spreadsheet_Template.xlsx",
-  "updatedAt": "2026-07-09T00:28:46+09:00",
+  "updatedAt": "2026-07-13T13:33:02+09:00",
   "dialogues": [
     {
       "id": "M001",
@@ -1655,6 +1655,102 @@
       "text": "ここは時間がゆっくり流れる場所なんだ。",
       "enabled": true,
       "note": ""
+    },
+    {
+      "id": "LI091",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "導入",
+      "conditions": [
+        "入室",
+        "昼"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "ここでは、ボトルメールを書いて森へ流せるんだよ。",
+      "enabled": true,
+      "note": "星風テラス入室時の昼導入。"
+    },
+    {
+      "id": "LI092",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "導入",
+      "conditions": [
+        "入室",
+        "昼"
+      ],
+      "tone": "明るい",
+      "priority": 100,
+      "text": "昼の星風テラスでは、書いたボトルメールを森へそっと流せるよ。",
+      "enabled": true,
+      "note": "星風テラス入室時の昼導入。"
+    },
+    {
+      "id": "LI093",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "導入",
+      "conditions": [
+        "入室",
+        "昼"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "言葉をボトルに入れたら、ここから森へ送り出せるんだ。",
+      "enabled": true,
+      "note": "星風テラス入室時の昼導入。"
+    },
+    {
+      "id": "LI094",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "導入",
+      "conditions": [
+        "入室",
+        "夜"
+      ],
+      "tone": "神秘的",
+      "priority": 100,
+      "text": "夜の星風テラスでは、願い星を書いて空へ届けられるんだよ。",
+      "enabled": true,
+      "note": "星風テラス入室時の夜導入。"
+    },
+    {
+      "id": "LI095",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "導入",
+      "conditions": [
+        "入室",
+        "夜"
+      ],
+      "tone": "穏やか",
+      "priority": 100,
+      "text": "今夜は、願いを書いて星のランタンにそっと預けられるよ。",
+      "enabled": true,
+      "note": "星風テラス入室時の夜導入。"
+    },
+    {
+      "id": "LI096",
+      "type": "character",
+      "character": "リル",
+      "place": "星風テラス",
+      "section": "導入",
+      "conditions": [
+        "入室",
+        "夜"
+      ],
+      "tone": "静か",
+      "priority": 100,
+      "text": "夜のここでは、小さな願いを星空へ送り出せるんだ。",
+      "enabled": true,
+      "note": "星風テラス入室時の夜導入。"
     },
     {
       "id": "LI011",
