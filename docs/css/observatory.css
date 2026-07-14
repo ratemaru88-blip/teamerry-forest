@@ -215,6 +215,11 @@ body {
   display: none;
 }
 
+.drift-bottle-arrival.is-dismissed {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .drift-bottle-button {
   position: relative;
   display: block;
@@ -260,11 +265,20 @@ body {
   display: flex;
 }
 
+.drift-bottle-receive.is-ending {
+  background: rgba(5, 4, 3, 0.92);
+}
+
+.drift-bottle-receive.is-ending .drift-bottle-receive-video {
+  opacity: 0;
+}
+
 .drift-bottle-receive-video {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: opacity 0.32s ease;
 }
 
 .drift-bottle-modal {
@@ -275,70 +289,140 @@ body {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 24px;
-  background: rgba(18, 13, 9, 0.48);
+  padding: clamp(16px, 4vw, 42px);
+  background: rgba(8, 6, 4, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.42s ease;
 }
 
 .drift-bottle-modal.is-active {
   display: flex;
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.drift-bottle-dialog {
+.drift-bottle-letter-stage {
   box-sizing: border-box;
-  width: min(88vw, 380px);
-  padding: 26px 24px 22px;
-  border: 1px solid rgba(126, 88, 42, 0.26);
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 248, 224, 0.98), rgba(246, 228, 188, 0.98));
-  color: #4c331d;
-  box-shadow:
-    0 22px 48px rgba(0, 0, 0, 0.36),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.46);
+  position: relative;
+  width: min(92vw, 1440px);
+  max-height: 92vh;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("../assets/images/observatory/bottle_mail/desk_background_pc_v01.webp");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #4a3525;
+  outline: none;
 }
 
-.drift-bottle-title {
-  margin: 0 0 12px;
-  color: #7c5128;
-  font-size: 14px;
-  font-weight: bold;
-  letter-spacing: 0.08em;
-  text-align: center;
+.drift-bottle-title--sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.drift-bottle-letter-paper {
+  position: relative;
+  width: auto;
+  height: 76%;
+  max-width: 48%;
+  aspect-ratio: 0.78;
+  transform: translateY(18px) scale(0.98) rotate(-1deg);
+  filter: drop-shadow(0 14px 24px rgba(41, 24, 12, 0.28));
+  opacity: 0;
+  transition: opacity 0.52s ease 0.08s, transform 0.56s ease 0.08s;
+}
+
+.drift-bottle-modal.is-active .drift-bottle-letter-paper {
+  opacity: 1;
+  transform: translateY(0) scale(1) rotate(-1deg);
+}
+
+.drift-bottle-letter-paper-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.drift-bottle-letter-content {
+  position: absolute;
+  inset: 16% 13% 25%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  color: #4a3525;
+  font-family: "Kiwi Maru", "Zen Maru Gothic", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.42s ease 0.28s, transform 0.42s ease 0.28s;
+}
+
+.drift-bottle-modal.is-active .drift-bottle-letter-content {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .drift-bottle-sender {
-  margin: 0 0 14px;
-  color: #5a3a21;
-  font-size: 16px;
+  margin: 0 0 18px;
+  color: #513827;
+  font-size: clamp(22px, 1.9vw, 28px);
   font-weight: bold;
-  line-height: 1.5;
+  line-height: 1.7;
 }
 
 .drift-bottle-body {
-  min-height: 4.5em;
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 100%;
   margin: 0;
-  color: #4b321d;
-  font-size: 16px;
-  line-height: 1.9;
+  overflow: auto;
+  color: #4a3525;
+  font-size: clamp(26px, 2.25vw, 34px);
+  line-height: 1.8;
   white-space: pre-wrap;
   word-break: normal;
   word-break: auto-phrase;
   overflow-wrap: break-word;
   line-break: strict;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(94, 62, 35, 0.32) transparent;
 }
 
 .drift-bottle-close {
-  display: block;
-  min-width: 120px;
-  margin: 22px auto 0;
-  padding: 10px 18px;
-  border: 0;
+  position: absolute;
+  right: 13%;
+  bottom: 9%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 118px;
+  min-height: 38px;
+  padding: 9px 16px;
+  border: 1px solid rgba(100, 68, 36, 0.2);
   border-radius: 999px;
   cursor: pointer;
-  background: rgba(115, 80, 42, 0.18);
-  color: #4f331f;
+  background: rgba(248, 225, 174, 0.42);
+  color: #513827;
   font: inherit;
+  font-size: 14px;
   font-weight: bold;
+  box-shadow: 0 4px 10px rgba(65, 38, 17, 0.12);
 }
 
 .drift-bottle-close:focus-visible {
@@ -944,14 +1028,53 @@ body {
     width: clamp(34px, 10vw, 58px);
   }
 
-  .drift-bottle-dialog {
-    width: min(88vw, 340px);
-    padding: 23px 20px 20px;
+  .drift-bottle-modal {
+    padding: max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    background: rgba(8, 6, 4, 0.78);
+  }
+
+  .drift-bottle-letter-stage {
+    width: 100%;
+    max-height: 100dvh;
+    aspect-ratio: auto;
+    background-image: none;
+  }
+
+  .drift-bottle-letter-paper {
+    width: min(94vw, 430px);
+    height: auto;
+    max-width: 94vw;
+    max-height: 88dvh;
+    aspect-ratio: 0.78;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  .drift-bottle-modal.is-active .drift-bottle-letter-paper {
+    transform: translateY(0) scale(1);
+  }
+
+  .drift-bottle-letter-content {
+    inset: 15% 13% 17%;
+    justify-content: center;
+  }
+
+  .drift-bottle-sender {
+    margin-bottom: 12px;
+    font-size: clamp(18px, 5.2vw, 22px);
   }
 
   .drift-bottle-body {
-    font-size: 15px;
-    line-height: 1.85;
+    font-size: clamp(20px, 5.5vw, 26px);
+    line-height: 1.8;
+  }
+
+  .drift-bottle-close {
+    right: 13%;
+    bottom: 8%;
+    min-width: 108px;
+    min-height: 36px;
+    padding: 8px 14px;
+    font-size: 13px;
   }
 
   .observatory-view {
@@ -1041,6 +1164,20 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .drift-bottle-button {
     animation: none;
+  }
+
+  .drift-bottle-receive-video,
+  .drift-bottle-modal,
+  .drift-bottle-letter-paper,
+  .drift-bottle-letter-content {
+    transition: none;
+  }
+
+  .drift-bottle-letter-paper,
+  .drift-bottle-modal.is-active .drift-bottle-letter-paper,
+  .drift-bottle-letter-content,
+  .drift-bottle-modal.is-active .drift-bottle-letter-content {
+    transform: none;
   }
 }
 

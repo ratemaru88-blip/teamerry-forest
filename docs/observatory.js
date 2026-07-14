@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const driftBottleArrival = document.getElementById("driftBottleArrival");
   const driftBottleButton = document.getElementById("driftBottleButton");
   const driftBottleModal = document.getElementById("driftBottleModal");
-  const driftBottleDialog = driftBottleModal && driftBottleModal.querySelector(".drift-bottle-dialog");
+  const driftBottleDialog = driftBottleModal && driftBottleModal.querySelector(".drift-bottle-letter-stage");
   const driftBottleSender = document.getElementById("driftBottleSender");
   const driftBottleBody = document.getElementById("driftBottleBody");
   const driftBottleClose = document.getElementById("driftBottleClose");
@@ -351,8 +351,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    driftBottleArrival.hidden = true;
+    driftBottleArrival.hidden = false;
     driftBottleArrival.classList.remove("is-visible");
+    driftBottleArrival.classList.add("is-dismissed");
+
+    if (driftBottleButton) {
+      driftBottleButton.tabIndex = -1;
+    }
   }
 
   function playDriftBottleArrivalSe() {
@@ -404,13 +409,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const message = openDriftBottleMessage.current;
 
     if (driftBottleSender) {
-      driftBottleSender.textContent = message.displayName || "おさんぽさん";
+      driftBottleSender.textContent = `${message.displayName || "おさんぽさん"}より`;
     }
 
     if (driftBottleBody) {
       driftBottleBody.textContent = message.text;
     }
 
+    driftBottleModal.hidden = false;
     driftBottleModal.classList.add("is-active");
     driftBottleModal.setAttribute("aria-hidden", "false");
     window.setTimeout(() => {
@@ -428,7 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (driftBottleReceive) {
       driftBottleReceive.hidden = true;
-      driftBottleReceive.classList.remove("is-active");
+      driftBottleReceive.classList.remove("is-active", "is-ending");
       driftBottleReceive.setAttribute("aria-hidden", "true");
     }
   }
@@ -458,11 +464,15 @@ document.addEventListener("DOMContentLoaded", () => {
       driftBottleReceiveVideo.removeEventListener("ended", finish);
       driftBottleReceiveVideo.removeEventListener("error", finish);
       playDriftBottleReceiveAnimation.isPlaying = false;
-      stopDriftBottleReceiveAnimation();
-      onComplete();
+      driftBottleReceive.classList.add("is-ending");
+      window.setTimeout(() => {
+        stopDriftBottleReceiveAnimation();
+        onComplete();
+      }, 320);
     };
 
     driftBottleReceive.hidden = false;
+    driftBottleReceive.classList.remove("is-ending");
     driftBottleReceive.classList.add("is-active");
     driftBottleReceive.setAttribute("aria-hidden", "false");
 
@@ -489,6 +499,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (driftBottleModal.classList.contains("is-active") || playDriftBottleReceiveAnimation.isPlaying) {
+      return;
+    }
+
     openDriftBottleMessage.lastFocus = document.activeElement;
     hideDriftBottleArrival();
     markDriftBottleSeen();
@@ -503,6 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const wasActive = driftBottleModal.classList.contains("is-active");
     driftBottleModal.classList.remove("is-active");
     driftBottleModal.setAttribute("aria-hidden", "true");
+    driftBottleModal.hidden = true;
 
     if (wasActive && openDriftBottleMessage.lastFocus && typeof openDriftBottleMessage.lastFocus.focus === "function") {
       openDriftBottleMessage.lastFocus.focus();
@@ -517,7 +532,9 @@ document.addEventListener("DOMContentLoaded", () => {
     openDriftBottleMessage.current = message;
     rememberDriftBottleId(message.id);
     driftBottleArrival.hidden = false;
+    driftBottleArrival.classList.remove("is-dismissed");
     driftBottleArrival.classList.add("is-visible");
+    driftBottleButton.removeAttribute("tabindex");
     playDriftBottleArrivalSe();
     showLilDriftBottleArrivalMessage();
   }
@@ -956,7 +973,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (driftBottleModal) {
     driftBottleModal.addEventListener("click", (event) => {
-      if (event.target === driftBottleModal) {
+      if (!event.target.closest(".drift-bottle-letter-paper")) {
         closeDriftBottleMessage();
       }
     });

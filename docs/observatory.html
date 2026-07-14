@@ -123,10 +123,11 @@
         <div
             id="driftBottleModal"
             class="drift-bottle-modal"
-            aria-hidden="true">
+            aria-hidden="true"
+            hidden>
 
             <div
-                class="drift-bottle-dialog"
+                class="drift-bottle-letter-stage"
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="driftBottleTitle"
@@ -134,32 +135,45 @@
 
                 <p
                     id="driftBottleTitle"
-                    class="drift-bottle-title">
+                    class="drift-bottle-title drift-bottle-title--sr">
 
                     流れ着いたボトルメール
 
                 </p>
 
-                <p
-                    id="driftBottleSender"
-                    class="drift-bottle-sender">
+                <div class="drift-bottle-letter-paper">
 
-                    おさんぽさん
+                    <img
+                        src="./assets/images/observatory/bottle_mail/paper_letter_v01.png"
+                        alt=""
+                        class="drift-bottle-letter-paper-image">
 
-                </p>
+                    <div class="drift-bottle-letter-content">
 
-                <p
-                    id="driftBottleBody"
-                    class="drift-bottle-body"></p>
+                        <p
+                            id="driftBottleSender"
+                            class="drift-bottle-sender">
 
-                <button
-                    type="button"
-                    id="driftBottleClose"
-                    class="drift-bottle-close">
+                            おさんぽさんより
 
-                    閉じる
+                        </p>
 
-                </button>
+                        <p
+                            id="driftBottleBody"
+                            class="drift-bottle-body"></p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="driftBottleClose"
+                        class="drift-bottle-close">
+
+                        紙をたたむ
+
+                    </button>
+
+                </div>
 
             </div>
 
