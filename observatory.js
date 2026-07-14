@@ -65,6 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const driftBottleRecentKey = "teaMerryDriftBottleRecentIds";
   const driftBottleArrivalChance = 0.4;
   const driftBottleArrivalAudio = typeof Audio === "function" ? new Audio(driftBottleArrivalSePath) : null;
+  let observatoryVideoFallbackTimer = null;
+  let observatoryVideoReturnFocus = null;
   const wishLanternTalkDuration = 2800;
   const wishLanternPauseDuration = 350;
   const wishLanternLiluFrames = [
@@ -623,12 +625,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function setVideoReturnFocus(element) {
+    observatoryVideoReturnFocus = element || null;
+  }
+
+  function restoreVideoReturnFocus() {
+    if (!observatoryVideoReturnFocus || !observatoryVideoReturnFocus.isConnected) {
+      observatoryVideoReturnFocus = null;
+      return;
+    }
+
+    try {
+      observatoryVideoReturnFocus.focus({ preventScroll: true });
+    } catch (error) {
+      observatoryVideoReturnFocus.focus();
+    }
+
+    observatoryVideoReturnFocus = null;
+  }
+
+  function scheduleVideoFallback(duration = 16000) {
+    window.clearTimeout(observatoryVideoFallbackTimer);
+    observatoryVideoFallbackTimer = window.setTimeout(closeViews, duration);
+  }
+
   function closeViews() {
+    window.clearTimeout(observatoryVideoFallbackTimer);
     closeBottlePrivacyModal();
     closeWishPrivacyModal();
     closeDriftBottleMessage();
     stopWishLanternSequence();
     showView(null);
+    restoreVideoReturnFocus();
   }
 
   function openBottlePrivacyModal() {
@@ -819,6 +847,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startBottleFlush() {
     closeBottlePrivacyModal();
+    setVideoReturnFocus(bottleMailButton);
     showView(bottleFlushView);
 
     if (!bottleFlushVideo) {
@@ -831,6 +860,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (playPromise) {
       playPromise.catch(closeViews);
     }
+    scheduleVideoFallback();
   }
 
   function stopWishLanternSequence() {
@@ -870,6 +900,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startWishLanternSequence() {
     closeWishPrivacyModal();
+    setVideoReturnFocus(wishStarButton);
     showView(wishLanternView);
     stopWishLanternSequence();
 
@@ -927,6 +958,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (playPromise) {
           playPromise.catch(() => {});
         }
+        scheduleVideoFallback();
       }, wishLanternPauseDuration);
     }, wishLanternTalkDuration);
   }
@@ -1033,10 +1065,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (bottleFlushVideo) {
     bottleFlushVideo.addEventListener("ended", closeViews);
+    bottleFlushVideo.addEventListener("error", closeViews);
   }
 
   if (wishLanternVideo) {
     wishLanternVideo.addEventListener("ended", closeViews);
+    wishLanternVideo.addEventListener("error", closeViews);
   }
 
   scheduleDriftBottleArrival();

@@ -249,35 +249,53 @@ body {
   transform: rotate(-18deg);
 }
 
-.drift-bottle-receive {
+.observatory-video-overlay {
   position: absolute;
   inset: 0;
   z-index: 70;
   display: none;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  padding: clamp(18px, 4vw, 48px);
   overflow: hidden;
-  background: rgba(10, 8, 6, 0.18);
+  background: rgba(0, 0, 0, 0.55);
   pointer-events: none;
 }
 
-.drift-bottle-receive.is-active {
+.observatory-video-overlay.is-active {
   display: flex;
 }
 
-.drift-bottle-receive.is-ending {
-  background: rgba(5, 4, 3, 0.92);
+.observatory-video-stage {
+  position: relative;
+  width: min(78vw, 1100px);
+  max-height: 78vh;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 6px solid rgba(94, 57, 30, 0.92);
+  border-radius: 18px;
+  background: #160e09;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.48);
 }
 
-.drift-bottle-receive.is-ending .drift-bottle-receive-video {
-  opacity: 0;
-}
-
-.drift-bottle-receive-video {
+.observatory-video-player {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #160e09;
+}
+
+.drift-bottle-receive.is-ending {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.drift-bottle-receive.is-ending .observatory-video-stage {
+  opacity: 0;
+}
+
+.drift-bottle-receive .observatory-video-stage {
   transition: opacity 0.32s ease;
 }
 
@@ -526,13 +544,13 @@ body {
 .observatory-view--wish-lantern {
   align-items: center;
   justify-content: center;
-  background: rgba(5, 6, 11, 0.88);
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .observatory-view--bottle-flush {
   align-items: center;
   justify-content: center;
-  background: #070504;
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .observatory-view--bottle-write.is-active,
@@ -561,12 +579,6 @@ body {
 .wish-write-card {
   background-image: url("../assets/images/observatory/backgrounds/bg_wish_mobile.webp");
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.34);
-}
-
-.bottle-flush-video {
-  width: min(100vw, calc(100vh * 16 / 9));
-  height: min(100vh, calc(100vw * 9 / 16));
-  object-fit: contain;
 }
 
 .observatory-view__back {
@@ -841,6 +853,11 @@ body {
   justify-content: center;
 }
 
+.wish-lantern-scene.is-playing {
+  width: 100%;
+  min-height: 0;
+}
+
 .wish-lantern-character {
   position: relative;
   width: min(280px, 64vw);
@@ -881,14 +898,8 @@ body {
   transform: translateX(-50%);
 }
 
-.wish-lantern-video {
-  position: absolute;
-  inset: 0;
+.wish-lantern-video-stage {
   display: none;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: #020307;
 }
 
 .wish-lantern-scene.is-playing .wish-lantern-character,
@@ -896,7 +907,7 @@ body {
   display: none;
 }
 
-.wish-lantern-scene.is-playing .wish-lantern-video {
+.wish-lantern-scene.is-playing .wish-lantern-video-stage {
   display: block;
 }
 
@@ -1082,6 +1093,18 @@ body {
     background-size: cover;
   }
 
+  .observatory-video-overlay {
+    padding: max(14px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .observatory-video-stage {
+    width: min(94vw, calc(86dvh * 16 / 9));
+    max-height: 86dvh;
+    border-width: 3px;
+    border-radius: 12px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.46);
+  }
+
   .bottle-write-card,
   .wish-write-card {
     width: min(100vw, 56.25vh);
@@ -1166,7 +1189,7 @@ body {
     animation: none;
   }
 
-  .drift-bottle-receive-video,
+  .drift-bottle-receive .observatory-video-stage,
   .drift-bottle-modal,
   .drift-bottle-letter-paper,
   .drift-bottle-letter-content {

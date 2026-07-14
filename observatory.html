@@ -6,6 +6,7 @@
 
     <title>星風のテラス | TeaMerry Forest</title>
 
+    <link rel="icon" href="./assets/icons/favicon.ico">
     <link rel="stylesheet" href="./css/observatory.css">
 </head>
 
@@ -106,16 +107,20 @@
 
         <div
             id="driftBottleReceive"
-            class="drift-bottle-receive"
+            class="observatory-video-overlay observatory-video-overlay--bottle-receive drift-bottle-receive"
             aria-hidden="true"
             hidden>
 
-            <video
-                id="driftBottleReceiveVideo"
-                class="drift-bottle-receive-video"
-                src="./assets/images/observatory/animations/bottle_receive_v02.webm"
-                playsinline
-                preload="auto"></video>
+            <div class="observatory-video-stage">
+
+                <video
+                    id="driftBottleReceiveVideo"
+                    class="observatory-video-player drift-bottle-receive-video"
+                    src="./assets/images/observatory/animations/bottle_receive_v02.webm"
+                    playsinline
+                    preload="auto"></video>
+
+            </div>
 
         </div>
 
@@ -416,12 +421,16 @@
 
                 </div>
 
-                <video
-                    id="wishLanternVideo"
-                    class="wish-lantern-video"
-                    src="./assets/images/observatory/animations/wishing_Star_v01.webm"
-                    playsinline
-                    preload="auto"></video>
+                <div class="observatory-video-stage wish-lantern-video-stage">
+
+                    <video
+                        id="wishLanternVideo"
+                        class="observatory-video-player wish-lantern-video"
+                        src="./assets/images/observatory/animations/wishing_Star_v01.webm"
+                        playsinline
+                        preload="auto"></video>
+
+                </div>
 
             </div>
 
@@ -461,15 +470,19 @@
 
         <section
             id="bottleFlushView"
-            class="observatory-view observatory-view--bottle-flush"
+            class="observatory-view observatory-video-overlay observatory-video-overlay--bottle-send observatory-view--bottle-flush"
             aria-hidden="true">
 
-            <video
-                id="bottleFlushVideo"
-                class="bottle-flush-video"
-                src="./assets/images/observatory/animations/bottle_flush_v02.mp4"
-                playsinline
-                preload="auto"></video>
+            <div class="observatory-video-stage">
+
+                <video
+                    id="bottleFlushVideo"
+                    class="observatory-video-player bottle-flush-video"
+                    src="./assets/images/observatory/animations/bottle_flush_v02.mp4"
+                    playsinline
+                    preload="auto"></video>
+
+            </div>
 
         </section>
 
