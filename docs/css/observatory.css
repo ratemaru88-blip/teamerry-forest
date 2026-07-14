@@ -1061,6 +1061,10 @@ body {
     background: none;
   }
 
+  .observatory.is-night .observatory-stage {
+    background: none;
+  }
+
   .observatory-bg--day-pc {
     display: none;
   }
