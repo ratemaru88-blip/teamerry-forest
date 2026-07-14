@@ -1,4807 +1,2707 @@
 {
-  "version": "1.0",
-  "source": "TeaMerry 漂着ボトルメールマスター Ver.1.xlsx",
-  "updatedAt": "2026-07-13T17:19:44+09:00",
+  "version": "2.0",
+  "source": "TeaMerry_Drift_Bottle_Mail_Master_v02.xlsx",
+  "updatedAt": "2026-07-15T03:38:21+09:00",
   "messages": [
     {
       "id": "BM001",
-      "displayName": "おさんぽさん",
       "category": "日常",
-      "text": "今日は目覚ましより少し早く起きました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "朝",
-        "生活"
-      ],
-      "enabled": true,
-      "note": ""
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ早起きできました。",
+      "text": "今日は少しだけ早起きできました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM002",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "洗濯物が一度で全部乾きました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "家事",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "風が気持ちよかったです。",
+      "text": "風が気持ちよかったです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM003",
-      "displayName": "こむぎさん",
-      "category": "日常",
-      "text": "帰り道に、いつもと違う道を歩いてみました。知らない家の庭に、小さな黄色い花が咲いていました。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "散歩",
-        "花"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "あったかいパンがおいしかったです。",
+      "text": "あったかいパンがおいしかったです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM004",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "今日は特に何もありませんでした。何もなかったことを、少しだけうれしく思いました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "穏やか",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "どんぐりをポケットに入れたまま洗ってしまいました。",
+      "text": "どんぐりをポケットに入れたまま洗ってしまいました。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM005",
-      "displayName": "ねむねこさん",
-      "category": "日常",
-      "text": "靴を左右反対に履きかけました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "失敗",
-        "朝"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ふしぎ",
+      "displayName": "おさんぽさん",
+      "message": "昨日見た夢をまだ少し覚えています。",
+      "text": "昨日見た夢をまだ少し覚えています。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM006",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "郵便受けに何も入っていませんでした。でも、のぞいた時の風が気持ちよかったです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "風",
-        "生活"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は何もしない日にしました。",
+      "text": "今日は何もしない日にしました。",
+      "handwritingTemplate": "careful",
+      "enabled": true
     },
     {
       "id": "BM007",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "昨日なくしたと思ったペンが、普通に机の上にありました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "発見",
-        "生活"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "森で迷いました。でも楽しかったです。",
+      "text": "森で迷いました。でも楽しかったです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM008",
-      "displayName": "みずたまさん",
       "category": "日常",
-      "text": "少し早く家を出たら、駅までゆっくり歩けました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "散歩",
-        "朝"
-      ],
-      "enabled": true,
-      "note": ""
+      "displayName": "おさんぽさん",
+      "message": "今日はここまで。",
+      "text": "今日はここまで。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM009",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "今日やろうと思っていたことを、半分だけできました。半分できたので、よしとします。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "達成",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "雲がパンみたいでした。",
+      "text": "雲がパンみたいでした。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM010",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "窓を開けたら、知らない鳥の声がしました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 0,
-      "tags": [
-        "鳥",
-        "朝"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "また明日も歩こうかな。",
+      "text": "また明日も歩こうかな。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM011",
-      "displayName": "はなまるさん",
       "category": "日常",
-      "text": "新しいタオルを使いました。思ったよりふわふわでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "生活",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "displayName": "おさんぽさん",
+      "message": "今日は少し遠回りして帰りました。いつも通らない道で小さな花が咲いていて、なんだか得をした気持ちになりました。また歩いてみようかな。",
+      "text": "今日は少し遠回りして帰りました。いつも通らない道で小さな花が咲いていて、なんだか得をした気持ちになりました。また歩いてみようかな。",
+      "handwritingTemplate": "careful",
+      "enabled": true
     },
     {
       "id": "BM012",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "買い物に行ったのに、一番必要なものを買い忘れました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "買い物",
-        "失敗"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "風が強かったので帽子を押さえながら歩いていました。葉っぱまで一緒に転がっていくのを見て、少しだけ笑ってしまいました。",
+      "text": "風が強かったので帽子を押さえながら歩いていました。葉っぱまで一緒に転がっていくのを見て、少しだけ笑ってしまいました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM013",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "今日は階段を使いました。途中で少し後悔しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "運動",
-        "生活"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は何も特別なことはありませんでした。でも何もない一日も、あとから思い返すと案外大事だったりするのかな、とお茶を飲みながら思いました。",
+      "text": "今日は何も特別なことはありませんでした。でも何もない一日も、あとから思い返すと案外大事だったりするのかな、とお茶を飲みながら思いました。",
+      "handwritingTemplate": "careful",
+      "enabled": true
     },
     {
       "id": "BM014",
-      "displayName": "くるみさん",
-      "category": "日常",
-      "text": "久しぶりに手紙を書きました。字が前より少し丸くなっていました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "手紙",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "TeaMerry",
+      "displayName": "おさんぽさん",
+      "message": "星風テラスで空を見ていました。誰も話していないのに、静かな時間だけがゆっくり流れていて、それだけで少し安心しました。",
+      "text": "星風テラスで空を見ていました。誰も話していないのに、静かな時間だけがゆっくり流れていて、それだけで少し安心しました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM015",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "夕方の空が明るかったので、帰る前に少しだけ立ち止まりました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 0,
-      "tags": [
-        "夕方",
-        "空"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パンを焼こうと思ったのに、焼き上がってからバターを買い忘れていたことを思い出しました。そのまま食べたら、それはそれでおいしかったです。",
+      "text": "パンを焼こうと思ったのに、焼き上がってからバターを買い忘れていたことを思い出しました。そのまま食べたら、それはそれでおいしかったです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM016",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "今日の予定は三つでした。二つ終わって、一つは明日に引っ越しました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "予定",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "鳥の声が聞こえたので探してみたけれど、最後まで見つけられませんでした。でも、それも悪くなかったです。",
+      "text": "鳥の声が聞こえたので探してみたけれど、最後まで見つけられませんでした。でも、それも悪くなかったです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM017",
-      "displayName": "まめさん",
       "category": "日常",
-      "text": "古い上着のポケットから、去年の飴が出てきました。食べるのはやめました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "発見",
-        "食べ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ早く眠れそうです。",
+      "text": "今日は少しだけ早く眠れそうです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM018",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "電車で座れました。今日はそれだけで少し助かりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "移動",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "あたたかい飲み物を両手で持つと、なんとなく安心します。",
+      "text": "あたたかい飲み物を両手で持つと、なんとなく安心します。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM019",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "日常",
-      "text": "机の上を片づけたら、机が思っていたより広かったです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "掃除",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "どこへ行こうとしていたんだっけ。",
+      "text": "どこへ行こうとしていたんだっけ。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM020",
-      "displayName": "そらまめさん",
-      "category": "日常",
-      "text": "今日という日を説明しようとしたけれど、普通の日だったので、普通の日と書いておきます。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 1,
-      "tags": [
-        "生活",
-        "つぶやき"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ふしぎ",
+      "displayName": "おさんぽさん",
+      "message": "昨日の夢に出てきた場所を思い出そうとしているけれど、あと少しのところで思い出せません。",
+      "text": "昨日の夢に出てきた場所を思い出そうとしているけれど、あと少しのところで思い出せません。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM021",
-      "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "朝のトーストが、ちょうど好きな色に焼けました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "朝食",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "TeaMerry",
+      "displayName": "みちくさ",
+      "message": "また森へ遊びに来ます。",
+      "text": "また森へ遊びに来ます。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM022",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "プリンを買いました。冷蔵庫を開けるたびに、まだあることを確認しています。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "プリン",
-        "楽しみ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日はここまで。",
+      "text": "今日はここまで。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM023",
-      "displayName": "あんこさん",
-      "category": "食べ物",
-      "text": "今日のおにぎりは少し塩が多かったです。でも、それも悪くありませんでした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "昼食",
-        "日常"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "雲がゆっくり流れていました。急いでいるのは私だけだったみたいです。",
+      "text": "雲がゆっくり流れていました。急いでいるのは私だけだったみたいです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM024",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "コーヒーを入れたのに、飲むのを忘れて冷たくなりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "飲み物",
-        "失敗"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "小さな子が落ち葉を集めていました。宝物みたいに大事そうでした。",
+      "text": "小さな子が落ち葉を集めていました。宝物みたいに大事そうでした。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM025",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "久しぶりにカレーを作りました。二日目の分まで作ったのに、ほとんど食べてしまいました。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "料理",
-        "カレー"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "あれ、なんて書こうとしてたんだっけ……",
+      "text": "あれ、なんて書こうとしてたんだっけ……",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM026",
-      "displayName": "こはくさん",
-      "category": "食べ物",
-      "text": "小さなクッキーを一枚だけ食べるつもりでした。予定とは変わるものですね。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "お菓子",
-        "予定変更"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "靴ひもが今日は一回もほどけませんでした。ちょっとだけいい日でした。",
+      "text": "靴ひもが今日は一回もほどけませんでした。ちょっとだけいい日でした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM027",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "スーパーで好きなパンが最後の一個でした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "パン",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "木の葉が一枚だけ、ずっと同じ場所をくるくる回っていました。",
+      "text": "木の葉が一枚だけ、ずっと同じ場所をくるくる回っていました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM028",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "温かいスープを飲んだら、思っていたよりおなかが安心しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "スープ",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お茶を入れたのに、お茶を入れたことを忘れていました。",
+      "text": "お茶を入れたのに、お茶を入れたことを忘れていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM029",
-      "displayName": "しろたまさん",
-      "category": "食べ物",
-      "text": "目玉焼きがきれいな丸になりました。写真は撮りませんでしたが、心の中では撮りました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "朝食",
-        "料理"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "TeaMerry",
+      "displayName": "おさんぽさん",
+      "message": "ランタンの灯りって、なんだか帰りたくなくなります。",
+      "text": "ランタンの灯りって、なんだか帰りたくなくなります。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM030",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "今日のりんごは、音までおいしかったです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "果物",
-        "音"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は少しだけ立ち止まってみました。急がなくても景色はちゃんと待っていてくれるんですね。",
+      "text": "今日は少しだけ立ち止まってみました。急がなくても景色はちゃんと待っていてくれるんですね。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM031",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "冷蔵庫の奥に、忘れていたゼリーがいました。賞味期限は大丈夫でした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 2,
-      "tags": [
-        "ゼリー",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "鳥が鳴いていました。返事をしたら、もう一回鳴いてくれました。",
+      "text": "鳥が鳴いていました。返事をしたら、もう一回鳴いてくれました。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM032",
-      "displayName": "ゆずさん",
-      "category": "食べ物",
-      "text": "お茶を入れている間だけ、何も考えずに湯気を見ていました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "お茶",
-        "穏やか"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "洗濯物がよく乾きました。なんとなくうれしいです。",
+      "text": "洗濯物がよく乾きました。なんとなくうれしいです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM033",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "今日はお味噌汁がちょうどよい濃さでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "食事",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "帰り道で猫があくびをしていました。私まで眠くなりました。",
+      "text": "帰り道で猫があくびをしていました。私まで眠くなりました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM034",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "食べ物",
-      "text": "パンを少し焦がしました。焦げたところが、知らない島の形に見えました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "パン",
-        "地図"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パンを買いに行ったのに、パン以外をいっぱい買って帰りました。",
+      "text": "パンを買いに行ったのに、パン以外をいっぱい買って帰りました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM035",
-      "displayName": "ことりさん",
-      "category": "食べ物",
-      "text": "誰にも見られていないので、最後の一口をゆっくり食べました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "食事",
-        "満足"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "TeaMerry",
+      "displayName": "おさんぽさん",
+      "message": "森のベンチに座っていたら、時間を忘れてしまいました。",
+      "text": "森のベンチに座っていたら、時間を忘れてしまいました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM036",
+      "category": "ふしぎ",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "犬が散歩の途中で、同じ葉っぱを二回見に戻りました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 1,
-      "tags": [
-        "犬",
-        "散歩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "同じ夢をまた見たような気がします。でも内容は思い出せません。",
+      "text": "同じ夢をまた見たような気がします。でも内容は思い出せません。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM037",
-      "displayName": "ねこやまさん",
-      "category": "動物",
-      "text": "猫に椅子を取られました。交渉しましたが、返してもらえませんでした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "猫",
-        "生活"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日はここまで。",
+      "text": "今日はここまで。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM038",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "駅の近くで鳩が一羽、ずっと同じ方向を見ていました。何があったのかは分かりません。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 1,
-      "tags": [
-        "鳩",
-        "不思議"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "雨が止んだあと、葉っぱが少し光って見えました。",
+      "text": "雨が止んだあと、葉っぱが少し光って見えました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM039",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "小さな犬が、大きな犬の後ろを一生懸命歩いていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 0,
-      "tags": [
-        "犬",
-        "散歩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "小さな花を見つけました。誰にも教えずに帰ってきました。",
+      "text": "小さな花を見つけました。誰にも教えずに帰ってきました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM040",
-      "displayName": "すずさん",
-      "category": "動物",
-      "text": "ベランダに鳥が来ました。こちらを見てから、何も言わずに帰りました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 1,
-      "tags": [
-        "鳥",
-        "訪問"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "どこへ向かって歩いていたんだっけ。",
+      "text": "どこへ向かって歩いていたんだっけ。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM041",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "猫が空の箱に入り、しばらく店長の顔をしていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 2,
-      "tags": [
-        "猫",
-        "箱"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "またリルに会えたら、お茶のおかわりをお願いしたいです。",
+      "text": "またリルに会えたら、お茶のおかわりをお願いしたいです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM042",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "散歩中の犬と目が合いました。たぶん、少し笑っていたと思います。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 1,
-      "tags": [
-        "犬",
-        "笑顔"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "夕焼けを見ていたら、帰るのが少し遅くなりました。でも今日はそれでよかったです。",
+      "text": "夕焼けを見ていたら、帰るのが少し遅くなりました。でも今日はそれでよかったです。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM043",
-      "displayName": "もこさん",
-      "category": "動物",
-      "text": "家の近くで、リスのような何かを見ました。リスではなかったかもしれません。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "動物",
-        "不明"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "新しい靴はまだ少しだけ歩き方がぎこちないです。",
+      "text": "新しい靴はまだ少しだけ歩き方がぎこちないです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM044",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "金魚が一匹だけ、こちらを待っていたように近づいてきました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 0,
-      "tags": [
-        "金魚",
-        "癒し"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "何もしない時間って、思っていたより大事なんですね。",
+      "text": "何もしない時間って、思っていたより大事なんですね。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM045",
+      "category": "ふしぎ",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "カラスが何かを落として、拾わずに飛んでいきました。潔かったです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "カラス",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "気のせいかもしれないけれど、風が笑ったような気がしました。",
+      "text": "気のせいかもしれないけれど、風が笑ったような気がしました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM046",
-      "displayName": "ぽんずさん",
-      "category": "動物",
-      "text": "うちの猫は、私が忙しい時だけキーボードの上に座ります。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 1,
-      "tags": [
-        "猫",
-        "仕事"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "今日は甘いものを半分だけ残しました。明日のお楽しみです。",
+      "text": "今日は甘いものを半分だけ残しました。明日のお楽しみです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM047",
-      "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "道の端を、てんとう虫が急いで歩いていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 0,
-      "tags": [
-        "虫",
-        "散歩"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "ぽけっと",
+      "message": "川を見ていたら、葉っぱが一枚だけ追い越していきました。",
+      "text": "川を見ていたら、葉っぱが一枚だけ追い越していきました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM048",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "犬がくしゃみをして、自分で驚いていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "犬",
-        "くしゃみ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "左右ちがう靴下で出かけていました。帰るまで気付きませんでした。",
+      "text": "左右ちがう靴下で出かけていました。帰るまで気付きませんでした。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM049",
-      "displayName": "つきみさん",
-      "category": "動物",
-      "text": "公園の鳩が、今日は会議をしているように丸く集まっていました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "鳩",
-        "会議"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "TeaMerry",
+      "displayName": "おさんぽさん",
+      "message": "ボトル、ちゃんと誰かに届くかな。",
+      "text": "ボトル、ちゃんと誰かに届くかな。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM050",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "動物",
-      "text": "名前を知らない鳥が、名前を知らない歌を歌っていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 1,
-      "tags": [
-        "鳥",
-        "音"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "明日は早起きできたらいいな。",
+      "text": "明日は早起きできたらいいな。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM051",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "雨が降りそうで降りませんでした。傘だけ一日いっしょでした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "天気",
-      "oddity": 0,
-      "tags": [
-        "雨",
-        "傘"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は目覚ましより少し早く起きました。外が静かで、なんとなく得をした気分でした。",
+      "text": "今日は目覚ましより少し早く起きました。外が静かで、なんとなく得をした気分でした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM052",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "風が強くて、髪型について考えるのをやめました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "風",
-        "生活"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "風で揺れる草を見ていたら、時間を忘れてしまいました。",
+      "text": "風で揺れる草を見ていたら、時間を忘れてしまいました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM053",
-      "displayName": "あおさん",
-      "category": "天気",
-      "text": "朝は寒かったのに、昼は少し暑くて、服が迷っていました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "天気",
-      "oddity": 1,
-      "tags": [
-        "気温",
-        "服"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "買い物に行ったのに、一番買いたかったものだけ忘れました。",
+      "text": "買い物に行ったのに、一番買いたかったものだけ忘れました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM054",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "雨上がりの道路に、空が二つありました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 0,
-      "tags": [
-        "雨",
-        "水たまり"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ティーカップのお家を見ると、なんだか帰ってきた気持ちになります。",
+      "text": "ティーカップのお家を見ると、なんだか帰ってきた気持ちになります。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM055",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "今日は雲が速かったです。少し急いでいるように見えました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 1,
-      "tags": [
-        "雲",
-        "空"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は何もしないと決めたら、本当に何もしませんでした。",
+      "text": "今日は何もしないと決めたら、本当に何もしませんでした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM056",
-      "displayName": "ひなたさん",
-      "category": "天気",
-      "text": "日なたの椅子が温かかったので、少しだけ座りました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "天気",
-      "oddity": 0,
-      "tags": [
-        "日差し",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "道ばたの花が昨日より少し増えていました。",
+      "text": "道ばたの花が昨日より少し増えていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM057",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "洗濯物を干したら雨が降り、取り込んだら晴れました。空と相談が必要です。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "雨",
-        "洗濯"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "空を見ていたら雲がゆっくりほどけていきました。",
+      "text": "空を見ていたら雲がゆっくりほどけていきました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM058",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "夕方の風に、少しだけ秋の匂いがしました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "風",
-        "秋"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "洗ったマグカップがきれいに並んでいるだけで少しうれしいです。",
+      "text": "洗ったマグカップがきれいに並んでいるだけで少しうれしいです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM059",
-      "displayName": "くもりさん",
-      "category": "天気",
-      "text": "曇っていたけれど、雲の隙間だけ明るかったです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 0,
-      "tags": [
-        "曇り",
-        "光"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "パンを焼きすぎました。でも香ばしいということにしました。",
+      "text": "パンを焼きすぎました。でも香ばしいということにしました。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM060",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "今日の空は、青というより薄い水色でした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 0,
-      "tags": [
-        "空",
-        "色"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は森の音がいつもより近く感じました。",
+      "text": "今日は森の音がいつもより近く感じました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM061",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "雷が鳴ったので数を数えました。途中で何を数えていたか忘れました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 2,
-      "tags": [
-        "雷",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "小鳥が枝を行ったり来たりしていました。何を探していたんだろう。",
+      "text": "小鳥が枝を行ったり来たりしていました。何を探していたんだろう。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM062",
-      "displayName": "しずくさん",
-      "category": "天気",
-      "text": "傘に雨粒が当たる音を、今日は少し長く聞いていました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 0,
-      "tags": [
-        "雨音",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ遠回りして帰りました。",
+      "text": "今日は少しだけ遠回りして帰りました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM063",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "風が冷たかったので、ポケットの中で手を握りました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "寒さ",
-        "冬"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "温かい飲み物を飲んだら、少しだけ肩の力が抜けました。",
+      "text": "温かい飲み物を飲んだら、少しだけ肩の力が抜けました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM064",
+      "category": "ふしぎ",
       "displayName": "おさんぽさん",
-      "category": "天気",
-      "text": "暑かったので、冷たい床に足を置いていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "夏",
-        "暑さ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "夢で見た場所を探して歩いたけれど、やっぱり見つかりませんでした。",
+      "text": "夢で見た場所を探して歩いたけれど、やっぱり見つかりませんでした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM065",
-      "displayName": "そよさん",
-      "category": "天気",
-      "text": "今日は空が近かった気がします。理由は分かりません。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "不思議",
-      "oddity": 1,
-      "tags": [
-        "空",
-        "感覚"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "小さな子が葉っぱを集めて笑っていました。",
+      "text": "小さな子が葉っぱを集めて笑っていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM066",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "今日は、帰ってきてからしばらく座ったままでした。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "疲れ",
-        "帰宅"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日はここまで。",
+      "text": "今日はここまで。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM067",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "やることは残っているけれど、今日はもう終わりにします。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "疲れ",
-        "休息"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "またボトルを流しに来ます。",
+      "text": "またボトルを流しに来ます。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM068",
-      "displayName": "やすみさん",
-      "category": "疲れ",
-      "text": "朝から忙しくて、気づいたら夕方でした。今、お茶を飲んでいます。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "忙しい",
-        "お茶"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "雨上がりの空気は少し甘い気がしました。",
+      "text": "雨上がりの空気は少し甘い気がしました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM069",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "何もしていない気がするのに疲れました。そういう日もあることにします。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "疲れ",
-        "受容"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "靴を履いてから左右が逆だと気付きました。",
+      "text": "靴を履いてから左右が逆だと気付きました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM070",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "今日は少しだけ静かな場所にいたいです。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "静か",
-        "疲れ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お気に入りのペンが見つかりました。昨日探したときは無かったのに。",
+      "text": "お気に入りのペンが見つかりました。昨日探したときは無かったのに。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM071",
-      "displayName": "つむぎさん",
-      "category": "疲れ",
-      "text": "帰り道、コンビニの明かりを見て少し安心しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "帰宅",
-        "光"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "川の流れを見ていたら、葉っぱが手を振っているようでした。",
+      "text": "川の流れを見ていたら、葉っぱが手を振っているようでした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM072",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "頑張ったかどうかは分からないけれど、今日を終えました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "一日",
-        "達成"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "星風テラスの風は今日もやさしかったです。",
+      "text": "星風テラスの風は今日もやさしかったです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM073",
-      "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "眠いので、文章が途中で終わるかもしれま",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 2,
-      "tags": [
-        "眠い",
-        "途中"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ひとやすみ",
+      "displayName": "こもれび",
+      "message": "今日は急がなくてもいい日にしました。",
+      "text": "今日は急がなくてもいい日にしました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM074",
-      "displayName": "まくらさん",
-      "category": "疲れ",
-      "text": "布団に入った時のことだけを考えて一日を乗り切りました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "睡眠",
-        "疲れ"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "焼きたてのパンの匂いで目が覚めました。",
+      "text": "焼きたてのパンの匂いで目が覚めました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM075",
+      "category": "ふしぎ",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "今日は返事をする元気がありませんでした。明日返します。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "疲れ",
-        "連絡"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "あの道、昨日より少し長かった気がします。",
+      "text": "あの道、昨日より少し長かった気がします。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM076",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "休憩しようと思ってスマホを見たら、休憩がずいぶん長くなりました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "休憩",
-        "スマホ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "冷蔵庫を開けたまま何を取りに来たのか忘れてしまいました。少し考えて、お茶を飲むことだけは思い出しました。",
+      "text": "冷蔵庫を開けたまま何を取りに来たのか忘れてしまいました。少し考えて、お茶を飲むことだけは思い出しました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM077",
-      "displayName": "ゆっくりさん",
-      "category": "疲れ",
-      "text": "一日中急いでいたので、今だけはゆっくり歩いています。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "散歩",
-        "疲れ"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "風に揺れる木を見ていたら、葉っぱ同士がおしゃべりしているみたいでした。",
+      "text": "風に揺れる木を見ていたら、葉っぱ同士がおしゃべりしているみたいでした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM078",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "今日は早く寝ると決めました。今のところ、その予定です。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "睡眠",
-        "予定"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は靴を履いたまま家の中を歩いてしまいました。気付いたとき、自分で笑ってしまいました。",
+      "text": "今日は靴を履いたまま家の中を歩いてしまいました。気付いたとき、自分で笑ってしまいました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM079",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "疲れ",
-      "text": "深呼吸したら、思っていたより息を止めていたことに気づきました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "深呼吸",
-        "気づき"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ティーカップのお家の窓を見ると、誰かがお茶を飲んでいる気がして少しうれしくなります。",
+      "text": "ティーカップのお家の窓を見ると、誰かがお茶を飲んでいる気がして少しうれしくなります。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM080",
-      "displayName": "こもれびさん",
-      "category": "疲れ",
-      "text": "疲れていたけれど、帰りに見た夕焼けだけは覚えています。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 0,
-      "tags": [
-        "夕焼け",
-        "疲れ"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ひとやすみ",
+      "displayName": "おさんぽさん",
+      "message": "今日は何もしない時間をちゃんと作れました。それだけで十分だった気がします。",
+      "text": "今日は何もしない時間をちゃんと作れました。それだけで十分だった気がします。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM081",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "探していた本が見つかりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "本",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "夕焼けが少しだけ桃色でした。明日も晴れるのかな。",
+      "text": "夕焼けが少しだけ桃色でした。明日も晴れるのかな。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM082",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "久しぶりの人から連絡が来ました。短い文章でしたが、うれしかったです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "連絡",
-        "再会"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お気に入りのマグカップで飲むだけで、お茶の味が少し違う気がします。",
+      "text": "お気に入りのマグカップで飲むだけで、お茶の味が少し違う気がします。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM083",
-      "displayName": "にじさん",
-      "category": "嬉しい",
-      "text": "うまくできなかったことが、今日は少しだけできました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "達成",
-        "成長"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "小さな子が落ち葉を一枚だけ大事そうに持って帰っていました。",
+      "text": "小さな子が落ち葉を一枚だけ大事そうに持って帰っていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM084",
+      "category": "ふしぎ",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "席を譲ったら、笑顔でありがとうと言ってもらえました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "親切",
-        "感謝"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "同じ場所を歩いているはずなのに、今日は初めて見る景色みたいでした。",
+      "text": "同じ場所を歩いているはずなのに、今日は初めて見る景色みたいでした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM085",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "欲しかった色の靴下がありました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "買い物",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は少しだけ遠くのスーパーまで歩きました。帰り道は荷物が重かったけれど、不思議と足取りは軽かったです。",
+      "text": "今日は少しだけ遠くのスーパーまで歩きました。帰り道は荷物が重かったけれど、不思議と足取りは軽かったです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM086",
-      "displayName": "はっぱさん",
-      "category": "嬉しい",
-      "text": "小さな花が咲きました。毎日見ていたので、少し自分のことのようです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 0,
-      "tags": [
-        "花",
-        "成長"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "TeaMerry",
+      "displayName": "おさんぽさん",
+      "message": "森を歩いていると、時間がゆっくりになるような気がします。また来ます。",
+      "text": "森を歩いていると、時間がゆっくりになるような気がします。また来ます。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM087",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "今日の写真に、偶然きれいな光が入りました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "写真",
-        "光"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パンを焼いていたことを忘れて、本を読んでいました。少しだけこんがりでした。",
+      "text": "パンを焼いていたことを忘れて、本を読んでいました。少しだけこんがりでした。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM088",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "苦手だった電話を、今日はちゃんとかけられました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "達成",
-        "勇気"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "川に映った雲を見ていたら、本当の空を見ているのか分からなくなりました。",
+      "text": "川に映った雲を見ていたら、本当の空を見ているのか分からなくなりました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM089",
-      "displayName": "ふわりさん",
-      "category": "嬉しい",
-      "text": "好きな曲が、ちょうどラジオから流れてきました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "音楽",
-        "偶然"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ早く寝ようと思います。本当に寝られるかは分かりません。",
+      "text": "今日は少しだけ早く寝ようと思います。本当に寝られるかは分かりません。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM090",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "信号が三回続けて青でした。少し歓迎されている気がしました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "移動",
-        "偶然"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "何も考えない時間って難しいですね。でも少しだけできました。",
+      "text": "何も考えない時間って難しいですね。でも少しだけできました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM091",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "昨日より少しだけ元気です。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "体調",
-        "回復"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "焼きたてのパンを半分だけ残しました。明日の楽しみです。",
+      "text": "焼きたてのパンを半分だけ残しました。明日の楽しみです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM092",
-      "displayName": "まろんさん",
-      "category": "嬉しい",
-      "text": "新しいマグカップを使いました。飲み物の味は同じなのに、少し特別でした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "カップ",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "TeaMerry",
+      "displayName": "おさんぽさん",
+      "message": "ボトルを流したら、ちゃんと海まで行けるのかなって考えていました。",
+      "text": "ボトルを流したら、ちゃんと海まで行けるのかなって考えていました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM093",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "予定より早く仕事が終わりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "仕事",
-        "時間"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "鳥が一羽だけ高いところで鳴いていました。返事はありませんでした。",
+      "text": "鳥が一羽だけ高いところで鳴いていました。返事はありませんでした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM094",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "嬉しい",
-      "text": "道を聞かれて答えられました。合っていたことを願います。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "親切",
-        "道案内"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は左右違う靴下でした。帰るまで誰にも気付かれませんでした。",
+      "text": "今日は左右違う靴下でした。帰るまで誰にも気付かれませんでした。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM095",
-      "displayName": "ほしさん",
-      "category": "嬉しい",
-      "text": "今日は、自分の好きなものを好きだと思えました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "気持ち",
-        "自己肯定"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "お気に入りだったペンが急に書けなくなりました。最後まで付き合ってくれてありがとう。",
+      "text": "お気に入りだったペンが急に書けなくなりました。最後まで付き合ってくれてありがとう。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM096",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "誰かと話したかったけれど、何を話したいのか分かりませんでした。",
-      "lengthClass": "中",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "寂しい",
-        "会話"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "星風テラスで風の音を聞いていたら、帰る時間を忘れてしまいました。",
+      "text": "星風テラスで風の音を聞いていたら、帰る時間を忘れてしまいました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM097",
+      "category": "ふしぎ",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "部屋が静かすぎたので、音楽を小さく流しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "静か",
-        "音楽"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "昨日見た夢の続きを今日も見られたらいいのに。",
+      "text": "昨日見た夢の続きを今日も見られたらいいのに。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM098",
-      "displayName": "つきさん",
-      "category": "寂しい",
-      "text": "昔の写真を見ていたら、時間が少し遠くなりました。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "思い出",
-        "寂しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "今日のおやつは一つだけのつもりが、もう一つ食べてしまいました。",
+      "text": "今日のおやつは一つだけのつもりが、もう一つ食べてしまいました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM099",
-      "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "会いたい人がいます。今は、それだけ書いておきます。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "会いたい",
-        "気持ち"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "あおいくつ",
+      "message": "今日はここまで。また明日。",
+      "text": "今日はここまで。また明日。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM100",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "ひとりで食べるごはんにも慣れました。でも今日は、少しだけ誰かと食べたかったです。",
-      "lengthClass": "長",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "食事",
-        "寂しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "夜空を見上げていたら、星が一つだけゆっくり流れました。お願いごとは間に合いませんでした。",
+      "text": "夜空を見上げていたら、星が一つだけゆっくり流れました。お願いごとは間に合いませんでした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM101",
-      "displayName": "しろさん",
-      "category": "寂しい",
-      "text": "外で誰かの笑い声がして、少しだけ安心しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "声",
-        "安心"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "牛乳を買いに行ったのに、牛乳だけ忘れて帰ってきました。",
+      "text": "牛乳を買いに行ったのに、牛乳だけ忘れて帰ってきました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM102",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "連絡をしようと思って、やめました。明日はできるかもしれません。",
-      "lengthClass": "中",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "連絡",
-        "迷い"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は紅茶を少し濃く入れすぎました。でもそれも悪くなかったです。",
+      "text": "今日は紅茶を少し濃く入れすぎました。でもそれも悪くなかったです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM103",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "夜が長いので、温かい飲み物を作りました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "夜",
-        "飲み物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パン屋さんからいい匂いがして、予定になかったパンを買いました。",
+      "text": "パン屋さんからいい匂いがして、予定になかったパンを買いました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM104",
-      "displayName": "あかりさん",
-      "category": "寂しい",
-      "text": "帰る場所の明かりが見えた時、少しほっとしました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "帰宅",
-        "光"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "お財布を探していたら、ちゃんと手に持っていました。",
+      "text": "お財布を探していたら、ちゃんと手に持っていました。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM105",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "言葉にしたら余計に寂しくなりそうで、でも少し書きたくなりました。",
-      "lengthClass": "中",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "気持ち",
-        "文章"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "クッキーを一枚だけ食べるつもりでした。",
+      "text": "クッキーを一枚だけ食べるつもりでした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM106",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "今日は人の声が恋しい日でした。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "寂しい",
-        "声"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日のお茶は、いつもより少しだけおいしく感じました。",
+      "text": "今日のお茶は、いつもより少しだけおいしく感じました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM107",
-      "displayName": "ゆきさん",
-      "category": "寂しい",
-      "text": "ひとりで歩いていたら、同じ方向へ歩く人がいて少し安心しました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "散歩",
-        "安心"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "冷蔵庫を開けて、何を取りに来たのか忘れました。また今度思い出します。",
+      "text": "冷蔵庫を開けて、何を取りに来たのか忘れました。また今度思い出します。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM108",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "遠くにいる人も、今ごろ何か飲んでいるのかなと思いました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "遠く",
-        "飲み物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "おにぎりを持って公園へ行きました。風も一緒にお昼休みでした。",
+      "text": "おにぎりを持って公園へ行きました。風も一緒にお昼休みでした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM109",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "寂しい",
-      "text": "静かな夜です。静かすぎるので、冷蔵庫の音まで聞こえます。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "夜",
-        "生活音"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "買ったばかりのおやつを、帰る前に食べてしまいました。",
+      "text": "買ったばかりのおやつを、帰る前に食べてしまいました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM110",
-      "displayName": "こえさん",
-      "category": "寂しい",
-      "text": "誰かに届くか分からないけれど、書いてみました。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "手紙",
-        "気持ち"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "湯気を見ているだけで、なんだか安心しました。",
+      "text": "湯気を見ているだけで、なんだか安心しました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM111",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "今日の仕事を終えました。終わっていない部分もありますが、今日は終わりです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "仕事",
-        "区切り"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日はいちごジャムにしました。明日は何にしようかな。",
+      "text": "今日はいちごジャムにしました。明日は何にしようかな。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM112",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "分からなかった問題が、一度寝たら少し分かりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "勉強",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "レジまで行ってから、買う物を一つ思い出しました。",
+      "text": "レジまで行ってから、買う物を一つ思い出しました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM113",
-      "displayName": "えんぴつさん",
-      "category": "仕事・勉強",
-      "text": "机に向かっただけで、今日は半分成功ということにします。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "勉強",
-        "開始"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "温かいスープを飲んだら、外の風までやさしく感じました。",
+      "text": "温かいスープを飲んだら、外の風までやさしく感じました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM114",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "会議で一度だけ発言しました。声は少し震えました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "達成",
-      "oddity": 0,
-      "tags": [
-        "仕事",
-        "勇気"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "新しいマグカップを買いました。帰ってすぐ使いました。",
+      "text": "新しいマグカップを買いました。帰ってすぐ使いました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM115",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "宿題を始めるまでに、机の掃除がずいぶん進みました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "勉強",
-        "掃除"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "食パンを焼いていたことを忘れて、本を読んでいました。",
+      "text": "食パンを焼いていたことを忘れて、本を読んでいました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM116",
-      "displayName": "ふせんさん",
-      "category": "仕事・勉強",
-      "text": "付箋を貼りすぎて、どれが大事なのか分からなくなりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "仕事",
-        "整理"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ遠いスーパーまで歩いてみました。",
+      "text": "今日は少しだけ遠いスーパーまで歩いてみました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM117",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "今日は覚えたことより、忘れたことの方が多い気がします。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "勉強",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "最後のお菓子を半分だけ残しました。明日の私が喜びます。",
+      "text": "最後のお菓子を半分だけ残しました。明日の私が喜びます。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM118",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "一つ終わるたびに、別の用事が生まれました。用事は増える生き物かもしれません。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "仕事",
-        "用事"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "コーヒーを入れたあと、紅茶を飲みたくなりました。",
+      "text": "コーヒーを入れたあと、紅茶を飲みたくなりました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM119",
-      "displayName": "ノートさん",
-      "category": "仕事・勉強",
-      "text": "書き直した文字の方が、最初より少し読みやすくなりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "達成",
-      "oddity": 0,
-      "tags": [
-        "勉強",
-        "成長"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日のお昼はサンドイッチでした。外で食べたらもっとおいしかったです。",
+      "text": "今日のお昼はサンドイッチでした。外で食べたらもっとおいしかったです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM120",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "今日は集中できませんでした。椅子には長く座っていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "勉強",
-        "集中"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "エコバッグを持って行ったのに、車に置いたままでした。",
+      "text": "エコバッグを持って行ったのに、車に置いたままでした。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM121",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "提出できました。中身については、今は考えないことにします。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "提出",
-        "達成"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "焼きたてのパンを持って帰る道は、少しだけ急ぎ足になります。",
+      "text": "焼きたてのパンを持って帰る道は、少しだけ急ぎ足になります。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM122",
-      "displayName": "とけいさん",
-      "category": "仕事・勉強",
-      "text": "五分だけやるつもりが、二十分できました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "達成",
-      "oddity": 0,
-      "tags": [
-        "勉強",
-        "時間"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "紅茶の葉っぱを少し多く入れました。今日はそんな気分でした。",
+      "text": "紅茶の葉っぱを少し多く入れました。今日はそんな気分でした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM123",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "説明を読んでも分からなかったけれど、図を見たら少し分かりました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "発見",
-      "oddity": 0,
-      "tags": [
-        "勉強",
-        "理解"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "プリンを買ったのに、スプーンをもらうのを忘れました。",
+      "text": "プリンを買ったのに、スプーンをもらうのを忘れました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM124",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "仕事・勉強",
-      "text": "今日は失敗しました。でも、失敗した場所は分かりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "達成",
-      "oddity": 0,
-      "tags": [
-        "失敗",
-        "学び"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お茶を飲みながら窓を開けたら、風も一緒に入ってきました。",
+      "text": "お茶を飲みながら窓を開けたら、風も一緒に入ってきました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM125",
-      "displayName": "すみれさん",
-      "category": "仕事・勉強",
-      "text": "明日の自分へ、やることを一つだけ残しておきました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "予定",
-        "明日"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "まめ",
+      "message": "パンの耳までおいしい日ってありますね。",
+      "text": "パンの耳までおいしい日ってありますね。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM126",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "家族と同じテレビを見て、同じところで笑いました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "家族",
-        "笑い"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は三回くらい「あれ？」って言いました。",
+      "text": "今日は三回くらい「あれ？」って言いました。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM127",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "友達から、特に用事のないメッセージが来ました。そういうのがうれしいです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "友達",
-        "連絡"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "冷たいお茶より、今日は温かい方を選びました。",
+      "text": "冷たいお茶より、今日は温かい方を選びました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM128",
-      "displayName": "りんさん",
-      "category": "家族・友人",
-      "text": "母が果物を切ってくれました。いつもより少し大きめでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "家族",
-        "果物"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "お買い得だったので買いました。でも何に使うかはこれから考えます。",
+      "text": "お買い得だったので買いました。でも何に使うかはこれから考えます。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM129",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "久しぶりに電話をしました。話すことはあまりなかったけれど、声を聞けてよかったです。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "電話",
-        "再会"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "おやつを半分こすると、少しうれしくなります。",
+      "text": "おやつを半分こすると、少しうれしくなります。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM130",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "友達と待ち合わせをして、二人とも少し遅れました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "友達",
-        "待ち合わせ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日はゆっくり朝ごはんを食べられました。",
+      "text": "今日はゆっくり朝ごはんを食べられました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM131",
-      "displayName": "つばきさん",
-      "category": "家族・友人",
-      "text": "昔の話をしていたら、覚えているところが少しずつ違いました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "思い出",
-        "会話"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "パンを切ったら、思っていたよりずっと厚くなりました。",
+      "text": "パンを切ったら、思っていたよりずっと厚くなりました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM132",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "家族から送られてきた写真が、少しぶれていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "写真",
-        "家族"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お気に入りのお茶がまだ少し残っていました。",
+      "text": "お気に入りのお茶がまだ少し残っていました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM133",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "言いすぎたかもしれません。次に会ったら、普通に話したいです。",
-      "lengthClass": "中",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "友達",
-        "反省"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "スーパーで好きなお菓子が安くなっていました。少しだけ幸運でした。",
+      "text": "スーパーで好きなお菓子が安くなっていました。少しだけ幸運でした。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM134",
-      "displayName": "ゆらさん",
-      "category": "家族・友人",
-      "text": "一緒に食べたものは、ひとりで食べる時より少しおいしく感じました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "食事",
-        "友達"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "家に帰ってから、買い物メモがポケットに入ったままだと気付きました。",
+      "text": "家に帰ってから、買い物メモがポケットに入ったままだと気付きました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM135",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "友達が笑ってくれたので、同じ話をもう一回しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "友達",
-        "笑い"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日はカレーを少しだけ多めによそいました。",
+      "text": "今日はカレーを少しだけ多めによそいました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM136",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "短い時間だったけれど、会えてよかったです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "再会",
-        "友達"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ケーキを買った日は、帰り道だけ少し慎重になります。",
+      "text": "ケーキを買った日は、帰り道だけ少し慎重になります。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM137",
-      "displayName": "たんぽぽさん",
-      "category": "家族・友人",
-      "text": "祖父の昔話は、聞くたびに少し内容が変わります。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "家族",
-        "昔話"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "焼きたての匂いだけで、おなかがすいてきました。",
+      "text": "焼きたての匂いだけで、おなかがすいてきました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM138",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "誰かのためにお土産を選ぶ時間が好きです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "贈り物",
-        "友達"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お茶をもう一杯飲もうか、少しだけ迷っています。",
+      "text": "お茶をもう一杯飲もうか、少しだけ迷っています。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM139",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "家族・友人",
-      "text": "今日は「ありがとう」を言えました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "感謝",
-        "家族"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "買い物かごを持ったまま、違う売り場へずっと歩いていました。",
+      "text": "買い物かごを持ったまま、違う売り場へずっと歩いていました。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM140",
-      "displayName": "ふたばさん",
-      "category": "家族・友人",
-      "text": "会話が途切れても、気まずくない人がいるのはいいことだと思いました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "友達",
-        "安心"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日はお気に入りのお皿を使いました。",
+      "text": "今日はお気に入りのお皿を使いました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM141",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "桜が一輪だけ先に咲いていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "春",
-        "花"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "あたたかいパンを手に持つと、なんだか笑ってしまいます。",
+      "text": "あたたかいパンを手に持つと、なんだか笑ってしまいます。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM142",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "夏の夕方の匂いがしました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "夏",
-        "夕方"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パンを買ったのに、ごはんも炊いていました。",
+      "text": "パンを買ったのに、ごはんも炊いていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM143",
-      "displayName": "もみじさん",
-      "category": "季節",
-      "text": "落ち葉を踏んだ音が、思っていたより大きかったです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "秋",
-        "音"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ甘い紅茶にしました。",
+      "text": "今日は少しだけ甘い紅茶にしました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM144",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "息が白くなったので、何度か試しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "冬",
-        "息"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お店を出てから、まだ買う物があったことを思い出しました。",
+      "text": "お店を出てから、まだ買う物があったことを思い出しました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM145",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "衣替えをしたら、去年探していたハンカチが出てきました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "季節",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お茶の湯気を見ていたら、ぼんやりする時間も悪くないなと思いました。",
+      "text": "お茶の湯気を見ていたら、ぼんやりする時間も悪くないなと思いました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM146",
-      "displayName": "さくらさん",
-      "category": "季節",
-      "text": "花びらが一枚、鞄の中までついてきました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "春",
-        "花"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "お昼ごはんを食べたばかりなのに、もう夕飯のことを考えていました。",
+      "text": "お昼ごはんを食べたばかりなのに、もう夕飯のことを考えていました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM147",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "今年初めて蝉の声を聞きました。夏が始まった感じがします。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "夏",
-        "蝉"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "レシートだけしっかり持って帰ってきました。",
+      "text": "レシートだけしっかり持って帰ってきました。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM148",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "どんぐりを一つ拾いました。持って帰る理由は特にありません。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 1,
-      "tags": [
-        "秋",
-        "どんぐり"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は少しだけいいお茶をいれました。",
+      "text": "今日は少しだけいいお茶をいれました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM149",
-      "displayName": "こなゆきさん",
-      "category": "季節",
-      "text": "雪が少しだけ降りました。積もらなかったので、空からの試作品だったのかもしれません。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "冬",
-        "雪"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "最後の一口は、ゆっくり味わって食べました。",
+      "text": "最後の一口は、ゆっくり味わって食べました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM150",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "新しいカレンダーをめくる時、少し緊張しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "新年",
-        "時間"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "買い物に行ったのに、散歩だけして帰ってきました。まあ、そんな日もあります。",
+      "text": "買い物に行ったのに、散歩だけして帰ってきました。まあ、そんな日もあります。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM151",
-      "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "春の上着を着たら、ポケットから去年の花びらが出ました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "春",
-        "思い出"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おちゃのみ",
+      "message": "洗ったタオルがふわふわでした。",
+      "text": "洗ったタオルがふわふわでした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM152",
-      "displayName": "なつさん",
-      "category": "季節",
-      "text": "アイスが溶ける方が、私が食べるより少し速かったです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "夏",
-        "アイス"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は窓を少し長く開けていました。",
+      "text": "今日は窓を少し長く開けていました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM153",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "秋の空は高いと聞きますが、今日は本当に少し遠く見えました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 0,
-      "tags": [
-        "秋",
-        "空"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "風がカーテンだけ連れていこうとしていました。",
+      "text": "風がカーテンだけ連れていこうとしていました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM154",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "季節",
-      "text": "手袋を片方だけ見つけました。もう片方は冬のどこかにいます。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "冬",
-        "手袋"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "靴を履いてから、忘れ物を思い出しました。",
+      "text": "靴を履いてから、忘れ物を思い出しました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM155",
-      "displayName": "うぐいすさん",
-      "category": "季節",
-      "text": "季節が変わる時の、まだ名前がない気温が好きです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "季節",
-      "oddity": 1,
-      "tags": [
-        "季節の変わり目",
-        "気温"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は早く寝る予定です。予定です。",
+      "text": "今日は早く寝る予定です。予定です。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM156",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "昔よく通った道を、久しぶりに歩きました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "道",
-        "昔"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お茶がおいしく入る日は、それだけでうれしいです。",
+      "text": "お茶がおいしく入る日は、それだけでうれしいです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM157",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "子どもの頃に好きだったお菓子を見つけました。前より小さく感じました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "お菓子",
-        "子ども"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "冷蔵庫にプリンがあるのを思い出しました。",
+      "text": "冷蔵庫にプリンがあるのを思い出しました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM158",
-      "displayName": "あさひさん",
-      "category": "思い出",
-      "text": "古いノートに、覚えていない予定が書いてありました。ちゃんと終わったのでしょうか。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "不思議",
-      "oddity": 1,
-      "tags": [
-        "ノート",
-        "過去"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "夕方の空が少しだけ紫色でした。",
+      "text": "夕方の空が少しだけ紫色でした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM159",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "昔の写真の中で、みんな今より少し若かったです。当然ですが、不思議でした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "写真",
-        "時間"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "買ったばかりのお菓子を、もう開けています。",
+      "text": "買ったばかりのお菓子を、もう開けています。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM160",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "懐かしい匂いがしたけれど、何の匂いだったか思い出せませんでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 1,
-      "tags": [
-        "匂い",
-        "記憶"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日はここまで。",
+      "text": "今日はここまで。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM161",
-      "displayName": "ともしびさん",
-      "category": "思い出",
-      "text": "前に住んでいた町の天気を、なんとなく調べました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "町",
-        "天気"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "マグカップを両手で持つ時間が好きです。",
+      "text": "マグカップを両手で持つ時間が好きです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM162",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "昔好きだった曲を聞いたら、歌詞より先に景色を思い出しました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "音楽",
-        "景色"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "外へ出たら思ったより寒かったです。",
+      "text": "外へ出たら思ったより寒かったです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM163",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "引き出しの奥から、使いかけの消しゴムが出てきました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "文房具",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "葉っぱが一枚だけ、ゆっくり落ちてきました。",
+      "text": "葉っぱが一枚だけ、ゆっくり落ちてきました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM164",
-      "displayName": "なぎさん",
-      "category": "思い出",
-      "text": "忘れていた出来事を、別の人が覚えていてくれました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "記憶",
-        "人"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "同じ話を二回していました。",
+      "text": "同じ話を二回していました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM165",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "昔の自分に会ったら、何を話すか少し考えました。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "過去",
-        "自分"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は少しだけ遠くまで歩きました。",
+      "text": "今日は少しだけ遠くまで歩きました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM166",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "古い服を捨てようと思ったけれど、今日はたたんで戻しました。",
-      "lengthClass": "中",
-      "todayHokkori": false,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "服",
-        "迷い"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "何もしない時間も必要なんですね。",
+      "text": "何もしない時間も必要なんですね。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM167",
-      "displayName": "つくしさん",
-      "category": "思い出",
-      "text": "子どもの頃は大きく見えた坂が、今日は短く見えました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "道",
-        "成長"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "雲がゆっくりほどけていきました。",
+      "text": "雲がゆっくりほどけていきました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM168",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "昔もらった手紙を読み返しました。文字の癖まで懐かしかったです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "手紙",
-        "記憶"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お気に入りのペンがまだ書けました。",
+      "text": "お気に入りのペンがまだ書けました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM169",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "思い出",
-      "text": "覚えていたはずのことを忘れ、忘れていたことを急に思い出しました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "不思議",
-      "oddity": 1,
-      "tags": [
-        "記憶",
-        "時間"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パンを温めたまま忘れていました。",
+      "text": "パンを温めたまま忘れていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM170",
-      "displayName": "みちさん",
-      "category": "思い出",
-      "text": "いつか今日のことも、何でもない思い出になるのかもしれません。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "今日",
-        "未来"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ笑うことが多かったです。",
+      "text": "今日は少しだけ笑うことが多かったです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM171",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "TeaMerryに初めて来ました。どこを押せばいいか少し迷いました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "初訪問",
-        "分かりにくい"
-      ],
-      "enabled": true,
-      "note": "率直な感想"
+      "message": "昨日より早く起きられました。",
+      "text": "昨日より早く起きられました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM172",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "森の音が落ち着きました。しばらく画面を見たままでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "音",
-        "癒し"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "鳥の声だけ聞こえてきました。姿は見えませんでした。",
+      "text": "鳥の声だけ聞こえてきました。姿は見えませんでした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM173",
-      "displayName": "ミルクティーさん",
-      "category": "TeaMerry感想",
-      "text": "星風テラスを見つけるまで少しかかりました。でも見つけた時はうれしかったです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "星風テラス",
-        "探索"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "テレビを探してリモコンを持っていました。",
+      "text": "テレビを探してリモコンを持っていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM174",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "TeaMerry、ちょっと分かりにくいです。でも、たぶんまだ知らない場所があります。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "分かりにくい",
-        "探索"
-      ],
-      "enabled": true,
-      "note": "率直な感想"
+      "message": "お茶をもう一杯飲もうか迷っています。",
+      "text": "お茶をもう一杯飲もうか迷っています。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM175",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "ティールームの背景が好きです。お茶が飲めたらもっといいです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "ティールーム",
-        "要望"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ぼんやりしていたら時間が過ぎていました。",
+      "text": "ぼんやりしていたら時間が過ぎていました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM176",
-      "displayName": "ほたるさん",
-      "category": "TeaMerry感想",
-      "text": "森へ戻るボタンを見つけるまで、少し探しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "操作",
-        "分かりにくい"
-      ],
-      "enabled": true,
-      "note": "率直な感想"
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は洗濯物がよく乾きました。",
+      "text": "今日は洗濯物がよく乾きました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM177",
-      "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "ミントが歩いているところをずっと見ていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "ミント",
-        "キャラクター"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "ことり",
+      "message": "風が少しだけ花の匂いを運んできました。",
+      "text": "風が少しだけ花の匂いを運んできました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM178",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "何をする場所なのか最初は分からなかったけれど、歩いているうちに少し分かりました。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "初訪問",
-        "探索"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お茶をいれたのに、冷めるまで忘れていました。",
+      "text": "お茶をいれたのに、冷めるまで忘れていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM179",
-      "displayName": "きいろさん",
-      "category": "TeaMerry感想",
-      "text": "願い星を飛ばすところが好きです。動画をもう一度見たくなりました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "願い星",
-        "演出"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "お気に入りの靴が今日は歩きやすかったです。",
+      "text": "お気に入りの靴が今日は歩きやすかったです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM180",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "ボトルメールに何を書けばいいか迷って、迷ったことを書きました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 1,
-      "tags": [
-        "ボトルメール",
-        "迷い"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パン屋さんの前を通るだけで幸せな気持ちになります。",
+      "text": "パン屋さんの前を通るだけで幸せな気持ちになります。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM181",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "忘れじの洞窟が少しこわくて、少し好きです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "洞窟",
-        "感想"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は少しだけ遠回りして帰りました。",
+      "text": "今日は少しだけ遠回りして帰りました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM182",
-      "displayName": "おちゃさん",
-      "category": "TeaMerry感想",
-      "text": "背景を動かしていたら、目的地を通り過ぎました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 1,
-      "tags": [
-        "操作",
-        "ユーモア"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "買ったと思っていた牛乳、まだ買っていませんでした。",
+      "text": "買ったと思っていた牛乳、まだ買っていませんでした。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM183",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "音が出ることに途中で気づきました。最初から聞けばよかったです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "音",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "雲がゆっくり流れるのを見ていました。",
+      "text": "雲がゆっくり流れるのを見ていました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM184",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "全部見つけたつもりですが、たぶん見つけていません。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 1,
-      "tags": [
-        "探索",
-        "不思議"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "机の上を片付けたら、探していたものが出てきました。",
+      "text": "机の上を片付けたら、探していたものが出てきました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM185",
-      "displayName": "ほしのこさん",
-      "category": "TeaMerry感想",
-      "text": "また来ました。前に来た時と少し違う気がします。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "再訪",
-        "変化"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ひとやすみ",
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ何もしない時間を作れました。",
+      "text": "今日は少しだけ何もしない時間を作れました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM186",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "森を動かせることに気づくまで、画面を何度も押しました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "操作",
-        "初訪問"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "湯気を見ながらぼんやりする時間が好きです。",
+      "text": "湯気を見ながらぼんやりする時間が好きです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM187",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "キャラクターの名前をまだ全部覚えていません。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "キャラクター",
-        "初訪問"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は三回くらい「あっ。」って言いました。",
+      "text": "今日は三回くらい「あっ。」って言いました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM188",
-      "displayName": "くろまめさん",
-      "category": "TeaMerry感想",
-      "text": "少し迷うけれど、森なので迷ってもいいような気がしました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "探索",
-        "感想"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "昨日より少しだけ早起きでした。",
+      "text": "昨日より少しだけ早起きでした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM189",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "ボタンなのか飾りなのか分からないものを、だいたい全部押しました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 1,
-      "tags": [
-        "操作",
-        "ユーモア"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "木の葉が一枚だけ手の上に落ちてきました。",
+      "text": "木の葉が一枚だけ手の上に落ちてきました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM190",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "TeaMerry感想",
-      "text": "今日も少しだけ見に来ました。何もしないで帰ります。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "再訪",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日はここまで。また書きます。",
+      "text": "今日はここまで。また書きます。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM191",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "今日は赤い四角が勝ちました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "意味不明",
-        "色"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "冷蔵庫を開けたのに、閉めてから思い出しました。",
+      "text": "冷蔵庫を開けたのに、閉めてから思い出しました。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM192",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "たぶん靴下が何か知っています。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "意味不明",
-        "靴下"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お気に入りのマグカップを使いました。",
+      "text": "お気に入りのマグカップを使いました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM193",
-      "displayName": "まるさん",
-      "category": "不思議",
-      "text": "朝起きたら、机が昨日より少し机でした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "意味不明",
-        "机"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "鳥の声だけ聞こえてきて、姿は最後まで見つかりませんでした。",
+      "text": "鳥の声だけ聞こえてきて、姿は最後まで見つかりませんでした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM194",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "冷蔵庫を開けたら、昨日の続きが入っていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "意味不明",
-        "冷蔵庫"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日のおやつは少しだけ特別でした。",
+      "text": "今日のおやつは少しだけ特別でした。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM195",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "青い火曜日でした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "意味不明",
-        "曜日"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "窓を開けたら風が先に入ってきました。",
+      "text": "窓を開けたら風が先に入ってきました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM196",
-      "displayName": "しかくさん",
-      "category": "不思議",
-      "text": "曲がり角を曲がったら、曲がる前のことを忘れました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "道",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "お財布を探していたら、ちゃんとポケットに入っていました。",
+      "text": "お財布を探していたら、ちゃんとポケットに入っていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM197",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "どんぐりは右から読んでも、たぶんどんぐりです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "どんぐり",
-        "言葉"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "夕焼けが思っていたより長く残っていました。",
+      "text": "夕焼けが思っていたより長く残っていました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM198",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "今日は机の下に、まだ使っていない午後が落ちていました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "意味不明",
-        "時間"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は温かいお茶を選びました。",
+      "text": "今日は温かいお茶を選びました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM199",
-      "displayName": "ななめさん",
-      "category": "不思議",
-      "text": "まっすぐ帰ったのに、気持ちは少し斜めでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "帰宅",
-        "感覚"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "最後の一口をゆっくり飲みました。",
+      "text": "最後の一口をゆっくり飲みました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM200",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "昨日の雲と、たぶん同じ雲を見ました。向こうは気づいていませんでした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "雲",
-        "再会"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "なんでもない日でした。でも、それで十分でした。",
+      "text": "なんでもない日でした。でも、それで十分でした。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM201",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "スプーンが一つ、話の途中みたいに置いてありました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "スプーン",
-        "不明"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "どんぐり みっつ ひろった",
+      "text": "どんぐり みっつ ひろった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM202",
-      "displayName": "まよいさん",
-      "category": "不思議",
-      "text": "玄関を出た時は水曜日でした。帰った時も水曜日でした。少し安心しました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "曜日",
-        "安心"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "きょうは おちゃが おいしかった",
+      "text": "きょうは おちゃが おいしかった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM203",
-      "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "今日の影は、いつもより半歩遅れていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "影",
-        "不思議"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "はっぱ",
+      "message": "くもが ぱんみたいでした",
+      "text": "くもが ぱんみたいでした",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM204",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "誰もいないのに、ティッシュが一枚だけ急いでいました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "意味不明",
-        "風"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "また あした",
+      "text": "また あした",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM205",
-      "displayName": "うずまきさん",
-      "category": "不思議",
-      "text": "考えごとをしていたら、考えごとの方が先に帰りました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "思考",
-        "意味不明"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "おさんぽ してきたよ",
+      "text": "おさんぽ してきたよ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM206",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "丸いものを探していたら、一日が丸く終わりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "丸",
-        "一日"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ぱんを たべたら まだ たべたくなった",
+      "text": "ぱんを たべたら まだ たべたくなった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM207",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "棚の隅に、小さい木曜日がありました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "曜日",
-        "棚"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "かぜが つよくて ぼうしが",
+      "text": "かぜが つよくて ぼうしが",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM208",
-      "displayName": "ひだりさん",
-      "category": "不思議",
-      "text": "右へ行くつもりでしたが、左がこちらを見ていたので左へ行きました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "方向",
-        "道"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "きょうは ここまで",
+      "text": "きょうは ここまで",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM209",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "何を書こうとしたか忘れました。たぶん大事ではありません。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 1,
-      "tags": [
-        "忘れ物",
-        "文章"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "あったかい おちゃって いいね",
+      "text": "あったかい おちゃって いいね",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM210",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "不思議",
-      "text": "今日は何も起きなかったので、それを記念日にしました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "何もない",
-        "記念日"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "おかし もうない",
+      "text": "おかし もうない",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM211",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "目覚ましを止めた記憶だけは、とてもはっきりあります。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "朝",
-        "睡眠"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ちょうちょが いたよ",
+      "text": "ちょうちょが いたよ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM212",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "片づけを始めたら、昔の写真を見る時間になりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "掃除",
-        "思い出"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "おひるね しました",
+      "text": "おひるね しました",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM213",
-      "displayName": "ぷりんさん",
-      "category": "ユーモア",
-      "text": "プリンを食べるためにスプーンを出し、プリンを出すのを忘れました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 2,
-      "tags": [
-        "プリン",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "あれ？ なに かこうと したんだっけ",
+      "text": "あれ？ なに かこうと したんだっけ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM214",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "傘を持って出た日は晴れます。持たない日は、空が思い出します。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 2,
-      "tags": [
-        "雨",
-        "傘"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "きが ゆれてる",
+      "text": "きが ゆれてる",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM215",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "冷蔵庫を開けて、目的を忘れて、閉めてから思い出しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "冷蔵庫",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "おちゃ こぼしちゃった",
+      "text": "おちゃ こぼしちゃった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM216",
-      "displayName": "もちさん",
-      "category": "ユーモア",
-      "text": "靴下が片方ありません。もう片方は落ち着いています。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 2,
-      "tags": [
-        "靴下",
-        "紛失"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "ぱん やわらかかった",
+      "text": "ぱん やわらかかった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM217",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "今日は早く寝ます。この文章を書いている時点で少し遅いです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "夜",
-        "睡眠"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "くつした ちがった",
+      "text": "くつした ちがった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM218",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "料理中に味見をしすぎて、完成前に少し満足しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "料理",
-        "味見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ねむいです",
+      "text": "ねむいです",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM219",
-      "displayName": "たまごさん",
-      "category": "ユーモア",
-      "text": "卵を割ったら黄身が二つでした。少し得をした気持ちです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "卵",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "そら あおかった",
+      "text": "そら あおかった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM220",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "買い物袋を持って出かけ、買い物袋を買って帰りました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "買い物",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "また くるね",
+      "text": "また くるね",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM221",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "猫に話しかけたら、聞いていない顔をされました。いつものことです。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "猫",
-        "会話"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "どこまで あるいたっけ",
+      "text": "どこまで あるいたっけ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM222",
-      "displayName": "ふくろさん",
-      "category": "ユーモア",
-      "text": "ゴミを捨てに行き、ゴミを持ったまま帰ってきました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "生活",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "おちゃ さめてた",
+      "text": "おちゃ さめてた",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM223",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "今日の私は、昨日の私が置いた物をずっと探していました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "探し物",
-        "自分"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ことりが うたってた",
+      "text": "ことりが うたってた",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM224",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ユーモア",
-      "text": "エレベーターのボタンを押してから、階段を使いました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "移動",
-        "選択"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "おやつ たべすぎたかも",
+      "text": "おやつ たべすぎたかも",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM225",
-      "displayName": "ころんさん",
-      "category": "ユーモア",
-      "text": "何もないところでつまずきました。何かはあったのだと思います。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 2,
-      "tags": [
-        "転ぶ",
-        "不思議"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "きょうも いいひ",
+      "text": "きょうも いいひ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM226",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "眠いです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "睡眠",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "おにぎり おとした",
+      "text": "おにぎり おとした",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM227",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "今日はカレーでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "食事",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "まだ かえりたくない",
+      "text": "まだ かえりたくない",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM228",
-      "displayName": "しおさん",
-      "category": "短文",
-      "text": "海を見たいです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "海",
-        "願い"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "はっぱ いっぱい",
+      "text": "はっぱ いっぱい",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM229",
-      "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "やっと終わりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "達成",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "ふわり",
+      "message": "おちゃ のむの わすれてた",
+      "text": "おちゃ のむの わすれてた",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM230",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "少し寒いです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "天気",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "きょうは はやく ねます",
+      "text": "きょうは はやく ねます",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM231",
-      "displayName": "あめさん",
-      "category": "短文",
-      "text": "傘を忘れました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "雨",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "おつきさま まるい",
+      "text": "おつきさま まるい",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM232",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "今日も来ました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "再訪",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "また おさんぽする",
+      "text": "また おさんぽする",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM233",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "猫がかわいいです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "猫",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ぱん やけたよ",
+      "text": "ぱん やけたよ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM234",
-      "displayName": "いちごさん",
-      "category": "短文",
-      "text": "おなかがすきました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "食事",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "ぼうし とんだ",
+      "text": "ぼうし とんだ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM235",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "何を書こう。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 1,
-      "tags": [
-        "迷い",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "かぜが わらってるみたい",
+      "text": "かぜが わらってるみたい",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM236",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "まあ、いいか。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "受容",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "あしたは",
+      "text": "あしたは",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM237",
-      "displayName": "まるさん",
-      "category": "短文",
-      "text": "今日は丸でした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 3,
-      "tags": [
-        "意味不明",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "ありがとうって いわれた",
+      "text": "ありがとうって いわれた",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM238",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "また明日。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "明日",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "くっきー あと ひとつ",
+      "text": "くっきー あと ひとつ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM239",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "短文",
-      "text": "お茶がおいしい。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "短文",
-      "oddity": 0,
-      "tags": [
-        "お茶",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "きょうは よくあるいた",
+      "text": "きょうは よくあるいた",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM240",
-      "displayName": "ねむりさん",
-      "category": "短文",
-      "text": "もう寝ます。たぶん。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "睡眠",
-        "一言"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "おほしさま みえた",
+      "text": "おほしさま みえた",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM241",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "最近、忙しくて空を見る時間がありませんでした。今日は少し早く帰れたので、橋の上で立ち止まりました。風が思ったより気持ちよくて、それだけで少し元気になりました。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "空",
-        "帰宅"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "まちがえちゃった",
+      "text": "まちがえちゃった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM242",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "朝からうまくいかないことが続いて、今日はだめな日だと思っていました。でも帰りに買ったパンがとてもおいしかったので、全部だめな日ではなかったことにします。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "失敗",
-        "パン"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "また あそびたい",
+      "text": "また あそびたい",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM243",
-      "displayName": "かえでさん",
-      "category": "長文",
-      "text": "久しぶりに友達と会いました。何か特別な話をしたわけではないけれど、別れたあとに少し心が軽くなっていました。また普通に会えたらいいです。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "友達",
-        "再会"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "かわが きらきら",
+      "text": "かわが きらきら",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM244",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "ずっと後回しにしていた場所を片づけました。昔の手紙や写真が出てきて、片づけより読む時間の方が長くなりました。でも、今日はそれでよかったと思います。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "掃除",
-        "手紙"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "おちゃ おかわり",
+      "text": "おちゃ おかわり",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM245",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "仕事で失敗しました。帰ってからも何度も思い出しましたが、お風呂に入って少しだけ薄くなりました。明日は同じ失敗をしないように、今日はもう寝ます。",
-      "lengthClass": "長",
-      "todayHokkori": false,
-      "hokkoriSlot": "寄り添い",
-      "oddity": 0,
-      "tags": [
-        "仕事",
-        "失敗"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "あっ",
+      "text": "あっ",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM246",
-      "displayName": "こむぎさん",
-      "category": "長文",
-      "text": "スーパーで小さな子が落とした手袋を、お母さんらしい人に渡しました。何も言われなかったけれど、ちゃんと届いたのでよかったです。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "親切",
-        "手袋"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "もう ねるね",
+      "text": "もう ねるね",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM247",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "今日は特にいいことも悪いこともありませんでした。朝ごはんを食べて、用事をして、少し疲れて帰りました。こういう日も、あとから大切に思うのでしょうか。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "生活",
-        "一日"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "きょうは かぜの においが ちがった",
+      "text": "きょうは かぜの においが ちがった",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM248",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "家を出た時は雨でした。途中で晴れて、傘が邪魔になりました。帰りにまた雨が降ったので、最後には持ってきてよかったと思いました。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "天気",
-      "oddity": 0,
-      "tags": [
-        "雨",
-        "傘"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "どんぐり なくした",
+      "text": "どんぐり なくした",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM249",
-      "displayName": "すずらんさん",
-      "category": "長文",
-      "text": "昔好きだった曲を偶然聞きました。曲そのものより、その頃に使っていた鞄や駅の景色を先に思い出しました。記憶は変な順番で戻ってくるものですね。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "思い出",
-      "oddity": 0,
-      "tags": [
-        "音楽",
-        "記憶"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "また あえるかな",
+      "text": "また あえるかな",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM250",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "今日は何をしても少し遅れていました。信号、電車、待ち合わせ。最後には急ぐのをやめて、ゆっくり歩いて帰りました。その方が風の匂いが分かりました。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "遅刻",
-        "風"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "つづきは またこんど",
+      "text": "つづきは またこんど",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM251",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "TeaMerryに来たけれど、最初は何をすればいいのかよく分かりませんでした。あちこち押していたら星風テラスに着きました。少し迷ったけれど、見つけた時はうれしかったです。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "初訪問",
-        "分かりにくい"
-      ],
-      "enabled": true,
-      "note": "率直な感想"
+      "message": "今日はいつもより少しだけ早く家を出ました。急ぐ理由はなかったけれど、朝の空気が気持ちよくて、そのまま遠回りして歩いてしまいました。",
+      "text": "今日はいつもより少しだけ早く家を出ました。急ぐ理由はなかったけれど、朝の空気が気持ちよくて、そのまま遠回りして歩いてしまいました。",
+      "handwritingTemplate": "careful",
+      "enabled": true
     },
     {
       "id": "BM252",
-      "displayName": "ぽんさん",
-      "category": "長文",
-      "text": "猫が窓の外をずっと見ていたので、隣に座って一緒に見ました。特に何もいませんでした。猫には何か見えていたのかもしれません。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "動物",
-      "oddity": 1,
-      "tags": [
-        "猫",
-        "窓"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "川の近くを歩いていたら、小さな葉っぱが何枚も流れていました。同じ場所を通っているはずなのに、毎日少しずつ景色が違うんですね。",
+      "text": "川の近くを歩いていたら、小さな葉っぱが何枚も流れていました。同じ場所を通っているはずなのに、毎日少しずつ景色が違うんですね。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM253",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "夕食を作る気力がなくて、簡単なものにしました。食べ始めたら思っていたよりおいしくて、ちゃんと食べられたことに少し安心しました。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "夕食",
-        "疲れ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パン屋さんから焼きたての匂いがして、予定になかったパンを買いました。帰るまで待てなくて、一つだけ歩きながら食べてしまいました。",
+      "text": "パン屋さんから焼きたての匂いがして、予定になかったパンを買いました。帰るまで待てなくて、一つだけ歩きながら食べてしまいました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM254",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "長文",
-      "text": "今日は誰とも話さないまま一日が終わりそうでした。帰りに店員さんと「ありがとうございます」だけ言い合いました。それだけでも人の声を聞けてよかったです。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "会話",
-        "買い物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日はお気に入りのマグカップを使いました。同じお茶なのに、少しだけ味まで違って感じるから不思議です。",
+      "text": "今日はお気に入りのマグカップを使いました。同じお茶なのに、少しだけ味まで違って感じるから不思議です。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM255",
-      "displayName": "ひかりさん",
-      "category": "長文",
-      "text": "ずっと欲しかったものを買いました。使うのがもったいなくて、まだ箱から出していません。買った意味については、明日考えます。",
-      "lengthClass": "長",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "買い物",
-        "箱"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "つきみ",
+      "message": "買い物へ行って、ちゃんとメモまで持って行ったのに、メモを一度も見ないまま帰ってきました。あとから見たら、一番大事なものを買い忘れていました。",
+      "text": "買い物へ行って、ちゃんとメモまで持って行ったのに、メモを一度も見ないまま帰ってきました。あとから見たら、一番大事なものを買い忘れていました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM256",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "明日は今日より、少しだけ落ち着いて過ごせますように。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "明日",
-        "穏やか"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "夕方になると風が少し変わります。昼間より少しだけ冷たくて、今日は季節がゆっくり進んでいることを思い出しました。",
+      "text": "夕方になると風が少し変わります。昼間より少しだけ冷たくて、今日は季節がゆっくり進んでいることを思い出しました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM257",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "大切な人が元気でいますように。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "家族",
-        "健康"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "星風テラスでしばらく空を見ていました。話し声はないのに静かすぎることもなくて、不思議と時間だけがゆっくり流れていました。",
+      "text": "星風テラスでしばらく空を見ていました。話し声はないのに静かすぎることもなくて、不思議と時間だけがゆっくり流れていました。",
+      "handwritingTemplate": "careful",
+      "enabled": true
     },
     {
       "id": "BM258",
-      "displayName": "ひよりさん",
-      "category": "願い",
-      "text": "今考えていることが、少しずつ形になりますように。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "夢",
-        "未来"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は部屋を少しだけ片付けました。探していたものは見つからなかったけれど、なくしたと思っていた別のものが出てきました。",
+      "text": "今日は部屋を少しだけ片付けました。探していたものは見つからなかったけれど、なくしたと思っていた別のものが出てきました。",
+      "handwritingTemplate": "careful",
+      "enabled": true
     },
     {
       "id": "BM259",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "ちゃんと眠れますように。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "睡眠",
-        "夜"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "温かい飲み物を両手で持っていると、何も考えていない時間まで大切な時間なんだなあと、ぼんやり思いました。",
+      "text": "温かい飲み物を両手で持っていると、何も考えていない時間まで大切な時間なんだなあと、ぼんやり思いました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM260",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "また笑って話せる日が来ますように。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "友達",
-        "再会"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "パンを焼いていることを忘れて、本を読んでいました。少しだけこんがりでした。でも今日はそのくらいがちょうどよかったです。",
+      "text": "パンを焼いていることを忘れて、本を読んでいました。少しだけこんがりでした。でも今日はそのくらいがちょうどよかったです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM261",
-      "displayName": "つきのさん",
-      "category": "願い",
-      "text": "次に会う時は、素直にありがとうと言えますように。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "感謝",
-        "再会"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "鳥の声が聞こえたので探してみました。でも最後まで見つかりませんでした。姿は見えなくても、少しだけ楽しい時間でした。",
+      "text": "鳥の声が聞こえたので探してみました。でも最後まで見つかりませんでした。姿は見えなくても、少しだけ楽しい時間でした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM262",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "新しいことを始める勇気が出ますように。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "挑戦",
-        "勇気"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は少しだけ遠いスーパーまで歩きました。帰りは荷物が重かったけれど、その分いい運動になった気がしています。",
+      "text": "今日は少しだけ遠いスーパーまで歩きました。帰りは荷物が重かったけれど、その分いい運動になった気がしています。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM263",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "なくした鍵が見つかりますように。できれば早めに。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "鍵",
-        "探し物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ボトルを流したあと、ちゃんと誰かに届くのかなあと考えていました。届いても届かなくても、それはそれでいい気がしています。",
+      "text": "ボトルを流したあと、ちゃんと誰かに届くのかなあと考えていました。届いても届かなくても、それはそれでいい気がしています。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM264",
-      "displayName": "ねがいさん",
-      "category": "願い",
-      "text": "今年は一度くらい、流れ星を見られますように。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "星",
-        "空"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "最後のお菓子を食べようと思ったけれど、明日の楽しみに残しておくことにしました。たぶん明日の私は少しだけ喜びます。",
+      "text": "最後のお菓子を食べようと思ったけれど、明日の楽しみに残しておくことにしました。たぶん明日の私は少しだけ喜びます。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM265",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "明日の朝、目覚ましに一回で気づけますように。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "朝",
-        "睡眠"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は特別なことはありませんでした。でも帰り道の空がきれいだったので、それだけで十分だったような気がしています。",
+      "text": "今日は特別なことはありませんでした。でも帰り道の空がきれいだったので、それだけで十分だったような気がしています。",
+      "handwritingTemplate": "careful",
+      "enabled": true
     },
     {
       "id": "BM266",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "うまく言葉にできない気持ちが、いつか伝わりますように。",
-      "lengthClass": "中",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "言葉",
-        "気持ち"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "雲を見ながら歩いていたら、いつの間にかいつもの道を通り過ぎていました。今日はそんな日でもいいことにしました。",
+      "text": "雲を見ながら歩いていたら、いつの間にかいつもの道を通り過ぎていました。今日はそんな日でもいいことにしました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM267",
-      "displayName": "ほしみさん",
-      "category": "願い",
-      "text": "好きなものを、これからも好きでいられますように。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "好き",
-        "未来"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "冷蔵庫を開けたまま考えごとをしていました。何を取りに来たのか思い出せないまま閉めました。またあとで開けます。",
+      "text": "冷蔵庫を開けたまま考えごとをしていました。何を取りに来たのか思い出せないまま閉めました。またあとで開けます。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM268",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "今日より少し、自分にやさしくできますように。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "自分",
-        "優しさ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お気に入りのペンで手紙を書こうと思ったら、インクがあと少ししかありませんでした。最後まで使い切ろうと思います。",
+      "text": "お気に入りのペンで手紙を書こうと思ったら、インクがあと少ししかありませんでした。最後まで使い切ろうと思います。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM269",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "願い",
-      "text": "冷蔵庫のプリンが、帰るまで残っていますように。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "プリン",
-        "帰宅"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "森を歩いていると、小さな音がたくさん聞こえてきます。立ち止まると聞こえる音もあるんだなあと今日知りました。",
+      "text": "森を歩いていると、小さな音がたくさん聞こえてきます。立ち止まると聞こえる音もあるんだなあと今日知りました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM270",
-      "displayName": "ことさん",
-      "category": "願い",
-      "text": "迷っている道のどちらかが、やさしい場所へ続いていますように。",
-      "lengthClass": "中",
-      "todayHokkori": false,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "道",
-        "迷い"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "今日はお茶を少しだけゆっくり飲みました。急がない時間って、ちゃんと味まで変わるんですね。",
+      "text": "今日はお茶を少しだけゆっくり飲みました。急がない時間って、ちゃんと味まで変わるんですね。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM271",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "窓を拭いたら、外が少し新しくなりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "掃除",
-        "窓"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は洗濯物がよく乾きました。たったそれだけなのに、なんだかいい一日だった気がします。",
+      "text": "今日は洗濯物がよく乾きました。たったそれだけなのに、なんだかいい一日だった気がします。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM272",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "今日は髪がうまくまとまりました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "朝",
-        "嬉しい"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "雨が止んだあとの葉っぱは、少しだけ星みたいに光っていました。",
+      "text": "雨が止んだあとの葉っぱは、少しだけ星みたいに光っていました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM273",
-      "displayName": "みかんさん",
-      "category": "ランダム",
-      "text": "みかんの皮が、途中で切れずにむけました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "みかん",
-        "達成"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "おやつを買ったことを忘れて、もう一つ買ってしまいました。今日は少しだけぜいたくです。",
+      "text": "おやつを買ったことを忘れて、もう一つ買ってしまいました。今日は少しだけぜいたくです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM274",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "ペンのインクが最後まで使い切れました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "文房具",
-        "達成"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ぼんやりしていたら、お茶が少し冷めていました。でもその温度もちょうどよかったです。",
+      "text": "ぼんやりしていたら、お茶が少し冷めていました。でもその温度もちょうどよかったです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM275",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "知らない人と同じタイミングで道を譲り合いました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "道",
-        "親切"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "また森へ来ます。次はどんなボトルが流れているのかな、と少し楽しみにしています。",
+      "text": "また森へ来ます。次はどんなボトルが流れているのかな、と少し楽しみにしています。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM276",
-      "displayName": "くじらさん",
-      "category": "ランダム",
-      "text": "雲が大きな魚に見えました。しばらくすると普通の雲になりました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 1,
-      "tags": [
-        "雲",
-        "魚"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ早起きできたので、いつもよりゆっくり朝ごはんを食べました。急がない朝は、それだけで少し特別でした。",
+      "text": "今日は少しだけ早起きできたので、いつもよりゆっくり朝ごはんを食べました。急がない朝は、それだけで少し特別でした。",
+      "handwritingTemplate": "careful",
+      "enabled": true
     },
     {
       "id": "BM277",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "今日はコップを割りませんでした。昨日は割りました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "生活",
-        "コップ"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "道ばたに咲いていた花が昨日より少し増えていました。見ている人は少なかったけれど、ちゃんと春は来ているんですね。",
+      "text": "道ばたに咲いていた花が昨日より少し増えていました。見ている人は少なかったけれど、ちゃんと春は来ているんですね。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM278",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "道端の看板が少し傾いていました。誰かに話しかけているようでした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 2,
-      "tags": [
-        "看板",
-        "道"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "買ったばかりのパンを家まで待てなくて、一つだけ食べました。残りはちゃんと持って帰りました。",
+      "text": "買ったばかりのパンを家まで待てなくて、一つだけ食べました。残りはちゃんと持って帰りました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM279",
-      "displayName": "いとさん",
-      "category": "ランダム",
-      "text": "ボタンが一つ取れました。なくさずにポケットへ入れました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "服",
-        "小物"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "TeaMerry",
+      "displayName": "おさんぽさん",
+      "message": "森を歩いていると、風の音が少しずつ変わっていくのが分かります。またゆっくり歩きに来ようと思います。",
+      "text": "森を歩いていると、風の音が少しずつ変わっていくのが分かります。またゆっくり歩きに来ようと思います。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM280",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "今日の月は、少し眠そうでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "自然",
-      "oddity": 1,
-      "tags": [
-        "月",
-        "夜"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "今日は何もしない時間をちゃんと作りました。時計を見ないだけで、こんなにゆっくりなんですね。",
+      "text": "今日は何もしない時間をちゃんと作りました。時計を見ないだけで、こんなにゆっくりなんですね。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM281",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "自動販売機に、知らない飲み物が増えていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "発見",
-      "oddity": 0,
-      "tags": [
-        "飲み物",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "朝、靴を履く前に、玄関で少しだけ立ち止まりました。外へ出る理由はちゃんとあったのに、雨の匂いを聞いていたら、少しだけ家にいたくなりました。傘を探すふりをして、しばらく玄関にいました。",
+      "text": "朝、靴を履く前に、玄関で少しだけ立ち止まりました。外へ出る理由はちゃんとあったのに、雨の匂いを聞いていたら、少しだけ家にいたくなりました。傘を探すふりをして、しばらく玄関にいました。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM282",
-      "displayName": "こえださん",
-      "category": "ランダム",
-      "text": "木の枝が一本だけ、風と違う方向へ揺れていました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "不思議",
-      "oddity": 2,
-      "tags": [
-        "木",
-        "風"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "自然",
+      "displayName": "おさんぽさん",
+      "message": "帰り道、いつもの角を曲がらず、まっすぐ歩きました。知らない窓に小さな灯りがついていて、そこにも今日があったんだな、と思いました。名前も知らない道なのに、少しだけ安心しました。",
+      "text": "帰り道、いつもの角を曲がらず、まっすぐ歩きました。知らない窓に小さな灯りがついていて、そこにも今日があったんだな、と思いました。名前も知らない道なのに、少しだけ安心しました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM283",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "今日は靴の中に小石が入りませんでした。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "靴",
-        "散歩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "洗ったマグカップを棚に戻す前に、なぜかもう一度、水を入れました。飲むつもりはなかったのに、台所で少しだけ休みました。流しの音が止まると、部屋が急に静かでした。時計だけが聞こえました。",
+      "text": "洗ったマグカップを棚に戻す前に、なぜかもう一度、水を入れました。飲むつもりはなかったのに、台所で少しだけ休みました。流しの音が止まると、部屋が急に静かでした。時計だけが聞こえました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM284",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "信号待ちの間に、好きな歌の一番だけ聞けました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "嬉しい",
-      "oddity": 0,
-      "tags": [
-        "音楽",
-        "移動"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "川沿いの道で、葉っぱが一枚だけ、同じ場所をくるくる回っていました。急いでいたはずなのに、しばらく見てしまいました。待っているのか、迷っているのか、少し分からなくて。",
+      "text": "川沿いの道で、葉っぱが一枚だけ、同じ場所をくるくる回っていました。急いでいたはずなのに、しばらく見てしまいました。待っているのか、迷っているのか、少し分からなくて。",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM285",
-      "displayName": "はるさん",
-      "category": "ランダム",
-      "text": "棚の上のほこりを拭いたら、小さな達成感がありました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "掃除",
-        "達成"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "机の上を片づけていたら、いつ書いたのか分からないメモが出てきました。大事そうなことなのに、今はもう思い出せません。捨てるのも違う気がして、本にはさみました。また忘れそうです。",
+      "text": "机の上を片づけていたら、いつ書いたのか分からないメモが出てきました。大事そうなことなのに、今はもう思い出せません。捨てるのも違う気がして、本にはさみました。また忘れそうです。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM286",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "今日は一度も傘を忘れませんでした。傘を使う日ではありませんでした。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "傘",
-        "日常"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ティーカップのお家を見ると、誰かがお茶を飲んでいる気がして安心します。",
+      "text": "ティーカップのお家を見ると、誰かがお茶を飲んでいる気がして安心します。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM287",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "知らない番号から電話が来ました。出ませんでした。",
-      "lengthClass": "短",
-      "todayHokkori": false,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "電話",
-        "生活"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "葉っぱが一枚だけくるくる回りながら落ちてきました。最後まで見届けました。",
+      "text": "葉っぱが一枚だけくるくる回りながら落ちてきました。最後まで見届けました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM288",
-      "displayName": "こよみさん",
-      "category": "ランダム",
-      "text": "カレンダーを一枚めくったら、部屋の時間が少し進みました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 1,
-      "tags": [
-        "時間",
-        "カレンダー"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日は少しだけ部屋を片付けました。まだ終わっていないけれど、それで十分です。",
+      "text": "今日は少しだけ部屋を片付けました。まだ終わっていないけれど、それで十分です。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM289",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "昨日より爪が少し伸びています。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 1,
-      "tags": [
-        "身体",
-        "発見"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "お財布を探していたら、ちゃんとバッグの中に入っていました。さっきも見たはずなのに。",
+      "text": "お財布を探していたら、ちゃんとバッグの中に入っていました。さっきも見たはずなのに。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM290",
+      "category": "ほっこり",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "ドアを開けたら風が入り、紙が一枚だけ旅立ちました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 1,
-      "tags": [
-        "風",
-        "紙"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "最後のクッキーを半分だけ残しました。明日の楽しみです。",
+      "text": "最後のクッキーを半分だけ残しました。明日の楽しみです。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM291",
-      "displayName": "しずかさん",
-      "category": "ランダム",
-      "text": "何も聞こえない時間が、少しだけありました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "休憩",
-      "oddity": 0,
-      "tags": [
-        "静か",
-        "時間"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "日常",
+      "displayName": "おさんぽさん",
+      "message": "今日はここまで。また続きを書くかもしれません。",
+      "text": "今日はここまで。また続きを書くかもしれません。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM292",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "夕方、家々の明かりが一つずつ増えていきました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "夕方",
-        "光"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "夕焼けが少しだけ長く空に残っていました。帰り道をゆっくり歩きました。",
+      "text": "夕焼けが少しだけ長く空に残っていました。帰り道をゆっくり歩きました。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM293",
+      "category": "TeaMerry",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "今日は右足から靴を履きました。たぶん昨日もです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "奇抜",
-      "oddity": 1,
-      "tags": [
-        "靴",
-        "習慣"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "ボトルを流すたびに、どこまで旅をするのかなあと考えています。届いても届かなくても、それはそれでいい気がします。",
+      "text": "ボトルを流すたびに、どこまで旅をするのかなあと考えています。届いても届かなくても、それはそれでいい気がします。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM294",
-      "displayName": "つぶさん",
-      "category": "ランダム",
-      "text": "小さな石を拾い、少し歩いてから元の場所へ戻しました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 1,
-      "tags": [
-        "石",
-        "散歩"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "くすっ",
+      "displayName": "おさんぽさん",
+      "message": "買い物へ行ったのに、お店で何を買うのか忘れました。歩いているうちに思い出しました。",
+      "text": "買い物へ行ったのに、お店で何を買うのか忘れました。歩いているうちに思い出しました。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM295",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "冷たい水が、思っていたよりおいしかったです。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "食べ物",
-      "oddity": 0,
-      "tags": [
-        "水",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "温かいお茶を飲みながら窓の外を見ていました。それだけで今日は満足です。",
+      "text": "温かいお茶を飲みながら窓の外を見ていました。それだけで今日は満足です。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM296",
+      "category": "自然",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "一日が終わる頃に、今日が何曜日だったか思い出しました。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "ユーモア",
-      "oddity": 1,
-      "tags": [
-        "曜日",
-        "夜"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "雲が少しだけ魚みたいでした。でも次に見たら、もう違う形でした。",
+      "text": "雲が少しだけ魚みたいでした。でも次に見たら、もう違う形でした。",
+      "handwritingTemplate": "faded",
+      "enabled": true
     },
     {
       "id": "BM297",
-      "displayName": "きなこさん",
-      "category": "ランダム",
-      "text": "新しい消しゴムの角を、まだ使わずに残しています。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 0,
-      "tags": [
-        "文房具",
-        "小さな幸せ"
-      ],
-      "enabled": true,
-      "note": ""
+      "category": "ほっこり",
+      "displayName": "おさんぽさん",
+      "message": "パン屋さんの紙袋って、持って歩くだけで少し幸せな気持ちになります。",
+      "text": "パン屋さんの紙袋って、持って歩くだけで少し幸せな気持ちになります。",
+      "handwritingTemplate": "round",
+      "enabled": true
     },
     {
       "id": "BM298",
+      "category": "日常",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "今日見た夢を覚えていたのに、朝ごはんの途中で忘れました。",
-      "lengthClass": "中",
-      "todayHokkori": true,
-      "hokkoriSlot": "日常",
-      "oddity": 1,
-      "tags": [
-        "夢",
-        "忘れ物"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "明日は何をしようかな。まだ決めていません。",
+      "text": "明日は何をしようかな。まだ決めていません。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     },
     {
       "id": "BM299",
+      "category": "くすっ",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "これを読んでいる人が、今日は少しゆっくりできますように。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "願い",
-      "oddity": 0,
-      "tags": [
-        "誰か",
-        "休憩"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "あれ、何を書こうとしてたんだっけ……",
+      "text": "あれ、何を書こうとしてたんだっけ……",
+      "handwritingTemplate": "child",
+      "enabled": true
     },
     {
       "id": "BM300",
+      "category": "ひとやすみ",
       "displayName": "おさんぽさん",
-      "category": "ランダム",
-      "text": "また何か書きたくなったら、ここに流しに来ます。",
-      "lengthClass": "短",
-      "todayHokkori": true,
-      "hokkoriSlot": "TeaMerry",
-      "oddity": 0,
-      "tags": [
-        "ボトルメール",
-        "再訪"
-      ],
-      "enabled": true,
-      "note": ""
+      "message": "またどこかで。",
+      "text": "またどこかで。",
+      "handwritingTemplate": "quiet",
+      "enabled": true
     }
   ]
 }

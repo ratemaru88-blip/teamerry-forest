@@ -377,18 +377,28 @@ body {
 
 .drift-bottle-letter-content {
   position: absolute;
-  inset: 16% 13% 25%;
+  inset: 12% 12% 12%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
-  color: #4a3525;
-  font-family: "Kiwi Maru", "Zen Maru Gothic", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  color: #4d3b2f;
+  font-family: "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", "Yu Mincho", "Hiragino Mincho ProN", serif;
   text-align: left;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.42s ease 0.28s, transform 0.42s ease 0.28s;
+  --letter-font-size: 25px;
+  --letter-line-height: 43px;
+  --type-font-delta: 0px;
+  --type-line-extra: 0px;
+  --type-letter-spacing: 0.03em;
+  --type-body-shift: 0px;
+  --type-line-width: 100%;
+  --sender-shift: 3px;
+  --fit-font-adjust: 0px;
+  text-shadow: 0.15px 0.1px 0 rgba(73, 50, 36, 0.22);
 }
 
 .drift-bottle-modal.is-active .drift-bottle-letter-content {
@@ -397,11 +407,14 @@ body {
 }
 
 .drift-bottle-sender {
-  margin: 0 0 18px;
-  color: #513827;
-  font-size: clamp(22px, 1.9vw, 28px);
-  font-weight: bold;
-  line-height: 1.7;
+  margin: 0 0 9px 2px;
+  color: #4d3b2f;
+  font-size: calc(var(--letter-font-size) + var(--type-font-delta) + var(--fit-font-adjust) - 3px);
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: calc(var(--type-letter-spacing) + 0.02em);
+  opacity: 0.76;
+  transform: translateX(var(--sender-shift));
 }
 
 .drift-bottle-body {
@@ -409,17 +422,102 @@ body {
   min-height: 0;
   max-height: 100%;
   margin: 0;
-  overflow: auto;
-  color: #4a3525;
-  font-size: clamp(26px, 2.25vw, 34px);
-  line-height: 1.8;
-  white-space: pre-wrap;
+  padding-left: var(--type-body-shift);
+  overflow: hidden;
+  color: #4d3b2f;
+  font-size: var(--letter-font-size);
+  font-weight: 400;
+  line-height: var(--letter-line-height);
+  letter-spacing: var(--type-letter-spacing);
+  white-space: normal;
   word-break: normal;
   word-break: auto-phrase;
   overflow-wrap: break-word;
   line-break: strict;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(94, 62, 35, 0.32) transparent;
+  opacity: 0.95;
+}
+
+.drift-bottle-letter-content.is-medium {
+  --letter-font-size: 22.5px;
+  --letter-line-height: 38px;
+}
+
+.drift-bottle-letter-content.is-long {
+  --letter-font-size: 19.5px;
+  --letter-line-height: 31px;
+}
+
+.drift-bottle-letter-content.is-extra-long {
+  --letter-font-size: 16.5px;
+  --letter-line-height: 26px;
+}
+
+.drift-bottle-letter-content.handwriting-quiet {
+  --type-font-delta: -0.6px;
+  --type-line-extra: 1.5px;
+  --type-letter-spacing: 0.035em;
+  --sender-shift: 4px;
+  color: #4d3b2f;
+  font-family: "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", "Yu Mincho", serif;
+}
+
+.drift-bottle-letter-content.handwriting-round {
+  --type-font-delta: 0.25px;
+  --type-line-extra: -1px;
+  --type-letter-spacing: 0.055em;
+  --sender-shift: 2px;
+  color: #5a4332;
+  font-family: "Kiwi Maru", "Zen Kurenaido", "Zen Maru Gothic", serif;
+}
+
+.drift-bottle-letter-content.handwriting-careful {
+  --type-font-delta: -1px;
+  --type-line-extra: 0px;
+  --type-letter-spacing: 0.028em;
+  --type-body-shift: 5px;
+  --type-line-width: 94%;
+  --sender-shift: 7px;
+  color: #473629;
+  font-family: "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", "Yu Mincho", serif;
+}
+
+.drift-bottle-letter-content.handwriting-faded {
+  --type-font-delta: 0px;
+  --type-line-extra: -0.5px;
+  --type-letter-spacing: 0.032em;
+  --sender-shift: 5px;
+  color: #6a5140;
+  font-family: "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", "Yu Mincho", serif;
+}
+
+.drift-bottle-letter-content.handwriting-child {
+  --type-font-delta: 0.8px;
+  --type-line-extra: 2px;
+  --type-letter-spacing: 0.045em;
+  --sender-shift: 4px;
+  color: #5a4030;
+  font-family: "Yomogi", "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", serif;
+}
+
+.letter-line {
+  display: block;
+  width: fit-content;
+  max-width: var(--type-line-width);
+  min-height: calc(var(--letter-line-height) + var(--type-line-extra) + var(--fit-font-adjust) + var(--line-gap, 0px));
+  color: currentColor;
+  opacity: var(--line-opacity, 0.92);
+  font-size: calc(var(--letter-font-size) + var(--type-font-delta) + var(--fit-font-adjust) + var(--line-font-delta, 0px));
+  line-height: calc(var(--letter-line-height) + var(--type-line-extra) + var(--fit-font-adjust) + var(--line-gap, 0px));
+  letter-spacing: inherit;
+  white-space: nowrap;
+  text-shadow: 0.15px 0.1px 0 rgba(73, 50, 36, 0.22);
+  transform: translateX(var(--line-indent, 0px)) rotate(var(--line-rotate, 0deg));
+  transform-origin: left center;
+}
+
+.letter-line--blank {
+  min-height: 16px;
+  line-height: 16px;
 }
 
 .drift-bottle-close {
@@ -1065,18 +1163,30 @@ body {
   }
 
   .drift-bottle-letter-content {
-    inset: 15% 13% 17%;
-    justify-content: center;
+    inset: 12% 12% 12%;
+    justify-content: flex-start;
+    --letter-font-size: 16.5px;
+    --letter-line-height: 29px;
   }
 
   .drift-bottle-sender {
-    margin-bottom: 12px;
-    font-size: clamp(18px, 5.2vw, 22px);
+    margin-bottom: 8px;
+    line-height: 1.5;
   }
 
-  .drift-bottle-body {
-    font-size: clamp(20px, 5.5vw, 26px);
-    line-height: 1.8;
+  .drift-bottle-letter-content.is-medium {
+    --letter-font-size: 17.5px;
+    --letter-line-height: 28px;
+  }
+
+  .drift-bottle-letter-content.is-long {
+    --letter-font-size: 15.5px;
+    --letter-line-height: 24px;
+  }
+
+  .drift-bottle-letter-content.is-extra-long {
+    --letter-font-size: 14px;
+    --letter-line-height: 21px;
   }
 
   .drift-bottle-close {

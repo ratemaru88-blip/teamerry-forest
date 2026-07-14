@@ -273,12 +273,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function normalizeDriftBottleHandwritingTemplate(value) {
+    const template = String(value || "quiet")
+      .split("（", 1)[0]
+      .split("(", 1)[0]
+      .trim()
+      .toLowerCase();
+    return ["quiet", "round", "careful", "faded", "child"].includes(template) ? template : "quiet";
+  }
+
   function normalizeDriftBottleMessage(message = {}) {
+    const text = String(message.message || message.text || "").trim();
+
     return {
       id: String(message.id || "").trim(),
       displayName: String(message.displayName || "おさんぽさん").trim() || "おさんぽさん",
-      text: String(message.text || "").trim(),
-      enabled: message.enabled === true,
+      text,
+      handwritingTemplate: normalizeDriftBottleHandwritingTemplate(message.handwritingTemplate),
+      enabled: message.enabled !== false,
     };
   }
 
@@ -403,6 +415,295 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function getDriftBottleLetterSizeClass(text = "") {
+    const length = Array.from(String(text).trim()).length;
+
+    if (length <= 80) {
+      return "is-short";
+    }
+
+    if (length <= 120) {
+      return "is-medium";
+    }
+
+    if (length <= 160) {
+      return "is-long";
+    }
+
+    return "is-extra-long";
+  }
+
+  function hashDriftBottleString(value = "") {
+    let hash = 2166136261;
+    const source = String(value);
+
+    for (let index = 0; index < source.length; index += 1) {
+      hash ^= source.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+
+    return hash >>> 0;
+  }
+
+  function createDriftBottleSeededRandom(seed) {
+    let state = seed >>> 0;
+
+    return () => {
+      state += 0x6D2B79F5;
+      let value = state;
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function getDriftBottleHandwritingClass(message = {}) {
+    return `handwriting-${normalizeDriftBottleHandwritingTemplate(message.handwritingTemplate)}`;
+  }
+
+  function getDriftBottleLineTarget(sizeClass, handwritingClass) {
+    const isMobileLayout = window.matchMedia("(max-width: 768px), (hover: none) and (pointer: coarse)").matches;
+    const baseTargets = isMobileLayout
+      ? { "is-short": 14, "is-medium": 15, "is-long": 17, "is-extra-long": 19 }
+      : { "is-short": 14, "is-medium": 16, "is-long": 18, "is-extra-long": 20 };
+    const handwritingOffset = {
+      "handwriting-quiet": -1,
+      "handwriting-round": 1,
+      "handwriting-careful": -2,
+      "handwriting-faded": 0,
+      "handwriting-child": 1,
+    };
+
+    return Math.max(8, (baseTargets[sizeClass] || 14) + (handwritingOffset[handwritingClass] || 0));
+  }
+
+  function isInsideDriftBottleProtectedWord(text, breakIndex) {
+    const protectedWords = ["ありませんでした", "分かりませんでした", "なりました", "思いました", "しています", "いいのか", "のか", "よく", "でした", "ます", "ません", "ので", "けれど", "から", "ため"];
+
+    return protectedWords.some((word) => {
+      let searchFrom = 0;
+      let wordIndex = text.indexOf(word, searchFrom);
+
+      while (wordIndex !== -1) {
+        if (breakIndex > wordIndex && breakIndex < wordIndex + word.length) {
+          return true;
+        }
+
+        searchFrom = wordIndex + 1;
+        wordIndex = text.indexOf(word, searchFrom);
+      }
+
+      return false;
+    });
+  }
+
+  function isForbiddenDriftBottleBreak(chars, breakIndex) {
+    if (breakIndex <= 0 || breakIndex >= chars.length) {
+      return true;
+    }
+
+    const noLineStart = "、。！？!?）」』】〉》ぁぃぅぇぉゃゅょっか";
+    const noLineEnd = "（「『【〈《";
+    const singleParticles = "がをにへではとも";
+    const before = chars[breakIndex - 1];
+    const after = chars[breakIndex];
+
+    if (noLineStart.includes(after) || noLineEnd.includes(before)) {
+      return true;
+    }
+
+    if (singleParticles.includes(after) && breakIndex + 1 < chars.length && !"、。！？!?".includes(chars[breakIndex + 1])) {
+      return true;
+    }
+
+    return isInsideDriftBottleProtectedWord(chars.join(""), breakIndex);
+  }
+
+  function scoreDriftBottleBreak(chars, breakIndex, targetLength) {
+    const before = chars[breakIndex - 1];
+    const previousTwo = chars.slice(Math.max(0, breakIndex - 2), breakIndex).join("");
+    const previousThree = chars.slice(Math.max(0, breakIndex - 3), breakIndex).join("");
+    const sentenceEnd = "。！？!?";
+    const comma = "、，,";
+    const particles = ["から", "まで", "より", "ので", "けれど", "ため", "には", "ても", "では", "が", "を", "に", "へ", "で", "と", "も", "は", "の"];
+    let score = -Math.abs(targetLength - breakIndex) * 1.2;
+
+    if (sentenceEnd.includes(before)) {
+      score += breakIndex > targetLength * 1.45 ? -20 : 120;
+    } else if (comma.includes(before)) {
+      score += 95;
+    }
+
+    if (particles.includes(previousThree)) {
+      score += 74;
+    } else if (particles.includes(previousTwo)) {
+      score += 68;
+    } else if (particles.includes(before)) {
+      score += 54;
+    }
+
+    if (before === " " || before === "　") {
+      score += 46;
+    }
+
+    return score;
+  }
+
+  function findDriftBottleLineBreak(chars, targetLength) {
+    const minBreak = Math.max(4, Math.floor(targetLength * 0.58));
+    const preferredMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.38));
+    const extendedMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.75));
+    let bestBreak = null;
+    let bestScore = -Infinity;
+
+    for (let index = minBreak; index <= extendedMax; index += 1) {
+      if (isForbiddenDriftBottleBreak(chars, index)) {
+        continue;
+      }
+
+      const score = scoreDriftBottleBreak(chars, index, targetLength) - (index > preferredMax ? (index - preferredMax) * 8 : 0);
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestBreak = index;
+      }
+    }
+
+    if (bestBreak !== null) {
+      return bestBreak;
+    }
+
+    for (let index = Math.min(targetLength, chars.length - 1); index < chars.length; index += 1) {
+      if (!isForbiddenDriftBottleBreak(chars, index)) {
+        return index;
+      }
+    }
+
+    for (let index = Math.min(targetLength, chars.length - 1); index >= 1; index -= 1) {
+      if (!isForbiddenDriftBottleBreak(chars, index)) {
+        return index;
+      }
+    }
+
+    return Math.min(targetLength, chars.length);
+  }
+
+  function splitDriftBottleLetterLines(text = "", sizeClass, handwritingClass, random) {
+    const target = getDriftBottleLineTarget(sizeClass, handwritingClass);
+    const lines = [];
+    const paragraphs = String(text).trim().split(/\n+/);
+
+    paragraphs.forEach((paragraph, paragraphIndex) => {
+      let chars = Array.from(paragraph.trim());
+
+      while (chars.length) {
+        if (chars.length <= Math.ceil(target * 1.18)) {
+          lines.push(chars.join(""));
+          break;
+        }
+
+        const lineTarget = Math.max(7, target + Math.round(random() * 4) - 2);
+        const breakIndex = findDriftBottleLineBreak(chars, lineTarget);
+        lines.push(chars.slice(0, breakIndex).join("").trim());
+        chars = chars.slice(breakIndex);
+      }
+
+      if (paragraphIndex < paragraphs.length - 1) {
+        lines.push("");
+      }
+    });
+
+    return lines.filter((line, index, source) => line || index < source.length - 1);
+  }
+
+  function renderDriftBottleLetterBody(message = {}) {
+    if (!driftBottleBody) {
+      return;
+    }
+
+    const text = String(message.text || "").trim();
+    const sizeClass = getDriftBottleLetterSizeClass(text);
+    const handwritingClass = getDriftBottleHandwritingClass(message);
+    const content = driftBottleBody.closest(".drift-bottle-letter-content");
+    const removableClasses = [
+      "is-short",
+      "is-medium",
+      "is-long",
+      "is-extra-long",
+      "handwriting-quiet",
+      "handwriting-round",
+      "handwriting-careful",
+      "handwriting-faded",
+      "handwriting-child",
+    ];
+    const random = createDriftBottleSeededRandom(hashDriftBottleString(`${message.id || ""}:${text}:lines`));
+    const lines = splitDriftBottleLetterLines(text, sizeClass, handwritingClass, random);
+
+    driftBottleBody.classList.remove(...removableClasses);
+    driftBottleBody.classList.add(sizeClass, handwritingClass);
+    driftBottleBody.textContent = "";
+
+    if (content) {
+      content.classList.remove(...removableClasses);
+      content.classList.add(sizeClass, handwritingClass);
+      content.style.removeProperty("--fit-font-adjust");
+    }
+
+    lines.forEach((line, index) => {
+      const lineElement = document.createElement("span");
+      lineElement.className = "letter-line";
+      lineElement.textContent = line;
+
+      if (!line) {
+        lineElement.classList.add("letter-line--blank");
+      }
+
+      const lineRandom = createDriftBottleSeededRandom(hashDriftBottleString(`${message.id || text}:line:${index}`));
+      const variation = {
+        "handwriting-quiet": { indent: 5, indentStart: -2, font: 1, rotate: 0.18, opacityMin: 0.86, opacityRange: 0.08 },
+        "handwriting-round": { indent: 7, indentStart: -2, font: 1, rotate: 0.22, opacityMin: 0.88, opacityRange: 0.08 },
+        "handwriting-careful": { indent: 4, indentStart: -1, font: 0.7, rotate: 0.08, opacityMin: 0.9, opacityRange: 0.05 },
+        "handwriting-faded": { indent: 8, indentStart: -3, font: 1.2, rotate: 0.24, opacityMin: 0.82, opacityRange: 0.12 },
+        "handwriting-child": { indent: 10, indentStart: -3, font: 2.2, rotate: 0.3, opacityMin: 0.86, opacityRange: 0.1 },
+      }[handwritingClass] || { indent: 6, indentStart: -2, font: 1, rotate: 0.2, opacityMin: 0.88, opacityRange: 0.08 };
+      lineElement.style.setProperty("--line-indent", `${Math.round(lineRandom() * variation.indent + variation.indentStart)}px`);
+      lineElement.style.setProperty("--line-font-delta", `${((lineRandom() - 0.5) * variation.font).toFixed(2)}px`);
+      lineElement.style.setProperty("--line-rotate", `${(lineRandom() * variation.rotate - variation.rotate / 2).toFixed(3)}deg`);
+      lineElement.style.setProperty("--line-opacity", `${Math.min(0.96, variation.opacityMin + lineRandom() * variation.opacityRange).toFixed(2)}`);
+      lineElement.style.setProperty("--line-gap", `${Math.round(lineRandom() * 3 - 1)}px`);
+      driftBottleBody.appendChild(lineElement);
+    });
+  }
+
+  function fitDriftBottleLetterToPaper() {
+    if (!driftBottleBody) {
+      return;
+    }
+
+    const content = driftBottleBody.closest(".drift-bottle-letter-content");
+    if (!content) {
+      return;
+    }
+
+    const isLetterOverflowing = () => {
+      const contentRect = content.getBoundingClientRect();
+      const hasWideLine = Array.from(driftBottleBody.querySelectorAll(".letter-line")).some((line) => {
+        const lineRect = line.getBoundingClientRect();
+        return lineRect.left < contentRect.left - 5 || lineRect.right > contentRect.right + 1;
+      });
+
+      return hasWideLine || driftBottleBody.scrollHeight > driftBottleBody.clientHeight + 1;
+    };
+
+    let adjust = 0;
+    content.style.setProperty("--fit-font-adjust", "0px");
+
+    while (isLetterOverflowing() && adjust > -6) {
+      adjust -= 1;
+      content.style.setProperty("--fit-font-adjust", `${adjust}px`);
+    }
+  }
+
   function showDriftBottleMessageModal() {
     if (!openDriftBottleMessage.current || !driftBottleModal) {
       return;
@@ -414,14 +715,14 @@ document.addEventListener("DOMContentLoaded", () => {
       driftBottleSender.textContent = `${message.displayName || "おさんぽさん"}より`;
     }
 
-    if (driftBottleBody) {
-      driftBottleBody.textContent = message.text;
-    }
+    renderDriftBottleLetterBody(message);
 
     driftBottleModal.hidden = false;
     driftBottleModal.classList.add("is-active");
     driftBottleModal.setAttribute("aria-hidden", "false");
     window.setTimeout(() => {
+      fitDriftBottleLetterToPaper();
+
       if (driftBottleDialog) {
         driftBottleDialog.focus();
       }
