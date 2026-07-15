@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const forestWhisperText = document.getElementById("forestWhisperText");
   const bottleMailButton = document.getElementById("bottleMailButton");
   const hokkoriButton = document.getElementById("hokkoriButton");
+  const hokkoriNightButton = document.getElementById("hokkoriNightButton");
   const wishStarButton = document.getElementById("wishStarButton");
   const bottleWriteView = document.getElementById("bottleWriteView");
   const wishWriteView = document.getElementById("wishWriteView");
@@ -58,6 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const driftBottleReceiveVideo = document.getElementById("driftBottleReceiveVideo");
   const hokkoriBoardLetters = document.getElementById("hokkoriBoardLetters");
   const hokkoriBoardEmpty = document.getElementById("hokkoriBoardEmpty");
+  const hokkoriBoardCharacters = document.querySelector(".hokkori-board__characters");
+  const wishHokkoriStars = document.getElementById("wishHokkoriStars");
+  const wishHokkoriCharacters = document.getElementById("wishHokkoriCharacters");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
   const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
@@ -79,6 +83,24 @@ document.addEventListener("DOMContentLoaded", () => {
     "./assets/images/lilu/present/lilu_full_present_mouth_open.webp",
     "./assets/images/lilu/present/lilu_full_present_mouth_round.webp",
     "./assets/images/lilu/present/lilu_full_present_mouth_smaile.webp",
+  ];
+  const hokkoriFairies = [
+    { src: "./assets/images/forest_fairy/aco_v01.webp", alt: "アコ" },
+    { src: "./assets/images/forest_fairy/berry_v01.webp", alt: "ベリー" },
+    { src: "./assets/images/forest_fairy/bumpy_v01.webp", alt: "バンピー" },
+    { src: "./assets/images/forest_fairy/curly_v01.webp", alt: "カーリー" },
+    { src: "./assets/images/forest_fairy/elder_v01.webp", alt: "エルダー" },
+    { src: "./assets/images/forest_fairy/lavi_v01.webp", alt: "ラヴィ" },
+    { src: "./assets/images/forest_fairy/lemon_v01.webp", alt: "レモン" },
+    { src: "./assets/images/forest_fairy/lilu_v01.webp", alt: "リル" },
+    { src: "./assets/images/forest_fairy/miiru_v01.webp", alt: "ミール" },
+    { src: "./assets/images/forest_fairy/mint_v01.webp", alt: "ミント" },
+    { src: "./assets/images/forest_fairy/tiara_v01.webp", alt: "ティアラ" },
+  ];
+  const wishHokkoriPlaceholders = [
+    "今日の小さな願いが、星のすきまにそっと届きますように。",
+    "眠る前のひと息が、明日の光になりますように。",
+    "誰かのやさしい気持ちが、夜空でまたたきますように。",
   ];
   const wishLanternTypes = [
     {
@@ -953,10 +975,6 @@ document.addEventListener("DOMContentLoaded", () => {
     button.className = `hokkori-letter hokkori-letter--${index + 1} ${handwritingClass}`;
     button.setAttribute("aria-label", `${item.displayName || "おさんぽさん"}さんの今日のほっこりを読む`);
 
-    const meta = document.createElement("span");
-    meta.className = "hokkori-letter__meta";
-    meta.textContent = item.category || "森の便り";
-
     const body = document.createElement("span");
     body.className = "hokkori-letter__body";
     body.textContent = item.preview || item.text;
@@ -965,9 +983,43 @@ document.addEventListener("DOMContentLoaded", () => {
     sender.className = "hokkori-letter__sender";
     sender.textContent = `${item.displayName || "おさんぽさん"}より`;
 
-    button.append(meta, body, sender);
+    button.append(body, sender);
     button.addEventListener("click", () => openHokkoriBottleMessage(item, button));
     return button;
+  }
+
+  function renderRandomHokkoriFairies(container, variant = "board") {
+    if (!container || !hokkoriFairies.length) {
+      return;
+    }
+
+    const count = Math.min(2, hokkoriFairies.length);
+    const selected = [...hokkoriFairies].sort(() => Math.random() - 0.5).slice(0, count);
+    container.textContent = "";
+
+    selected.forEach((fairy, index) => {
+      const image = document.createElement("img");
+      image.className = `hokkori-fairy hokkori-fairy--${variant}-${index + 1}`;
+      image.src = fairy.src;
+      image.alt = "";
+      image.loading = "lazy";
+      container.appendChild(image);
+    });
+  }
+
+  function renderWishHokkoriStars() {
+    if (!wishHokkoriStars) {
+      return;
+    }
+
+    wishHokkoriStars.textContent = "";
+
+    wishHokkoriPlaceholders.forEach((message, index) => {
+      const star = document.createElement("div");
+      star.className = `wish-hokkori-star wish-hokkori-star--${index + 1}`;
+      star.textContent = message;
+      wishHokkoriStars.appendChild(star);
+    });
   }
 
   async function renderTodayHokkoriBoard(targetDate) {
@@ -989,6 +1041,7 @@ document.addEventListener("DOMContentLoaded", () => {
       result.items.forEach((item, index) => {
         hokkoriBoardLetters.appendChild(createHokkoriLetterButton(item, index));
       });
+      renderRandomHokkoriFairies(hokkoriBoardCharacters, "board");
       setHokkoriEmptyState(!result.items.length);
       renderTodayHokkoriBoard.latest = result;
       return result;
@@ -1088,6 +1141,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (targetView === bottleHokkoriView) {
       const hokkoriDate = new URLSearchParams(window.location.search).get("hokkoriDate");
       renderTodayHokkoriBoard(hokkoriDate ? new Date(`${hokkoriDate}T12:00:00+09:00`) : undefined);
+    } else if (targetView === wishHokkoriView) {
+      renderWishHokkoriStars();
+      renderRandomHokkoriFairies(wishHokkoriCharacters, "wish");
     }
   }
 
@@ -1457,9 +1513,11 @@ document.addEventListener("DOMContentLoaded", () => {
     bottleMailButton.addEventListener("click", () => showView(bottleWriteView));
   }
 
-  if (hokkoriButton) {
-    hokkoriButton.addEventListener("click", () => showView(bottleHokkoriView));
-  }
+  [hokkoriButton, hokkoriNightButton].forEach((button) => {
+    if (button) {
+      button.addEventListener("click", () => showView(button === hokkoriNightButton ? wishHokkoriView : bottleHokkoriView));
+    }
+  });
 
   if (wishStarButton) {
     wishStarButton.addEventListener("click", () => showView(wishWriteView));
@@ -1542,6 +1600,9 @@ document.addEventListener("DOMContentLoaded", () => {
     wishLanternVideo.addEventListener("ended", closeViews);
     wishLanternVideo.addEventListener("error", closeViews);
   }
+
+  renderRandomHokkoriFairies(wishHokkoriCharacters, "wish");
+  renderWishHokkoriStars();
 
   if (new URLSearchParams(window.location.search).get("hokkori") === "1") {
     showView(bottleHokkoriView);

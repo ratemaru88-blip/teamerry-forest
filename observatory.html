@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Yomogi&family=Zen+Kurenaido&display=swap" rel="stylesheet">
     <link rel="icon" href="./assets/icons/favicon.ico">
-    <link rel="stylesheet" href="./css/observatory.css">
+    <link rel="stylesheet" href="./css/observatory.css?v=20260716-wish-star-text">
 </head>
 
 <body>
@@ -73,12 +73,6 @@
                 id="bottleMailButton"
                 aria-label="ボトルメールを書く"></button>
 
-            <button
-                type="button"
-                class="hokkori-hotspot"
-                id="hokkoriButton"
-                aria-label="今日のほっこりを見る"></button>
-
         </section>
 
         <!-- 夜モード -->
@@ -93,6 +87,18 @@
                 aria-label="願いごとを書く"></button>
 
         </section>
+
+        <button
+            type="button"
+            class="hokkori-hotspot hokkori-hotspot--day"
+            id="hokkoriButton"
+            aria-label="今日のほっこりを見る"></button>
+
+        <button
+            type="button"
+            class="hokkori-hotspot hokkori-hotspot--night"
+            id="hokkoriNightButton"
+            aria-label="今日のほっこりを見る"></button>
 
         <div
             id="driftBottleArrival"
@@ -483,6 +489,17 @@
             class="observatory-view observatory-view--wish-hokkori"
             aria-hidden="true">
 
+            <div class="wish-hokkori-board" aria-live="polite">
+
+                <div class="wish-hokkori__stars" id="wishHokkoriStars"></div>
+
+                <div
+                    class="wish-hokkori__characters"
+                    id="wishHokkoriCharacters"
+                    aria-hidden="true"></div>
+
+            </div>
+
             <button
                 type="button"
                 class="observatory-view__back"
@@ -517,8 +534,8 @@
     </main>
 
     <script src="./js/dialogueEngine.js"></script>
-    <script src="./today-hokkori.js?v=20260715-daily-hokkori"></script>
-    <script src="./observatory.js?v=20260711-wish-lantern-sequence"></script>
+    <script src="./today-hokkori.js?v=20260716-hokkori-fixed-window"></script>
+    <script src="./observatory.js?v=20260716-wish-hokkori-window"></script>
 
 </body>
 </html>

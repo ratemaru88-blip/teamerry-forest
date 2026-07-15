@@ -308,6 +308,48 @@
 
   setupForestNameModal();
 
+  function setupObservatoryPopup() {
+    if (!fixedObservatoryPortal) {
+      return;
+    }
+
+    const mobileLikeQuery = window.matchMedia("(max-width: 768px), (hover: none), (pointer: coarse)");
+    const popupWidth = 430;
+    const popupHeight = 760;
+
+    fixedObservatoryPortal.addEventListener("click", (event) => {
+      if (mobileLikeQuery.matches || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - popupWidth) / 2));
+      const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - popupHeight) / 2));
+      const features = [
+        `width=${popupWidth}`,
+        `height=${popupHeight}`,
+        `left=${left}`,
+        `top=${top}`,
+        "menubar=no",
+        "toolbar=no",
+        "location=no",
+        "status=no",
+        "resizable=yes",
+        "scrollbars=no",
+      ].join(",");
+      const popup = window.open(fixedObservatoryPortal.href, "TeaMerryObservatoryMobile", features);
+
+      if (popup) {
+        popup.focus();
+      } else {
+        window.location.href = fixedObservatoryPortal.href;
+      }
+    });
+  }
+
+  setupObservatoryPopup();
+
   if (!scene || !map) {
     return;
   }

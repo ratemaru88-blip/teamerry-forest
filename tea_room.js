@@ -47,8 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   ];
 
-  const grid = document.getElementById("teaNoticeGrid");
-  const mobileList = document.getElementById("teaMobileNoticeList");
+  const hotspotLayer = document.getElementById("teaNoticeHotspots");
   const modal = document.getElementById("teaNoticeModal");
   const dialog = modal?.querySelector(".tea-notice-modal__dialog");
   const closeButton = document.getElementById("teaNoticeModalClose");
@@ -58,38 +57,61 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalBody = document.getElementById("teaNoticeModalBody");
   let lastFocusedNotice = null;
 
-  function createNoticeButton(notice, variant) {
+  const hotspotPositions = {
+    "starwind-terrace": {
+      pc: { x: 7.7, y: 22.6, w: 21.5, h: 26.6 },
+      mobile: { x: 14.4, y: 17.1, w: 71.3, h: 10 },
+    },
+    "wish-lantern": {
+      pc: { x: 31.4, y: 22.6, w: 24.1, h: 26.6 },
+      mobile: { x: 14.4, y: 29.6, w: 71.3, h: 10 },
+    },
+    "forest-secrets": {
+      pc: { x: 58.3, y: 22.6, w: 28, h: 26.6 },
+      mobile: { x: 14.4, y: 42.1, w: 71.3, h: 10 },
+    },
+    "future-events": {
+      pc: { x: 7.7, y: 53, w: 27.3, h: 24.3 },
+      mobile: { x: 14.4, y: 54.6, w: 71.3, h: 10 },
+    },
+    "in-production": {
+      pc: { x: 38.1, y: 53, w: 24.7, h: 24.3 },
+      mobile: { x: 14.4, y: 67.1, w: 71.3, h: 10 },
+    },
+  };
+
+  function setPercentStyle(button, name, value) {
+    button.style.setProperty(name, `${value}%`);
+  }
+
+  function createNoticeButton(notice) {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `tea-notice-card tea-notice-card--${variant}`;
+    button.className = "tea-notice-hotspot";
     button.dataset.noticeId = notice.id;
     button.setAttribute("aria-label", `${notice.number}. ${notice.title}の詳細を開く`);
+    button.textContent = notice.title;
 
-    button.innerHTML = `
-      <span class="tea-notice-card__pin" aria-hidden="true"></span>
-      ${notice.isNew ? '<span class="tea-notice-card__new">NEW</span>' : ""}
-      <span class="tea-notice-card__number" aria-hidden="true">${notice.number}</span>
-      <span class="tea-notice-card__copy">
-        <strong>${notice.title}</strong>
-        <span>${notice.summary}</span>
-      </span>
-      <img class="tea-notice-card__image" src="${notice.image}" alt="">
-    `;
+    const position = hotspotPositions[notice.id];
+    if (position) {
+      setPercentStyle(button, "--pc-x", position.pc.x);
+      setPercentStyle(button, "--pc-y", position.pc.y);
+      setPercentStyle(button, "--pc-w", position.pc.w);
+      setPercentStyle(button, "--pc-h", position.pc.h);
+      setPercentStyle(button, "--mobile-x", position.mobile.x);
+      setPercentStyle(button, "--mobile-y", position.mobile.y);
+      setPercentStyle(button, "--mobile-w", position.mobile.w);
+      setPercentStyle(button, "--mobile-h", position.mobile.h);
+    }
 
     button.addEventListener("click", () => openNoticeModal(notice, button));
     return button;
   }
 
   function renderNotices() {
-    if (grid) {
+    if (hotspotLayer) {
       notices.forEach((notice) => {
-        grid.appendChild(createNoticeButton(notice, "board"));
-      });
-    }
-
-    if (mobileList) {
-      notices.forEach((notice) => {
-        mobileList.appendChild(createNoticeButton(notice, "mobile"));
+        hotspotLayer.appendChild(createNoticeButton(notice));
       });
     }
   }

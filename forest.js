@@ -30,6 +30,8 @@
   const TM_NAME_KEY = "teaMerryForestName";
   const TM_DISPLAY_NAME_KEY = "teaMerryDisplayName";
   const TM_NAME_DONE_KEY = "teaMerryNameDone";
+  const TM_RETURN_SOURCE_KEY = "teaMerryReturnSource";
+  const TM_RETURN_SOURCE_OBSERVATORY = "observatory";
 
   const getStoredItem = (key) => {
     try {
@@ -198,10 +200,41 @@
     window.setTimeout(placeCaretAtNameEnd, 80);
   }
 
+  function hasObservatoryReferrer() {
+    try {
+      return new URL(document.referrer).pathname.endsWith("/observatory.html");
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function consumeObservatoryReturn() {
+    const params = new URLSearchParams(window.location.search);
+    let source = params.get("from");
+
+    try {
+      source = source || window.sessionStorage.getItem(TM_RETURN_SOURCE_KEY);
+      window.sessionStorage.removeItem(TM_RETURN_SOURCE_KEY);
+    } catch (error) {
+      // URL parameters still cover the normal observatory return path.
+    }
+
+    if (params.get("from") === TM_RETURN_SOURCE_OBSERVATORY && window.history?.replaceState) {
+      params.delete("from");
+      const query = params.toString();
+      const cleanUrl = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
+      window.history.replaceState(null, "", cleanUrl);
+    }
+
+    return source === TM_RETURN_SOURCE_OBSERVATORY || hasObservatoryReferrer();
+  }
+
   function showNameModalIfNeeded() {
     if (!nameModal) {
       return;
     }
+
+    consumeObservatoryReturn();
 
     const done = getStoredItem(TM_NAME_DONE_KEY);
     const display = getStoredItem(TM_DISPLAY_NAME_KEY);
@@ -217,6 +250,14 @@
   function setupForestNameModal() {
     updateWriterNames();
     showNameModalIfNeeded();
+
+    window.addEventListener("pageshow", () => {
+      if (!hasObservatoryReferrer()) {
+        return;
+      }
+
+      nameModal?.classList.add("hidden");
+    });
 
     reuseForestNameButton?.addEventListener("click", () => {
       if (!getStoredForestNameForInput()) {
@@ -266,6 +307,48 @@
   window.getForestDisplayName = getForestDisplayName;
 
   setupForestNameModal();
+
+  function setupObservatoryPopup() {
+    if (!fixedObservatoryPortal) {
+      return;
+    }
+
+    const mobileLikeQuery = window.matchMedia("(max-width: 768px), (hover: none), (pointer: coarse)");
+    const popupWidth = 430;
+    const popupHeight = 760;
+
+    fixedObservatoryPortal.addEventListener("click", (event) => {
+      if (mobileLikeQuery.matches || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - popupWidth) / 2));
+      const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - popupHeight) / 2));
+      const features = [
+        `width=${popupWidth}`,
+        `height=${popupHeight}`,
+        `left=${left}`,
+        `top=${top}`,
+        "menubar=no",
+        "toolbar=no",
+        "location=no",
+        "status=no",
+        "resizable=yes",
+        "scrollbars=no",
+      ].join(",");
+      const popup = window.open(fixedObservatoryPortal.href, "TeaMerryObservatoryMobile", features);
+
+      if (popup) {
+        popup.focus();
+      } else {
+        window.location.href = fixedObservatoryPortal.href;
+      }
+    });
+  }
+
+  setupObservatoryPopup();
 
   if (!scene || !map) {
     return;
@@ -710,45 +793,95 @@
   const kakaoWalkerAssets = {
     walk: {
       up: [
-        "./assets/images/events/kakao_walk/kakao_back_A1.webp",
+        "./assets/images/events/kakao_walk/kakao_back_v02.webp",
+        "./assets/images/events/kakao_walk/kakao_back_left_v02.webp",
+        "./assets/images/events/kakao_walk/kakao_back_v02.webp",
+        "./assets/images/events/kakao_walk/kakao_back_right_v02.webp",
       ],
       down: [
-        "./assets/images/events/kakao_walk/kakao_front_A1.webp",
-        "./assets/images/events/kakao_walk/kakao_front_left1.webp",
-        "./assets/images/events/kakao_walk/kakao_front_A1.webp",
-        "./assets/images/events/kakao_walk/kakao_front_right_1.webp",
+        "./assets/images/events/kakao_walk/kakao_front_v02.webp",
+        "./assets/images/events/kakao_walk/kakao_front_left_v02.webp",
+        "./assets/images/events/kakao_walk/kakao_front_v02.webp",
+        "./assets/images/events/kakao_walk/kakao_front_right_v02.webp",
       ],
       left: [
-        "./assets/images/events/kakao_walk/kakao_left_1.webp",
-        "./assets/images/events/kakao_walk/kakao_left_2.webp",
+        "./assets/images/events/kakao_walk/kakao_left_1_v02.webp",
+        "./assets/images/events/kakao_walk/kakao_left_2_v02.webp",
       ],
       right: [
-        "./assets/images/events/kakao_walk/kakao_right_1.webp",
-        "./assets/images/events/kakao_walk/kakao_right_2.webp",
+        "./assets/images/events/kakao_walk/kakao_right_1_v02.webp",
+        "./assets/images/events/kakao_walk/kakao_right_2_v02.webp",
       ],
     },
     bento: [
-      "./assets/images/events/kakao_walk/kakao_bentou_A1.webp",
-      "./assets/images/events/kakao_walk/kakao_bentou_A2.webp",
+      "./assets/images/events/kakao_walk/kakao_bentou_a_v02.webp",
+      "./assets/images/events/kakao_walk/kakao_bentou_b_v02.webp",
     ],
     nap: [
-      "./assets/images/events/kakao_walk/kakao_napping_A1.webp",
-      "./assets/images/events/kakao_walk/kakao_napping_A2.webp",
-      "./assets/images/events/kakao_walk/kakao_napping_A3.webp",
+      "./assets/images/events/kakao_walk/kakao_napping_a1_v02.webp",
+      "./assets/images/events/kakao_walk/kakao_napping_a2_v02.webp",
+      "./assets/images/events/kakao_walk/kakao_napping_a3_v02.webp",
     ],
   };
 
   const kakaoWalkPath = [
-    { x: 285, y: 956 },
-    { x: 352, y: 928 },
-    { x: 438, y: 908 },
-    { x: 525, y: 866 },
-    { x: 584, y: 820 },
-    { x: 610, y: 778 },
-    { x: 566, y: 748 },
-    { x: 505, y: 736 },
-    { x: 552, y: 706 },
-    { x: 632, y: 684 },
+    { x: 36, y: 1074 },
+    { x: 160, y: 1052 },
+    { x: 270, y: 982 },
+    { x: 430, y: 958 },
+    { x: 570, y: 904 },
+    { x: 612, y: 852 },
+    { x: 544, y: 784 },
+    { x: 496, y: 712 },
+    { x: 418, y: 624 },
+    { x: 326, y: 572 },
+    { x: 354, y: 520 },
+    { x: 256, y: 438 },
+    { x: 150, y: 358 },
+    { x: 66, y: 292 },
+    { x: 96, y: 274 },
+    { x: 184, y: 370 },
+    { x: 306, y: 470 },
+    { x: 368, y: 578 },
+    { x: 472, y: 640 },
+    { x: 610, y: 750 },
+    { x: 676, y: 884 },
+    { x: 750, y: 1012 },
+    { x: 896, y: 1074 },
+    { x: 1040, y: 1062 },
+    { x: 1186, y: 1030 },
+    { x: 1268, y: 988 },
+    { x: 1368, y: 1030 },
+    { x: 1460, y: 1006 },
+    { x: 1560, y: 960 },
+    { x: 1660, y: 956 },
+    { x: 1678, y: 868 },
+    { x: 1650, y: 762 },
+    { x: 1574, y: 816 },
+    { x: 1478, y: 868 },
+    { x: 1488, y: 772 },
+    { x: 1550, y: 666 },
+    { x: 1526, y: 580 },
+    { x: 1582, y: 502 },
+    { x: 1612, y: 414 },
+    { x: 1588, y: 334 },
+    { x: 1638, y: 306 },
+    { x: 1666, y: 386 },
+    { x: 1610, y: 478 },
+    { x: 1548, y: 572 },
+    { x: 1580, y: 670 },
+    { x: 1536, y: 760 },
+    { x: 1444, y: 880 },
+    { x: 1320, y: 988 },
+    { x: 1230, y: 974 },
+    { x: 1160, y: 890 },
+    { x: 1116, y: 770 },
+    { x: 1020, y: 732 },
+    { x: 910, y: 720 },
+    { x: 858, y: 648 },
+    { x: 944, y: 590 },
+    { x: 1020, y: 548 },
+    { x: 1084, y: 490 },
   ];
 
   const kakaoWalkerState = {
@@ -1504,11 +1637,11 @@
     const dx = to.x - from.x;
     const dy = to.y - from.y;
 
-    if (Math.abs(dx) >= Math.abs(dy)) {
-      return dx >= 0 ? "right" : "left";
+    if (Math.abs(dy) >= 6) {
+      return dy >= 0 ? "down" : "up";
     }
 
-    return dy >= 0 ? "down" : "up";
+    return dx >= 0 ? "right" : "left";
   };
 
   const setKakaoWalkImage = (direction, elapsedMs) => {
