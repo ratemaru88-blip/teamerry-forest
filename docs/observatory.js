@@ -65,8 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const driftBottleRecentKey = "teaMerryDriftBottleRecentIds";
   const driftBottleArrivalChance = 0.4;
   const driftBottleArrivalAudio = typeof Audio === "function" ? new Audio(driftBottleArrivalSePath) : null;
+  const driftBottleModalCloseDuration = 520;
   let observatoryVideoFallbackTimer = null;
   let observatoryVideoReturnFocus = null;
+  let driftBottleModalCloseTimer = null;
   const wishLanternTalkDuration = 2800;
   const wishLanternPauseDuration = 350;
   const wishLanternLiluFrames = [
@@ -704,6 +706,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function setDriftBottleBackgroundInteractivity(isModalOpen) {
+    if (!driftBottleModal || !driftBottleModal.parentElement) {
+      return;
+    }
+
+    Array.from(driftBottleModal.parentElement.children).forEach((element) => {
+      if (element === driftBottleModal) {
+        return;
+      }
+
+      if (isModalOpen) {
+        if (!element.hasAttribute("data-drift-bottle-aria-hidden")) {
+          element.setAttribute("data-drift-bottle-aria-hidden", element.getAttribute("aria-hidden") || "");
+        }
+        element.setAttribute("aria-hidden", "true");
+        if ("inert" in element) {
+          element.inert = true;
+        }
+        return;
+      }
+
+      if (element.hasAttribute("data-drift-bottle-aria-hidden")) {
+        const previousValue = element.getAttribute("data-drift-bottle-aria-hidden");
+        if (previousValue) {
+          element.setAttribute("aria-hidden", previousValue);
+        } else {
+          element.removeAttribute("aria-hidden");
+        }
+        element.removeAttribute("data-drift-bottle-aria-hidden");
+      }
+
+      if ("inert" in element) {
+        element.inert = false;
+      }
+    });
+  }
+
   function showDriftBottleMessageModal() {
     if (!openDriftBottleMessage.current || !driftBottleModal) {
       return;
@@ -717,9 +756,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderDriftBottleLetterBody(message);
 
+    window.clearTimeout(driftBottleModalCloseTimer);
     driftBottleModal.hidden = false;
-    driftBottleModal.classList.add("is-active");
+    driftBottleModal.classList.remove("is-closing");
     driftBottleModal.setAttribute("aria-hidden", "false");
+    setDriftBottleBackgroundInteractivity(true);
+    window.requestAnimationFrame(() => {
+      driftBottleModal.classList.add("is-active");
+    });
     window.setTimeout(() => {
       fitDriftBottleLetterToPaper();
 
@@ -818,13 +862,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const wasActive = driftBottleModal.classList.contains("is-active");
-    driftBottleModal.classList.remove("is-active");
-    driftBottleModal.setAttribute("aria-hidden", "true");
-    driftBottleModal.hidden = true;
-
-    if (wasActive && openDriftBottleMessage.lastFocus && typeof openDriftBottleMessage.lastFocus.focus === "function") {
-      openDriftBottleMessage.lastFocus.focus();
+    const wasClosing = driftBottleModal.classList.contains("is-closing");
+    if (!wasActive && !wasClosing) {
+      return;
     }
+
+    window.clearTimeout(driftBottleModalCloseTimer);
+    driftBottleModal.classList.remove("is-active");
+    driftBottleModal.classList.add("is-closing");
+    driftBottleModal.setAttribute("aria-hidden", "true");
+
+    driftBottleModalCloseTimer = window.setTimeout(() => {
+      driftBottleModal.classList.remove("is-closing");
+      driftBottleModal.hidden = true;
+      setDriftBottleBackgroundInteractivity(false);
+
+      if (wasActive && openDriftBottleMessage.lastFocus && typeof openDriftBottleMessage.lastFocus.focus === "function") {
+        openDriftBottleMessage.lastFocus.focus();
+      }
+    }, driftBottleModalCloseDuration);
   }
 
   function showDriftBottleArrival(message) {
