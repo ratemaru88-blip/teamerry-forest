@@ -1717,7 +1717,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderWishHokkoriStars();
 
   if (new URLSearchParams(window.location.search).get("hokkori") === "1") {
-    showView(bottleHokkoriView);
+    showView(isNight ? wishHokkoriView : bottleHokkoriView);
   }
 
   scheduleDriftBottleArrival();

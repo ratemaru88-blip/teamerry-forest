@@ -202,13 +202,14 @@ body {
 
 .hokkori-hotspot {
   position: absolute;
-  z-index: 36;
+  z-index: 48;
   right: 5.6%;
   bottom: 5.8%;
   display: block;
   width: 18.2%;
   height: 25.5%;
   border-radius: 28% 22% 24% 26%;
+  pointer-events: auto;
 }
 
 .hokkori-hotspot--night {
@@ -1459,12 +1460,12 @@ body {
   }
 
   .hokkori-hotspot {
-    left: 65%;
+    left: 60%;
     right: auto;
-    top: 64%;
+    top: 62%;
     bottom: auto;
-    width: 34%;
-    height: 23%;
+    width: 39%;
+    height: 27%;
     border-radius: 30% 22% 24% 28%;
   }
 
