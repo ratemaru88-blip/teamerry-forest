@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
   const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
+  const wishStarTsvPath = "./data/wish_star/TeaMerry_Wish_Star_Master_v01.tsv";
   const driftBottleArrivalSePath = "./assets/audio/sfx/bottle_water_landing_v01.mp3";
   const driftBottleArrivalText = "あっ、ボトルメールが流れ着いたみたい！";
   const driftBottleSeenKey = "teaMerryDriftBottleSeen";
@@ -76,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let observatoryVideoFallbackTimer = null;
   let observatoryVideoReturnFocus = null;
   let driftBottleModalCloseTimer = null;
+  let wishHokkoriMessagesPromise = null;
   const wishLanternTalkDuration = 2800;
   const wishLanternPauseDuration = 350;
   const wishLanternLiluFrames = [
@@ -97,10 +99,25 @@ document.addEventListener("DOMContentLoaded", () => {
     { src: "./assets/images/forest_fairy/mint_v01.webp", alt: "ミント" },
     { src: "./assets/images/forest_fairy/tiara_v01.webp", alt: "ティアラ" },
   ];
-  const wishHokkoriPlaceholders = [
-    "今日の小さな願いが、星のすきまにそっと届きますように。",
-    "眠る前のひと息が、明日の光になりますように。",
-    "誰かのやさしい気持ちが、夜空でまたたきますように。",
+  const wishHokkoriFallbacks = [
+    {
+      id: "wish-fallback-1",
+      displayName: "おさんぽさん",
+      text: "今日の小さな願いが、星のすきまにそっと届きますように。",
+      handwritingTemplate: "round",
+    },
+    {
+      id: "wish-fallback-2",
+      displayName: "おさんぽさん",
+      text: "眠る前のひと息が、明日の光になりますように。",
+      handwritingTemplate: "quiet",
+    },
+    {
+      id: "wish-fallback-3",
+      displayName: "おさんぽさん",
+      text: "誰かのやさしい気持ちが、夜空でまたたきますように。",
+      handwritingTemplate: "child",
+    },
   ];
   const wishLanternTypes = [
     {
@@ -351,6 +368,80 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("[TeaMerry Observatory] Today hokkori messages failed:", error);
       return [];
     }
+  }
+
+  function parseWishStarTsv(text = "") {
+    const lines = String(text).replace(/^\uFEFF/, "").split(/\r?\n/).filter((line) => line.trim());
+    const headers = lines.shift();
+
+    if (!headers) {
+      return [];
+    }
+
+    const headerNames = headers.split("\t").map((header) => header.trim());
+    const getValue = (columns, name) => {
+      const index = headerNames.indexOf(name);
+      return index >= 0 ? String(columns[index] || "").trim() : "";
+    };
+
+    return lines
+      .map((line) => {
+        const columns = line.split("\t");
+        const textValue = getValue(columns, "願いごと本文");
+        const enabled = getValue(columns, "願い星対象").toUpperCase() !== "FALSE";
+
+        return {
+          id: getValue(columns, "ID"),
+          displayName: getValue(columns, "呼び名 （空欄＝おさんぽさん）") || "おさんぽさん",
+          text: textValue,
+          handwritingTemplate: normalizeDriftBottleHandwritingTemplate(getValue(columns, "筆跡テンプレート")),
+          enabled,
+        };
+      })
+      .filter((message) => message.enabled && message.text);
+  }
+
+  async function loadWishHokkoriMessages() {
+    if (!wishHokkoriMessagesPromise) {
+      wishHokkoriMessagesPromise = fetch(wishStarTsvPath)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Wish star TSV load failed: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(parseWishStarTsv)
+        .catch((error) => {
+          console.warn("[TeaMerry Observatory] Wish hokkori TSV failed:", error);
+          return [];
+        });
+    }
+
+    return wishHokkoriMessagesPromise;
+  }
+
+  function getWishHokkoriDateKey(targetDate = new Date()) {
+    const formatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    return formatter.format(targetDate);
+  }
+
+  function pickDailyWishHokkoriMessages(messages, targetDate = new Date()) {
+    const source = Array.isArray(messages) && messages.length ? messages : wishHokkoriFallbacks;
+    const dateKey = getWishHokkoriDateKey(targetDate);
+
+    return [...source]
+      .map((message) => ({
+        message,
+        score: hashDriftBottleString(`${dateKey}:${message.id || message.text}`),
+      }))
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 3)
+      .map(({ message }) => message);
   }
 
   function readSessionJson(key, fallback) {
@@ -1007,18 +1098,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function renderWishHokkoriStars() {
+  function createWishHokkoriStarButton(item, index) {
+    const button = document.createElement("button");
+    const displayName = String(item.displayName || "おさんぽさん").trim() || "おさんぽさん";
+    const text = String(item.text || "").trim();
+    const preview = Array.from(text).length > 24 ? `${Array.from(text).slice(0, 24).join("")}…` : text;
+
+    button.type = "button";
+    button.className = `wish-hokkori-star wish-hokkori-star--${index + 1}`;
+    button.setAttribute("aria-label", `${displayName}の願いごとを読む`);
+
+    const name = document.createElement("span");
+    name.className = "wish-hokkori-star__name";
+    name.textContent = displayName;
+
+    const body = document.createElement("span");
+    body.className = "wish-hokkori-star__body";
+    body.textContent = preview;
+
+    button.append(name, body);
+    button.addEventListener("click", () => openHokkoriBottleMessage(item, button));
+    return button;
+  }
+
+  async function renderWishHokkoriStars(targetDate) {
     if (!wishHokkoriStars) {
       return;
     }
 
     wishHokkoriStars.textContent = "";
 
-    wishHokkoriPlaceholders.forEach((message, index) => {
-      const star = document.createElement("div");
-      star.className = `wish-hokkori-star wish-hokkori-star--${index + 1}`;
-      star.textContent = message;
-      wishHokkoriStars.appendChild(star);
+    const messages = pickDailyWishHokkoriMessages(await loadWishHokkoriMessages(), targetDate || new Date());
+    messages.forEach((message, index) => {
+      wishHokkoriStars.appendChild(createWishHokkoriStarButton(message, index));
     });
   }
 
