@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const forestWhisper = document.getElementById("forestWhisper");
   const forestWhisperText = document.getElementById("forestWhisperText");
   const bottleMailButton = document.getElementById("bottleMailButton");
+  const hokkoriButton = document.getElementById("hokkoriButton");
   const wishStarButton = document.getElementById("wishStarButton");
   const bottleWriteView = document.getElementById("bottleWriteView");
   const wishWriteView = document.getElementById("wishWriteView");
@@ -1454,6 +1455,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (bottleMailButton) {
     bottleMailButton.addEventListener("click", () => showView(bottleWriteView));
+  }
+
+  if (hokkoriButton) {
+    hokkoriButton.addEventListener("click", () => showView(bottleHokkoriView));
   }
 
   if (wishStarButton) {
