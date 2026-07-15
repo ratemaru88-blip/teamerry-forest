@@ -308,14 +308,19 @@ body {
   justify-content: center;
   box-sizing: border-box;
   padding: clamp(16px, 4vw, 42px);
-  background: rgba(8, 6, 4, 0.7);
+  background: rgba(8, 7, 6, 0.72);
+  backdrop-filter: blur(2px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.42s ease;
 }
 
-.drift-bottle-modal.is-active {
+.drift-bottle-modal.is-active,
+.drift-bottle-modal.is-closing {
   display: flex;
+}
+
+.drift-bottle-modal.is-active {
   opacity: 1;
   pointer-events: auto;
 }
@@ -323,16 +328,12 @@ body {
 .drift-bottle-letter-stage {
   box-sizing: border-box;
   position: relative;
-  width: min(92vw, 1440px);
-  max-height: 92vh;
-  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url("../assets/images/observatory/bottle_mail/desk_background_pc_v01.webp");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
   color: #4a3525;
   outline: none;
 }
@@ -351,19 +352,24 @@ body {
 
 .drift-bottle-letter-paper {
   position: relative;
-  width: auto;
-  height: 76%;
-  max-width: 48%;
+  width: min(50vw, 560px, calc(84vh * 0.78));
+  height: auto;
+  max-height: 84vh;
   aspect-ratio: 0.78;
-  transform: translateY(18px) scale(0.98) rotate(-1deg);
-  filter: drop-shadow(0 14px 24px rgba(41, 24, 12, 0.28));
+  transform: translateY(8px) scale(0.97);
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.42));
   opacity: 0;
-  transition: opacity 0.52s ease 0.08s, transform 0.56s ease 0.08s;
+  transition: opacity 0.48s ease 0.06s, transform 0.5s ease 0.06s;
 }
 
 .drift-bottle-modal.is-active .drift-bottle-letter-paper {
   opacity: 1;
-  transform: translateY(0) scale(1) rotate(-1deg);
+  transform: translateY(0) scale(1);
+}
+
+.drift-bottle-modal.is-closing .drift-bottle-letter-paper {
+  opacity: 0;
+  transform: translateY(2px) scale(0.97);
 }
 
 .drift-bottle-letter-paper-image {
@@ -633,6 +639,158 @@ body {
 
 .observatory-view--bottle-hokkori {
   background-image: url("../assets/images/observatory/backgrounds/bg_bottle_hokkori_mobile.webp");
+}
+
+.hokkori-board {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: clamp(54px, 8vh, 92px) clamp(30px, 7vw, 110px) clamp(34px, 7vh, 74px);
+}
+
+.hokkori-board__letters {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 3vw, 42px);
+  align-items: start;
+  width: min(88vw, 1120px);
+  margin: 0 auto;
+}
+
+.hokkori-letter {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  min-height: clamp(178px, 23vh, 250px);
+  padding: clamp(19px, 2.2vw, 28px) clamp(18px, 2.2vw, 26px) clamp(17px, 2vw, 24px);
+  border: 0;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #4d3b2f;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 238, 0.9), rgba(244, 225, 187, 0.88)),
+    url("../assets/images/observatory/bottle_mail/paper_letter_v01.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  font-family: "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  text-align: left;
+  filter: drop-shadow(0 12px 18px rgba(34, 24, 16, 0.28));
+  transform-origin: 50% 18%;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.hokkori-letter:hover,
+.hokkori-letter:focus-visible {
+  filter: drop-shadow(0 15px 22px rgba(34, 24, 16, 0.34));
+}
+
+.hokkori-letter:focus-visible {
+  outline: 3px solid rgba(255, 246, 196, 0.9);
+  outline-offset: 5px;
+}
+
+.hokkori-letter--1 {
+  transform: translateY(10px) rotate(-2.8deg);
+}
+
+.hokkori-letter--1:hover,
+.hokkori-letter--1:focus-visible {
+  transform: translateY(6px) rotate(-2.8deg);
+}
+
+.hokkori-letter--2 {
+  min-height: clamp(190px, 24vh, 268px);
+  transform: translateY(0) rotate(0.4deg);
+}
+
+.hokkori-letter--2:hover,
+.hokkori-letter--2:focus-visible {
+  transform: translateY(-4px) rotate(0.4deg);
+}
+
+.hokkori-letter--3 {
+  transform: translateY(14px) rotate(2.6deg);
+}
+
+.hokkori-letter--3:hover,
+.hokkori-letter--3:focus-visible {
+  transform: translateY(10px) rotate(2.6deg);
+}
+
+.hokkori-letter.handwriting-round {
+  color: #5a4332;
+  font-family: "Kiwi Maru", "Zen Kurenaido", "Zen Maru Gothic", serif;
+}
+
+.hokkori-letter.handwriting-careful {
+  color: #473629;
+  font-family: "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", "Yu Mincho", serif;
+}
+
+.hokkori-letter.handwriting-faded {
+  color: rgba(106, 81, 64, 0.84);
+}
+
+.hokkori-letter.handwriting-child {
+  color: #5a4030;
+  font-family: "Yomogi", "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", serif;
+}
+
+.hokkori-letter__meta,
+.hokkori-letter__sender {
+  display: block;
+  flex: 0 0 auto;
+  font-size: clamp(12px, 1.05vw, 14px);
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+.hokkori-letter__body {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 10px 0;
+  font-size: clamp(17px, 1.55vw, 23px);
+  line-height: 1.75;
+  letter-spacing: 0.03em;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.hokkori-letter__sender {
+  align-self: flex-end;
+}
+
+.hokkori-board__empty {
+  position: absolute;
+  left: 50%;
+  top: 24%;
+  box-sizing: border-box;
+  width: min(82vw, 430px);
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: rgba(255, 248, 220, 0.9);
+  color: #4a341d;
+  font-size: 15px;
+  line-height: 1.7;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+  transform: translateX(-50%);
+}
+
+.hokkori-board__characters {
+  position: absolute;
+  left: 50%;
+  bottom: 5%;
+  width: min(70vw, 620px);
+  height: min(16vh, 140px);
+  pointer-events: none;
+  transform: translateX(-50%);
 }
 
 .observatory-view--wish-hokkori {
@@ -1143,23 +1301,21 @@ body {
 
   .drift-bottle-modal {
     padding: max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-    background: rgba(8, 6, 4, 0.78);
   }
 
   .drift-bottle-letter-stage {
     width: 100%;
-    max-height: 100dvh;
-    aspect-ratio: auto;
-    background-image: none;
+    height: 100%;
+    max-height: 100%;
   }
 
   .drift-bottle-letter-paper {
-    width: min(94vw, 430px);
+    width: min(94vw, 430px, calc(88dvh * 0.78));
     height: auto;
     max-width: 94vw;
     max-height: 88dvh;
     aspect-ratio: 0.78;
-    transform: translateY(14px) scale(0.985);
+    transform: translateY(8px) scale(0.97);
   }
 
   .drift-bottle-modal.is-active .drift-bottle-letter-paper {
@@ -1205,6 +1361,53 @@ body {
   .observatory-view {
     background-position: center center;
     background-size: cover;
+  }
+
+  .hokkori-board {
+    padding: max(58px, calc(env(safe-area-inset-top) + 54px)) max(18px, env(safe-area-inset-right)) max(26px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+  }
+
+  .hokkori-board__letters {
+    width: min(92vw, 420px);
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .hokkori-letter {
+    min-height: 136px;
+    padding: 16px 18px 14px;
+    filter: drop-shadow(0 9px 13px rgba(34, 24, 16, 0.26));
+  }
+
+  .hokkori-letter--1,
+  .hokkori-letter--1:hover,
+  .hokkori-letter--1:focus-visible {
+    transform: rotate(-0.8deg);
+  }
+
+  .hokkori-letter--2,
+  .hokkori-letter--2:hover,
+  .hokkori-letter--2:focus-visible {
+    min-height: 138px;
+    transform: rotate(0.2deg);
+  }
+
+  .hokkori-letter--3,
+  .hokkori-letter--3:hover,
+  .hokkori-letter--3:focus-visible {
+    transform: rotate(0.8deg);
+  }
+
+  .hokkori-letter__meta,
+  .hokkori-letter__sender {
+    font-size: 12px;
+  }
+
+  .hokkori-letter__body {
+    margin: 7px 0;
+    font-size: clamp(15px, 4.1vw, 18px);
+    line-height: 1.7;
+    -webkit-line-clamp: 3;
   }
 
   .observatory-video-overlay {

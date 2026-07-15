@@ -444,6 +444,23 @@
             class="observatory-view observatory-view--bottle-hokkori"
             aria-hidden="true">
 
+            <div class="hokkori-board" aria-live="polite">
+
+                <div class="hokkori-board__letters" id="hokkoriBoardLetters"></div>
+
+                <div
+                    class="hokkori-board__empty"
+                    id="hokkoriBoardEmpty"
+                    hidden>
+
+                    今日の便りは、まだ風の途中にあるみたい。
+
+                </div>
+
+                <div class="hokkori-board__characters" aria-hidden="true"></div>
+
+            </div>
+
             <button
                 type="button"
                 class="observatory-view__back"
@@ -494,6 +511,7 @@
     </main>
 
     <script src="./js/dialogueEngine.js"></script>
+    <script src="./today-hokkori.js?v=20260715-daily-hokkori"></script>
     <script src="./observatory.js?v=20260711-wish-lantern-sequence"></script>
 
 </body>

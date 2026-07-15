@@ -55,6 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const driftBottleClose = document.getElementById("driftBottleClose");
   const driftBottleReceive = document.getElementById("driftBottleReceive");
   const driftBottleReceiveVideo = document.getElementById("driftBottleReceiveVideo");
+  const hokkoriBoardLetters = document.getElementById("hokkoriBoardLetters");
+  const hokkoriBoardEmpty = document.getElementById("hokkoriBoardEmpty");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
   const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
@@ -309,6 +311,21 @@ document.addEventListener("DOMContentLoaded", () => {
         : [];
     } catch (error) {
       console.warn("[TeaMerry Observatory] Drift bottle messages failed:", error);
+      return [];
+    }
+  }
+
+  async function loadDriftBottleRawMessages() {
+    try {
+      const response = await fetch(driftBottleJsonPath);
+      if (!response.ok) {
+        throw new Error(`Drift bottle JSON load failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return Array.isArray(data && data.messages) ? data.messages : [];
+    } catch (error) {
+      console.error("[TeaMerry Observatory] Today hokkori messages failed:", error);
       return [];
     }
   }
@@ -773,6 +790,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 0);
   }
 
+  function openHokkoriBottleMessage(message, triggerElement) {
+    if (!message || !driftBottleModal) {
+      console.error("[TeaMerry Observatory] Drift bottle letter UI is not available for hokkori.");
+      return;
+    }
+
+    if (driftBottleModal.classList.contains("is-active") || playDriftBottleReceiveAnimation.isPlaying) {
+      return;
+    }
+
+    openDriftBottleMessage.current = {
+      id: String(message.id || "").trim(),
+      displayName: String(message.displayName || "おさんぽさん").trim() || "おさんぽさん",
+      text: String(message.text || "").trim(),
+      handwritingTemplate: normalizeDriftBottleHandwritingTemplate(message.handwritingTemplate),
+    };
+    openDriftBottleMessage.lastFocus = triggerElement || document.activeElement;
+    showDriftBottleMessageModal();
+  }
+
   function stopDriftBottleReceiveAnimation() {
     if (driftBottleReceiveVideo) {
       driftBottleReceiveVideo.pause();
@@ -898,6 +935,70 @@ document.addEventListener("DOMContentLoaded", () => {
     showLilDriftBottleArrivalMessage();
   }
 
+  function setHokkoriEmptyState(isEmpty) {
+    if (hokkoriBoardEmpty) {
+      hokkoriBoardEmpty.hidden = !isEmpty;
+    }
+
+    if (hokkoriBoardLetters) {
+      hokkoriBoardLetters.hidden = isEmpty;
+    }
+  }
+
+  function createHokkoriLetterButton(item, index) {
+    const button = document.createElement("button");
+    const handwritingClass = `handwriting-${normalizeDriftBottleHandwritingTemplate(item.handwritingTemplate)}`;
+    button.type = "button";
+    button.className = `hokkori-letter hokkori-letter--${index + 1} ${handwritingClass}`;
+    button.setAttribute("aria-label", `${item.displayName || "おさんぽさん"}さんの今日のほっこりを読む`);
+
+    const meta = document.createElement("span");
+    meta.className = "hokkori-letter__meta";
+    meta.textContent = item.category || "森の便り";
+
+    const body = document.createElement("span");
+    body.className = "hokkori-letter__body";
+    body.textContent = item.preview || item.text;
+
+    const sender = document.createElement("span");
+    sender.className = "hokkori-letter__sender";
+    sender.textContent = `${item.displayName || "おさんぽさん"}より`;
+
+    button.append(meta, body, sender);
+    button.addEventListener("click", () => openHokkoriBottleMessage(item, button));
+    return button;
+  }
+
+  async function renderTodayHokkoriBoard(targetDate) {
+    if (!hokkoriBoardLetters || !bottleHokkoriView) {
+      return null;
+    }
+
+    if (!window.TeaMerryTodayHokkori || typeof window.TeaMerryTodayHokkori.getTodayHokkori !== "function") {
+      console.error("[TeaMerry Observatory] Today hokkori selector is not loaded.");
+      setHokkoriEmptyState(true);
+      return null;
+    }
+
+    const rawMessages = await loadDriftBottleRawMessages();
+
+    try {
+      const result = window.TeaMerryTodayHokkori.getTodayHokkori(rawMessages, targetDate || new Date());
+      hokkoriBoardLetters.textContent = "";
+      result.items.forEach((item, index) => {
+        hokkoriBoardLetters.appendChild(createHokkoriLetterButton(item, index));
+      });
+      setHokkoriEmptyState(!result.items.length);
+      renderTodayHokkoriBoard.latest = result;
+      return result;
+    } catch (error) {
+      console.error("[TeaMerry Observatory] Today hokkori render failed:", error);
+      hokkoriBoardLetters.textContent = "";
+      setHokkoriEmptyState(true);
+      return null;
+    }
+  }
+
   async function scheduleDriftBottleArrival() {
     if (isNight || !driftBottleArrival || !driftBottleButton) {
       return;
@@ -933,6 +1034,8 @@ document.addEventListener("DOMContentLoaded", () => {
     showDriftBottleArrival,
     hideDriftBottleArrival,
     openDriftBottleMessage,
+    openHokkoriBottleMessage,
+    renderTodayHokkoriBoard,
   };
 
   window.setTimeout(async () => {
@@ -979,6 +1082,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const textInput = targetView && targetView.querySelector(".observatory-view__text");
     if (textInput) {
       textInput.focus();
+    }
+
+    if (targetView === bottleHokkoriView) {
+      const hokkoriDate = new URLSearchParams(window.location.search).get("hokkoriDate");
+      renderTodayHokkoriBoard(hokkoriDate ? new Date(`${hokkoriDate}T12:00:00+09:00`) : undefined);
     }
   }
 
@@ -1428,6 +1536,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (wishLanternVideo) {
     wishLanternVideo.addEventListener("ended", closeViews);
     wishLanternVideo.addEventListener("error", closeViews);
+  }
+
+  if (new URLSearchParams(window.location.search).get("hokkori") === "1") {
+    showView(bottleHokkoriView);
   }
 
   scheduleDriftBottleArrival();
