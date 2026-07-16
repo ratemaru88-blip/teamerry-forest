@@ -946,6 +946,7 @@ body {
 }
 
 .wish-hokkori-star {
+  --star-copy-y: 7px;
   position: absolute;
   z-index: 0;
   box-sizing: border-box;
@@ -956,16 +957,17 @@ body {
   gap: 4px;
   width: 132px;
   height: 118px;
-  padding: 24px 21px 20px;
+  padding: 27px 25px 18px;
   border: 0;
   background: transparent;
   color: #5a3a20;
   cursor: pointer;
   font-family: "Yomogi", "Zen Kurenaido", "Kiwi Maru", "Zen Maru Gothic", serif;
-  font-size: 11.5px;
-  line-height: 1.42;
+  font-size: 11px;
+  line-height: 1.36;
   text-align: center;
   overflow-wrap: anywhere;
+  word-break: keep-all;
   isolation: isolate;
   transition: filter 160ms ease, transform 160ms ease;
   appearance: none;
@@ -988,16 +990,19 @@ body {
 
 .wish-hokkori-star__name {
   display: block;
-  max-width: 100%;
+  max-width: 78%;
   color: rgba(96, 59, 29, 0.82);
   font-size: 10px;
   line-height: 1.1;
   white-space: nowrap;
+  transform: translateY(var(--star-copy-y));
 }
 
 .wish-hokkori-star__body {
   display: block;
-  max-width: 100%;
+  max-width: 76%;
+  text-wrap: balance;
+  transform: translateY(var(--star-copy-y));
 }
 
 .wish-hokkori-star--1 {
@@ -1635,11 +1640,12 @@ body {
   }
 
   .wish-hokkori-star {
+    --star-copy-y: min(1.9vw, 1dvh, 7px);
     width: min(36vw, 19dvh, 132px);
     height: min(32vw, 17dvh, 118px);
-    padding: min(6.3vw, 3.4dvh, 24px) min(5.4vw, 2.8dvh, 21px) min(5vw, 2.6dvh, 20px);
-    font-size: clamp(10px, min(2.85vw, 1.52dvh), 11.5px);
-    line-height: 1.38;
+    padding: min(7.1vw, 3.8dvh, 27px) min(6.4vw, 3.3dvh, 25px) min(4.8vw, 2.5dvh, 18px);
+    font-size: clamp(9.5px, min(2.75vw, 1.46dvh), 11px);
+    line-height: 1.34;
   }
 
   .wish-hokkori-star__name {
