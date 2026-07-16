@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
   const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
   const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
+  const lillActionReactionsJsonPath = "./data/export/lill_action_reactions.json";
   const wishStarTsvPath = "./data/wish_star/TeaMerry_Wish_Star_Master_v01.tsv";
   const driftBottleArrivalSePath = "./assets/audio/sfx/bottle_water_landing_v01.mp3";
   const driftBottleArrivalText = "あっ、ボトルメールが流れ着いたみたい！";
@@ -78,6 +79,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let observatoryVideoReturnFocus = null;
   let driftBottleModalCloseTimer = null;
   let wishHokkoriMessagesPromise = null;
+  let lillActionReactionsPromise = null;
+  let lillReactionState = null;
+  let lillReactionAdvanceLocked = false;
+  let pendingLillReactionCategory = null;
+  let letterOpenSource = null;
+  const lastReactionSetIdByCategory = {};
   const wishLanternTalkDuration = 2800;
   const wishLanternPauseDuration = 350;
   const wishLanternLiluFrames = [
@@ -239,6 +246,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (lillReactionState) {
+      return;
+    }
+
     if (typeof window.pickCharacterDialogue !== "function") {
       fairyBalloon.textContent = selectedMessage;
       return;
@@ -252,10 +263,14 @@ document.addEventListener("DOMContentLoaded", () => {
         conditionTags: ["入室", isNight ? "夜" : "昼"],
         time: isNight ? "夜" : "昼"
       });
-      fairyBalloon.textContent = dialogueText || selectedMessage;
+      if (!lillReactionState) {
+        fairyBalloon.textContent = dialogueText || selectedMessage;
+      }
     } catch (error) {
       console.warn("[TeaMerry Observatory] Dialogue Engine character dialogue failed:", error);
-      fairyBalloon.textContent = selectedMessage;
+      if (!lillReactionState) {
+        fairyBalloon.textContent = selectedMessage;
+      }
     }
   }
 
@@ -368,6 +383,123 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("[TeaMerry Observatory] Today hokkori messages failed:", error);
       return [];
     }
+  }
+
+  function showLillSpeech(message) {
+    if (fairyBalloon && message) {
+      fairyBalloon.textContent = message;
+    }
+  }
+
+  function normalizeLillActionReactionSet(set = {}) {
+    const setId = String(set.setId || "").trim();
+    const lines = Array.isArray(set.lines)
+      ? set.lines.map((line) => String(line || "").trim()).filter(Boolean)
+      : [];
+
+    return setId && lines.length === 3 ? { setId, lines } : null;
+  }
+
+  async function loadLillActionReactions() {
+    if (!lillActionReactionsPromise) {
+      lillActionReactionsPromise = fetch(lillActionReactionsJsonPath)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Lill action reactions JSON load failed: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const reactions = data && data.reactions && typeof data.reactions === "object"
+            ? data.reactions
+            : {};
+
+          return Object.fromEntries(
+            Object.entries(reactions).map(([category, sets]) => [
+              category,
+              Array.isArray(sets)
+                ? sets.map(normalizeLillActionReactionSet).filter(Boolean)
+                : [],
+            ])
+          );
+        })
+        .catch((error) => {
+          console.warn("[TeaMerry] リルの行動後リアクションを読み込めませんでした。", error);
+          return {};
+        });
+    }
+
+    return lillActionReactionsPromise;
+  }
+
+  function pickLillActionReactionSet(category, sets) {
+    if (!sets.length) {
+      return null;
+    }
+
+    const lastSetId = lastReactionSetIdByCategory[category];
+    const candidates = sets.length > 1
+      ? sets.filter((set) => set.setId !== lastSetId)
+      : sets;
+    const selected = candidates[Math.floor(Math.random() * candidates.length)] || sets[0];
+    lastReactionSetIdByCategory[category] = selected.setId;
+    return selected;
+  }
+
+  async function startLillActionReaction(category) {
+    const reactions = await loadLillActionReactions();
+    const sets = Array.isArray(reactions[category]) ? reactions[category] : [];
+    const selected = pickLillActionReactionSet(category, sets);
+
+    if (!selected) {
+      lillReactionState = null;
+      return false;
+    }
+
+    lillReactionState = {
+      category,
+      setId: selected.setId,
+      currentIndex: 0,
+      lines: [...selected.lines],
+    };
+    showLillSpeech(lillReactionState.lines[0]);
+    return true;
+  }
+
+  function advanceLillActionReaction() {
+    if (!lillReactionState || lillReactionAdvanceLocked) {
+      return false;
+    }
+
+    lillReactionAdvanceLocked = true;
+    window.setTimeout(() => {
+      lillReactionAdvanceLocked = false;
+    }, 180);
+
+    const nextIndex = lillReactionState.currentIndex + 1;
+    if (nextIndex < lillReactionState.lines.length) {
+      lillReactionState.currentIndex = nextIndex;
+      showLillSpeech(lillReactionState.lines[nextIndex]);
+      return true;
+    }
+
+    lillReactionState = null;
+    setInitialFairyMessage();
+    return true;
+  }
+
+  function queueLillActionReaction(category) {
+    pendingLillReactionCategory = category;
+  }
+
+  function consumePendingLillActionReaction() {
+    if (!pendingLillReactionCategory) {
+      return;
+    }
+
+    const category = pendingLillReactionCategory;
+    pendingLillReactionCategory = null;
+    startLillActionReaction(category);
   }
 
   function parseWishStarTsv(text = "") {
@@ -534,7 +666,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fairyBalloon.textContent = driftBottleArrivalText;
 
     showLilDriftBottleArrivalMessage.timer = window.setTimeout(() => {
-      if (fairyBalloon.textContent === driftBottleArrivalText) {
+      if (!lillReactionState && fairyBalloon.textContent === driftBottleArrivalText) {
         fairyBalloon.textContent = previousMessage || selectedMessage;
       }
     }, 4600);
@@ -921,6 +1053,7 @@ document.addEventListener("DOMContentLoaded", () => {
       handwritingTemplate: normalizeDriftBottleHandwritingTemplate(message.handwritingTemplate),
     };
     openDriftBottleMessage.lastFocus = triggerElement || document.activeElement;
+    letterOpenSource = "hokkori";
     showDriftBottleMessageModal();
   }
 
@@ -1002,6 +1135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     openDriftBottleMessage.lastFocus = document.activeElement;
+    letterOpenSource = "driftBottle";
     hideDriftBottleArrival();
     markDriftBottleSeen();
     playDriftBottleReceiveAnimation(showDriftBottleMessageModal);
@@ -1019,6 +1153,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.clearTimeout(driftBottleModalCloseTimer);
+    const shouldStartDriftReaction = wasActive && letterOpenSource === "driftBottle";
+    letterOpenSource = null;
     driftBottleModal.classList.remove("is-active");
     driftBottleModal.classList.add("is-closing");
     driftBottleModal.setAttribute("aria-hidden", "true");
@@ -1030,6 +1166,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (wasActive && openDriftBottleMessage.lastFocus && typeof openDriftBottleMessage.lastFocus.focus === "function") {
         openDriftBottleMessage.lastFocus.focus();
+      }
+
+      if (shouldStartDriftReaction) {
+        startLillActionReaction("漂着ボトルメールを見たあと");
       }
     }, driftBottleModalCloseDuration);
   }
@@ -1280,7 +1420,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function scheduleVideoFallback(duration = 16000) {
     window.clearTimeout(observatoryVideoFallbackTimer);
-    observatoryVideoFallbackTimer = window.setTimeout(closeViews, duration);
+    observatoryVideoFallbackTimer = window.setTimeout(() => {
+      closeViews();
+      consumePendingLillActionReaction();
+    }, duration);
   }
 
   function closeViews() {
@@ -1481,18 +1624,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startBottleFlush() {
     closeBottlePrivacyModal();
+    queueLillActionReaction("ボトルメールを出したあと");
     setVideoReturnFocus(bottleMailButton);
     showView(bottleFlushView);
 
     if (!bottleFlushVideo) {
       closeViews();
+      consumePendingLillActionReaction();
       return;
     }
 
     bottleFlushVideo.currentTime = 0;
     const playPromise = bottleFlushVideo.play();
     if (playPromise) {
-      playPromise.catch(closeViews);
+      playPromise.catch(() => {
+        closeViews();
+        consumePendingLillActionReaction();
+      });
     }
     scheduleVideoFallback();
   }
@@ -1534,6 +1682,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startWishLanternSequence() {
     closeWishPrivacyModal();
+    queueLillActionReaction("願い星を飛ばしたあと");
     setVideoReturnFocus(wishStarButton);
     showView(wishLanternView);
     stopWishLanternSequence();
@@ -1590,7 +1739,10 @@ document.addEventListener("DOMContentLoaded", () => {
         wishLanternVideo.currentTime = 0;
         const playPromise = wishLanternVideo.play();
         if (playPromise) {
-          playPromise.catch(() => {});
+          playPromise.catch(() => {
+            closeViews();
+            consumePendingLillActionReaction();
+          });
         }
         scheduleVideoFallback();
       }, wishLanternPauseDuration);
@@ -1638,6 +1790,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (driftBottleButton) {
     driftBottleButton.addEventListener("click", openDriftBottleMessage);
   }
+
+  [fairyImage, fairyBalloon].forEach((element) => {
+    if (element) {
+      element.addEventListener("click", advanceLillActionReaction);
+    }
+  });
 
   if (driftBottleClose) {
     driftBottleClose.addEventListener("click", closeDriftBottleMessage);
@@ -1704,13 +1862,25 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   if (bottleFlushVideo) {
-    bottleFlushVideo.addEventListener("ended", closeViews);
-    bottleFlushVideo.addEventListener("error", closeViews);
+    bottleFlushVideo.addEventListener("ended", () => {
+      closeViews();
+      consumePendingLillActionReaction();
+    });
+    bottleFlushVideo.addEventListener("error", () => {
+      closeViews();
+      consumePendingLillActionReaction();
+    });
   }
 
   if (wishLanternVideo) {
-    wishLanternVideo.addEventListener("ended", closeViews);
-    wishLanternVideo.addEventListener("error", closeViews);
+    wishLanternVideo.addEventListener("ended", () => {
+      closeViews();
+      consumePendingLillActionReaction();
+    });
+    wishLanternVideo.addEventListener("error", () => {
+      closeViews();
+      consumePendingLillActionReaction();
+    });
   }
 
   renderRandomHokkoriFairies(wishHokkoriCharacters, "wish");
