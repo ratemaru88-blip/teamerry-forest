@@ -96,14 +96,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const hokkoriFairies = [
     { src: "./assets/images/forest_fairy/aco_v01.webp", alt: "アコ" },
     { src: "./assets/images/forest_fairy/berry_v01.webp", alt: "ベリー" },
-    { src: "./assets/images/forest_fairy/bumpy_v01.webp", alt: "バンピー" },
     { src: "./assets/images/forest_fairy/curly_v01.webp", alt: "カーリー" },
-    { src: "./assets/images/forest_fairy/elder_v01.webp", alt: "エルダー" },
     { src: "./assets/images/forest_fairy/lavi_v01.webp", alt: "ラヴィ" },
     { src: "./assets/images/forest_fairy/lemon_v01.webp", alt: "レモン" },
-    { src: "./assets/images/forest_fairy/lilu_v01.webp", alt: "リル" },
     { src: "./assets/images/forest_fairy/miiru_v01.webp", alt: "ミール" },
-    { src: "./assets/images/forest_fairy/mint_v01.webp", alt: "ミント" },
     { src: "./assets/images/forest_fairy/tiara_v01.webp", alt: "ティアラ" },
   ];
   const wishHokkoriFallbacks = [
@@ -1224,7 +1220,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const count = Math.min(2, hokkoriFairies.length);
+    const count = Math.min(Math.random() < 0.5 ? 1 : 2, hokkoriFairies.length);
     const selected = [...hokkoriFairies].sort(() => Math.random() - 0.5).slice(0, count);
     container.textContent = "";
 
