@@ -24,6 +24,7 @@ window.getForestDisplayName = getForestDisplayName;
 
 document.addEventListener("DOMContentLoaded", () => {
   const observatory = document.getElementById("observatory");
+  const observatoryStage = document.querySelector(".observatory-stage");
   const fairyImage = document.getElementById("fairyImage");
   const fairyBalloon = document.getElementById("fairyBalloon");
   const forestWhisper = document.getElementById("forestWhisper");
@@ -1395,6 +1396,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function isAnyViewActive() {
+    return views.some((view) => view.classList.contains("is-active"))
+      || (driftBottleModal && driftBottleModal.classList.contains("is-active"));
+  }
+
+  function isHokkoriBackgroundClick(event) {
+    if (!observatoryStage || isAnyViewActive()) {
+      return false;
+    }
+
+    if (event.target.closest("button, a, textarea, input, select, [role='dialog'], .fairy-area, .forest-back")) {
+      return false;
+    }
+
+    const rect = observatoryStage.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return false;
+    }
+
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+    return x >= 0.48 && y >= 0.48;
+  }
+
+  function openCurrentHokkoriView() {
+    showView(isNight ? wishHokkoriView : bottleHokkoriView);
+  }
+
   function setVideoReturnFocus(element) {
     observatoryVideoReturnFocus = element || null;
   }
@@ -1775,9 +1804,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   [hokkoriButton, hokkoriNightButton].forEach((button) => {
     if (button) {
-      button.addEventListener("click", () => showView(button === hokkoriNightButton ? wishHokkoriView : bottleHokkoriView));
+      button.addEventListener("click", () => openCurrentHokkoriView());
     }
   });
+
+  if (observatoryStage) {
+    observatoryStage.addEventListener("click", (event) => {
+      if (isHokkoriBackgroundClick(event)) {
+        openCurrentHokkoriView();
+      }
+    });
+  }
 
   if (wishStarButton) {
     wishStarButton.addEventListener("click", () => showView(wishWriteView));
