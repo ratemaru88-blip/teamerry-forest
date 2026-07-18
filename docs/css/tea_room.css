@@ -831,6 +831,7 @@ body {
   width: 100%;
   aspect-ratio: 16 / 9;
   max-height: min(76vh, 720px);
+  overflow: hidden;
 }
 
 .tea-notice-board__picture,
@@ -853,28 +854,121 @@ body {
   z-index: 2;
 }
 
-.tea-notice-hotspot {
+.maroudo-board-layer {
   position: absolute;
-  left: var(--pc-x);
-  top: var(--pc-y);
-  width: var(--pc-w);
-  height: var(--pc-h);
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: calc(var(--maroudo-board-width, 1536) * 1px);
+  height: calc(var(--maroudo-board-height, 864) * 1px);
+  overflow: hidden;
+  transform: scale(var(--maroudo-board-scale, 1));
+  transform-origin: top left;
+}
+
+.maroudo-board-item {
+  position: absolute;
+  display: block;
   padding: 0;
   border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0);
-  color: transparent;
+  background: transparent;
+  line-height: 0;
+  transform-origin: center center;
+}
+
+.maroudo-board-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 8px 8px rgba(35, 18, 8, 0.28));
+}
+
+button.maroudo-board-item {
   cursor: pointer;
 }
 
-.tea-notice-hotspot:hover {
-  background: rgba(255, 244, 196, 0.08);
+button.maroudo-board-item:hover img {
+  filter:
+    brightness(1.04)
+    drop-shadow(0 9px 10px rgba(35, 18, 8, 0.34));
 }
 
-.tea-notice-hotspot:focus-visible {
+button.maroudo-board-item:focus-visible {
   outline: 3px solid rgba(255, 226, 143, 0.95);
   outline-offset: 3px;
-  background: rgba(255, 244, 196, 0.12);
+}
+
+.maroudo-board-item.is-missing-image {
+  min-height: 64px;
+  background: rgba(91, 50, 24, 0.14);
+  box-shadow: inset 0 0 0 2px rgba(119, 65, 30, 0.22);
+}
+
+.maroudo-board-date {
+  position: absolute;
+  right: 116px;
+  bottom: 46px;
+  z-index: 90;
+  margin: 0;
+  color: rgba(84, 52, 23, 0.78);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: 0 1px 0 rgba(255, 238, 190, 0.42);
+  pointer-events: none;
+}
+
+.maroudo-board-debug {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 120;
+  display: grid;
+  gap: 2px;
+  width: 360px;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(28, 18, 10, 0.72);
+  color: rgba(255, 248, 220, 0.94);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.maroudo-board-debug span {
+  overflow-wrap: anywhere;
+}
+
+.maroudo-board-debug b {
+  color: #ffe39a;
+}
+
+.tea-notice-modal__dialog--image {
+  width: min(900px, 94vw);
+  padding: clamp(18px, 3vw, 30px);
+}
+
+.tea-notice-modal__dialog--image .tea-notice-modal__number,
+.tea-notice-modal__dialog--image .tea-notice-modal__body:empty {
+  display: none;
+}
+
+.tea-notice-modal__dialog--image .tea-notice-modal__image {
+  width: auto;
+  max-width: 100%;
+  max-height: min(76vh, 900px);
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+body.maroudo-modal-open {
+  overflow: hidden;
 }
 
 @media (max-width: 980px) and (min-width: 769px) {
@@ -907,11 +1001,16 @@ body {
     object-fit: contain;
   }
 
-  .tea-notice-hotspot {
-    left: var(--mobile-x);
-    top: var(--mobile-y);
-    width: var(--mobile-w);
-    height: var(--mobile-h);
-    border-radius: 12px;
+  .maroudo-board-date {
+    right: 44px;
+    bottom: 36px;
+    font-size: 12px;
+  }
+
+  .maroudo-board-debug {
+    left: 10px;
+    bottom: 10px;
+    width: calc(100% - 20px);
+    font-size: 10px;
   }
 }

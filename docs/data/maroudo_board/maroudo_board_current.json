@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "boardVersion": "2026.07.18-01",
+    "updatedAt": "2026-07-18T22:30:00+09:00",
+    "displayDate": "2026年7月18日現在",
+    "status": "draft",
+    "commit": "",
+    "summary": "まろうどティールーム掲示板JSON表示の初期データ"
+  },
+  "canvas": {
+    "pc": {
+      "width": 1536,
+      "height": 864
+    },
+    "mobile": {
+      "width": 640,
+      "height": 1040
+    }
+  },
+  "items": [
+    {
+      "id": "board_starwind_001",
+      "name": "星風テラスのお知らせ",
+      "image": "assets/images/広告_お知らせ/星風テラス_お知らせ.webp",
+      "imagePc": "",
+      "imageMobile": "",
+      "alt": "星風テラスのお知らせ",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "detailImage",
+      "detailImage": "assets/images/広告_お知らせ/星風テラス_お知らせ.webp",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 136,
+          "y": 202,
+          "width": 330,
+          "rotation": -2,
+          "zIndex": 4
+        },
+        "mobile": {
+          "x": 92,
+          "y": 180,
+          "width": 455,
+          "rotation": -1,
+          "zIndex": 4
+        }
+      }
+    },
+    {
+      "id": "board_musical_001",
+      "name": "制作中のお知らせ",
+      "image": "assets/images/ui/maroudo_tearoom_ui.webp",
+      "imagePc": "",
+      "imageMobile": "",
+      "alt": "TeaMerry制作中のお知らせ",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "none",
+      "detailImage": "",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 676,
+          "y": 360,
+          "width": 250,
+          "rotation": 3,
+          "zIndex": 3
+        },
+        "mobile": {
+          "x": 128,
+          "y": 560,
+          "width": 360,
+          "rotation": 2,
+          "zIndex": 3
+        }
+      }
+    },
+    {
+      "id": "board_observatory_link_001",
+      "name": "星風テラスへの小さな案内",
+      "image": "assets/images/ui/observatory_ui.webp",
+      "imagePc": "",
+      "imageMobile": "",
+      "alt": "星風テラスへ向かう案内",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "link",
+      "detailImage": "",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "./observatory.html",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 1036,
+          "y": 212,
+          "width": 230,
+          "rotation": -4,
+          "zIndex": 2
+        },
+        "mobile": {
+          "x": 154,
+          "y": 760,
+          "width": 300,
+          "rotation": -3,
+          "zIndex": 2
+        }
+      }
+    }
+  ]
+}

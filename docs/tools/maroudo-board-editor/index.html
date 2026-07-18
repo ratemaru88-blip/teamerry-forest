@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>まろうど掲示板エディター | TeaMerry Forest</title>
+  <link rel="stylesheet" href="./board-editor.css">
+</head>
+<body>
+  <main class="editor-shell">
+    <header class="editor-header">
+      <div>
+        <h1>まろうど掲示板エディター</h1>
+        <p id="saveState">未保存の変更はありません</p>
+      </div>
+      <div class="editor-header__actions">
+        <button type="button" id="modePc" class="is-active">PC版を編集</button>
+        <button type="button" id="modeMobile">モバイル版を編集</button>
+        <button type="button" id="editMode" class="is-active">編集モード</button>
+        <button type="button" id="previewMode">本番プレビュー</button>
+      </div>
+    </header>
+
+    <section class="meta-panel" aria-label="掲示板バージョン">
+      <label>掲示板バージョン<input id="metaBoardVersion" type="text"></label>
+      <label>最終更新日時<input id="metaUpdatedAt" type="text"></label>
+      <label>状態
+        <select id="metaStatus">
+          <option value="draft">ローカル編集中</option>
+          <option value="committed">コミット済み・未公開</option>
+          <option value="published">公開済み</option>
+        </select>
+      </label>
+      <label>commit<input id="metaCommit" type="text"></label>
+      <label>更新日表示<input id="metaDisplayDate" type="text"></label>
+      <label class="meta-panel__summary">更新内容<input id="metaSummary" type="text"></label>
+    </section>
+
+    <div class="editor-layout">
+      <aside class="side-panel">
+        <section>
+          <h2>JSON</h2>
+          <div class="button-row">
+            <label class="file-button">JSON読込<input id="jsonFile" type="file" accept="application/json,.json"></label>
+            <button type="button" id="downloadJson">JSON書出し</button>
+          </div>
+          <div class="button-row">
+            <button type="button" id="copyJson">コピー用JSON更新</button>
+            <button type="button" id="resetSample">初期状態へ戻す</button>
+          </div>
+          <textarea id="jsonText" spellcheck="false" aria-label="コピー用JSON"></textarea>
+        </section>
+
+        <section>
+          <h2>画像追加</h2>
+          <label>既存画像パス<input id="newImagePath" type="text" placeholder="assets/images/maroudo_board/items/item.webp"></label>
+          <label>管理用名称<input id="newItemName" type="text" placeholder="新しい貼り紙"></label>
+          <div id="dropZone" class="drop-zone">画像をドラッグ＆ドロップ</div>
+          <div class="button-row">
+            <label class="file-button">画像選択<input id="imageFile" type="file" accept="image/*"></label>
+            <button type="button" id="addItem">追加</button>
+          </div>
+          <p class="hint" id="imageHint">ローカル画像はプレビューのみです。推奨保存先: assets/images/maroudo_board/items/</p>
+        </section>
+
+        <section>
+          <h2>貼り紙一覧</h2>
+          <div id="itemList" class="item-list"></div>
+        </section>
+      </aside>
+
+      <section class="canvas-panel">
+        <div class="editor-toolbar">
+          <button type="button" id="undo">Undo</button>
+          <button type="button" id="redo">Redo</button>
+          <button type="button" id="duplicateItem">複製</button>
+          <button type="button" id="deleteItem">削除</button>
+          <button type="button" id="bringFront">最前面へ</button>
+          <button type="button" id="sendBack">最背面へ</button>
+        </div>
+        <div class="board-wrap">
+          <div class="tea-notice-board__stage editor-stage" id="boardStage">
+            <picture class="tea-notice-board__picture">
+              <source id="boardSourceMobile" media="(max-width: 768px)" srcset="../../assets/images/tea_room/notice_board_mobile.webp" type="image/webp">
+              <source id="boardSourcePc" srcset="../../assets/images/tea_room/notice_board_pc.webp" type="image/webp">
+              <img id="boardImage" class="tea-notice-board__image" src="../../assets/images/tea_room/notice_board_pc.png" alt="">
+            </picture>
+          </div>
+        </div>
+      </section>
+
+      <aside class="property-panel">
+        <section>
+          <h2>選択中</h2>
+          <label>管理用名称<input id="propName" type="text"></label>
+          <label>共通画像パス<input id="propImage" type="text"></label>
+          <label>PC画像パス<input id="propImagePc" type="text"></label>
+          <label>モバイル画像パス<input id="propImageMobile" type="text"></label>
+          <label>代替テキスト<input id="propAlt" type="text"></label>
+          <div class="grid-2">
+            <label>X<input id="propX" type="number" step="1"></label>
+            <label>Y<input id="propY" type="number" step="1"></label>
+            <label>幅<input id="propWidth" type="number" min="24" step="1"></label>
+            <label>回転<input id="propRotation" type="number" step="1"></label>
+            <label>z-index<input id="propZ" type="number" step="1"></label>
+          </div>
+          <label>クリック動作
+            <select id="propAction">
+              <option value="none">クリックなし</option>
+              <option value="detailImage">詳細画像を開く</option>
+              <option value="link">指定ページへ移動</option>
+            </select>
+          </label>
+          <label>詳細画像パス<input id="propDetail" type="text"></label>
+          <label>リンク先<input id="propLink" type="text"></label>
+          <label class="check"><input id="propNewTab" type="checkbox">新しいタブで開く</label>
+          <label class="check"><input id="propEnabled" type="checkbox">表示する</label>
+          <label>公開開始日<input id="propFrom" type="text" placeholder="YYYY-MM-DD"></label>
+          <label>公開終了日<input id="propUntil" type="text" placeholder="YYYY-MM-DD"></label>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script src="../../js/maroudo-board-renderer.js?v=2026.07.18-01"></script>
+  <script src="./board-editor.js"></script>
+</body>
+</html>
