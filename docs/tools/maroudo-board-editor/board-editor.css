@@ -275,11 +275,12 @@ textarea {
   width: min(100%, 1100px);
   aspect-ratio: 16 / 9;
   overflow: hidden;
+  background: #120e0a;
 }
 
 .editor-stage[data-board-mode="mobile"] {
   width: min(100%, 430px);
-  aspect-ratio: 640 / 1040;
+  aspect-ratio: 9 / 16;
 }
 
 .tea-notice-board__picture,
@@ -300,11 +301,13 @@ textarea {
   left: 0;
   top: 0;
   z-index: 2;
-  width: calc(var(--maroudo-board-width, 1536) * 1px);
-  height: calc(var(--maroudo-board-height, 864) * 1px);
+  width: calc(var(--maroudo-board-width, 730) * 1px);
+  height: calc(var(--maroudo-board-height, 658) * 1px);
   overflow: hidden;
   transform: scale(var(--maroudo-board-scale, 1));
   transform-origin: top left;
+  outline: 2px dashed rgba(255, 74, 132, 0.72);
+  outline-offset: 0;
 }
 
 .maroudo-board-item {

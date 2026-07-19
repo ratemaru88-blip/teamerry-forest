@@ -3,7 +3,7 @@
 
   const renderer = window.TeaMerryMaroudoBoard;
   const STORAGE_KEY = "teamerry.maroudoBoardEditor.draft";
-  const DATA_URL = "../../data/maroudo_board/maroudo_board_current.json?v=2026.07.18-01";
+  const DATA_URL = "../../data/maroudo_board/maroudo_board_current.json?v=2026.07.20-02";
   const objectUrls = new Map();
 
   const state = {
@@ -73,7 +73,7 @@
     const draft = storageGet(STORAGE_KEY);
     if (draft) {
       try {
-        state.data = JSON.parse(draft);
+        state.data = normalizeBoardData(JSON.parse(draft));
         render();
       } catch (error) {
         console.warn("[TeaMerry] localStorageの掲示板下書きを読み込めませんでした。", error);
@@ -83,7 +83,7 @@
       fetch(DATA_URL, { cache: "no-store" })
         .then((response) => response.json())
         .then((data) => {
-          state.data = data;
+          state.data = normalizeBoardData(data);
           render();
         })
         .catch((error) => {
@@ -100,14 +100,15 @@
     return {
       meta: {
         schemaVersion: 1,
-        boardVersion: "2026.07.18-01",
+        boardVersion: "2026.07.20-02",
         updatedAt: now.toISOString(),
-        displayDate: "2026年7月18日現在",
+        displayDate: "2026年7月20日現在",
         status: "draft",
         commit: "",
         summary: "まろうど掲示板の下書き",
       },
       canvas: renderer.DEFAULT_CANVAS,
+      background: renderer.DEFAULT_BACKGROUND,
       items: [],
     };
   }
@@ -298,14 +299,14 @@
     const sourcePc = $("boardSourcePc");
     if (state.mode === "mobile") {
       stage.dataset.boardMode = "mobile";
-      sourceMobile.srcset = "../../assets/images/tea_room/notice_board_mobile.webp";
-      sourcePc.srcset = "../../assets/images/tea_room/notice_board_mobile.webp";
-      image.src = "../../assets/images/tea_room/notice_board_mobile.png";
+      sourceMobile.srcset = "../../assets/images/tea_room/tea_room_mobile_bg_v02.webp";
+      sourcePc.srcset = "../../assets/images/tea_room/tea_room_mobile_bg_v02.webp";
+      image.src = "../../assets/images/tea_room/tea_room_mobile_bg_v02.webp";
     } else {
       stage.dataset.boardMode = "pc";
-      sourceMobile.srcset = "../../assets/images/tea_room/notice_board_pc.webp";
-      sourcePc.srcset = "../../assets/images/tea_room/notice_board_pc.webp";
-      image.src = "../../assets/images/tea_room/notice_board_pc.png";
+      sourceMobile.srcset = "../../assets/images/tea_room/tea_room_pc_bg_v02.webp";
+      sourcePc.srcset = "../../assets/images/tea_room/tea_room_pc_bg_v02.webp";
+      image.src = "../../assets/images/tea_room/tea_room_pc_bg_v02.webp";
     }
   }
 
@@ -518,7 +519,7 @@
       return;
     }
     file.text().then((text) => {
-      const parsed = JSON.parse(text);
+      const parsed = normalizeBoardData(JSON.parse(text));
       const validation = renderer.validateBoardData(parsed);
       if (!validation.valid) {
         alert(`JSONに問題があります。\n${validation.errors.join("\n")}`);
@@ -569,6 +570,55 @@
       delete item._editorHidden;
     });
     return copy;
+  }
+
+  function normalizeBoardData(data) {
+    const copy = renderer.clone(data || createEmptyBoard());
+    const pcCanvas = copy.canvas?.pc || {};
+    const mobileCanvas = copy.canvas?.mobile || {};
+    const isLegacyCanvas =
+      !copy.background &&
+      Number(pcCanvas.width) === 1536 &&
+      Number(pcCanvas.height) === 864 &&
+      Number(mobileCanvas.width) === 640 &&
+      Number(mobileCanvas.height) === 1040;
+
+    if (isLegacyCanvas) {
+      const nextCanvas = renderer.clone(renderer.DEFAULT_CANVAS);
+      copy.items = (copy.items || []).map((item) => {
+        const next = renderer.clone(item);
+        transformLegacyLayout(next.layouts?.pc, pcCanvas, nextCanvas.pc);
+        transformLegacyLayout(next.layouts?.mobile, mobileCanvas, nextCanvas.mobile);
+        return next;
+      });
+      copy.canvas = nextCanvas;
+    } else {
+      copy.canvas = Object.assign({}, renderer.clone(renderer.DEFAULT_CANVAS), copy.canvas || {});
+    }
+    if (isLegacyCanvas || copy.meta?.boardVersion === "2026.07.18-01") {
+      copy.meta = Object.assign({}, copy.meta || {}, {
+        boardVersion: "2026.07.20-02",
+        updatedAt: "2026-07-20T00:00:00+09:00",
+        displayDate: "2026年7月20日現在",
+        summary: "ティールームv02背景の掲示板範囲に合わせて配置を更新",
+      });
+    }
+    copy.background = Object.assign({}, renderer.clone(renderer.DEFAULT_BACKGROUND), copy.background || {});
+    return copy;
+  }
+
+  function transformLegacyLayout(layout, fromCanvas, toCanvas) {
+    if (!layout || !fromCanvas || !toCanvas) {
+      return;
+    }
+    const scaleX = Number(toCanvas.width) / Number(fromCanvas.width);
+    const scaleY = Number(toCanvas.height) / Number(fromCanvas.height);
+    if (!Number.isFinite(scaleX) || !Number.isFinite(scaleY)) {
+      return;
+    }
+    layout.x = Math.round(Number(layout.x || 0) * scaleX);
+    layout.y = Math.round(Number(layout.y || 0) * scaleY);
+    layout.width = Math.max(24, Math.round(Number(layout.width || 0) * scaleX));
   }
 
   function updateSelected(mutator) {
@@ -806,7 +856,7 @@
 
   function resolveEditorImage(item) {
     const path = renderer.resolveImagePath(item, state.mode, false);
-    return objectUrls.get(path) || toEditorUrl(path) || "../../assets/images/tea_room/notice_board_pc.png";
+    return objectUrls.get(path) || toEditorUrl(path) || "../../assets/images/tea_room/tea_room_pc_bg_v02.webp";
   }
 
   function toEditorUrl(path) {

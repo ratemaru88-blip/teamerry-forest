@@ -14,7 +14,7 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-image: url("../assets/images/tea_room/tea_room_pc_bg.webp");
+  background-image: url("../assets/images/tea_room/tea_room_pc_bg_v02.webp");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -617,7 +617,7 @@ body {
 
 @media (max-width: 768px) {
   .tea-room {
-    background-image: url("../assets/images/tea_room/tea_room_mobile_bg.webp");
+    background-image: url("../assets/images/tea_room/tea_room_mobile_bg_v02.webp");
     background-color: #000;
     background-position: center center;
     background-size: contain;
@@ -807,13 +807,14 @@ body {
 
 /* Notice board image-map mode */
 .tea-notice-board {
-  left: clamp(18px, 3.2vw, 58px);
-  top: clamp(42px, 7vh, 76px);
-  width: min(74vw, 1180px);
-  max-width: calc(100vw - 360px);
-  max-height: 76vh;
-  overflow: visible;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  overflow: hidden;
   z-index: 11;
+  pointer-events: none;
 }
 
 .tea-notice-board__heading {
@@ -831,14 +832,15 @@ body {
 .tea-notice-board__stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: min(76vh, 720px);
+  height: 100%;
+  aspect-ratio: auto;
+  max-height: none;
   overflow: hidden;
 }
 
 .tea-notice-board__picture,
 .tea-notice-board__image {
-  display: block;
+  display: none;
   width: 100%;
   height: 100%;
 }
@@ -854,6 +856,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 2;
+  pointer-events: none;
 }
 
 .maroudo-board-layer {
@@ -861,11 +864,12 @@ body {
   left: 0;
   top: 0;
   z-index: 2;
-  width: calc(var(--maroudo-board-width, 1536) * 1px);
-  height: calc(var(--maroudo-board-height, 864) * 1px);
+  width: calc(var(--maroudo-board-width, 730) * 1px);
+  height: calc(var(--maroudo-board-height, 658) * 1px);
   overflow: hidden;
   transform: scale(var(--maroudo-board-scale, 1));
   transform-origin: top left;
+  pointer-events: none;
 }
 
 .maroudo-board-item {
@@ -876,6 +880,7 @@ body {
   background: transparent;
   line-height: 0;
   transform-origin: center center;
+  pointer-events: none;
 }
 
 .maroudo-board-item img {
@@ -890,6 +895,7 @@ body {
 
 button.maroudo-board-item {
   cursor: pointer;
+  pointer-events: auto;
 }
 
 button.maroudo-board-item:hover img {
@@ -975,27 +981,27 @@ body.maroudo-modal-open {
 
 @media (max-width: 980px) and (min-width: 769px) {
   .tea-notice-board {
-    width: min(68vw, 880px);
-    max-width: calc(100vw - 310px);
+    width: 100vw;
+    max-width: none;
   }
 }
 
 @media (max-width: 768px) {
   .tea-notice-board {
     display: block;
-    left: 50%;
-    top: max(18px, env(safe-area-inset-top));
-    width: min(84vw, 420px);
-    max-width: calc(100vw - 28px);
-    max-height: calc(100dvh - 116px);
-    transform: translateX(-50%);
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+    inset: 0;
+    width: 100vw;
+    height: 100svh;
+    max-width: none;
+    max-height: none;
+    transform: none;
+    overflow: hidden;
   }
 
   .tea-notice-board__stage {
-    aspect-ratio: 640 / 1040;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
     max-height: none;
   }
 

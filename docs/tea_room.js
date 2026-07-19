@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const BOARD_VERSION = "2026.07.18-01";
+  const BOARD_VERSION = "2026.07.20-02";
   const DATA_URL = `./data/maroudo_board/maroudo_board_current.json?v=${BOARD_VERSION}`;
   const renderer = window.TeaMerryMaroudoBoard;
   const stage = document.querySelector(".tea-notice-board__stage");

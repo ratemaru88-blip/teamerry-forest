@@ -3,8 +3,24 @@
 
   const VIEWPORT_QUERY = "(max-width: 768px)";
   const DEFAULT_CANVAS = {
-    pc: { width: 1536, height: 864 },
-    mobile: { width: 640, height: 1040 },
+    pc: { width: 730, height: 658 },
+    mobile: { width: 394, height: 1338 },
+  };
+  const DEFAULT_BACKGROUND = {
+    pc: {
+      image: "assets/images/tea_room/tea_room_pc_bg_v02.webp",
+      width: 1920,
+      height: 1080,
+      fit: "cover",
+      board: { x: 111, y: 91, width: 730, height: 658 },
+    },
+    mobile: {
+      image: "assets/images/tea_room/tea_room_mobile_bg_v02.webp",
+      width: 1080,
+      height: 1920,
+      fit: "contain",
+      board: { x: 44, y: 142, width: 394, height: 1338 },
+    },
   };
   const VALID_ACTIONS = new Set(["none", "detailImage", "link"]);
   const JST_OFFSET = "+09:00";
@@ -23,10 +39,37 @@
 
   function getCanvas(data, mode) {
     const key = normalizeMode(mode);
+    const region = getBoardRegion(data, key);
+    if (region) {
+      return {
+        width: toPositiveNumber(region.width, DEFAULT_CANVAS[key].width),
+        height: toPositiveNumber(region.height, DEFAULT_CANVAS[key].height),
+      };
+    }
     const canvas = data && data.canvas && data.canvas[key] ? data.canvas[key] : DEFAULT_CANVAS[key];
-    const width = Number(canvas.width) > 0 ? Number(canvas.width) : DEFAULT_CANVAS[key].width;
-    const height = Number(canvas.height) > 0 ? Number(canvas.height) : DEFAULT_CANVAS[key].height;
+    const width = toPositiveNumber(canvas.width, DEFAULT_CANVAS[key].width);
+    const height = toPositiveNumber(canvas.height, DEFAULT_CANVAS[key].height);
     return { width, height };
+  }
+
+  function getBackground(data, mode) {
+    const key = normalizeMode(mode);
+    const fallback = DEFAULT_BACKGROUND[key];
+    const background = data && data.background && data.background[key] ? data.background[key] : fallback;
+    return background ? Object.assign({}, fallback, background) : null;
+  }
+
+  function getBoardRegion(data, mode) {
+    const key = normalizeMode(mode);
+    const background = getBackground(data, key);
+    const region = background && background.board ? background.board :
+      data && data.boardRegion && data.boardRegion[key] ? data.boardRegion[key] : null;
+    return region ? Object.assign({}, region) : null;
+  }
+
+  function toPositiveNumber(value, fallback) {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? number : fallback;
   }
 
   function getLayout(item, mode) {
@@ -143,29 +186,50 @@
 
   function applyStageCanvas(stage, data, mode) {
     const canvas = getCanvas(data, mode);
+    const background = getBackground(data, mode);
+    const region = getBoardRegion(data, mode);
     stage.style.setProperty("--maroudo-board-width", `${canvas.width}`);
     stage.style.setProperty("--maroudo-board-height", `${canvas.height}`);
     stage.dataset.boardMode = mode;
-    updateStageScale(stage, canvas);
-    observeStage(stage, canvas);
+    stage._maroudoBoardLayout = { canvas, background, region };
+    updateStageScale(stage);
+    observeStage(stage);
     return canvas;
   }
 
-  function updateStageScale(stage, canvas) {
+  function updateStageScale(stage) {
+    const layout = stage._maroudoBoardLayout || {};
+    const canvas = layout.canvas || getCanvas(null, getMode());
+    const layer = stage.querySelector(".maroudo-board-layer");
     const rect = stage.getBoundingClientRect();
-    const scale = Math.min(rect.width / canvas.width, rect.height / canvas.height);
+    let scale = Math.min(rect.width / canvas.width, rect.height / canvas.height);
+    let left = 0;
+    let top = 0;
+    if (layout.background && layout.region) {
+      const backgroundWidth = toPositiveNumber(layout.background.width, rect.width || 1);
+      const backgroundHeight = toPositiveNumber(layout.background.height, rect.height || 1);
+      scale = layout.background.fit === "cover"
+        ? Math.max(rect.width / backgroundWidth, rect.height / backgroundHeight)
+        : Math.min(rect.width / backgroundWidth, rect.height / backgroundHeight);
+      left = (rect.width - backgroundWidth * scale) / 2 + Number(layout.region.x || 0) * scale;
+      top = (rect.height - backgroundHeight * scale) / 2 + Number(layout.region.y || 0) * scale;
+    }
     stage.style.setProperty("--maroudo-board-scale", String(Number.isFinite(scale) && scale > 0 ? scale : 1));
+    if (layer) {
+      layer.style.left = `${Number.isFinite(left) ? left : 0}px`;
+      layer.style.top = `${Number.isFinite(top) ? top : 0}px`;
+    }
   }
 
-  function observeStage(stage, canvas) {
+  function observeStage(stage) {
     if (!window.ResizeObserver) {
-      window.addEventListener("resize", () => updateStageScale(stage, canvas), { passive: true });
+      window.addEventListener("resize", () => updateStageScale(stage), { passive: true });
       return;
     }
     if (stage._maroudoBoardObserver) {
       stage._maroudoBoardObserver.disconnect();
     }
-    const observer = new ResizeObserver(() => updateStageScale(stage, canvas));
+    const observer = new ResizeObserver(() => updateStageScale(stage));
     observer.observe(stage);
     stage._maroudoBoardObserver = observer;
   }
@@ -199,6 +263,7 @@
 
     applyStageCanvas(stage, data, mode);
     const layer = createLayer(stage);
+    updateStageScale(stage);
     layer.innerHTML = "";
 
     const items = Array.isArray(data && data.items) ? data.items : [];
@@ -230,6 +295,7 @@
     const key = normalizeMode(mode);
     const canvas = applyStageCanvas(stage, data, key);
     const layer = createLayer(stage);
+    updateStageScale(stage);
     return { stage, layer, canvas, mode: key };
   }
 
@@ -318,10 +384,13 @@
 
   window.TeaMerryMaroudoBoard = {
     DEFAULT_CANVAS,
+    DEFAULT_BACKGROUND,
     VIEWPORT_QUERY,
     clone,
     getMode,
     getCanvas,
+    getBackground,
+    getBoardRegion,
     getLayout,
     resolveImagePath,
     isWithinPublishWindow,

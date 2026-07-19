@@ -1,21 +1,47 @@
 {
   "meta": {
     "schemaVersion": 1,
-    "boardVersion": "2026.07.18-01",
-    "updatedAt": "2026-07-18T22:30:00+09:00",
-    "displayDate": "2026年7月18日現在",
+    "boardVersion": "2026.07.20-02",
+    "updatedAt": "2026-07-20T00:00:00+09:00",
+    "displayDate": "2026年7月20日現在",
     "status": "draft",
     "commit": "",
-    "summary": "まろうどティールーム掲示板JSON表示の初期データ"
+    "summary": "ティールームv02背景の掲示板範囲に合わせて配置を更新"
   },
   "canvas": {
     "pc": {
-      "width": 1536,
-      "height": 864
+      "width": 730,
+      "height": 658
     },
     "mobile": {
-      "width": 640,
-      "height": 1040
+      "width": 394,
+      "height": 1338
+    }
+  },
+  "background": {
+    "pc": {
+      "image": "assets/images/tea_room/tea_room_pc_bg_v02.webp",
+      "width": 1920,
+      "height": 1080,
+      "fit": "cover",
+      "board": {
+        "x": 111,
+        "y": 91,
+        "width": 730,
+        "height": 658
+      }
+    },
+    "mobile": {
+      "image": "assets/images/tea_room/tea_room_mobile_bg_v02.webp",
+      "width": 1080,
+      "height": 1920,
+      "fit": "contain",
+      "board": {
+        "x": 44,
+        "y": 142,
+        "width": 394,
+        "height": 1338
+      }
     }
   },
   "items": [
@@ -37,16 +63,16 @@
       "openInNewTab": false,
       "layouts": {
         "pc": {
-          "x": 136,
-          "y": 202,
-          "width": 330,
+          "x": 65,
+          "y": 154,
+          "width": 157,
           "rotation": -2,
           "zIndex": 4
         },
         "mobile": {
-          "x": 92,
-          "y": 180,
-          "width": 455,
+          "x": 57,
+          "y": 232,
+          "width": 280,
           "rotation": -1,
           "zIndex": 4
         }
@@ -70,16 +96,16 @@
       "openInNewTab": false,
       "layouts": {
         "pc": {
-          "x": 676,
-          "y": 360,
-          "width": 250,
+          "x": 321,
+          "y": 274,
+          "width": 119,
           "rotation": 3,
           "zIndex": 3
         },
         "mobile": {
-          "x": 128,
-          "y": 560,
-          "width": 360,
+          "x": 79,
+          "y": 721,
+          "width": 222,
           "rotation": 2,
           "zIndex": 3
         }
@@ -103,16 +129,16 @@
       "openInNewTab": false,
       "layouts": {
         "pc": {
-          "x": 1036,
-          "y": 212,
-          "width": 230,
+          "x": 492,
+          "y": 161,
+          "width": 109,
           "rotation": -4,
           "zIndex": 2
         },
         "mobile": {
-          "x": 154,
-          "y": 760,
-          "width": 300,
+          "x": 95,
+          "y": 977,
+          "width": 185,
           "rotation": -3,
           "zIndex": 2
         }
