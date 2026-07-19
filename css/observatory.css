@@ -23,46 +23,60 @@ body {
 }
 
 .observatory-stage {
+  --bottle-hotspot-left: 7%;
+  --bottle-hotspot-top: 34%;
+  --bottle-hotspot-width: 24%;
+  --bottle-hotspot-height: 18%;
+  --wish-hotspot-left: 18%;
+  --wish-hotspot-top: 77%;
+  --wish-hotspot-width: 18%;
+  --wish-hotspot-height: 9%;
+  --hokkori-day-left: 78%;
+  --hokkori-day-top: 80%;
+  --hokkori-day-width: 14%;
+  --hokkori-day-height: 8%;
+  --hokkori-night-left: 78%;
+  --hokkori-night-top: 80%;
+  --hokkori-night-width: 14%;
+  --hokkori-night-height: 8%;
   position: relative;
   width: min(100vw, calc(100vh * 16 / 9));
   max-height: 100vh;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background-image: url("../assets/images/observatory/backgrounds/observatory_day_pc_v02.webp");
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background: #120f0a;
 }
 
-.observatory-bg {
+.observatory-scene__image {
   position: absolute;
   inset: 0;
   z-index: 0;
+  display: none;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   pointer-events: none;
+  user-select: none;
 }
 
-.observatory-bg--day-pc {
+.observatory-scene__image--day-pc {
   display: block;
 }
 
-/* 夜モード */
-.observatory.is-night .observatory-stage {
-  background-image: url("../assets/images/observatory/backgrounds/observatory_night_pc_v02.webp");
+.observatory.is-night .observatory-scene__image--day-pc {
+  display: none;
 }
 
-.observatory.is-night .observatory-bg--day-pc {
-  display: none;
+.observatory.is-night .observatory-scene__image--night-pc {
+  display: block;
 }
 
 /* 妖精エリア */
 .fairy-area {
   position: absolute;
-  left: 36vw;
-  bottom: 8vh;
-  z-index: 20;
+  left: 36%;
+  bottom: 8%;
+  z-index: 30;
   display: flex;
   align-items: flex-end;
   gap: 14px;
@@ -152,28 +166,23 @@ body {
 .night-panel,
 .day-panel {
   position: absolute;
-  z-index: 25;
-  left: 7%;
-  top: 32%;
-  width: 36%;
-  height: 38%;
+  z-index: 22;
+  pointer-events: none;
 }
 
 .day-panel {
-  position: absolute;
-  z-index: 25;
-  left: 7%;
-  top: 32%;
-  width: 36%;
-  height: 38%;
+  left: var(--bottle-hotspot-left);
+  top: var(--bottle-hotspot-top);
+  width: var(--bottle-hotspot-width);
+  height: var(--bottle-hotspot-height);
 }
 
 .night-panel {
   display: none;
-  left: 16%;
-  top: 70%;
-  width: 30%;
-  height: 28%;
+  left: var(--wish-hotspot-left);
+  top: var(--wish-hotspot-top);
+  width: var(--wish-hotspot-width);
+  height: var(--wish-hotspot-height);
 }
 
 .observatory.is-night .day-panel {
@@ -191,6 +200,8 @@ body {
   border: 0;
   cursor: pointer;
   background: transparent;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .bottle-mail-hotspot,
@@ -198,22 +209,29 @@ body {
   display: block;
   width: 100%;
   height: 100%;
+  pointer-events: auto;
 }
 
 .hokkori-hotspot {
   position: absolute;
   z-index: 18;
-  right: 1.5%;
-  bottom: 2%;
+  left: var(--hokkori-day-left);
+  top: var(--hokkori-day-top);
+  right: auto;
+  bottom: auto;
   display: block;
-  width: 33%;
-  height: 39%;
-  border-radius: 28% 22% 24% 26%;
+  width: var(--hokkori-day-width);
+  height: var(--hokkori-day-height);
+  border-radius: 14px;
   pointer-events: auto;
 }
 
 .hokkori-hotspot--night {
   display: none;
+  left: var(--hokkori-night-left);
+  top: var(--hokkori-night-top);
+  width: var(--hokkori-night-width);
+  height: var(--hokkori-night-height);
 }
 
 .observatory.is-night .hokkori-hotspot--day {
@@ -617,12 +635,12 @@ body {
 
 /* 森へ戻る */
 .forest-back {
-  position: fixed;
-  right: clamp(18px, 2.8vw, 42px);
-  top: clamp(18px, 3vh, 36px);
+  position: absolute;
+  right: 2.4%;
+  top: 3%;
   bottom: auto;
   z-index: 40;
-  width: clamp(96px, 8vw, 128px);
+  width: clamp(96px, 8%, 128px);
   display: block;
   line-height: 0;
   transition: filter 0.2s ease;
@@ -1443,43 +1461,53 @@ body {
 /* スマホ */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
   .observatory {
-    display: block;
+    display: flex;
     height: 100dvh;
     min-height: 100dvh;
-    background-image: url("../assets/images/observatory/backgrounds/observatory_day_mobile_v03.webp");
-    background-position: center bottom;
-    background-size: cover;
-    background-repeat: no-repeat;
-  }
-
-  .observatory.is-night {
-    background-image: url("../assets/images/observatory/backgrounds/observatory_night_mobile_v02.webp");
+    background: #120f0a;
   }
 
   .observatory-stage {
-    width: 100%;
-    height: 100%;
-    max-height: none;
-    aspect-ratio: auto;
-    background: none;
+    --bottle-hotspot-left: 7%;
+    --bottle-hotspot-top: 42%;
+    --bottle-hotspot-width: 34%;
+    --bottle-hotspot-height: 16%;
+    --wish-hotspot-left: 16%;
+    --wish-hotspot-top: 80%;
+    --wish-hotspot-width: 22%;
+    --wish-hotspot-height: 8%;
+    --hokkori-day-left: 59%;
+    --hokkori-day-top: 84%;
+    --hokkori-day-width: 30%;
+    --hokkori-day-height: 8%;
+    --hokkori-night-left: 59%;
+    --hokkori-night-top: 84%;
+    --hokkori-night-width: 30%;
+    --hokkori-night-height: 8%;
+    width: min(100vw, calc(100dvh * 9 / 16));
+    height: auto;
+    max-height: 100dvh;
+    aspect-ratio: 9 / 16;
+    background: #120f0a;
   }
 
-  .observatory.is-night .observatory-stage {
-    background: none;
-  }
-
-  .hokkori-hotspot {
-    left: 48%;
-    right: auto;
-    top: 54%;
-    bottom: auto;
-    width: 51%;
-    height: 40%;
-    border-radius: 30% 22% 24% 28%;
-  }
-
-  .observatory-bg--day-pc {
+  .observatory-scene__image--day-pc,
+  .observatory-scene__image--night-pc,
+  .observatory.is-night .observatory-scene__image--day-pc,
+  .observatory.is-night .observatory-scene__image--night-pc {
     display: none;
+  }
+
+  .observatory-scene__image--day-mobile {
+    display: block;
+  }
+
+  .observatory.is-night .observatory-scene__image--day-mobile {
+    display: none;
+  }
+
+  .observatory.is-night .observatory-scene__image--night-mobile {
+    display: block;
   }
 
   .fairy-area {
@@ -1522,19 +1550,6 @@ body {
     line-height: 1.65;
   }
 
-  .night-panel {
-    left: 14%;
-    top: 66%;
-    width: 58%;
-    height: 30%;
-  }
-
-  .day-panel {
-    left: 4%;
-    top: 35%;
-    width: 46%;
-    height: 34%;
-  }
 
   .action-button {
     width: 100%;
@@ -1543,9 +1558,9 @@ body {
   }
 
   .forest-back {
-    right: max(12px, env(safe-area-inset-right));
-    top: max(12px, env(safe-area-inset-top));
-    width: clamp(82px, 23vw, 104px);
+    right: 2.5%;
+    top: 2.5%;
+    width: clamp(82px, 23%, 104px);
   }
 
   .drift-bottle-arrival {
@@ -1615,7 +1630,8 @@ body {
 
   .observatory-view {
     background-position: center center;
-    background-size: cover;
+    background-color: #000;
+    background-size: contain;
   }
 
   .hokkori-board {
@@ -1625,6 +1641,8 @@ body {
     max-height: 100dvh;
     aspect-ratio: 9 / 16;
     padding: 0;
+    background-color: #000;
+    background-size: contain;
     border-radius: 0;
     box-shadow: none;
   }
@@ -1639,6 +1657,8 @@ body {
     max-width: 100vw;
     max-height: 100dvh;
     aspect-ratio: 9 / 16;
+    background-color: #000;
+    background-size: contain;
     border-radius: 0;
     box-shadow: none;
   }
@@ -1727,6 +1747,8 @@ body {
   .wish-write-card {
     width: min(100vw, 56.25vh);
     max-height: 100dvh;
+    background-color: #000;
+    background-size: contain;
   }
 
   .observatory-view__text {

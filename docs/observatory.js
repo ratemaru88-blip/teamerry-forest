@@ -1401,25 +1401,9 @@ document.addEventListener("DOMContentLoaded", () => {
       || (driftBottleModal && driftBottleModal.classList.contains("is-active"));
   }
 
-  function isHokkoriBackgroundClick(event) {
-    if (!observatoryStage || isAnyViewActive()) {
-      return false;
-    }
-
-    if (event.target.closest("button, a, textarea, input, select, [role='dialog'], .fairy-area, .forest-back")) {
-      return false;
-    }
-
-    const rect = observatoryStage.getBoundingClientRect();
-    if (!rect.width || !rect.height) {
-      return false;
-    }
-
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-    return x >= 0.48 && y >= 0.48;
+  function isHokkoriBackgroundClick() {
+    return false;
   }
-
   function openCurrentHokkoriView() {
     showView(isNight ? wishHokkoriView : bottleHokkoriView);
   }

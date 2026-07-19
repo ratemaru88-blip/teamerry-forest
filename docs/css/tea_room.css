@@ -618,7 +618,9 @@ body {
 @media (max-width: 768px) {
   .tea-room {
     background-image: url("../assets/images/tea_room/tea_room_mobile_bg.webp");
-    background-position: center top;
+    background-color: #000;
+    background-position: center center;
+    background-size: contain;
   }
 
   .tea-notice-board {
