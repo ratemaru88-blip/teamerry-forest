@@ -510,6 +510,8 @@ body {
   max-height: 100%;
   margin: 0;
   padding-left: var(--type-body-shift);
+  padding-right: max(6px, 0.45em);
+  box-sizing: border-box;
   overflow: hidden;
   color: #4d3b2f;
   font-size: var(--letter-font-size);
@@ -1665,13 +1667,13 @@ body {
     --wish-hotspot-width: 22%;
     --wish-hotspot-height: 8%;
     --hokkori-day-left: 59%;
-    --hokkori-day-top: 84%;
+    --hokkori-day-top: 74%;
     --hokkori-day-width: 30%;
-    --hokkori-day-height: 8%;
+    --hokkori-day-height: 11%;
     --hokkori-night-left: 59%;
-    --hokkori-night-top: 84%;
+    --hokkori-night-top: 74%;
     --hokkori-night-width: 30%;
-    --hokkori-night-height: 8%;
+    --hokkori-night-height: 11%;
     width: min(100vw, calc(100dvh * 9 / 16));
     height: auto;
     max-height: 100dvh;
@@ -1825,10 +1827,11 @@ body {
   }
 
   .drift-bottle-letter-content {
-    inset: 12% 12% 12%;
+    inset: 13% 15% 13% 14%;
     justify-content: flex-start;
-    --letter-font-size: 16.5px;
-    --letter-line-height: 29px;
+    --letter-font-size: 15.6px;
+    --letter-line-height: 27px;
+    --type-line-width: 92%;
   }
 
   .drift-bottle-sender {
@@ -1837,18 +1840,18 @@ body {
   }
 
   .drift-bottle-letter-content.is-medium {
-    --letter-font-size: 17.5px;
-    --letter-line-height: 28px;
+    --letter-font-size: 16.4px;
+    --letter-line-height: 26.5px;
   }
 
   .drift-bottle-letter-content.is-long {
-    --letter-font-size: 15.5px;
-    --letter-line-height: 24px;
+    --letter-font-size: 14.6px;
+    --letter-line-height: 23px;
   }
 
   .drift-bottle-letter-content.is-extra-long {
-    --letter-font-size: 14px;
-    --letter-line-height: 21px;
+    --letter-font-size: 13.2px;
+    --letter-line-height: 20px;
   }
 
   .drift-bottle-close {

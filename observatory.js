@@ -728,7 +728,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function getDriftBottleLineTarget(sizeClass, handwritingClass) {
     const isMobileLayout = window.matchMedia("(max-width: 768px), (hover: none) and (pointer: coarse)").matches;
     const baseTargets = isMobileLayout
-      ? { "is-short": 14, "is-medium": 15, "is-long": 17, "is-extra-long": 19 }
+      ? { "is-short": 13, "is-medium": 14, "is-long": 15, "is-extra-long": 17 }
       : { "is-short": 14, "is-medium": 16, "is-long": 18, "is-extra-long": 20 };
     const handwritingOffset = {
       "handwriting-quiet": -1,
@@ -815,8 +815,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function findDriftBottleLineBreak(chars, targetLength) {
     const minBreak = Math.max(4, Math.floor(targetLength * 0.58));
-    const preferredMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.38));
-    const extendedMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.75));
+    const preferredMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.3));
+    const extendedMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.58));
     let bestBreak = null;
     let bestScore = -Infinity;
 
