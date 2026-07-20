@@ -33,8 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const hokkoriButton = document.getElementById("hokkoriButton");
   const hokkoriNightButton = document.getElementById("hokkoriNightButton");
   const wishStarButton = document.getElementById("wishStarButton");
-  const bottleHokkoriButton = document.getElementById("bottleHokkoriButton");
-  const wishHokkoriButton = document.getElementById("wishHokkoriButton");
   const bottleWriteView = document.getElementById("bottleWriteView");
   const wishWriteView = document.getElementById("wishWriteView");
   const bottleHokkoriView = document.getElementById("bottleHokkoriView");
@@ -728,7 +726,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function getDriftBottleLineTarget(sizeClass, handwritingClass) {
     const isMobileLayout = window.matchMedia("(max-width: 768px), (hover: none) and (pointer: coarse)").matches;
     const baseTargets = isMobileLayout
-      ? { "is-short": 14, "is-medium": 15, "is-long": 17, "is-extra-long": 19 }
+      ? { "is-short": 13, "is-medium": 14, "is-long": 15, "is-extra-long": 17 }
       : { "is-short": 14, "is-medium": 16, "is-long": 18, "is-extra-long": 20 };
     const handwritingOffset = {
       "handwriting-quiet": -1,
@@ -815,8 +813,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function findDriftBottleLineBreak(chars, targetLength) {
     const minBreak = Math.max(4, Math.floor(targetLength * 0.58));
-    const preferredMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.38));
-    const extendedMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.75));
+    const preferredMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.3));
+    const extendedMax = Math.min(chars.length - 1, Math.ceil(targetLength * 1.58));
     let bestBreak = null;
     let bestScore = -Infinity;
 
@@ -1437,160 +1435,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, duration);
   }
 
-  function getJstDateKey() {
-    const formatter = new Intl.DateTimeFormat("ja-JP", {
-      timeZone: "Asia/Tokyo",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-
-    return formatter.format(new Date()).replace(/\//g, "-");
-  }
-
-  function hashString(value = "") {
-    let hash = 2166136261;
-    const source = String(value);
-
-    for (let index = 0; index < source.length; index += 1) {
-      hash ^= source.charCodeAt(index);
-      hash = Math.imul(hash, 16777619);
-    }
-
-    return hash >>> 0;
-  }
-
-  function pickSeededItems(items, count, seedKey) {
-    return [...items]
-      .map((item) => ({
-        item,
-        score: hashString(`${seedKey}:${item.id || item.text}`),
-      }))
-      .sort((a, b) => a.score - b.score)
-      .slice(0, count)
-      .map((entry) => entry.item);
-  }
-
-  function readLocalHokkoriMessages(key) {
-    try {
-      return JSON.parse(window.localStorage.getItem(key) || "[]")
-        .filter((message) => message && message.public !== false && String(message.text || "").trim())
-        .map((message, index) => ({
-          id: `local-${key}-${message.createdAt || index}`,
-          displayName: String(message.displayName || message.sender || message.writer || "おさんぽさん").trim() || "おさんぽさん",
-          text: String(message.text || "").trim(),
-          category: key.includes("Wish") ? "願い" : "ボトルメール",
-          todayHokkori: true,
-          enabled: true,
-        }));
-    } catch (error) {
-      return [];
-    }
-  }
-
-  async function loadTodayHokkoriMessages(type) {
-    const localKey = type === "wish" ? "teaMerryWishMessages" : "teaMerryBottleMessages";
-    const localMessages = readLocalHokkoriMessages(localKey);
-
-    try {
-      const response = await fetch(driftBottleJsonPath);
-      if (!response.ok) {
-        throw new Error(`Hokkori JSON load failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const messages = Array.isArray(data && data.messages) ? data.messages : [];
-      const filteredMessages = messages
-        .filter((message) => message && message.enabled !== false && String(message.text || "").trim())
-        .filter((message) => {
-          if (type === "wish") {
-            return message.category === "願い" || message.hokkoriSlot === "願い";
-          }
-
-          return message.todayHokkori === true && message.category !== "願い";
-        });
-
-      return [...localMessages, ...filteredMessages].map((message) => ({
-        id: String(message.id || message.text || ""),
-        displayName: String(message.displayName || "おさんぽさん").trim() || "おさんぽさん",
-        text: String(message.text || "").trim(),
-        category: String(message.category || "").trim(),
-      }));
-    } catch (error) {
-      console.warn("[TeaMerry Observatory] Today hokkori messages failed:", error);
-      return localMessages;
-    }
-  }
-
-  function openHokkoriDetail(message, type) {
-    const modal = document.createElement("div");
-    modal.className = "hokkori-detail-modal is-active";
-    modal.setAttribute("role", "presentation");
-    modal.innerHTML = `
-      <div class="hokkori-detail-dialog" role="dialog" aria-modal="true" tabindex="-1">
-        <p class="hokkori-detail-title">${type === "wish" ? "今日の願い星" : "今日のほっこり"}</p>
-        <p class="hokkori-detail-sender"></p>
-        <p class="hokkori-detail-body"></p>
-        <button type="button" class="hokkori-detail-close">閉じる</button>
-      </div>
-    `;
-
-    modal.querySelector(".hokkori-detail-sender").textContent = message.displayName || "おさんぽさん";
-    modal.querySelector(".hokkori-detail-body").textContent = message.text;
-
-    const closeModal = () => modal.remove();
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        closeModal();
-      }
-    });
-    modal.querySelector(".hokkori-detail-close").addEventListener("click", closeModal);
-    document.body.appendChild(modal);
-    modal.querySelector(".hokkori-detail-dialog").focus();
-  }
-
-  async function renderHokkoriView(view, type) {
-    if (!view) {
-      return;
-    }
-
-    let board = view.querySelector(".hokkori-board");
-    if (!board) {
-      board = document.createElement("div");
-      board.className = "hokkori-board";
-      view.appendChild(board);
-    }
-
-    board.textContent = "読み込み中...";
-    const messages = await loadTodayHokkoriMessages(type);
-    const selectedMessages = pickSeededItems(messages, 3, `${type}-${getJstDateKey()}`);
-    board.textContent = "";
-
-    if (!selectedMessages.length) {
-      const emptyMessage = document.createElement("p");
-      emptyMessage.className = "hokkori-empty";
-      emptyMessage.textContent = "今日のほっこりは、まだ届いていません。";
-      board.appendChild(emptyMessage);
-      return;
-    }
-
-    selectedMessages.forEach((message, index) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `hokkori-card hokkori-card--${type}`;
-      button.setAttribute("aria-label", `${type === "wish" ? "願い星" : "手紙"}${index + 1}を開く`);
-      button.innerHTML = `
-        <span class="hokkori-card__marker" aria-hidden="true"></span>
-        <span class="hokkori-card__sender"></span>
-        <span class="hokkori-card__text"></span>
-      `;
-      button.querySelector(".hokkori-card__sender").textContent = message.displayName || "おさんぽさん";
-      button.querySelector(".hokkori-card__text").textContent = message.text;
-      button.addEventListener("click", () => openHokkoriDetail(message, type));
-      board.appendChild(button);
-    });
-  }
-
   function closeViews() {
     window.clearTimeout(observatoryVideoFallbackTimer);
     closeBottlePrivacyModal();
@@ -1958,20 +1802,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (wishStarButton) {
     wishStarButton.addEventListener("click", () => showView(wishWriteView));
-  }
-
-  if (bottleHokkoriButton) {
-    bottleHokkoriButton.addEventListener("click", () => {
-      showView(bottleHokkoriView);
-      renderHokkoriView(bottleHokkoriView, "bottle");
-    });
-  }
-
-  if (wishHokkoriButton) {
-    wishHokkoriButton.addEventListener("click", () => {
-      showView(wishHokkoriView);
-      renderHokkoriView(wishHokkoriView, "wish");
-    });
   }
 
   if (driftBottleButton) {

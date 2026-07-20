@@ -8,7 +8,7 @@ html, body {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  background: url("../assets/images/tea_room/tea_room_pc_bg.webp") center/cover no-repeat;
+  background: url("../assets/images/tea_room/tea_room_pc_bg_v02.webp") center/cover no-repeat;
   overflow: hidden;
 }
 
@@ -155,7 +155,7 @@ html, body {
 
 @media (max-width: 768px) {
   .tea-room {
-    background-image: url("../assets/images/tea_room/tea_room_mobile_bg.webp");
+    background-image: url("../assets/images/tea_room/tea_room_mobile_bg_v02.webp");
   }
 
   .coffee-steam {

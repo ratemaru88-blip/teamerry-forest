@@ -250,39 +250,6 @@ body {
   border-radius: 18px;
 }
 
-.bottle-mail-hotspot,
-.wish-star-hotspot {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: auto;
-}
-
-.observatory-hokkori-hotspot {
-  position: absolute;
-  z-index: 2;
-  display: block;
-  padding: 0;
-  border: 0;
-  cursor: pointer;
-  background: transparent;
-  pointer-events: auto;
-}
-
-.bottle-hokkori-hotspot {
-  right: 0;
-  bottom: 0;
-  width: 48%;
-  height: 30%;
-}
-
-.wish-hokkori-hotspot {
-  right: 0;
-  bottom: 0;
-  width: 48%;
-  height: 32%;
-}
-
 .drift-bottle-arrival {
   position: absolute;
   left: 2.4%;
@@ -510,6 +477,8 @@ body {
   max-height: 100%;
   margin: 0;
   padding-left: var(--type-body-shift);
+  padding-right: max(6px, 0.45em);
+  box-sizing: border-box;
   overflow: hidden;
   color: #4d3b2f;
   font-size: var(--letter-font-size);
@@ -704,14 +673,6 @@ body {
 
 .observatory-view.is-active {
   display: block;
-}
-
-.observatory-view {
-  pointer-events: none;
-}
-
-.observatory-view.is-active {
-  pointer-events: auto;
 }
 
 .observatory-view--bottle-write {
@@ -1099,153 +1060,6 @@ body {
 .wish-hokkori-star--3:hover,
 .wish-hokkori-star--3:focus-visible {
   transform: rotate(-3deg) translateY(-2px);
-}
-
-.hokkori-board {
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  z-index: 3;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(12px, 2.2vw, 24px);
-  width: min(82%, 900px);
-  color: #4a3218;
-  transform: translate(-50%, -50%);
-}
-
-.hokkori-card {
-  position: relative;
-  min-height: clamp(150px, 19vw, 230px);
-  padding: 42px 22px 24px;
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #4a3218;
-  background: rgba(255, 246, 218, 0.92);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
-  font: inherit;
-  text-align: left;
-  pointer-events: auto;
-}
-
-.hokkori-card--wish {
-  color: #fff7d5;
-  background: rgba(42, 46, 83, 0.82);
-  box-shadow: 0 0 22px rgba(255, 238, 155, 0.18), 0 14px 30px rgba(0, 0, 0, 0.32);
-}
-
-.hokkori-card__marker {
-  position: absolute;
-  left: 18px;
-  top: 16px;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: rgba(194, 139, 70, 0.78);
-}
-
-.hokkori-card--wish .hokkori-card__marker {
-  background: #ffe98c;
-  box-shadow: 0 0 16px rgba(255, 233, 140, 0.82);
-}
-
-.hokkori-card__sender,
-.hokkori-card__text {
-  display: block;
-}
-
-.hokkori-card__sender {
-  margin-bottom: 12px;
-  font-weight: bold;
-  line-height: 1.5;
-}
-
-.hokkori-card__text {
-  display: -webkit-box;
-  overflow: hidden;
-  font-size: clamp(14px, 1.45vw, 17px);
-  line-height: 1.75;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-}
-
-.hokkori-empty {
-  grid-column: 1 / -1;
-  margin: 0;
-  padding: 18px 22px;
-  border-radius: 8px;
-  background: rgba(255, 246, 218, 0.9);
-  text-align: center;
-}
-
-.hokkori-detail-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(12, 9, 7, 0.58);
-}
-
-.hokkori-detail-modal.is-active {
-  display: flex;
-}
-
-.hokkori-detail-dialog {
-  box-sizing: border-box;
-  width: min(88vw, 420px);
-  padding: 26px 24px 22px;
-  border-radius: 8px;
-  background: rgba(255, 248, 224, 0.98);
-  color: #4c331d;
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.36);
-  outline: none;
-}
-
-.hokkori-detail-title,
-.hokkori-detail-sender,
-.hokkori-detail-body {
-  margin: 0;
-}
-
-.hokkori-detail-title {
-  margin-bottom: 12px;
-  color: #7c5128;
-  font-size: 14px;
-  font-weight: bold;
-  letter-spacing: 0.08em;
-  text-align: center;
-}
-
-.hokkori-detail-sender {
-  margin-bottom: 14px;
-  font-weight: bold;
-  line-height: 1.5;
-}
-
-.hokkori-detail-body {
-  min-height: 4.5em;
-  font-size: 16px;
-  line-height: 1.9;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-}
-
-.hokkori-detail-close {
-  display: block;
-  min-width: 120px;
-  margin: 22px auto 0;
-  padding: 10px 18px;
-  border: 0;
-  border-radius: 999px;
-  cursor: pointer;
-  background: rgba(115, 80, 42, 0.18);
-  color: #4f331f;
-  font: inherit;
-  font-weight: bold;
 }
 
 .observatory-view--wish-lantern {
@@ -1665,13 +1479,13 @@ body {
     --wish-hotspot-width: 22%;
     --wish-hotspot-height: 8%;
     --hokkori-day-left: 59%;
-    --hokkori-day-top: 84%;
+    --hokkori-day-top: 74%;
     --hokkori-day-width: 30%;
-    --hokkori-day-height: 8%;
+    --hokkori-day-height: 11%;
     --hokkori-night-left: 59%;
-    --hokkori-night-top: 84%;
+    --hokkori-night-top: 74%;
     --hokkori-night-width: 30%;
-    --hokkori-night-height: 8%;
+    --hokkori-night-height: 11%;
     width: min(100vw, calc(100dvh * 9 / 16));
     height: auto;
     max-height: 100dvh;
@@ -1739,50 +1553,6 @@ body {
   }
 
 
-  .bottle-hokkori-hotspot {
-    right: 0;
-    bottom: 0;
-    width: 50%;
-    height: 30%;
-  }
-
-  .wish-hokkori-hotspot {
-    right: 0;
-    bottom: 0;
-    width: 50%;
-    height: 32%;
-  }
-
-  .hokkori-board {
-    top: 54%;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    width: min(82vw, 360px);
-  }
-
-  .hokkori-card {
-    min-height: 94px;
-    padding: 16px 16px 15px 46px;
-  }
-
-  .hokkori-card__marker {
-    left: 16px;
-    top: 18px;
-    width: 16px;
-    height: 16px;
-  }
-
-  .hokkori-card__sender {
-    margin-bottom: 5px;
-    font-size: 13px;
-  }
-
-  .hokkori-card__text {
-    font-size: 13px;
-    line-height: 1.55;
-    -webkit-line-clamp: 2;
-  }
-
   .action-button {
     width: 100%;
     padding: 0.8em 1em;
@@ -1825,10 +1595,11 @@ body {
   }
 
   .drift-bottle-letter-content {
-    inset: 12% 12% 12%;
+    inset: 13% 15% 13% 14%;
     justify-content: flex-start;
-    --letter-font-size: 16.5px;
-    --letter-line-height: 29px;
+    --letter-font-size: 15.6px;
+    --letter-line-height: 27px;
+    --type-line-width: 92%;
   }
 
   .drift-bottle-sender {
@@ -1837,18 +1608,18 @@ body {
   }
 
   .drift-bottle-letter-content.is-medium {
-    --letter-font-size: 17.5px;
-    --letter-line-height: 28px;
+    --letter-font-size: 16.4px;
+    --letter-line-height: 26.5px;
   }
 
   .drift-bottle-letter-content.is-long {
-    --letter-font-size: 15.5px;
-    --letter-line-height: 24px;
+    --letter-font-size: 14.6px;
+    --letter-line-height: 23px;
   }
 
   .drift-bottle-letter-content.is-extra-long {
-    --letter-font-size: 14px;
-    --letter-line-height: 21px;
+    --letter-font-size: 13.2px;
+    --letter-line-height: 20px;
   }
 
   .drift-bottle-close {
@@ -2078,3 +1849,33 @@ body {
 
 
 
+
+/* Mobile: place Lilu's message above her on the Starwind Terrace lantern view. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .observatory-view--wish-lantern {
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .wish-lantern-scene {
+    width: min(100vw, calc(100dvh * 9 / 16));
+    min-height: 100dvh;
+    aspect-ratio: 9 / 16;
+  }
+
+  .wish-lantern-character {
+    position: absolute;
+    left: 50%;
+    bottom: 14%;
+    width: min(56vw, 30dvh, 230px);
+    transform: translateX(-50%);
+  }
+
+  .wish-lantern-message {
+    bottom: 52%;
+    width: min(78vw, 320px);
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+}
