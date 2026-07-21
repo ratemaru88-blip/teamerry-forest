@@ -489,6 +489,12 @@
 
   function addObjectUrlItem(file) {
     const suggested = `assets/images/maroudo_board/items/${file.name}`;
+    const existingItems = findDropImageItems(suggested, file.name, getImageScope());
+    if (existingItems.length) {
+      objectUrls.set(suggested, URL.createObjectURL(file));
+      selectExistingDropItem(existingItems, suggested, file.name);
+      return;
+    }
     if (isRecentImageAdd(suggested)) {
       return;
     }
@@ -497,6 +503,39 @@
     objectUrls.set(suggested, url);
     els.imageHint.textContent = `プレビュー中: ${file.name} / ${getImageScopeLabel(getImageScope())} / 推奨保存先: ${suggested}`;
     addItem({ id, name: file.name, image: suggested, imageScope: getImageScope() });
+  }
+
+  function selectExistingDropItem(existingItems, suggestedPath, fileName) {
+    const keep = existingItems[0];
+    if (existingItems.length > 1) {
+      const removeIds = new Set(existingItems.slice(1).map((item) => item.id));
+      pushHistory();
+      state.data.items = state.data.items.filter((item) => !removeIds.has(item.id));
+      markDirty();
+    }
+    state.selectedId = keep.id;
+    els.imageHint.textContent = `既存の貼り紙を選択しました: ${fileName} / 推奨保存先: ${suggestedPath}`;
+    render();
+  }
+
+  function findDropImageItems(suggestedPath, fileName, scope) {
+    return state.data.items.filter((item) => {
+      if (item.name !== fileName) {
+        return false;
+      }
+      return getImagePathForScope(item, scope) === suggestedPath;
+    });
+  }
+
+  function getImagePathForScope(item, scope) {
+    const target = scope === "current" ? state.mode : scope;
+    if (target === "pc") {
+      return item.imagePc || item.image || "";
+    }
+    if (target === "mobile") {
+      return item.imageMobile || item.image || "";
+    }
+    return item.image || "";
   }
 
   function isRecentImageAdd(suggestedPath) {
@@ -675,7 +714,28 @@
       });
     }
     copy.background = Object.assign({}, renderer.clone(renderer.DEFAULT_BACKGROUND), copy.background || {});
+    copy.items = dedupeDropCreatedItems(copy.items || []);
     return copy;
+  }
+
+  function dedupeDropCreatedItems(items) {
+    const seen = new Set();
+    return items.filter((item) => {
+      const signature = [
+        item.name || "",
+        item.image || "",
+        item.imagePc || "",
+        item.imageMobile || "",
+      ].join("|");
+      if (!item.name || (!item.image && !item.imagePc && !item.imageMobile)) {
+        return true;
+      }
+      if (seen.has(signature)) {
+        return false;
+      }
+      seen.add(signature);
+      return true;
+    });
   }
 
   function transformLegacyLayout(layout, fromCanvas, toCanvas) {
