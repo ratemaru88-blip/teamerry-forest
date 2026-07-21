@@ -446,13 +446,10 @@
   }
 
   function toCanvasPoint(event) {
-    const layer = stage.querySelector(".maroudo-board-layer");
-    const rect = stage.getBoundingClientRect();
-    const scale = Number(getComputedStyle(stage).getPropertyValue("--maroudo-board-scale")) || 1;
-    return {
-      x: (event.clientX - rect.left - (layer ? layer.offsetLeft : 0)) / scale,
-      y: (event.clientY - rect.top - (layer ? layer.offsetTop : 0)) / scale,
-    };
+    if (typeof renderer.screenToBoardPoint === "function") {
+      return renderer.screenToBoardPoint(stage, event.clientX, event.clientY);
+    }
+    return { x: 0, y: 0 };
   }
 
   function addItemFromInputs() {

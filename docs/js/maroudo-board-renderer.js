@@ -12,14 +12,36 @@
       width: 1920,
       height: 1080,
       fit: "cover",
-      board: { x: 111, y: 91, width: 730, height: 658 },
+      board: {
+        x: 111,
+        y: 91,
+        width: 730,
+        height: 658,
+        quad: [
+          { x: 111, y: 91 },
+          { x: 841, y: 140 },
+          { x: 841, y: 680 },
+          { x: 118, y: 749 },
+        ],
+      },
     },
     mobile: {
       image: "assets/images/tea_room/tea_room_mobile_bg_v02.webp",
       width: 1080,
       height: 1920,
       fit: "contain",
-      board: { x: 44, y: 142, width: 394, height: 1338 },
+      board: {
+        x: 44,
+        y: 142,
+        width: 394,
+        height: 1338,
+        quad: [
+          { x: 44, y: 142 },
+          { x: 438, y: 205 },
+          { x: 438, y: 1434 },
+          { x: 44, y: 1480 },
+        ],
+      },
     },
   };
   const VALID_ACTIONS = new Set(["none", "detailImage", "link"]);
@@ -56,7 +78,12 @@
     const key = normalizeMode(mode);
     const fallback = DEFAULT_BACKGROUND[key];
     const background = data && data.background && data.background[key] ? data.background[key] : fallback;
-    return background ? Object.assign({}, fallback, background) : null;
+    if (!background) {
+      return null;
+    }
+    return Object.assign({}, fallback, background, {
+      board: Object.assign({}, fallback?.board || {}, background.board || {}),
+    });
   }
 
   function getBoardRegion(data, mode) {
@@ -205,20 +232,169 @@
     let scale = Math.min(rect.width / canvas.width, rect.height / canvas.height);
     let left = 0;
     let top = 0;
+    let transform = "";
+    let inverse = null;
     if (layout.background && layout.region) {
       const backgroundWidth = toPositiveNumber(layout.background.width, rect.width || 1);
       const backgroundHeight = toPositiveNumber(layout.background.height, rect.height || 1);
       scale = layout.background.fit === "cover"
         ? Math.max(rect.width / backgroundWidth, rect.height / backgroundHeight)
         : Math.min(rect.width / backgroundWidth, rect.height / backgroundHeight);
-      left = (rect.width - backgroundWidth * scale) / 2 + Number(layout.region.x || 0) * scale;
-      top = (rect.height - backgroundHeight * scale) / 2 + Number(layout.region.y || 0) * scale;
+      const offsetX = (rect.width - backgroundWidth * scale) / 2;
+      const offsetY = (rect.height - backgroundHeight * scale) / 2;
+      const quad = normalizeQuad(layout.region.quad, layout.region);
+      if (quad) {
+        const points = quad.map((point) => ({
+          x: offsetX + Number(point.x || 0) * scale,
+          y: offsetY + Number(point.y || 0) * scale,
+        }));
+        const matrix = getProjectiveTransform(canvas, points);
+        if (matrix) {
+          left = 0;
+          top = 0;
+          transform = toMatrix3d(matrix);
+          inverse = invertProjectiveMatrix(matrix);
+        }
+      }
+      if (!transform) {
+        left = offsetX + Number(layout.region.x || 0) * scale;
+        top = offsetY + Number(layout.region.y || 0) * scale;
+      }
     }
     stage.style.setProperty("--maroudo-board-scale", String(Number.isFinite(scale) && scale > 0 ? scale : 1));
+    stage._maroudoBoardTransform = { inverse, scale: Number.isFinite(scale) && scale > 0 ? scale : 1 };
     if (layer) {
       layer.style.left = `${Number.isFinite(left) ? left : 0}px`;
       layer.style.top = `${Number.isFinite(top) ? top : 0}px`;
+      layer.style.transform = transform || `scale(${Number.isFinite(scale) && scale > 0 ? scale : 1})`;
     }
+  }
+
+  function normalizeQuad(quad, region) {
+    if (Array.isArray(quad) && quad.length === 4) {
+      return quad;
+    }
+    return null;
+  }
+
+  function getProjectiveTransform(canvas, points) {
+    const width = toPositiveNumber(canvas.width, 1);
+    const height = toPositiveNumber(canvas.height, 1);
+    const src = [
+      { x: 0, y: 0 },
+      { x: width, y: 0 },
+      { x: width, y: height },
+      { x: 0, y: height },
+    ];
+    const matrixRows = [];
+    const values = [];
+    for (let index = 0; index < 4; index += 1) {
+      const source = src[index];
+      const target = points[index];
+      matrixRows.push([source.x, source.y, 1, 0, 0, 0, -source.x * target.x, -source.y * target.x]);
+      values.push(target.x);
+      matrixRows.push([0, 0, 0, source.x, source.y, 1, -source.x * target.y, -source.y * target.y]);
+      values.push(target.y);
+    }
+    const solved = solveLinearSystem(matrixRows, values);
+    if (!solved) {
+      return null;
+    }
+    return [
+      solved[0], solved[1], solved[2],
+      solved[3], solved[4], solved[5],
+      solved[6], solved[7], 1,
+    ];
+  }
+
+  function solveLinearSystem(matrix, values) {
+    const size = values.length;
+    const rows = matrix.map((row, index) => row.concat(values[index]));
+    for (let column = 0; column < size; column += 1) {
+      let pivot = column;
+      for (let row = column + 1; row < size; row += 1) {
+        if (Math.abs(rows[row][column]) > Math.abs(rows[pivot][column])) {
+          pivot = row;
+        }
+      }
+      if (Math.abs(rows[pivot][column]) < 1e-10) {
+        return null;
+      }
+      [rows[column], rows[pivot]] = [rows[pivot], rows[column]];
+      const divisor = rows[column][column];
+      for (let cell = column; cell <= size; cell += 1) {
+        rows[column][cell] /= divisor;
+      }
+      for (let row = 0; row < size; row += 1) {
+        if (row === column) {
+          continue;
+        }
+        const factor = rows[row][column];
+        for (let cell = column; cell <= size; cell += 1) {
+          rows[row][cell] -= factor * rows[column][cell];
+        }
+      }
+    }
+    return rows.map((row) => row[size]);
+  }
+
+  function toMatrix3d(matrix) {
+    const [a, b, c, d, e, f, g, h] = matrix;
+    return `matrix3d(${[
+      a, d, 0, g,
+      b, e, 0, h,
+      0, 0, 1, 0,
+      c, f, 0, 1,
+    ].map((value) => Number(value).toFixed(12)).join(",")})`;
+  }
+
+  function invertProjectiveMatrix(matrix) {
+    const [a, b, c, d, e, f, g, h, i] = matrix;
+    const determinant =
+      a * (e * i - f * h) -
+      b * (d * i - f * g) +
+      c * (d * h - e * g);
+    if (Math.abs(determinant) < 1e-10) {
+      return null;
+    }
+    return [
+      (e * i - f * h) / determinant,
+      (c * h - b * i) / determinant,
+      (b * f - c * e) / determinant,
+      (f * g - d * i) / determinant,
+      (a * i - c * g) / determinant,
+      (c * d - a * f) / determinant,
+      (d * h - e * g) / determinant,
+      (b * g - a * h) / determinant,
+      (a * e - b * d) / determinant,
+    ];
+  }
+
+  function applyProjectiveMatrix(matrix, x, y) {
+    const denominator = matrix[6] * x + matrix[7] * y + matrix[8];
+    if (!Number.isFinite(denominator) || Math.abs(denominator) < 1e-10) {
+      return { x: 0, y: 0 };
+    }
+    return {
+      x: (matrix[0] * x + matrix[1] * y + matrix[2]) / denominator,
+      y: (matrix[3] * x + matrix[4] * y + matrix[5]) / denominator,
+    };
+  }
+
+  function screenToBoardPoint(stage, clientX, clientY) {
+    const rect = stage.getBoundingClientRect();
+    const transform = stage._maroudoBoardTransform || {};
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    if (transform.inverse) {
+      return applyProjectiveMatrix(transform.inverse, x, y);
+    }
+    const layer = stage.querySelector(".maroudo-board-layer");
+    const scale = transform.scale || Number(getComputedStyle(stage).getPropertyValue("--maroudo-board-scale")) || 1;
+    return {
+      x: (clientX - rect.left - (layer ? layer.offsetLeft : 0)) / scale,
+      y: (clientY - rect.top - (layer ? layer.offsetTop : 0)) / scale,
+    };
   }
 
   function observeStage(stage) {
@@ -397,5 +573,6 @@
     validateBoardData,
     prepareStage,
     renderBoard,
+    screenToBoardPoint,
   };
 })();
