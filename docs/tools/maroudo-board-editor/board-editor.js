@@ -7,6 +7,7 @@
   const MISSING_IMAGE =
     "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%20288'%3E%3Crect%20width='400'%20height='288'%20fill='%23f6e7c6'/%3E%3Cpath%20d='M24%2024h352v240H24z'%20fill='none'%20stroke='%238b6a43'%20stroke-width='8'%20stroke-dasharray='18%2014'/%3E%3Ctext%20x='200'%20y='144'%20font-family='sans-serif'%20font-size='28'%20text-anchor='middle'%20fill='%23654a2d'%3Eimage%20not%20set%3C/text%3E%3C/svg%3E";
   const objectUrls = new Map();
+  const recentImageAdds = new Map();
 
   const state = {
     data: null,
@@ -214,6 +215,7 @@
     });
     els.dropZone.addEventListener("drop", (event) => {
       event.preventDefault();
+      event.stopPropagation();
       const file = event.dataTransfer.files && event.dataTransfer.files[0];
       if (file) {
         addObjectUrlItem(file);
@@ -486,12 +488,29 @@
   }
 
   function addObjectUrlItem(file) {
+    if (isRecentImageAdd(file)) {
+      return;
+    }
     const url = URL.createObjectURL(file);
     const suggested = `assets/images/maroudo_board/items/${file.name}`;
     const id = makeId(file.name.replace(/\.[^.]+$/, ""));
     objectUrls.set(suggested, url);
     els.imageHint.textContent = `プレビュー中: ${file.name} / ${getImageScopeLabel(getImageScope())} / 推奨保存先: ${suggested}`;
     addItem({ id, name: file.name, image: suggested, imageScope: getImageScope() });
+  }
+
+  function isRecentImageAdd(file) {
+    const signature = [
+      file.name || "",
+      file.size || 0,
+      file.lastModified || 0,
+      state.mode,
+      getImageScope(),
+    ].join("|");
+    const now = Date.now();
+    const lastAddedAt = recentImageAdds.get(signature) || 0;
+    recentImageAdds.set(signature, now);
+    return now - lastAddedAt < 900;
   }
 
   function addItem(seed) {
