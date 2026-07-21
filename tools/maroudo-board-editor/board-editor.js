@@ -258,6 +258,10 @@
         return;
       }
       const layout = getCurrentLayout(item);
+      const imagePath = resolveEditorImagePath(item);
+      if (!imagePath) {
+        return;
+      }
       const src = resolveEditorImage(item);
       const node = document.createElement("button");
       node.type = "button";
@@ -905,8 +909,12 @@
   }
 
   function resolveEditorImage(item) {
-    const path = renderer.resolveImagePath(item, state.mode, false);
+    const path = resolveEditorImagePath(item);
     return objectUrls.get(path) || toEditorUrl(path) || MISSING_IMAGE;
+  }
+
+  function resolveEditorImagePath(item) {
+    return renderer.resolveImagePath(item, state.mode, false);
   }
 
   function getImageSourceLabel(item) {
