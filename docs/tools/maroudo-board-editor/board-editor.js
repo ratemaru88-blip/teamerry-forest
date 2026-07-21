@@ -488,29 +488,27 @@
   }
 
   function addObjectUrlItem(file) {
-    if (isRecentImageAdd(file)) {
+    const suggested = `assets/images/maroudo_board/items/${file.name}`;
+    if (isRecentImageAdd(suggested)) {
       return;
     }
     const url = URL.createObjectURL(file);
-    const suggested = `assets/images/maroudo_board/items/${file.name}`;
     const id = makeId(file.name.replace(/\.[^.]+$/, ""));
     objectUrls.set(suggested, url);
     els.imageHint.textContent = `プレビュー中: ${file.name} / ${getImageScopeLabel(getImageScope())} / 推奨保存先: ${suggested}`;
     addItem({ id, name: file.name, image: suggested, imageScope: getImageScope() });
   }
 
-  function isRecentImageAdd(file) {
+  function isRecentImageAdd(suggestedPath) {
     const signature = [
-      file.name || "",
-      file.size || 0,
-      file.lastModified || 0,
+      suggestedPath || "",
       state.mode,
       getImageScope(),
     ].join("|");
     const now = Date.now();
     const lastAddedAt = recentImageAdds.get(signature) || 0;
     recentImageAdds.set(signature, now);
-    return now - lastAddedAt < 900;
+    return now - lastAddedAt < 3000;
   }
 
   function addItem(seed) {
