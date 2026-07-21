@@ -2081,3 +2081,33 @@ body {
 
 
 
+
+/* Mobile: place Lilu's message above her on the Starwind Terrace lantern view. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .observatory-view--wish-lantern {
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .wish-lantern-scene {
+    width: min(100vw, calc(100dvh * 9 / 16));
+    min-height: 100dvh;
+    aspect-ratio: 9 / 16;
+  }
+
+  .wish-lantern-character {
+    position: absolute;
+    left: 50%;
+    bottom: 14%;
+    width: min(56vw, 30dvh, 230px);
+    transform: translateX(-50%);
+  }
+
+  .wish-lantern-message {
+    bottom: 52%;
+    width: min(78vw, 320px);
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+}
