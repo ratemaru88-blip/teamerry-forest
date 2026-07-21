@@ -2,11 +2,11 @@
   "meta": {
     "schemaVersion": 1,
     "boardVersion": "2026.07.20-02",
-    "updatedAt": "2026-07-20T00:00:00+09:00",
+    "updatedAt": "2026-07-21T18:53:59.510Z",
     "displayDate": "2026年7月20日現在",
     "status": "draft",
     "commit": "",
-    "summary": "ティールームv02背景の掲示板範囲に合わせて配置を更新"
+    "summary": "まろうど掲示板の下書き"
   },
   "canvas": {
     "pc": {
@@ -82,45 +82,12 @@
   },
   "items": [
     {
-      "id": "board_starwind_001",
-      "name": "星風テラスのお知らせ",
-      "image": "assets/images/広告_お知らせ/星風テラス_お知らせ.webp",
-      "imagePc": "",
+      "id": "board_oshirase_pc_03",
+      "name": "oshirase_pc_03.webp",
+      "image": "",
+      "imagePc": "assets/images/maroudo_board/items/oshirase_pc_03.webp",
       "imageMobile": "",
-      "alt": "星風テラスのお知らせ",
-      "enabled": true,
-      "publishFrom": "",
-      "publishUntil": "",
-      "clickAction": "detailImage",
-      "detailImage": "assets/images/広告_お知らせ/星風テラス_お知らせ.webp",
-      "detailImagePc": "",
-      "detailImageMobile": "",
-      "link": "",
-      "openInNewTab": false,
-      "layouts": {
-        "pc": {
-          "x": 65,
-          "y": 154,
-          "width": 157,
-          "rotation": -2,
-          "zIndex": 4
-        },
-        "mobile": {
-          "x": 57,
-          "y": 232,
-          "width": 280,
-          "rotation": -1,
-          "zIndex": 4
-        }
-      }
-    },
-    {
-      "id": "board_musical_001",
-      "name": "制作中のお知らせ",
-      "image": "assets/images/ui/maroudo_tearoom_ui.webp",
-      "imagePc": "",
-      "imageMobile": "",
-      "alt": "TeaMerry制作中のお知らせ",
+      "alt": "oshirase_pc_03.webp",
       "enabled": true,
       "publishFrom": "",
       "publishUntil": "",
@@ -132,51 +99,414 @@
       "openInNewTab": false,
       "layouts": {
         "pc": {
-          "x": 321,
-          "y": 274,
-          "width": 119,
-          "rotation": 3,
+          "x": 13.711046414249381,
+          "y": 72.71933303207052,
+          "width": 261.86228981794716,
+          "rotation": 1,
+          "zIndex": 1
+        },
+        "mobile": {
+          "x": 37.31125269898425,
+          "y": 307.4347792180684,
+          "width": 320,
+          "rotation": -1,
+          "zIndex": 1
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_pc_02",
+      "name": "oshirase_pc_02.webp",
+      "image": "",
+      "imagePc": "assets/images/maroudo_board/items/oshirase_pc_02.webp",
+      "imageMobile": "",
+      "alt": "oshirase_pc_02.webp",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "detailImage",
+      "detailImage": "assets/images/maroudo_board/details/hosikaze_terasu_osirase2 .webp",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 9.946109137208907,
+          "y": 446.2978880560838,
+          "width": 287.09435999791145,
+          "rotation": 2,
+          "zIndex": 2
+        },
+        "mobile": {
+          "x": 36.47831325641479,
+          "y": 53.87574339895451,
+          "width": 320,
+          "rotation": -1,
+          "zIndex": 2
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_pc_01",
+      "name": "oshirase_pc_01.webp",
+      "image": "",
+      "imagePc": "assets/images/maroudo_board/items/oshirase_pc_01.webp",
+      "imageMobile": "",
+      "alt": "oshirase_pc_01.webp",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "detailImage",
+      "detailImage": "assets/images/maroudo_board/details/hosikaze_terasu_osirase .webp",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": -44.90818700701155,
+          "y": 223.0313472668367,
+          "width": 375.83154360091953,
+          "rotation": 1,
           "zIndex": 3
         },
         "mobile": {
-          "x": 79,
-          "y": 721,
-          "width": 222,
-          "rotation": 2,
+          "x": 33.54510741634229,
+          "y": 555.8151913149628,
+          "width": 320,
+          "rotation": -1,
           "zIndex": 3
         }
       }
     },
     {
-      "id": "board_observatory_link_001",
-      "name": "星風テラスへの小さな案内",
-      "image": "assets/images/ui/observatory_ui.webp",
-      "imagePc": "",
+      "id": "board_oshirase_pc_04",
+      "name": "oshirase_pc_04.webp",
+      "image": "",
+      "imagePc": "assets/images/maroudo_board/items/oshirase_pc_04.webp",
       "imageMobile": "",
-      "alt": "星風テラスへ向かう案内",
+      "alt": "oshirase_pc_04.webp",
       "enabled": true,
       "publishFrom": "",
       "publishUntil": "",
-      "clickAction": "link",
+      "clickAction": "none",
       "detailImage": "",
       "detailImagePc": "",
       "detailImageMobile": "",
-      "link": "./observatory.html",
+      "link": "",
       "openInNewTab": false,
       "layouts": {
         "pc": {
-          "x": 492,
-          "y": 161,
-          "width": 109,
-          "rotation": -4,
-          "zIndex": 2
+          "x": 334.2036951552997,
+          "y": 82.85064892649893,
+          "width": 347.1010945864197,
+          "rotation": 1,
+          "zIndex": 5
         },
         "mobile": {
-          "x": 95,
-          "y": 977,
-          "width": 185,
-          "rotation": -3,
-          "zIndex": 2
+          "x": 37.19072129601426,
+          "y": 1080.5417823856326,
+          "width": 320,
+          "rotation": -1,
+          "zIndex": 5
+        }
+      }
+    },
+    {
+      "id": "board_item",
+      "name": "森のお知らせ.png",
+      "image": "",
+      "imagePc": "assets/images/maroudo_board/items/森のお知らせ.png",
+      "imageMobile": "",
+      "alt": "森のお知らせ.png",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "none",
+      "detailImage": "",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 224.01922579140353,
+          "y": 35.518384871810404,
+          "width": 260,
+          "rotation": 1,
+          "zIndex": 7
+        },
+        "mobile": {
+          "x": 80,
+          "y": 160,
+          "width": 320,
+          "rotation": -1,
+          "zIndex": 7
+        }
+      }
+    },
+    {
+      "id": "board_item_2",
+      "name": "森のお知らせ.png",
+      "image": "",
+      "imagePc": "",
+      "imageMobile": "assets/images/maroudo_board/items/森のお知らせ.png",
+      "alt": "森のお知らせ.png",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "none",
+      "detailImage": "",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 120,
+          "y": 120,
+          "width": 260,
+          "rotation": -2,
+          "zIndex": 8
+        },
+        "mobile": {
+          "x": 35.237286335205425,
+          "y": 61.14778784287128,
+          "width": 320,
+          "rotation": 0,
+          "zIndex": 8
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_m_a03",
+      "name": "oshirase_m_a03.webp",
+      "image": "",
+      "imagePc": "",
+      "imageMobile": "assets/images/maroudo_board/items/oshirase_m_a03.webp",
+      "alt": "oshirase_m_a03.webp",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "none",
+      "detailImage": "",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 120,
+          "y": 120,
+          "width": 260,
+          "rotation": -2,
+          "zIndex": 9
+        },
+        "mobile": {
+          "x": -14.950876660817983,
+          "y": 31.44802032733091,
+          "width": 421.1138728579412,
+          "rotation": 0,
+          "zIndex": 9
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_m_a01",
+      "name": "oshirase_m_a01.webp",
+      "image": "",
+      "imagePc": "",
+      "imageMobile": "assets/images/maroudo_board/items/oshirase_m_a01.webp",
+      "alt": "oshirase_m_a01.webp",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "detailImage",
+      "detailImage": "assets/images/maroudo_board/details/hosikaze_terasu_osirase .webp",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": true,
+      "layouts": {
+        "pc": {
+          "x": 120,
+          "y": 120,
+          "width": 260,
+          "rotation": -2,
+          "zIndex": 10
+        },
+        "mobile": {
+          "x": -20.312463026583217,
+          "y": 327.1757924261266,
+          "width": 443.8802246143664,
+          "rotation": 0,
+          "zIndex": 10
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_m_a02",
+      "name": "oshirase_m_a02.webp",
+      "image": "",
+      "imagePc": "",
+      "imageMobile": "assets/images/maroudo_board/items/oshirase_m_a02.webp",
+      "alt": "oshirase_m_a02.webp",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "detailImage",
+      "detailImage": "assets/images/maroudo_board/details/hosikaze_terasu_osirase2 .webp",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": true,
+      "layouts": {
+        "pc": {
+          "x": 120,
+          "y": 120,
+          "width": 260,
+          "rotation": -2,
+          "zIndex": 11
+        },
+        "mobile": {
+          "x": -1.3769906990323761,
+          "y": 571.6331331617957,
+          "width": 389.7597990696129,
+          "rotation": 1,
+          "zIndex": 11
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_m_a04",
+      "name": "oshirase_m_a04.webp",
+      "image": "",
+      "imagePc": "",
+      "imageMobile": "assets/images/maroudo_board/items/oshirase_m_a04.webp",
+      "alt": "oshirase_m_a04.webp",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "none",
+      "detailImage": "",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 120,
+          "y": 120,
+          "width": 260,
+          "rotation": -2,
+          "zIndex": 12
+        },
+        "mobile": {
+          "x": -12.821184915083577,
+          "y": 1021.8961332893965,
+          "width": 422.5134387548162,
+          "rotation": 2,
+          "zIndex": 12
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_m_a05",
+      "name": "oshirase_m_a05.webp",
+      "image": "",
+      "imagePc": "",
+      "imageMobile": "assets/images/maroudo_board/items/oshirase_m_a05.webp",
+      "alt": "oshirase_m_a05.webp",
+      "enabled": false,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "detailImage",
+      "detailImage": "assets/images/maroudo_board/details/tirasi_v01.webp",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": true,
+      "layouts": {
+        "pc": {
+          "x": 120,
+          "y": 120,
+          "width": 260,
+          "rotation": -2,
+          "zIndex": 13
+        },
+        "mobile": {
+          "x": -1.233532683930747,
+          "y": 869.982743018918,
+          "width": 390.23100769014627,
+          "rotation": 1,
+          "zIndex": 13
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_pc_05",
+      "name": "oshirase_pc_05.webp",
+      "image": "",
+      "imagePc": "assets/images/maroudo_board/items/oshirase_pc_05.webp",
+      "imageMobile": "",
+      "alt": "oshirase_pc_05.webp",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "detailImage",
+      "detailImage": "assets/images/maroudo_board/details/tirasi_v01.webp",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 298.65059338318315,
+          "y": 284.97521163753584,
+          "width": 435.28703253659774,
+          "rotation": 1,
+          "zIndex": 15
+        },
+        "mobile": {
+          "x": 80,
+          "y": 160,
+          "width": 320,
+          "rotation": -1,
+          "zIndex": 15
+        }
+      }
+    },
+    {
+      "id": "board_oshirase_pc_03_2",
+      "name": "oshirase_pc_03.webp",
+      "image": "",
+      "imagePc": "",
+      "imageMobile": "assets/images/maroudo_board/items/oshirase_pc_03.webp",
+      "alt": "oshirase_pc_03.webp",
+      "enabled": true,
+      "publishFrom": "",
+      "publishUntil": "",
+      "clickAction": "none",
+      "detailImage": "",
+      "detailImagePc": "",
+      "detailImageMobile": "",
+      "link": "",
+      "openInNewTab": false,
+      "layouts": {
+        "pc": {
+          "x": 120,
+          "y": 120,
+          "width": 260,
+          "rotation": -2,
+          "zIndex": 16
+        },
+        "mobile": {
+          "x": -0.6264896337633559,
+          "y": 121.7690792246799,
+          "width": 404.228987515421,
+          "rotation": 0,
+          "zIndex": 16
         }
       }
     }
