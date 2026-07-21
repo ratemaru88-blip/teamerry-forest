@@ -1,6 +1,6 @@
 # TeaMerry Dialogue Export Report
 
-- Export日時: 2026-07-22T02:07:10+09:00
+- Export日時: 2026-07-22T04:19:09+09:00
 - 入力ファイル: `data\dialogue\TeaMerry_Dialogue_Spreadsheet_Template.xlsx`
 - 出力ファイル: `data\export\dialogue.json`
 - docs公開用コピー: `docs\data\export\dialogue.json`
