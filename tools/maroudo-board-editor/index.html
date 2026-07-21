@@ -55,12 +55,20 @@
           <h2>画像追加</h2>
           <label>既存画像パス<input id="newImagePath" type="text" placeholder="assets/images/maroudo_board/items/item.webp"></label>
           <label>管理用名称<input id="newItemName" type="text" placeholder="新しい貼り紙"></label>
+          <label>追加先
+            <select id="newImageScope">
+              <option value="current">現在の編集モード専用</option>
+              <option value="common">PC/モバイル共通</option>
+              <option value="pc">PC専用</option>
+              <option value="mobile">モバイル専用</option>
+            </select>
+          </label>
           <div id="dropZone" class="drop-zone">画像をドラッグ＆ドロップ</div>
           <div class="button-row">
             <label class="file-button">画像選択<input id="imageFile" type="file" accept="image/*"></label>
             <button type="button" id="addItem">追加</button>
           </div>
-          <p class="hint" id="imageHint">ローカル画像はプレビューのみです。推奨保存先: assets/images/maroudo_board/items/</p>
+          <p class="hint" id="imageHint">追加先を選ぶと、PC用とモバイル用の画像を別々に設定できます。ローカル画像はプレビューのみです。</p>
         </section>
 
         <section>
@@ -96,6 +104,10 @@
           <label>共通画像パス<input id="propImage" type="text"></label>
           <label>PC画像パス<input id="propImagePc" type="text"></label>
           <label>モバイル画像パス<input id="propImageMobile" type="text"></label>
+          <div class="button-row">
+            <button type="button" id="useCommonImageForMode">共通画像を現在モードへコピー</button>
+            <button type="button" id="clearModeImage">現在モード専用画像を解除</button>
+          </div>
           <label>代替テキスト<input id="propAlt" type="text"></label>
           <div class="grid-2">
             <label>X<input id="propX" type="number" step="1"></label>

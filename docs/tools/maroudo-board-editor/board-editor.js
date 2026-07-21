@@ -4,6 +4,8 @@
   const renderer = window.TeaMerryMaroudoBoard;
   const STORAGE_KEY = "teamerry.maroudoBoardEditor.draft";
   const DATA_URL = "../../data/maroudo_board/maroudo_board_current.json?v=2026.07.20-02";
+  const MISSING_IMAGE =
+    "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20400%20288'%3E%3Crect%20width='400'%20height='288'%20fill='%23f6e7c6'/%3E%3Cpath%20d='M24%2024h352v240H24z'%20fill='none'%20stroke='%238b6a43'%20stroke-width='8'%20stroke-dasharray='18%2014'/%3E%3Ctext%20x='200'%20y='144'%20font-family='sans-serif'%20font-size='28'%20text-anchor='middle'%20fill='%23654a2d'%3Eimage%20not%20set%3C/text%3E%3C/svg%3E";
   const objectUrls = new Map();
 
   const state = {
@@ -33,6 +35,7 @@
     resetSample: $("resetSample"),
     newImagePath: $("newImagePath"),
     newItemName: $("newItemName"),
+    newImageScope: $("newImageScope"),
     imageFile: $("imageFile"),
     imageHint: $("imageHint"),
     addItem: $("addItem"),
@@ -54,6 +57,8 @@
     propImage: $("propImage"),
     propImagePc: $("propImagePc"),
     propImageMobile: $("propImageMobile"),
+    useCommonImageForMode: $("useCommonImageForMode"),
+    clearModeImage: $("clearModeImage"),
     propAlt: $("propAlt"),
     propX: $("propX"),
     propY: $("propY"),
@@ -130,6 +135,8 @@
     els.deleteItem.addEventListener("click", deleteSelected);
     els.bringFront.addEventListener("click", () => adjustZ("front"));
     els.sendBack.addEventListener("click", () => adjustZ("back"));
+    els.useCommonImageForMode.addEventListener("click", copyCommonImageToCurrentMode);
+    els.clearModeImage.addEventListener("click", clearCurrentModeImage);
     stage.addEventListener("pointerdown", handleStagePointerDown);
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", endPointerAction);
@@ -323,8 +330,12 @@
   function renderProperties() {
     const item = getSelectedItem();
     const inputs = document.querySelectorAll(".property-panel input, .property-panel select");
+    const buttons = document.querySelectorAll(".property-panel button");
     inputs.forEach((input) => {
       input.disabled = !item;
+    });
+    buttons.forEach((button) => {
+      button.disabled = !item;
     });
     if (!item) {
       inputs.forEach((input) => {
@@ -363,12 +374,13 @@
       .sort((a, b) => (getCurrentLayout(b).zIndex || 0) - (getCurrentLayout(a).zIndex || 0))
       .forEach((item) => {
         const row = document.createElement("button");
+        const imageSourceLabel = getImageSourceLabel(item);
         row.type = "button";
         row.className = "item-row";
         row.classList.toggle("is-selected", item.id === state.selectedId);
         row.innerHTML = `
           <img src="${escapeAttr(resolveEditorImage(item))}" alt="">
-          <span><strong>${escapeHtml(item.name || item.id)}</strong><span>${escapeHtml(item.clickAction || "none")} / z:${getCurrentLayout(item).zIndex || 1}</span></span>
+          <span><strong>${escapeHtml(item.name || item.id)}</strong><span>${escapeHtml(imageSourceLabel)} / ${escapeHtml(item.clickAction || "none")} / z:${getCurrentLayout(item).zIndex || 1}</span></span>
           <input type="checkbox" ${item.enabled !== false ? "checked" : ""} aria-label="表示">
         `;
         row.addEventListener("click", (event) => {
@@ -457,6 +469,7 @@
     addItem({
       name: els.newItemName.value.trim() || "新しい貼り紙",
       image: imagePath,
+      imageScope: getImageScope(),
     });
   }
 
@@ -473,8 +486,8 @@
     const suggested = `assets/images/maroudo_board/items/${file.name}`;
     const id = makeId(file.name.replace(/\.[^.]+$/, ""));
     objectUrls.set(suggested, url);
-    els.imageHint.textContent = `プレビュー中: ${file.name} / 推奨保存先: ${suggested}`;
-    addItem({ id, name: file.name, image: suggested });
+    els.imageHint.textContent = `プレビュー中: ${file.name} / ${getImageScopeLabel(getImageScope())} / 推奨保存先: ${suggested}`;
+    addItem({ id, name: file.name, image: suggested, imageScope: getImageScope() });
   }
 
   function addItem(seed) {
@@ -484,7 +497,7 @@
     const item = {
       id,
       name: seed.name || id,
-      image: seed.image || "",
+      image: "",
       imagePc: "",
       imageMobile: "",
       alt: seed.name || id,
@@ -502,12 +515,52 @@
         mobile: { x: 80, y: 160, width: 320, rotation: -1, zIndex: nextZ() },
       },
     };
+    assignImageByScope(item, seed.image || "", seed.imageScope || "current");
     item.layouts[state.mode].x = Math.round(canvas.width * 0.18);
     item.layouts[state.mode].y = Math.round(canvas.height * 0.18);
     state.data.items.push(item);
     state.selectedId = id;
     markDirty();
     render();
+  }
+
+  function getImageScope() {
+    const scope = els.newImageScope?.value || "current";
+    return ["current", "common", "pc", "mobile"].includes(scope) ? scope : "current";
+  }
+
+  function assignImageByScope(item, imagePath, scope) {
+    const target = scope === "current" ? state.mode : scope;
+    if (target === "pc") {
+      item.imagePc = imagePath;
+    } else if (target === "mobile") {
+      item.imageMobile = imagePath;
+    } else {
+      item.image = imagePath;
+    }
+  }
+
+  function getCurrentModeImageKey() {
+    return state.mode === "mobile" ? "imageMobile" : "imagePc";
+  }
+
+  function copyCommonImageToCurrentMode() {
+    updateSelected((item) => {
+      item[getCurrentModeImageKey()] = item.image || "";
+    });
+  }
+
+  function clearCurrentModeImage() {
+    updateSelected((item) => {
+      item[getCurrentModeImageKey()] = "";
+    });
+  }
+
+  function getImageScopeLabel(scope) {
+    if (scope === "common") return "PC/モバイル共通";
+    if (scope === "pc") return "PC専用";
+    if (scope === "mobile") return "モバイル専用";
+    return state.mode === "mobile" ? "現在の編集モード専用: モバイル" : "現在の編集モード専用: PC";
   }
 
   function handleJsonFile(event) {
@@ -853,7 +906,20 @@
 
   function resolveEditorImage(item) {
     const path = renderer.resolveImagePath(item, state.mode, false);
-    return objectUrls.get(path) || toEditorUrl(path) || "../../assets/images/tea_room/tea_room_pc_bg_v02.webp";
+    return objectUrls.get(path) || toEditorUrl(path) || MISSING_IMAGE;
+  }
+
+  function getImageSourceLabel(item) {
+    if (state.mode === "mobile" && item.imageMobile) {
+      return "モバイル画像";
+    }
+    if (state.mode === "pc" && item.imagePc) {
+      return "PC画像";
+    }
+    if (item.image) {
+      return "共通画像";
+    }
+    return state.mode === "mobile" ? "モバイル画像未設定" : "PC画像未設定";
   }
 
   function toEditorUrl(path) {
