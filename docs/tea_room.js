@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (detail.action === "detailImage" && detail.detailImage) {
       openNoticeModal({
-        title: detail.item.name || detail.item.alt || "森のお知らせ",
+        title: "",
         image: detail.detailImage,
         alt: detail.item.alt || detail.item.name || "",
         body: "",
@@ -55,9 +55,18 @@ document.addEventListener("DOMContentLoaded", () => {
     lastFocusedNotice = trigger instanceof HTMLElement ? trigger : null;
     modalNumber.textContent = "";
     modalTitle.textContent = notice.title || "";
+    modalTitle.hidden = !notice.title;
     modalImage.src = notice.image || "";
     modalImage.alt = notice.alt || notice.title || "";
     modalBody.textContent = notice.body || "";
+
+    if (notice.title) {
+      dialog.setAttribute("aria-labelledby", "teaNoticeModalTitle");
+      dialog.removeAttribute("aria-label");
+    } else {
+      dialog.removeAttribute("aria-labelledby");
+      dialog.setAttribute("aria-label", "森のお知らせ");
+    }
 
     dialog.classList.toggle("tea-notice-modal__dialog--image", Boolean(notice.imageOnly));
     modal.classList.add("is-active");
