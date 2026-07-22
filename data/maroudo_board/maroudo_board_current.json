@@ -280,39 +280,6 @@
       }
     },
     {
-      "id": "board_oshirase_m_a03",
-      "name": "oshirase_m_a03.webp",
-      "image": "",
-      "imagePc": "",
-      "imageMobile": "assets/images/maroudo_board/items/oshirase_m_a03.webp",
-      "alt": "oshirase_m_a03.webp",
-      "enabled": true,
-      "publishFrom": "",
-      "publishUntil": "",
-      "clickAction": "none",
-      "detailImage": "",
-      "detailImagePc": "",
-      "detailImageMobile": "",
-      "link": "",
-      "openInNewTab": false,
-      "layouts": {
-        "pc": {
-          "x": 120,
-          "y": 120,
-          "width": 260,
-          "rotation": -2,
-          "zIndex": 9
-        },
-        "mobile": {
-          "x": -14.950876660817983,
-          "y": 31.44802032733091,
-          "width": 421.1138728579412,
-          "rotation": 0,
-          "zIndex": 9
-        }
-      }
-    },
-    {
       "id": "board_oshirase_m_a01",
       "name": "oshirase_m_a01.webp",
       "image": "",
@@ -327,7 +294,7 @@
       "detailImagePc": "",
       "detailImageMobile": "",
       "link": "",
-      "openInNewTab": true,
+      "openInNewTab": false,
       "layouts": {
         "pc": {
           "x": 120,
@@ -337,8 +304,8 @@
           "zIndex": 10
         },
         "mobile": {
-          "x": -20.312463026583217,
-          "y": 327.1757924261266,
+          "x": -15.243223437862227,
+          "y": 384.84425748052786,
           "width": 443.8802246143664,
           "rotation": 0,
           "zIndex": 10
@@ -360,7 +327,7 @@
       "detailImagePc": "",
       "detailImageMobile": "",
       "link": "",
-      "openInNewTab": true,
+      "openInNewTab": false,
       "layouts": {
         "pc": {
           "x": 120,
@@ -370,8 +337,8 @@
           "zIndex": 11
         },
         "mobile": {
-          "x": -1.3769906990323761,
-          "y": 571.6331331617957,
+          "x": 3.7534947994425067,
+          "y": 642.3888584247486,
           "width": 389.7597990696129,
           "rotation": 1,
           "zIndex": 11
@@ -403,8 +370,8 @@
           "zIndex": 12
         },
         "mobile": {
-          "x": -12.821184915083577,
-          "y": 1021.8961332893965,
+          "x": -12.87990665844903,
+          "y": 1069.0633165035158,
           "width": 422.5134387548162,
           "rotation": 2,
           "zIndex": 12
@@ -418,7 +385,7 @@
       "imagePc": "",
       "imageMobile": "assets/images/maroudo_board/items/oshirase_m_a05.webp",
       "alt": "oshirase_m_a05.webp",
-      "enabled": false,
+      "enabled": true,
       "publishFrom": "",
       "publishUntil": "",
       "clickAction": "detailImage",
@@ -426,7 +393,7 @@
       "detailImagePc": "",
       "detailImageMobile": "",
       "link": "",
-      "openInNewTab": true,
+      "openInNewTab": false,
       "layouts": {
         "pc": {
           "x": 120,
@@ -436,8 +403,8 @@
           "zIndex": 13
         },
         "mobile": {
-          "x": -1.233532683930747,
-          "y": 869.982743018918,
+          "x": 4.626460082743222,
+          "y": 954.3668529382328,
           "width": 390.23100769014627,
           "rotation": 1,
           "zIndex": 13
@@ -462,8 +429,8 @@
       "openInNewTab": false,
       "layouts": {
         "pc": {
-          "x": 298.65059338318315,
-          "y": 284.97521163753584,
+          "x": 300.8351451030818,
+          "y": 285.08992860321956,
           "width": 435.28703253659774,
           "rotation": 1,
           "zIndex": 15
@@ -502,8 +469,8 @@
           "zIndex": 16
         },
         "mobile": {
-          "x": -0.6264896337633559,
-          "y": 121.7690792246799,
+          "x": -0.47054230670229913,
+          "y": 145.45455315127862,
           "width": 404.228987515421,
           "rotation": 0,
           "zIndex": 16
