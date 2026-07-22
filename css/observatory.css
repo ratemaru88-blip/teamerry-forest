@@ -1666,10 +1666,10 @@ body {
     --wish-hotspot-top: 80%;
     --wish-hotspot-width: 22%;
     --wish-hotspot-height: 8%;
-    --hokkori-day-left: 59%;
-    --hokkori-day-top: 74%;
-    --hokkori-day-width: 30%;
-    --hokkori-day-height: 11%;
+    --hokkori-day-left: 55%;
+    --hokkori-day-top: 48%;
+    --hokkori-day-width: 24%;
+    --hokkori-day-height: 14%;
     --hokkori-night-left: 59%;
     --hokkori-night-top: 74%;
     --hokkori-night-width: 30%;
@@ -1701,9 +1701,9 @@ body {
   }
 
   .fairy-area {
-    left: 50%;
-    bottom: 10vh;
-    width: min(92vw, 360px);
+    left: 60%;
+    bottom: 5.5vh;
+    width: min(78vw, 300px);
     flex-direction: column;
     align-items: center;
     gap: 8px;
@@ -1715,9 +1715,9 @@ body {
   }
 
   .fairy-balloon {
-    width: min(84vw, 320px);
-    min-width: min(72vw, 260px);
-    max-width: 320px;
+    width: min(78vw, 300px);
+    min-width: min(68vw, 240px);
+    max-width: 300px;
     padding: 11px 14px;
     font-size: 13px;
     line-height: 1.6;
