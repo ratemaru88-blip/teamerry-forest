@@ -1007,7 +1007,7 @@ body {
 }
 
 .wish-hokkori-star {
-  --star-copy-y: -20px;
+  --star-copy-y: 0px;
   position: absolute;
   z-index: 0;
   box-sizing: border-box;
@@ -1071,8 +1071,8 @@ body {
 }
 
 .wish-hokkori-star--1 {
-  left: 12%;
-  top: 30%;
+  left: 10%;
+  top: 24.5%;
   transform: rotate(-8deg);
 }
 
@@ -1082,8 +1082,8 @@ body {
 }
 
 .wish-hokkori-star--2 {
-  left: 69%;
-  top: 33%;
+  left: 72%;
+  top: 24.5%;
   transform: translateX(-50%) rotate(5deg);
 }
 
@@ -1093,14 +1093,14 @@ body {
 }
 
 .wish-hokkori-star--3 {
-  right: 25%;
-  top: 54%;
-  transform: rotate(-3deg);
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) rotate(-3deg);
 }
 
 .wish-hokkori-star--3:hover,
 .wish-hokkori-star--3:focus-visible {
-  transform: rotate(-3deg) translateY(-2px);
+  transform: translateX(-50%) rotate(-3deg) translateY(-2px);
 }
 
 .hokkori-board {
@@ -1899,7 +1899,7 @@ body {
   }
 
   .wish-hokkori-star {
-    --star-copy-y: -20px;
+    --star-copy-y: 0px;
     width: min(36vw, 19dvh, 132px);
     height: min(32vw, 17dvh, 118px);
     padding: 0 min(8vw, 4.3dvh, 31px);
