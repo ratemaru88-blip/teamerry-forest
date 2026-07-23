@@ -1007,7 +1007,7 @@ body {
 }
 
 .wish-hokkori-star {
-  --star-copy-y: -1px;
+  --star-copy-y: -8px;
   position: absolute;
   z-index: 0;
   box-sizing: border-box;
@@ -1051,7 +1051,7 @@ body {
 
 .wish-hokkori-star__name {
   display: block;
-  max-width: 100%;
+  max-width: 92%;
   color: rgba(96, 59, 29, 0.82);
   font-size: 8.5px;
   line-height: 1.1;
@@ -1061,11 +1061,11 @@ body {
 
 .wish-hokkori-star__body {
   display: -webkit-box;
-  max-width: 100%;
-  max-height: 4.9em;
+  max-width: 92%;
+  max-height: 3.7em;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   text-wrap: balance;
   transform: translateY(var(--star-copy-y));
 }
@@ -1899,7 +1899,7 @@ body {
   }
 
   .wish-hokkori-star {
-    --star-copy-y: calc(-1 * min(0.3vw, 0.16dvh, 1px));
+    --star-copy-y: -8px;
     width: min(36vw, 19dvh, 132px);
     height: min(32vw, 17dvh, 118px);
     padding: 0 min(8vw, 4.3dvh, 31px);
