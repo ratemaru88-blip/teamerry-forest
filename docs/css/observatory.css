@@ -1007,7 +1007,7 @@ body {
 }
 
 .wish-hokkori-star {
-  --star-copy-y: -8px;
+  --star-copy-y: -20px;
   position: absolute;
   z-index: 0;
   box-sizing: border-box;
@@ -1899,7 +1899,7 @@ body {
   }
 
   .wish-hokkori-star {
-    --star-copy-y: -8px;
+    --star-copy-y: -20px;
     width: min(36vw, 19dvh, 132px);
     height: min(32vw, 17dvh, 118px);
     padding: 0 min(8vw, 4.3dvh, 31px);
