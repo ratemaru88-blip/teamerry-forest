@@ -68,6 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
   const lillActionReactionsJsonPath = "./data/export/lill_action_reactions.json";
   const wishStarTsvPath = "./data/wish_star/TeaMerry_Wish_Star_Master_v01.tsv";
+  const observatoryDayBgmPath = "./assets/audio/bgm/observatory_days_se_v01.mp3";
+  const observatoryNightBgmPath = "./assets/audio/bgm/observatory_night_se_v01.mp3";
   const driftBottleArrivalSePath = "./assets/audio/sfx/bottle_water_landing_v01.mp3";
   const driftBottleArrivalText = "あっ、ボトルメールが流れ着いたみたい！";
   const driftBottleSeenKey = "teaMerryDriftBottleSeen";
@@ -75,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const driftBottleRecentKey = "teaMerryDriftBottleRecentIds";
   const driftBottleArrivalChance = 0.4;
   const driftBottleArrivalAudio = typeof Audio === "function" ? new Audio(driftBottleArrivalSePath) : null;
+  const observatoryBgmAudio = document.getElementById("observatoryBgmAudio");
   const driftBottleModalCloseDuration = 520;
   let observatoryVideoFallbackTimer = null;
   let observatoryVideoReturnFocus = null;
@@ -172,6 +175,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (isNight) {
     observatory.classList.add("is-night");
+  }
+
+  startObservatoryBgm();
+
+  function startObservatoryBgm() {
+    if (!observatoryBgmAudio) {
+      return;
+    }
+    observatoryBgmAudio.src = isNight ? observatoryNightBgmPath : observatoryDayBgmPath;
+    observatoryBgmAudio.loop = true;
+    observatoryBgmAudio.volume = 0.16;
+    observatoryBgmAudio.preload = "auto";
+    window.TeaMerryObservatoryBgm = {
+      audio: observatoryBgmAudio,
+      mode: isNight ? "night" : "day",
+      path: observatoryBgmAudio.src,
+    };
+
+    const play = () => {
+      observatoryBgmAudio.play().catch(() => {
+        document.addEventListener("pointerdown", play, { once: true });
+        document.addEventListener("click", play, { once: true });
+        document.addEventListener("keydown", play, { once: true });
+      });
+    };
+
+    play();
   }
 
   const fairies = [
