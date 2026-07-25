@@ -191,6 +191,7 @@ body {
 
 .observatory.is-night .night-panel {
   display: block;
+  pointer-events: auto;
 }
 
 .bottle-mail-hotspot,
