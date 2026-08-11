@@ -24,6 +24,7 @@
     history: [],
     future: [],
     pointer: null,
+    selectionRect: null,
     panelResize: null,
     finalPreviewComplete: false,
     dirty: false,
@@ -460,11 +461,32 @@
       edit: !state.preview,
       selectedId: state.selectedId,
       showHitAreas: state.showHitAreas,
-      onSelect: (id, event) => beginLayerPointer(id, event),
+      onSelect: (id, event) => {
+        if (state.tool === "select") {
+          beginRectSelection(event);
+        } else {
+          beginLayerPointer(id, event);
+        }
+      },
     });
     if (!state.preview) {
+      renderRectSelection();
       renderSelectionHandles();
     }
+  }
+
+  function renderRectSelection() {
+    if (!state.selectionRect) {
+      return;
+    }
+    const rect = getNormalizedRect(state.selectionRect.start, state.selectionRect.current);
+    const box = document.createElement("div");
+    box.className = "tb-rect-selection";
+    box.style.left = `${rect.x}px`;
+    box.style.top = `${rect.y}px`;
+    box.style.width = `${rect.width}px`;
+    box.style.height = `${rect.height}px`;
+    els.canvas.appendChild(box);
   }
 
   function renderSelectionHandles() {
@@ -680,6 +702,10 @@
     if (state.preview) {
       return;
     }
+    if (state.tool === "select") {
+      beginRectSelection(event);
+      return;
+    }
     event.preventDefault();
     event.stopPropagation();
     const layer = findLayer(id);
@@ -710,10 +736,31 @@
   }
 
   function handleCanvasPointerDown(event) {
-    if (event.target === els.canvas) {
+    if (state.preview || event.target !== els.canvas) {
+      return;
+    }
+    if (state.tool === "select") {
+      beginRectSelection(event);
+    } else {
       state.selectedId = "";
       renderAll();
     }
+  }
+
+  function beginRectSelection(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const point = getCanvasPoint(event);
+    state.selectionRect = {
+      start: point,
+      current: point,
+    };
+    state.pointer = {
+      type: "rect-select",
+      start: point,
+    };
+    state.selectedId = "";
+    renderAll();
   }
 
   function handlePointerMove(event) {
@@ -724,6 +771,14 @@
       return;
     }
     if (!state.pointer) {
+      return;
+    }
+    if (state.pointer.type === "rect-select") {
+      if (!state.selectionRect) {
+        return;
+      }
+      state.selectionRect.current = getCanvasPoint(event);
+      renderAll();
       return;
     }
     const layer = findLayer(state.pointer.id);
@@ -749,8 +804,26 @@
   }
 
   function endPointer() {
+    if (state.pointer?.type === "rect-select") {
+      finishRectSelection();
+    }
     state.pointer = null;
     state.panelResize = null;
+  }
+
+  function finishRectSelection() {
+    if (!state.selectionRect) {
+      return;
+    }
+    const rect = getNormalizedRect(state.selectionRect.start, state.selectionRect.current);
+    state.selectionRect = null;
+    if (rect.width < 4 && rect.height < 4) {
+      renderAll();
+      return;
+    }
+    const layer = findTopLayerInRect(rect);
+    state.selectedId = layer ? layer.id : "";
+    renderAll();
   }
 
   function handleDoubleClick(event) {
@@ -1142,6 +1215,45 @@
       x: (event.clientX - rect.left) / scaleX,
       y: (event.clientY - rect.top) / scaleY,
     };
+  }
+
+  function getNormalizedRect(start, end) {
+    const x = Math.min(start.x, end.x);
+    const y = Math.min(start.y, end.y);
+    return {
+      x,
+      y,
+      width: Math.abs(end.x - start.x),
+      height: Math.abs(end.y - start.y),
+    };
+  }
+
+  function findTopLayerInRect(selectionRect) {
+    const layers = getCurrentPage().layers || [];
+    for (let index = layers.length - 1; index >= 0; index -= 1) {
+      const layer = layers[index];
+      if (!layer || layer.visible === false || layer.locked || layer.role === "background") {
+        continue;
+      }
+      const layout = getCurrentLayout(layer);
+      const layerRect = {
+        x: Number(layout.x) || 0,
+        y: Number(layout.y) || 0,
+        width: Math.max(1, Number(layout.width) || 1),
+        height: Math.max(1, Number(layout.height) || 1),
+      };
+      if (rectsIntersect(selectionRect, layerRect)) {
+        return layer;
+      }
+    }
+    return null;
+  }
+
+  function rectsIntersect(a, b) {
+    return a.x < b.x + b.width
+      && a.x + a.width > b.x
+      && a.y < b.y + b.height
+      && a.y + a.height > b.y;
   }
 
   function updateSelected(mutator) {

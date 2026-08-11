@@ -1618,6 +1618,15 @@ body.is-space-panning .tb-canvas-viewport {
   outline: 3px solid color-mix(in srgb, var(--tb-accent) 95%, transparent);
 }
 
+.tb-rect-selection {
+  position: absolute;
+  z-index: 6000;
+  pointer-events: none;
+  border: 2px solid rgba(45, 185, 232, 0.92);
+  background: rgba(45, 185, 232, 0.13);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28), 0 0 18px rgba(45, 185, 232, 0.24);
+}
+
 .tb-layer:not(.is-locked) {
   cursor: grab;
 }
