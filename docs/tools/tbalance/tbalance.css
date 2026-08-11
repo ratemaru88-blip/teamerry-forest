@@ -484,15 +484,6 @@ select {
   color: var(--text-sub);
 }
 
-.tb-command-button--ai[aria-pressed="true"]::after {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: #2fd2f2;
-  box-shadow: 0 0 10px rgba(47, 210, 242, 0.9);
-}
-
 .tb-command-button--markup {
   flex-basis: 78px;
   width: 78px;
