@@ -574,8 +574,11 @@ select {
 }
 
 .tb-command-button--publish {
-  flex-basis: 76px;
-  width: 76px;
+  flex-basis: 82px;
+  width: 82px;
+  justify-content: flex-start;
+  gap: 5px;
+  padding-inline: 7px 9px;
   border-color: rgba(127, 199, 181, 0.4);
   background: linear-gradient(180deg, rgba(127, 199, 181, 0.16), rgba(57, 185, 101, 0.16));
 }
