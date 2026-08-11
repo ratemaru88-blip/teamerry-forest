@@ -286,7 +286,7 @@ select {
 .tb-history-actions {
   flex: 0 0 auto;
   gap: 4px;
-  margin-right: 42px;
+  margin-inline: 22px;
   min-width: max-content;
 }
 
