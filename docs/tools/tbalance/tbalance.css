@@ -872,13 +872,19 @@ select {
   gap: 6px;
   min-width: 0;
   min-height: 0;
-  overflow: auto;
+  overflow: visible;
   padding: 8px 5px;
   border-right: 1px solid var(--border);
   background: rgba(13, 19, 25, 0.94);
 }
 
+.tb-tool-menu-wrap {
+  position: relative;
+  min-width: 0;
+}
+
 .tb-tool-button {
+  position: relative;
   display: grid;
   grid-template-columns: 27px 1fr;
   align-items: center;
@@ -893,10 +899,65 @@ select {
   overflow: hidden;
 }
 
+.tb-tool-menu-wrap > .tb-tool-button {
+  width: 100%;
+}
+
 .tb-tool-button.is-active,
 .tb-tools .is-active {
   border-color: color-mix(in srgb, var(--tb-accent) 68%, var(--border));
   background: linear-gradient(180deg, color-mix(in srgb, var(--tb-accent) 34%, transparent), color-mix(in srgb, var(--tb-accent) 16%, transparent));
+}
+
+.tb-tool-caret {
+  position: absolute;
+  right: 5px;
+  bottom: 3px;
+  color: rgba(198, 223, 234, 0.82);
+  font-size: 7px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.tb-tool-menu {
+  position: absolute;
+  left: calc(100% + 7px);
+  top: 0;
+  z-index: 9000;
+  display: grid;
+  min-width: 132px;
+  padding: 5px;
+  border: 1px solid rgba(77, 130, 168, 0.62);
+  border-radius: 7px;
+  background: rgba(8, 16, 22, 0.98);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.tb-tool-menu[hidden] {
+  display: none;
+}
+
+.tb-tool-menu button {
+  min-height: 26px;
+  padding: 4px 9px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #eaf4f7;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.tb-tool-menu button:hover,
+.tb-tool-menu button:focus-visible {
+  background: rgba(30, 144, 255, 0.22);
+  color: #ffffff;
+}
+
+.tb-tool-menu button:disabled {
+  color: rgba(195, 208, 216, 0.42);
+  cursor: default;
 }
 
 .tb-tool-icon {
@@ -1448,9 +1509,7 @@ select {
 }
 
 .tb-tool-select select {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
+  display: none;
 }
 
 body[data-editor-mode="custom"] {

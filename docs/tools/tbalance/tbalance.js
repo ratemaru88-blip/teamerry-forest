@@ -171,12 +171,18 @@
     els.showBeginnerHints.addEventListener("change", persistToolDisplaySettings);
     els.showShortcuts.addEventListener("change", persistToolDisplaySettings);
     els.moveTool.addEventListener("click", () => setTool("move"));
-    els.selectTool.addEventListener("click", () => setTool("select"));
+    els.selectTool.addEventListener("click", (event) => {
+      setTool("select");
+      toggleToolMenu("select", event);
+    });
     els.imageFile.addEventListener("change", handleImageFile);
     els.addText.addEventListener("click", addTextLayer);
     els.addBubble.addEventListener("click", addBubbleGroup);
     els.markupButton.addEventListener("click", addBubbleGroup);
-    els.addButton.addEventListener("click", addButtonLayer);
+    els.addButton.addEventListener("click", (event) => {
+      setTool("click");
+      toggleToolMenu("click", event);
+    });
     els.eyedropperTool.addEventListener("click", () => setTool("eyedropper"));
     els.shapeTool.addEventListener("change", () => {
       if (els.shapeTool.value) {
@@ -184,6 +190,7 @@
         els.shapeTool.value = "";
       }
     });
+    bindToolMenus();
     els.toggleHitAreas.addEventListener("click", () => {
       state.showHitAreas = !state.showHitAreas;
       renderAll();
@@ -218,8 +225,108 @@
     window.addEventListener("resize", updateCanvasScale);
     document.addEventListener("keydown", handleKeys);
     document.addEventListener("keyup", handleKeyUp);
+    document.addEventListener("pointerdown", handleDocumentPointerDown);
     bindPropertyInputs();
     bindLayerButtons();
+  }
+
+  function bindToolMenus() {
+    document.querySelectorAll("[data-tool-menu-trigger]").forEach((button) => {
+      const menuName = button.dataset.toolMenuTrigger;
+      if (menuName === "select" || menuName === "click") {
+        return;
+      }
+      button.addEventListener("click", (event) => {
+        if (button.dataset.tool) {
+          setTool(button.dataset.tool);
+        }
+        toggleToolMenu(menuName, event);
+      });
+    });
+    document.querySelectorAll("[data-select-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.disabled) {
+          return;
+        }
+        setTool("select");
+        closeToolMenus();
+        showModeToast("矩形選択: ドラッグした範囲に重なったレイヤーを選択します。");
+      });
+    });
+    document.querySelectorAll("[data-click-action]").forEach((button) => {
+      button.addEventListener("click", () => {
+        handleClickActionMenu(button.dataset.clickAction);
+      });
+    });
+    document.querySelectorAll("[data-shape-menu]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const shape = button.dataset.shapeMenu;
+        closeToolMenus();
+        if (shape) {
+          addShapeLayer(shape);
+        }
+      });
+    });
+  }
+
+  function toggleToolMenu(name, event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    const targetMenu = document.querySelector(`[data-tool-menu="${name}"]`);
+    if (!targetMenu) {
+      return;
+    }
+    const shouldOpen = targetMenu.hidden;
+    closeToolMenus();
+    targetMenu.hidden = !shouldOpen;
+  }
+
+  function closeToolMenus() {
+    document.querySelectorAll("[data-tool-menu]").forEach((menu) => {
+      menu.hidden = true;
+    });
+  }
+
+  function handleDocumentPointerDown(event) {
+    if (!event.target.closest(".tb-tool-menu-wrap")) {
+      closeToolMenus();
+    }
+  }
+
+  function handleClickActionMenu(action) {
+    closeToolMenus();
+    if (action === "button") {
+      addButtonLayer();
+      return;
+    }
+    if (action === "hit-area") {
+      enableHitAreaForSelected();
+    }
+  }
+
+  function enableHitAreaForSelected() {
+    const layer = getSelectedLayer();
+    state.showHitAreas = true;
+    setTool("click");
+    if (!layer) {
+      renderAll();
+      showModeToast("当たり判定: レイヤーを選ぶとクリック範囲を設定できます。");
+      return;
+    }
+    pushHistory();
+    const layout = getCurrentLayout(layer);
+    layer.link = layer.link || "#";
+    layer.hitArea = Object.assign({}, layer.hitArea || {}, {
+      enabled: true,
+      visible: true,
+      x: 0,
+      y: 0,
+      width: Math.max(1, Number(layout.width) || 1),
+      height: Math.max(1, Number(layout.height) || 1),
+    });
+    markDirty();
+    renderAll();
+    showModeToast("当たり判定をONにしました。リンク欄でクリック時の移動先を設定できます。");
   }
 
   function bindPropertyInputs() {
@@ -842,6 +949,9 @@
   }
 
   function handleKeys(event) {
+    if (event.key === "Escape") {
+      closeToolMenus();
+    }
     const activeTag = document.activeElement?.tagName;
     const inInput = activeTag === "INPUT" || activeTag === "SELECT" || activeTag === "TEXTAREA";
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {

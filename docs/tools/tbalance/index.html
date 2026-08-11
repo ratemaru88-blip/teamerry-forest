@@ -220,18 +220,26 @@
         </span>
         <span class="tb-tool-label">移動</span>
       </button>
-      <button id="selectTool" class="tb-tool-button" type="button" data-tool="select" title="選択: 範囲選択">
-        <span class="tb-tool-icon" aria-hidden="true">
-          <svg class="tb-select-tool-icon" viewBox="0 0 48 48">
-            <rect class="tb-select-area" x="10" y="10" width="28" height="28" rx="3"/>
-            <rect class="tb-select-handle" x="7" y="7" width="7" height="7" rx="1.5"/>
-            <rect class="tb-select-handle" x="34" y="7" width="7" height="7" rx="1.5"/>
-            <rect class="tb-select-handle" x="7" y="34" width="7" height="7" rx="1.5"/>
-            <rect class="tb-select-handle" x="34" y="34" width="7" height="7" rx="1.5"/>
-          </svg>
-        </span>
-        <span class="tb-tool-label">選択</span>
-      </button>
+      <div class="tb-tool-menu-wrap">
+        <button id="selectTool" class="tb-tool-button tb-tool-has-menu" type="button" data-tool="select" data-tool-menu-trigger="select" title="選択: 範囲選択">
+          <span class="tb-tool-icon" aria-hidden="true">
+            <svg class="tb-select-tool-icon" viewBox="0 0 48 48">
+              <rect class="tb-select-area" x="10" y="10" width="28" height="28" rx="3"/>
+              <rect class="tb-select-handle" x="7" y="7" width="7" height="7" rx="1.5"/>
+              <rect class="tb-select-handle" x="34" y="7" width="7" height="7" rx="1.5"/>
+              <rect class="tb-select-handle" x="7" y="34" width="7" height="7" rx="1.5"/>
+              <rect class="tb-select-handle" x="34" y="34" width="7" height="7" rx="1.5"/>
+            </svg>
+          </span>
+          <span class="tb-tool-label">選択</span>
+          <span class="tb-tool-caret" aria-hidden="true">▲</span>
+        </button>
+        <div class="tb-tool-menu" data-tool-menu="select" hidden>
+          <button type="button" data-select-mode="rect">矩形選択</button>
+          <button type="button" data-select-mode="lasso" disabled>輪投げ選択</button>
+          <button type="button" data-select-mode="free" disabled>自由選択</button>
+        </div>
+      </div>
       <label class="tb-tool-button tb-tool-file" data-tool="image" title="画像: 画像素材を追加">
         <input id="imageFile" type="file" accept="image/*">
         <span class="tb-tool-icon" aria-hidden="true">
@@ -257,11 +265,14 @@
         </span>
         <span class="tb-tool-label">文字</span>
       </button>
-      <label class="tb-tool-button tb-tool-select" data-tool="shape" title="図形: 図形を追加">
-        <span class="tb-tool-icon" aria-hidden="true">
-          <img class="tb-tool-image-icon" src="../../assets/images/ui/tbalance_icon_shape.svg" alt="">
-        </span>
-        <span class="tb-tool-label">図形</span>
+      <div class="tb-tool-menu-wrap">
+        <button id="shapeMenuButton" class="tb-tool-button tb-tool-select tb-tool-has-menu" type="button" data-tool="shape" data-tool-menu-trigger="shape" title="図形: 図形を追加">
+          <span class="tb-tool-icon" aria-hidden="true">
+            <img class="tb-tool-image-icon" src="../../assets/images/ui/tbalance_icon_shape.svg" alt="">
+          </span>
+          <span class="tb-tool-label">図形</span>
+          <span class="tb-tool-caret" aria-hidden="true">▲</span>
+        </button>
         <select id="shapeTool" aria-label="図形を追加">
           <option value="">選択</option>
           <option value="rect">四角形</option>
@@ -274,7 +285,16 @@
           <option value="pen">ペン</option>
           <option value="marker">マーカー</option>
         </select>
-      </label>
+        <div class="tb-tool-menu" data-tool-menu="shape" hidden>
+          <button type="button" data-shape-menu="rect">四角形</button>
+          <button type="button" data-shape-menu="roundRect">角丸</button>
+          <button type="button" data-shape-menu="ellipse">円</button>
+          <button type="button" data-shape-menu="triangle">三角</button>
+          <button type="button" data-shape-menu="diamond">ひし形</button>
+          <button type="button" data-shape-menu="arrow">矢印</button>
+          <button type="button" data-shape-menu="line">直線</button>
+        </div>
+      </div>
       <button class="tb-tool-button" type="button" data-tool="animation" title="動き・演出: 動きや演出を設定" disabled>
         <span class="tb-tool-icon" aria-hidden="true">
           <svg class="tb-action-loop-icon" viewBox="0 0 48 48" aria-hidden="true">
@@ -294,17 +314,24 @@
         </span>
         <span class="tb-tool-label tb-tool-label--stacked">動き・<br>演出</span>
       </button>
-      <button id="addButton" class="tb-tool-button" type="button" data-tool="click" title="クリック動作: クリックしたときの動作を設定します">
-        <span class="tb-tool-icon" aria-hidden="true">
-          <svg class="tb-click-action-icon" viewBox="0 0 48 48" aria-hidden="true">
-            <path class="tb-click-wave" d="M21 7c-9.4 1.8-16.5 10-16.5 19.9 0 7.6 4.1 14.2 10.3 17.8"/>
-            <path class="tb-click-wave" d="M22 15c-5.4 1.4-9.4 6.3-9.4 12.1 0 3.9 1.8 7.4 4.8 9.8"/>
-            <path class="tb-click-wave" d="M23 23c-1.8 1-3 2.9-3 5 0 1.4.5 2.7 1.4 3.7"/>
-            <path class="tb-click-cursor" d="M29 22.5 46 28.3 38.5 32.5 45 43.2 39.2 46.5 32.8 35.9 27 42.5 23.5 20.5 29 22.5Z"/>
-          </svg>
-        </span>
-        <span class="tb-tool-label tb-tool-label--stacked">クリック<br>動作</span>
-      </button>
+      <div class="tb-tool-menu-wrap">
+        <button id="addButton" class="tb-tool-button tb-tool-has-menu" type="button" data-tool="click" data-tool-menu-trigger="click" title="クリック動作: クリックしたときの動作を設定します">
+          <span class="tb-tool-icon" aria-hidden="true">
+            <svg class="tb-click-action-icon" viewBox="0 0 48 48" aria-hidden="true">
+              <path class="tb-click-wave" d="M21 7c-9.4 1.8-16.5 10-16.5 19.9 0 7.6 4.1 14.2 10.3 17.8"/>
+              <path class="tb-click-wave" d="M22 15c-5.4 1.4-9.4 6.3-9.4 12.1 0 3.9 1.8 7.4 4.8 9.8"/>
+              <path class="tb-click-wave" d="M23 23c-1.8 1-3 2.9-3 5 0 1.4.5 2.7 1.4 3.7"/>
+              <path class="tb-click-cursor" d="M29 22.5 46 28.3 38.5 32.5 45 43.2 39.2 46.5 32.8 35.9 27 42.5 23.5 20.5 29 22.5Z"/>
+            </svg>
+          </span>
+          <span class="tb-tool-label tb-tool-label--stacked">クリック<br>動作</span>
+          <span class="tb-tool-caret" aria-hidden="true">▲</span>
+        </button>
+        <div class="tb-tool-menu" data-tool-menu="click" hidden>
+          <button type="button" data-click-action="hit-area">当たり判定</button>
+          <button type="button" data-click-action="button">ボタン作成</button>
+        </div>
+      </div>
       <button class="tb-tool-button" type="button" data-tool="sound" title="サウンド: 音の再生を設定" disabled>
         <span class="tb-tool-icon" aria-hidden="true">
           <img class="tb-tool-image-icon" src="../../assets/images/ui/tbalance_icon_sound.svg" alt="">
