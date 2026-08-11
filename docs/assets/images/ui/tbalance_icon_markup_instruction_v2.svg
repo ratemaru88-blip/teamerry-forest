@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">TBalance markup instruction icon v2</title>
+  <desc id="desc">A speech bubble with a red check mark and a red-blue pencil for TBalance markup instructions.</desc>
+
+  <g>
+    <path d="M115 75H345A35 35 0 0 1 380 110V295A35 35 0 0 1 345 330H210L160 375V330H115A35 35 0 0 1 80 295V110A35 35 0 0 1 115 75Z"
+      fill="none"
+      stroke="#ffffff"
+      stroke-width="22"
+      stroke-linejoin="round"
+      stroke-linecap="round"/>
+
+    <path d="M135 200 205 270 325 130"
+      fill="none"
+      stroke="#e52421"
+      stroke-width="36"
+      stroke-linecap="round"
+      stroke-linejoin="round"/>
+
+    <g transform="translate(325 305) rotate(45)">
+      <path d="M-25-135H25L40-80V80L25 135H-25L-40 80V-80Z"
+        fill="#ffffff"
+        stroke="#ffffff"
+        stroke-width="26"
+        stroke-linejoin="round"
+        stroke-linecap="round"/>
+
+      <path d="M-32-75H32V0H-32Z" fill="#e52421"/>
+      <path d="M-32-75H-10V0H-32Z" fill="#b01917"/>
+      <path d="M10-75H32V0H10Z" fill="#8b0a08"/>
+
+      <path d="M-32 0H32V75H-32Z" fill="#0d6efd"/>
+      <path d="M-32 0H-10V75H-32Z" fill="#0a58ca"/>
+      <path d="M10 0H32V75H10Z" fill="#0242a5"/>
+
+      <polygon points="-32,-75 32,-75 18,-115 -18,-115" fill="#d7a15c"/>
+      <polygon points="-32,-75 -10,-75 -6,-115 -18,-115" fill="#c48c46"/>
+      <polygon points="-18,-115 18,-115 0,-138" fill="#e52421"/>
+
+      <polygon points="-32,75 32,75 18,115 -18,115" fill="#d7a15c"/>
+      <polygon points="-32,75 -10,75 -6,115 -18,115" fill="#c48c46"/>
+      <polygon points="-18,115 18,115 0,138" fill="#0d6efd"/>
+
+      <line x1="-32" y1="0" x2="32" y2="0" stroke="#121212" stroke-width="2" opacity="0.3"/>
+    </g>
+  </g>
+</svg>

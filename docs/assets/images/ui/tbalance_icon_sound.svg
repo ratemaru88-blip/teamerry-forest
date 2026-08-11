@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="100%" height="100%">
+  <g transform="translate(10, 0)">
+    <!-- スピーカー本体（左側：濃いグレーブルー） -->
+    <path d="M 50 85 
+             H 80 
+             V 155 
+             H 50 
+             a 10 10 0 0 1 -10 -10 
+             V 95 
+             a 10 10 0 0 1 10 -10 Z" 
+          fill="#567280" />
+
+    <!-- スピーカーホーン（右側：明るいグレーブルー） -->
+    <path d="M 80 85 
+             L 135 25 
+             V 215 
+             L 80 155 
+             Z" 
+          fill="#738D9C" />
+
+    <!-- 音波（水色・3本のアーク） -->
+    <!-- 内側 -->
+    <path d="M 146 100 A 30 30 0 0 1 146 140" 
+          fill="none" 
+          stroke="#38C0F8" 
+          stroke-width="11" 
+          stroke-linecap="round" />
+
+    <!-- 中央 -->
+    <path d="M 163 82 A 55 55 0 0 1 163 158" 
+          fill="none" 
+          stroke="#38C0F8" 
+          stroke-width="11" 
+          stroke-linecap="round" />
+
+    <!-- 外側 -->
+    <path d="M 180 64 A 80 80 0 0 1 180 176" 
+          fill="none" 
+          stroke="#38C0F8" 
+          stroke-width="11" 
+          stroke-linecap="round" />
+  </g>
+</svg>

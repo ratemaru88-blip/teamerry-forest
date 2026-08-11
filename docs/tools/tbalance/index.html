@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TBalance Editor UI Ver.1.0 | TeaMerry Forest</title>
+  <link rel="stylesheet" href="./tbalance.css">
+</head>
+<body>
+  <main class="tb-app" aria-label="TBalance visual editor">
+    <header class="tb-header" aria-label="TBalance header">
+      <section class="tb-header-main" aria-label="メイン操作">
+        <section class="tb-brand" aria-label="TBalance">
+          <img class="tb-logo-mark" src="../../assets/images/ui/tbalance_logo_mark.svg" alt="" aria-hidden="true">
+          <span class="tb-brand-copy">
+            <strong>TBalance</strong>
+            <small>Design with Balance.</small>
+          </span>
+        </section>
+
+        <section class="tb-mode-switch" aria-label="Mode">
+          <button id="normalMode" class="is-active" type="button">Normal</button>
+          <button id="customMode" type="button">Custom</button>
+        </section>
+
+        <nav class="tb-history-actions" aria-label="履歴操作">
+          <button id="undoButton" class="tb-icon-button tb-history-button" type="button" title="戻る Ctrl / Cmd + Z">
+            <span aria-hidden="true">↶</span>
+            <span>戻る</span>
+          </button>
+          <button id="redoButton" class="tb-icon-button tb-history-button" type="button" title="やり直す Ctrl / Cmd + Shift + Z">
+            <span aria-hidden="true">↷</span>
+            <span>やり直し</span>
+          </button>
+        </nav>
+
+        <section class="tb-device-switch" aria-label="キャンバス切り替え">
+          <button id="desktopMode" class="is-active" type="button">
+            <svg class="tb-device-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3.5" y="5" width="17" height="11" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M9 19h6M12 16v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            PC
+          </button>
+          <button id="mobileMode" type="button">
+            <svg class="tb-device-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="7.5" y="3.5" width="9" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M11 17.5h2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Mobile
+          </button>
+        </section>
+
+        <button id="aiCollabButton" class="tb-command-button tb-command-button--ai" type="button" aria-pressed="false" title="AIと同じ画面を見ながら共同編集">
+          <svg class="tb-command-icon tb-ai-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <defs>
+              <linearGradient id="tb-ai-a" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ffae4f"/><stop offset=".46" stop-color="#ff6f4f"/><stop offset="1" stop-color="#f72d77"/></linearGradient>
+              <linearGradient id="tb-ai-person" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#2fd2f2"/><stop offset=".54" stop-color="#11aaf1"/><stop offset="1" stop-color="#117be6"/></linearGradient>
+            </defs>
+            <path d="M5.5 42 19.4 6h9.2l13.9 36h-9.2l-2.9-8.2H17.6L14.7 42H5.5Zm14.8-15.8h7.4L24 15.5l-3.7 10.7Z" fill="url(#tb-ai-a)"/>
+            <circle cx="24" cy="15.5" r="5.3" fill="url(#tb-ai-person)"/>
+            <path d="M13.4 27.5c0-2.2 1.8-4 4-4h13.2c2.2 0 4 1.8 4 4v1.6c0 2.2-1.8 4-4 4h-2.2v6.3c0 2.4-2 4.4-4.4 4.4s-4.4-2-4.4-4.4v-6.3h-2.2c-2.2 0-4-1.8-4-4v-1.6Z" fill="url(#tb-ai-person)"/>
+          </svg>
+          <span class="tb-command-copy"><strong>WITH AI</strong><small>AI共同</small></span>
+        </button>
+
+        <button id="balanceCheckButton" class="tb-command-button tb-command-button--balance" type="button" aria-haspopup="menu" title="赤ペン修正と青ペン提案を比較">
+          <img class="tb-command-icon" src="../../assets/images/ui/tbalance_icon_balance_check.svg" alt="" aria-hidden="true">
+          <span class="tb-command-copy tb-command-copy--stack"><strong><span>Balance</span><span>Check</span></strong><small>比較</small></span>
+          <span class="tb-balance-modes" aria-hidden="true">
+            <span data-balance-mode="side-by-side"><i></i>左右表示</span>
+            <span data-balance-mode="overlay"><i></i>重ね表示</span>
+            <span data-balance-mode="before-after"><i></i>Before</span>
+          </span>
+        </button>
+
+        <button id="previewButton" class="tb-test-button tb-command-button" type="button" title="制作中の軽い確認">
+          <img class="tb-mini-logo" src="../../assets/images/ui/tbalance_logo_mark.svg" alt="" aria-hidden="true">
+          <span>TEST</span>
+        </button>
+
+        <button id="markupButton" class="tb-command-button tb-command-button--markup" type="button" title="修正指示・コメントを追加">
+          <img class="tb-markup-icon" src="../../assets/images/ui/tbalance_icon_markup_instruction_v2.svg" alt="" aria-hidden="true">
+          <span class="tb-command-copy"><strong>Markup</strong><small>指示</small></span>
+        </button>
+
+        <button id="finalPreviewButton" class="tb-command-button tb-command-button--final" type="button" title="最終確認・最適化">
+          <img class="tb-final-button-png" src="../../assets/images/ui/tbalance_final_preview_button.webp" alt="Final Preview">
+        </button>
+
+        <button id="publishButton" class="tb-command-button tb-command-button--publish" type="button" disabled title="Final Preview完了後に有効化">
+          <svg class="tb-publish-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="8.5" fill="none" stroke="#f4f9f9" stroke-width="1.8"/>
+            <path d="M3.5 12h17M12 3.5c2.6 2.7 2.6 14.3 0 17M12 3.5c-2.6 2.7-2.6 14.3 0 17" fill="none" stroke="#7fc7b5" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span class="tb-command-copy"><strong>Publish</strong><small>公開</small></span>
+        </button>
+
+        <button id="settingsButton" class="tb-settings-button" type="button" title="設定">
+          <span aria-hidden="true">⚙</span>
+          <span aria-hidden="true">⌄</span>
+        </button>
+
+        <nav class="tb-compact-actions" aria-label="ファイル操作">
+          <label class="tb-icon-button tb-file-button" title="開く">
+            <input id="openFile" type="file" accept=".tbalance,application/json">
+            <span class="tb-button-icon" aria-hidden="true">□</span>
+            <span>開く</span>
+          </label>
+          <button id="saveProject" class="tb-icon-button" type="button" title="保存">
+            <span class="tb-button-icon" aria-hidden="true">▣</span>
+            <span>保存</span>
+          </button>
+          <button id="saveJson" class="tb-ghost-action" type="button" title="JSONとして保存">JSON</button>
+        </nav>
+
+      </section>
+
+      <nav class="tb-menu-header" aria-label="メニュー">
+        <button type="button">ファイル</button>
+        <button type="button">表示</button>
+        <button type="button">画像</button>
+        <button type="button">レイヤー</button>
+        <button type="button">選択</button>
+        <button type="button">カラー</button>
+        <button type="button">図形</button>
+        <button type="button">テキスト</button>
+        <button type="button">動き・演出</button>
+        <button type="button">効果</button>
+        <button type="button">フィルター</button>
+        <button type="button">ウィンドウ</button>
+        <button type="button">ヘルプ</button>
+      </nav>
+
+      <section id="propertyHeader" class="tb-property-header" aria-label="プロパティ">
+        <div class="tb-property-history" aria-label="履歴">
+          <button id="propertyUndoButton" type="button" title="戻る">
+            <span aria-hidden="true">↶</span>
+          </button>
+          <button id="propertyRedoButton" type="button" title="やり直し">
+            <span aria-hidden="true">↷</span>
+          </button>
+        </div>
+        <div id="emptyProperties" class="tb-empty">レイヤー未選択</div>
+        <div id="properties" class="tb-properties" hidden>
+          <div class="tb-edit-ribbon" aria-label="変形モード" data-property-section="transform">
+            <strong>変形モード</strong>
+            <div class="tb-segment tb-segment--tight tb-transform-controls">
+              <button id="transformNormal" type="button" title="スケール変形">
+                <svg class="tb-tool-inline-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="5" y="5" width="14" height="14" rx="1.8"></rect>
+                  <path d="M8 16h8M16 8v8"></path>
+                </svg>
+                <span>スケール</span>
+              </button>
+              <button id="transformPerspective" class="tb-custom-only" type="button" title="遠近変形">
+                <svg class="tb-tool-inline-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 5h8l3 14H5L8 5Z"></path>
+                  <path d="M12 5v14M7 13h10"></path>
+                </svg>
+                <span>遠近</span>
+              </button>
+              <button id="transformFree" class="tb-custom-only" type="button" title="歪み変形">
+                <svg class="tb-tool-inline-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 7c4-3 6 3 10 0 2-1.5 3-1 4 0v10c-4-3-6 3-10 0-2 1.5-3 1-4 0V7Z"></path>
+                  <path d="M8 9v6M16 9v6"></path>
+                </svg>
+                <span>歪み</span>
+              </button>
+            </div>
+          </div>
+          <div class="tb-grid-2 tb-custom-fields" data-property-section="layout">
+            <label>X<input id="propX" type="number" step="1"></label>
+            <label>Y<input id="propY" type="number" step="1"></label>
+            <label>W<input id="propW" type="number" min="1" step="1"></label>
+            <label>H<input id="propH" type="number" min="1" step="1"></label>
+            <label>回転<input id="propRotation" type="number" step="1"></label>
+          </div>
+          <label data-property-section="click">リンク<input id="propLink" type="text" placeholder="#about または https://..."></label>
+          <label data-property-section="style">明るさ<input id="propBrightness" type="number" min="0" max="2" step="0.05"></label>
+          <label data-property-section="style">不透明度
+            <span class="tb-range-row">
+              <input id="propOpacity" type="range" min="0" max="100" step="1">
+              <input id="propOpacityNumber" type="number" min="0" max="100" step="1">
+            </span>
+          </label>
+          <label class="tb-check tb-ribbon-check" data-property-section="style"><input id="propShadow" type="checkbox">影</label>
+        </div>
+      </section>
+    </header>
+
+    <section id="settingsPanel" class="tb-settings-panel" aria-label="設定" hidden>
+      <div class="tb-panel-title">
+        <h2>設定</h2>
+        <button id="closeSettings" type="button">閉じる</button>
+      </div>
+      <fieldset>
+        <legend>起動モード</legend>
+        <label class="tb-radio"><input id="rememberLastMode" type="radio" name="startupMode" value="remember">前回使用したモードで起動</label>
+        <label class="tb-radio"><input id="alwaysStartNormal" type="radio" name="startupMode" value="normal">常にNormal Modeで起動</label>
+      </fieldset>
+      <fieldset>
+        <legend>ツール表示</legend>
+        <label class="tb-check"><input id="showToolDescriptions" type="checkbox" checked>ツール説明を表示</label>
+        <label class="tb-check"><input id="showBeginnerHints" type="checkbox" checked>初心者向けヒントを表示</label>
+        <label class="tb-check"><input id="showShortcuts" type="checkbox" checked>ショートカットを表示</label>
+      </fieldset>
+    </section>
+
+    <p id="modeToast" class="tb-toast" role="status" aria-live="polite"></p>
+
+    <aside class="tb-tools" aria-label="ツール">
+      <button id="moveTool" class="tb-tool-button is-active" type="button" data-tool="move" title="移動: オブジェクト選択、ドラッグ移動、拡大縮小、回転">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-move-tool-icon" viewBox="0 0 48 48">
+            <path class="tb-move-glow" d="M31 8h8v8M39 8 29 18M17 39H9v-8M9 39l10-10"/>
+            <path class="tb-move-cursor" d="M13 5.5 36.5 29 25 31.6l7.8 12.5-6.1 3.7-7.7-12.4-7.4 8.2Z"/>
+            <path class="tb-move-highlight" d="M17 13.5 30.5 27"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label">移動</span>
+      </button>
+      <button id="selectTool" class="tb-tool-button" type="button" data-tool="select" title="選択: 範囲選択">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-select-tool-icon" viewBox="0 0 48 48">
+            <rect class="tb-select-area" x="10" y="10" width="28" height="28" rx="3"/>
+            <rect class="tb-select-handle" x="7" y="7" width="7" height="7" rx="1.5"/>
+            <rect class="tb-select-handle" x="34" y="7" width="7" height="7" rx="1.5"/>
+            <rect class="tb-select-handle" x="7" y="34" width="7" height="7" rx="1.5"/>
+            <rect class="tb-select-handle" x="34" y="34" width="7" height="7" rx="1.5"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label">選択</span>
+      </button>
+      <label class="tb-tool-button tb-tool-file" data-tool="image" title="画像: 画像素材を追加">
+        <input id="imageFile" type="file" accept="image/*">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-image-tool-icon" viewBox="0 0 48 48">
+            <rect class="tb-image-frame" x="7" y="8" width="34" height="30" rx="5"/>
+            <circle class="tb-image-sun" cx="17.2" cy="18" r="4.2"/>
+            <path class="tb-image-sky" d="M10.5 29.5 19 22.3l5.9 5.4 3.9-4.5 8.7 9.7v1.3h-27Z"/>
+            <path class="tb-image-mountain" d="M10.5 34.2 19 25.2l5.8 5.3 3.7-4.2 9 7.9Z"/>
+            <path class="tb-image-gloss" d="M13 12.6h17.5"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label">画像</span>
+      </label>
+      <button id="addText" class="tb-tool-button" type="button" data-tool="text" title="文字: テキストを追加">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-text-tool-icon" viewBox="0 0 48 48">
+            <rect class="tb-text-card" x="8" y="7" width="32" height="34" rx="6"/>
+            <path class="tb-text-accent" d="M13 14h22"/>
+            <path class="tb-text-letter" d="M14 18h20M24 18v17M19.5 35h9"/>
+            <path class="tb-text-line tb-text-line--cyan" d="M15 28h5"/>
+            <path class="tb-text-line tb-text-line--green" d="M28 28h5"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label">文字</span>
+      </button>
+      <label class="tb-tool-button tb-tool-select" data-tool="shape" title="図形: 図形を追加">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <img class="tb-tool-image-icon" src="../../assets/images/ui/tbalance_icon_shape.svg" alt="">
+        </span>
+        <span class="tb-tool-label">図形</span>
+        <select id="shapeTool" aria-label="図形を追加">
+          <option value="">選択</option>
+          <option value="rect">四角形</option>
+          <option value="roundRect">角丸</option>
+          <option value="ellipse">円</option>
+          <option value="triangle">三角</option>
+          <option value="diamond">ひし形</option>
+          <option value="arrow">矢印</option>
+          <option value="line">直線</option>
+          <option value="pen">ペン</option>
+          <option value="marker">マーカー</option>
+        </select>
+      </label>
+      <button class="tb-tool-button" type="button" data-tool="animation" title="動き・演出: 動きや演出を設定" disabled>
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-action-loop-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <defs>
+              <linearGradient id="tb-action-loop-a" x1="8" y1="10" x2="40" y2="38" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#8a6cff"/>
+                <stop offset="0.48" stop-color="#35b8ff"/>
+                <stop offset="1" stop-color="#7b5cff"/>
+              </linearGradient>
+            </defs>
+            <path class="tb-action-loop-arc" d="M17 12.4A17 17 0 0 1 39.4 26"/>
+            <path class="tb-action-loop-arc" d="M31 37A17 17 0 0 1 9.2 23.5"/>
+            <circle class="tb-action-loop-dot tb-action-loop-dot--small" cx="12" cy="15" r="4"/>
+            <circle class="tb-action-loop-dot tb-action-loop-dot--large" cx="38" cy="26" r="5"/>
+            <circle class="tb-action-loop-dot tb-action-loop-dot--large" cx="10" cy="31" r="5"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label tb-tool-label--stacked">動き・<br>演出</span>
+      </button>
+      <button id="addButton" class="tb-tool-button" type="button" data-tool="click" title="クリック動作: クリックしたときの動作を設定します">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-click-action-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path class="tb-click-wave" d="M21 7c-9.4 1.8-16.5 10-16.5 19.9 0 7.6 4.1 14.2 10.3 17.8"/>
+            <path class="tb-click-wave" d="M22 15c-5.4 1.4-9.4 6.3-9.4 12.1 0 3.9 1.8 7.4 4.8 9.8"/>
+            <path class="tb-click-wave" d="M23 23c-1.8 1-3 2.9-3 5 0 1.4.5 2.7 1.4 3.7"/>
+            <path class="tb-click-cursor" d="M29 22.5 46 28.3 38.5 32.5 45 43.2 39.2 46.5 32.8 35.9 27 42.5 23.5 20.5 29 22.5Z"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label tb-tool-label--stacked">クリック<br>動作</span>
+      </button>
+      <button class="tb-tool-button" type="button" data-tool="sound" title="サウンド: 音の再生を設定" disabled>
+        <span class="tb-tool-icon" aria-hidden="true">
+          <img class="tb-tool-image-icon" src="../../assets/images/ui/tbalance_icon_sound.svg" alt="">
+        </span>
+        <span class="tb-tool-label">サウンド</span>
+      </button>
+      <button class="tb-tool-button" type="button" data-tool="pen" title="ペン" disabled>
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-paintbrush-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <defs>
+              <linearGradient id="tb-brush-wood" x1="18" y1="30" x2="44" y2="4" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#d8903e"/>
+                <stop offset="0.34" stop-color="#ffd990"/>
+                <stop offset="0.72" stop-color="#f4bd68"/>
+                <stop offset="1" stop-color="#ffe8b7"/>
+              </linearGradient>
+              <linearGradient id="tb-brush-metal-grad" x1="14" y1="31" x2="27" y2="19" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#8f9696"/>
+                <stop offset="0.28" stop-color="#f3f4ec"/>
+                <stop offset="0.62" stop-color="#b7bebd"/>
+                <stop offset="1" stop-color="#727c7d"/>
+              </linearGradient>
+              <linearGradient id="tb-brush-hair" x1="5" y1="43" x2="19" y2="27" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#8a3b09"/>
+                <stop offset="0.42" stop-color="#c86612"/>
+                <stop offset="0.78" stop-color="#f0a13b"/>
+                <stop offset="1" stop-color="#ffe2a3"/>
+              </linearGradient>
+            </defs>
+            <path class="tb-paintbrush-handle" d="M25.8 21.1C31.6 13.2 38.9 5.1 44 3.4c1.6-.5 2.7.5 2.2 2.2-1.7 5.1-9.8 12.4-17.7 18.2Z"/>
+            <path class="tb-paintbrush-handle-line" d="M31.5 17.3c3.9-4.5 8-8.2 11.1-10.2M28.8 20.7c4.4-4.8 9.3-9.2 14.1-12.8M26.7 19.1c4.2-5 9-9.8 14.1-14"/>
+            <path class="tb-paintbrush-metal" d="M15.1 29.8 24.4 20.5c1.4-1.4 5.7 2.9 4.3 4.3l-9.3 9.3c-1.5 1.5-5.8-2.8-4.3-4.3Z"/>
+            <path class="tb-paintbrush-bristle" d="M16 31.8c-5.9.7-9 3.4-10.6 7.4-1 2.4-3.1 3.9-5 4.3 2.3 2.4 8.5 2 13.2-1 3.9-2.5 5.8-6.1 5.7-8.8-.1-1.6-1.4-2.2-3.3-1.9Z"/>
+            <path class="tb-paintbrush-bristle-line" d="M5.9 40.3c3.9-.7 7-3.5 9.9-7.6M10.1 42.3c3.4-1.3 5.8-3.8 7.4-7.2"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label">ペン</span>
+      </button>
+      <button class="tb-tool-button" type="button" data-tool="clone" title="クローンブラシ" disabled>
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-clone-brush-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path class="tb-clone-t tb-clone-t--green" d="M4 12h24c2.3 0 4 1.7 4 4s-1.7 4-4 4h-7v19c0 2.4-1.8 4.2-4.2 4.2s-4.2-1.8-4.2-4.2V20H4c-2.3 0-4-1.7-4-4s1.7-4 4-4Z"/>
+            <path class="tb-clone-t tb-clone-t--cyan" d="M8 8h24c2.3 0 4 1.7 4 4s-1.7 4-4 4h-7v19c0 2.4-1.8 4.2-4.2 4.2s-4.2-1.8-4.2-4.2V16H8c-2.3 0-4-1.7-4-4s1.7-4 4-4Z"/>
+            <path class="tb-clone-t tb-clone-t--orange" d="M12 4h24c2.3 0 4 1.7 4 4s-1.7 4-4 4h-7v19c0 2.4-1.8 4.2-4.2 4.2s-4.2-1.8-4.2-4.2V12H12c-2.3 0-4-1.7-4-4s1.7-4 4-4Z"/>
+            <path class="tb-clone-t tb-clone-t--white" d="M9 11h23c2 0 3.4 1.5 3.4 3.4S34 17.8 32 17.8h-7.4V39c0 2.2-1.7 3.9-3.9 3.9s-3.9-1.7-3.9-3.9V17.8H9c-2 0-3.4-1.5-3.4-3.4S7 11 9 11Z"/>
+            <path class="tb-brush-handle" d="M31 38 44 12"/>
+            <path class="tb-brush-grip" d="M37.5 24.5 41 17.5"/>
+            <path class="tb-brush-band" d="M29.6 37.3 34.7 27.3"/>
+            <path class="tb-brush-tip" d="M24.5 43.8c.9-6.2 4.2-9.4 9.1-11l3 2.2c-2.7 4.9-6.2 7.7-12.1 8.8Z"/>
+            <path class="tb-brush-tip-highlight" d="M29 39.5c1.1-1.7 2.4-2.9 4.1-3.7"/>
+            <path class="tb-brush-spark" d="M42.5 28h2M39.5 35h2M35.5 43h2"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label tb-tool-label--stacked">クローン<br>ブラシ</span>
+      </button>
+      <button class="tb-tool-button" type="button" data-tool="eraser" title="消しゴム" disabled>
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-eraser-icon" viewBox="0 0 200 200">
+            <line class="tb-eraser-ground" x1="20" y1="175" x2="160" y2="175"/>
+            <g transform="translate(86 102) rotate(-42) translate(-65 -45)">
+              <defs>
+                <clipPath id="tb-eraser-shape">
+                  <rect x="0" y="0" width="130" height="72" rx="16" ry="16"/>
+                </clipPath>
+              </defs>
+              <g clip-path="url(#tb-eraser-shape)">
+                <rect class="tb-eraser-end" x="0" y="0" width="130" height="72"/>
+                <path class="tb-eraser-soft-shadow" d="M0 55Q22 42 42 42L42 72 0 72Z"/>
+                <rect class="tb-eraser-blue" x="38" y="0" width="92" height="72"/>
+                <rect class="tb-eraser-center" x="38" y="17" width="92" height="38"/>
+                <path class="tb-eraser-blue-shadow" d="M112 0 130 0 130 17 102 17Z"/>
+                <path class="tb-eraser-blue-shadow" d="M118 55 130 55 130 72 95 72Z"/>
+                <line class="tb-eraser-seam" x1="38" y1="0" x2="38" y2="72"/>
+                <line class="tb-eraser-seam" x1="38" y1="17" x2="130" y2="17"/>
+                <line class="tb-eraser-seam" x1="38" y1="55" x2="130" y2="55"/>
+              </g>
+              <rect class="tb-eraser-outline" x="0" y="0" width="130" height="72" rx="16" ry="16"/>
+            </g>
+          </svg>
+        </span>
+        <span class="tb-tool-label">消しゴム</span>
+      </button>
+      <button class="tb-tool-button" type="button" data-tool="fill" title="塗りつぶし" disabled>
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-fill-bucket-icon" viewBox="0 0 48 48">
+            <ellipse class="tb-fill-shadow" cx="23.5" cy="42" rx="13.4" ry="2.3"/>
+            <path class="tb-fill-bucket-body" d="M19.1 4.7 41.9 27.5c.9.9.9 2.3 0 3.2-.9.9-2.3.9-3.2 0L15.9 7.9c-.9-.9-.9-2.3 0-3.2.9-.9 2.3-.9 3.2 0Z"/>
+            <path class="tb-fill-bucket-side" d="M15.9 7.9 5.2 22.4c-.9 1.2-.8 2.8.3 3.9l16.2 16.2c1.2 1.2 3.2 1.2 4.4 0L39.7 28Z"/>
+            <path class="tb-fill-paint" d="M5.5 26.3 21.7 42.5c1.2 1.2 3.2 1.2 4.4 0L39.7 28H10.4c-2 0-3.7-.6-4.9-1.7Z"/>
+            <path class="tb-fill-highlight" d="M15.5 14.8 10.6 21.3M18.8 11.1l18.7 18.7"/>
+            <path class="tb-fill-drop" d="M43.2 28.8c3.2 3.9 4.8 6.8 4.8 9.1 0 3-2.3 5.2-5.2 5.2s-5.2-2.2-5.2-5.2c0-2.3 1.7-5.2 5.6-9.1Z"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label">塗りつぶし</span>
+      </button>
+      <button id="eyedropperTool" class="tb-tool-button" type="button" data-tool="eyedropper" title="スポイト: 色を取得">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-eyedropper-icon" viewBox="0 0 48 48">
+            <g transform="rotate(42 24 24)">
+              <path class="tb-eyedropper-bulb" d="M20.8 3.8c0-2.7 2-4.6 4.5-4.6s4.5 1.9 4.5 4.6v8.7h-9Z"/>
+              <rect class="tb-eyedropper-collar" x="16.5" y="12" width="17.6" height="5.5" rx="1.8"/>
+              <path class="tb-eyedropper-bulb-shine" d="M23.7 2.7c1.7-.7 3.1-.5 4 .6"/>
+              <path class="tb-eyedropper-glass" d="M19.7 17h11.2v18.4c0 2.7-1.6 5-4 5.8v3.4c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5v-3.4c-2.4-.8-4-3.1-4-5.8Z"/>
+              <path class="tb-eyedropper-highlight" d="M22.6 20.2v8"/>
+            </g>
+          </svg>
+        </span>
+        <span class="tb-tool-label">スポイト</span>
+      </button>
+      <button class="tb-tool-button" type="button" data-tool="retouch" title="レタッチ" disabled>
+        <span class="tb-tool-icon" aria-hidden="true">
+          <img class="tb-tool-image-icon tb-retouch-png-icon" src="../../assets/images/ui/tbalance_icon_retouch.png" alt="">
+        </span>
+        <span class="tb-tool-label">レタッチ</span>
+      </button>
+      <button id="addBubble" class="tb-tool-button" type="button" data-tool="note" title="注釈: 編集用コメントや指示">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-note-tool-icon" viewBox="0 0 48 48">
+            <path class="tb-note-bubble" d="M8 9.5h32c2.2 0 4 1.8 4 4v18c0 2.2-1.8 4-4 4H22.2l-10.8 7.2v-7.2H8c-2.2 0-4-1.8-4-4v-18c0-2.2 1.8-4 4-4Z"/>
+            <path class="tb-note-pin" d="M15.5 6.5h17"/>
+            <path class="tb-note-line tb-note-line--blue" d="M13 18h22"/>
+            <path class="tb-note-line tb-note-line--green" d="M13 24h16"/>
+            <path class="tb-note-line tb-note-line--pink" d="M13 30h20"/>
+            <circle class="tb-note-dot" cx="36.2" cy="29.6" r="2.3"/>
+          </svg>
+        </span>
+        <span class="tb-tool-label">注釈</span>
+      </button>
+      <button id="toggleHitAreas" class="tb-tool-button" type="button" data-tool="click-area" title="クリックできる範囲を表示">
+        <span class="tb-tool-icon" aria-hidden="true">
+          <svg class="tb-tool-line-icon" viewBox="0 0 24 24"><path d="M6 12h.1M12 12h.1M18 12h.1"/></svg>
+        </span>
+        <span class="tb-tool-label">その他</span>
+      </button>
+    </aside>
+
+    <section class="tb-workspace" aria-label="Workspace">
+      <div class="tb-ruler tb-ruler--top" aria-hidden="true"></div>
+      <div class="tb-ruler tb-ruler--left" aria-hidden="true"></div>
+      <div id="canvasViewport" class="tb-canvas-viewport">
+        <div id="canvasScaler" class="tb-canvas-scaler">
+          <div id="canvas" class="tb-canvas" tabindex="0" aria-label="編集キャンバス"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside id="rightPanel" class="tb-sidepanel" aria-label="プロパティとレイヤー">
+      <section id="inspectorPanel" class="tb-inspector">
+        <div class="tb-panel-tabs" role="tablist" aria-label="インスペクター">
+          <button id="propertyTab" class="is-active" type="button" role="tab" aria-selected="true">プロパティ</button>
+          <button id="styleTab" type="button" role="tab" aria-selected="false">スタイル</button>
+        </div>
+
+        <section id="propertyPane" class="tb-panel tb-tab-pane is-active" aria-label="プロパティ">
+          <div class="tb-empty">プロパティは上部バーで編集します。</div>
+        </section>
+
+        <section id="stylePane" class="tb-panel tb-tab-pane" aria-label="スタイル" hidden>
+          <div class="tb-style-placeholder">
+            <strong>カラーパレット</strong>
+            <p>色、文字、効果などを配置するための領域です。</p>
+          </div>
+        </section>
+      </section>
+
+      <div id="rightPanelDivider" class="tb-panel-divider" role="separator" aria-orientation="horizontal" tabindex="0" title="上下パネル境界をドラッグ"></div>
+
+      <section class="tb-panel tb-layer-panel">
+        <div class="tb-panel-title">
+          <h2>レイヤー</h2>
+          <div class="tb-layer-detail" aria-label="選択レイヤー詳細" hidden>
+            <label>ID<input id="propId" type="text" readonly></label>
+            <label>レイヤー名<input id="propName" type="text"></label>
+            <label id="squareOption" class="tb-check"><input id="propKeepSquare" type="checkbox">正方形</label>
+            <label id="circleOption" class="tb-check"><input id="propKeepCircle" type="checkbox">正円</label>
+            <label class="tb-check"><input id="propKeepAspect" type="checkbox">縦横比</label>
+          </div>
+          <div class="tb-layer-placement" aria-label="配置">
+            <button id="fitStretchCanvas" type="button" title="選択中のレイヤーをキャンバスサイズに合わせる。比率は変更されます。">キャンバスに合わせる</button>
+            <button id="setBackgroundLayer" type="button" title="最背面へ移動してロックする。">背景固定</button>
+          </div>
+          <div class="tb-layer-actions" aria-label="レイヤー操作">
+            <button id="bringFront" type="button" title="最前面へ">前面</button>
+            <button id="moveForward" type="button" title="一つ前へ">+1</button>
+            <button id="moveBackward" type="button" title="一つ後ろへ">-1</button>
+            <button id="sendBack" type="button" title="最背面へ">背面</button>
+            <button type="button" title="複製" disabled>複製</button>
+            <button type="button" title="フォルダ / グループ" disabled>フォルダ</button>
+            <button id="deleteLayer" type="button" title="削除">削除</button>
+          </div>
+        </div>
+        <div id="layerList" class="tb-layer-list"></div>
+      </section>
+    </aside>
+
+    <footer class="tb-statusbar">
+      <section class="tb-canvas-toolbar" aria-label="表示操作">
+        <output id="zoomPercent">Fit</output>
+        <button id="zoomOut" type="button" title="縮小">−</button>
+        <output id="zoomLabel">Fit</output>
+        <button id="zoomIn" type="button" title="拡大">＋</button>
+        <button id="fitCanvas" type="button">全体</button>
+        <button id="actualSize" type="button" title="キャンバスを原寸大で表示">原寸</button>
+      </section>
+      <span id="statusText">ID: - / 名前: -</span>
+      <span id="rotationStatus">リンク: -</span>
+      <label class="tb-status-page">ページ:<select id="pageSelect" aria-label="ページ選択"></select></label>
+      <span id="saveState">保存済み</span>
+    </footer>
+
+    <section id="finalPreviewModal" class="tb-final-modal" aria-label="Final Preview" hidden>
+      <div class="tb-final-dialog">
+        <div class="tb-panel-title">
+          <h2>Final Preview</h2>
+          <button id="closeFinalPreview" type="button">閉じる</button>
+        </div>
+        <p id="finalPreviewStatus">最終確認・最適化を準備しています。</p>
+        <div class="tb-progress"><span id="finalPreviewProgress"></span></div>
+        <ul id="finalPreviewChecklist" class="tb-final-checklist"></ul>
+        <p id="finalPreviewComplete" class="tb-complete-sign" hidden>Complete</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="./tbalance-renderer.js"></script>
+  <script src="./tbalance.js"></script>
+</body>
+</html>

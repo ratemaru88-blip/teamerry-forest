@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title desc">
+  <title id="title">TBalance Balance Check icon</title>
+  <desc id="desc">Overlapping red and blue panels with opposing arrows for comparing layout proposals.</desc>
+  <rect x="8" y="8" width="22" height="24" rx="2" fill="none" stroke="#ff7669" stroke-width="3"/>
+  <rect x="18" y="16" width="22" height="24" rx="2" fill="none" stroke="#20b7e8" stroke-width="3"/>
+  <path d="M16 27h16M16 27l5-5M16 27l5 5" fill="none" stroke="#f6ffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M32 25H16M32 25l-5-5M32 25l-5 5" fill="none" stroke="#f6ffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".72"/>
+</svg>
