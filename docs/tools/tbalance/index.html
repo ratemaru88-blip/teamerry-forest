@@ -64,15 +64,17 @@
           <span class="tb-command-copy"><strong>WITH AI</strong><small>AI共同</small></span>
         </button>
 
-        <button id="balanceCheckButton" class="tb-command-button tb-command-button--balance" type="button" aria-haspopup="menu" title="赤ペン修正と青ペン提案を比較">
-          <img class="tb-command-icon" src="../../assets/images/ui/tbalance_icon_balance_check.svg" alt="" aria-hidden="true">
-          <span class="tb-command-copy tb-command-copy--stack"><strong><span>Balance</span><span>Check</span></strong><small>比較</small></span>
-          <span class="tb-balance-modes" aria-hidden="true">
-            <span data-balance-mode="side-by-side"><i></i>左右表示</span>
-            <span data-balance-mode="overlay"><i></i>重ね表示</span>
-            <span data-balance-mode="before-after"><i></i>Before</span>
+        <section class="tb-balance-group" aria-label="Balance Check 表示方法">
+          <button id="balanceCheckButton" class="tb-command-button tb-command-button--balance" type="button" title="赤ペン修正と青ペン提案を比較">
+            <img class="tb-command-icon" src="../../assets/images/ui/tbalance_icon_balance_check.svg" alt="" aria-hidden="true">
+            <span class="tb-command-copy tb-command-copy--stack"><strong><span>Balance</span><span>Check</span></strong><small>比較</small></span>
+          </button>
+          <span class="tb-balance-modes" role="group" aria-label="比較表示モード">
+            <button type="button" data-balance-mode="side-by-side"><i></i>左右に表示</button>
+            <button type="button" data-balance-mode="overlay"><i></i>重ねて表示</button>
+            <button type="button" data-balance-mode="before-after"><i></i>ビフォーアフター</button>
           </span>
-        </button>
+        </section>
 
         <button id="previewButton" class="tb-test-button tb-command-button" type="button" title="制作中の軽い確認">
           <img class="tb-mini-logo" src="../../assets/images/ui/tbalance_logo_mark.svg" alt="" aria-hidden="true">

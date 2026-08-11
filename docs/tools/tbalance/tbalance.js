@@ -153,6 +153,9 @@
     els.propertyRedoButton.addEventListener("click", redo);
     els.aiCollabButton.addEventListener("click", toggleAiCollab);
     els.balanceCheckButton.addEventListener("click", cycleBalanceMode);
+    document.querySelectorAll("[data-balance-mode]").forEach((button) => {
+      button.addEventListener("click", () => setBalanceMode(button.dataset.balanceMode));
+    });
     els.previewButton.addEventListener("click", () => {
       state.preview = !state.preview;
       renderAll();
@@ -356,7 +359,15 @@
   function cycleBalanceMode() {
     const modes = ["side-by-side", "overlay", "before-after"];
     const currentIndex = Math.max(0, modes.indexOf(state.balanceMode));
-    state.balanceMode = modes[(currentIndex + 1) % modes.length];
+    setBalanceMode(modes[(currentIndex + 1) % modes.length]);
+  }
+
+  function setBalanceMode(mode) {
+    const modes = ["side-by-side", "overlay", "before-after"];
+    if (!modes.includes(mode)) {
+      return;
+    }
+    state.balanceMode = mode;
     updateButtons();
     showModeToast(`Balance Check: ${getBalanceModeLabel(state.balanceMode)}に切り替えました。`);
   }
@@ -616,8 +627,9 @@
     els.aiCollabButton.classList.toggle("is-active", state.aiCollab);
     els.aiCollabButton.setAttribute("aria-pressed", String(state.aiCollab));
     els.balanceCheckButton.title = `比較: ${getBalanceModeLabel(state.balanceMode)}`;
-    els.balanceCheckButton.querySelectorAll("[data-balance-mode]").forEach((node) => {
+    document.querySelectorAll("[data-balance-mode]").forEach((node) => {
       node.classList.toggle("is-active", node.dataset.balanceMode === state.balanceMode);
+      node.setAttribute("aria-pressed", String(node.dataset.balanceMode === state.balanceMode));
     });
     els.previewButton.classList.toggle("is-active", state.preview);
     els.toggleHitAreas.classList.toggle("is-active", state.showHitAreas);

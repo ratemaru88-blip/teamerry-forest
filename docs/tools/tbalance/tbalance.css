@@ -512,24 +512,45 @@ select {
   height: 24px;
 }
 
+.tb-balance-group {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 6px;
+  min-width: 0;
+}
+
 .tb-balance-modes {
-  display: none;
-  flex: 0 0 54px;
-  gap: 1px;
-  margin-left: auto;
-  padding-left: 7px;
-  border-left: 1px solid rgba(225, 240, 240, 0.18);
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 3px;
   color: rgba(217, 226, 236, 0.68);
   font-size: 8px;
+  font-weight: 800;
   line-height: 1.05;
   text-align: left;
 }
 
-.tb-balance-modes span {
-  display: flex;
+.tb-balance-modes button {
+  display: inline-flex;
   align-items: center;
+  min-height: 24px;
+  padding: 3px 7px;
   gap: 3px;
+  border: 1px solid rgba(133, 158, 172, 0.34);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+  color: inherit;
+  font: inherit;
   white-space: nowrap;
+  cursor: pointer;
+}
+
+.tb-balance-modes button:hover,
+.tb-balance-modes button:focus-visible {
+  border-color: rgba(45, 185, 232, 0.62);
+  color: #f6ffff;
 }
 
 .tb-balance-modes i {
@@ -541,11 +562,13 @@ select {
   box-shadow: none;
 }
 
-.tb-balance-modes span.is-active {
+.tb-balance-modes button.is-active {
+  border-color: rgba(32, 183, 232, 0.8);
+  background: linear-gradient(180deg, rgba(32, 183, 232, 0.23), rgba(32, 183, 232, 0.08));
   color: #f6ffff;
 }
 
-.tb-balance-modes span.is-active i {
+.tb-balance-modes button.is-active i {
   background: #20b7e8;
   box-shadow: 0 0 8px rgba(32, 183, 232, 0.9);
 }
