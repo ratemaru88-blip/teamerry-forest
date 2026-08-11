@@ -485,8 +485,11 @@ select {
 }
 
 .tb-command-button--markup {
-  flex-basis: 78px;
-  width: 78px;
+  flex-basis: 84px;
+  width: 84px;
+  justify-content: flex-start;
+  gap: 5px;
+  padding-inline: 7px 9px;
   border-color: rgba(229, 36, 33, 0.44);
 }
 
