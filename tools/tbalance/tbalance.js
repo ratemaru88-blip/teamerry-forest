@@ -3772,13 +3772,13 @@
       "画像最適化",
       "動画最適化",
       "スマホ表示確認",
-      "公開データ生成",
+      "公開前メモ作成",
     ];
     state.finalPreviewComplete = false;
     els.finalPreviewModal.hidden = false;
     els.finalPreviewComplete.hidden = true;
     els.finalPreviewProgress.style.width = "0%";
-    els.finalPreviewStatus.textContent = "Final Previewを開始しています。";
+    els.finalPreviewStatus.textContent = "Ver.1の公開前チェックを開始しています。自動HTML生成と自動公開は未接続です。";
     els.finalPreviewChecklist.innerHTML = steps.map((step) => (
       `<li data-step="${escapeAttr(step)}"><span class="tb-final-check"></span><span>${escapeHtml(step)}</span></li>`
     )).join("");
@@ -3804,11 +3804,11 @@
         row.querySelector(".tb-final-check").textContent = "T";
       });
       els.finalPreviewProgress.style.width = "100%";
-      els.finalPreviewStatus.textContent = "公開する準備ができました。";
+      els.finalPreviewStatus.textContent = "Ver.1の確認が完了しました。公開反映はCodexで公開用HTML/CSS/JSへ反映してからpushします。";
       els.finalPreviewComplete.hidden = false;
       state.finalPreviewComplete = true;
       updateButtons();
-      showModeToast("Final Previewが完了しました。公開ボタンを有効化しました。");
+      showModeToast("Final Preview確認が完了しました。Publish自動公開は次段階で接続します。");
     }, 420 * (steps.length + 2));
   }
 

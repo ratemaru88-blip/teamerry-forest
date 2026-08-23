@@ -4828,6 +4828,17 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   list-style: none;
 }
 
+.tb-final-note {
+  margin: -4px 0 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 210, 116, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 210, 116, 0.08);
+  color: #ffe4a6;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .tb-final-checklist li {
   display: grid;
   grid-template-columns: 24px 1fr;
