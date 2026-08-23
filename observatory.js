@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "ここでは、ボトルメールを書いて森へ流せるんだよ。"
       ],
       nightMessages: [
-        "夜の星風テラスでは、願い星を書いて空へ届けられるんだよ。"
+        "夜の空には、みんなの願いが輝いているよ。"
       ]
     },
     {
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedFairy = fairies.find((fairy) => fairy.name === "リル") || fairies[0];
   const messages = isNight ? selectedFairy.nightMessages : selectedFairy.dayMessages;
   const selectedMessage = isNight
-    ? "夜の星風テラスでは、願い星を書いて空へ届けられるんだよ。"
+    ? "夜の空には、みんなの願いが輝いているよ。"
     : "ここでは、ボトルメールを書いて森へ流せるんだよ。";
   const forestWhispers = isNight
     ? [

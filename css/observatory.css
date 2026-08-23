@@ -27,18 +27,18 @@ body {
   --bottle-hotspot-top: 34%;
   --bottle-hotspot-width: 24%;
   --bottle-hotspot-height: 18%;
-  --wish-hotspot-left: 18%;
-  --wish-hotspot-top: 77%;
-  --wish-hotspot-width: 18%;
-  --wish-hotspot-height: 9%;
+  --wish-hotspot-left: 3.28%;
+  --wish-hotspot-top: 65.83%;
+  --wish-hotspot-width: 37.4%;
+  --wish-hotspot-height: 34.07%;
   --hokkori-day-left: 91%;
   --hokkori-day-top: 39%;
   --hokkori-day-width: 7%;
   --hokkori-day-height: 13%;
-  --hokkori-night-left: 91%;
-  --hokkori-night-top: 39%;
-  --hokkori-night-width: 7%;
-  --hokkori-night-height: 13%;
+  --hokkori-night-left: 74.64%;
+  --hokkori-night-top: 68.52%;
+  --hokkori-night-width: 20.21%;
+  --hokkori-night-height: 21.11%;
   position: relative;
   width: min(100vw, calc(100vh * 16 / 9));
   max-height: 100vh;
@@ -74,29 +74,30 @@ body {
 /* 妖精エリア */
 .fairy-area {
   position: absolute;
-  left: 36%;
-  bottom: 8%;
+  inset: 0;
   z-index: 30;
-  display: flex;
-  align-items: flex-end;
-  gap: 14px;
+  pointer-events: none;
 }
 
 .fairy {
-  width: 132px;
+  position: absolute;
+  left: 44.01%;
+  top: 55.74%;
+  width: 16.3%;
   height: auto;
-  flex-shrink: 0;
   filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
   animation: fairyFloat 4s ease-in-out infinite;
 }
 
 .fairy-balloon {
+  position: absolute;
+  left: 35.89%;
+  top: 43.24%;
   box-sizing: border-box;
-  flex: 0 1 auto;
-  width: max-content;
-  min-width: 220px;
-  max-width: 280px;
-  padding: 13px 17px;
+  width: 31.88%;
+  min-width: 0;
+  max-width: none;
+  padding: 13px 22px;
   border-radius: 18px;
   background: rgba(255, 248, 220, 0.9);
   color: #4a341d;
@@ -109,6 +110,18 @@ body {
   overflow-wrap: break-word;
   line-break: strict;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+
+.fairy-balloon::after {
+  content: "";
+  position: absolute;
+  left: 47%;
+  top: 100%;
+  width: 0;
+  height: 0;
+  border: 14px solid transparent;
+  border-top-color: rgba(255, 248, 220, 0.9);
+  filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.16));
 }
 
 .forest-whisper {
@@ -191,6 +204,9 @@ body {
 
 .observatory.is-night .night-panel {
   display: block;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: auto;
 }
 
@@ -251,11 +267,20 @@ body {
   border-radius: 18px;
 }
 
-.bottle-mail-hotspot,
-.wish-star-hotspot {
+.bottle-mail-hotspot {
   position: absolute;
   inset: 0;
   z-index: 1;
+  pointer-events: auto;
+}
+
+.wish-star-hotspot {
+  position: absolute;
+  left: var(--wish-hotspot-left);
+  top: var(--wish-hotspot-top);
+  z-index: 1;
+  width: var(--wish-hotspot-width);
+  height: var(--wish-hotspot-height);
   pointer-events: auto;
 }
 
@@ -278,10 +303,12 @@ body {
 }
 
 .wish-hokkori-hotspot {
-  right: 0;
-  bottom: 0;
-  width: 48%;
-  height: 32%;
+  left: var(--hokkori-night-left);
+  top: var(--hokkori-night-top);
+  right: auto;
+  bottom: auto;
+  width: var(--hokkori-night-width);
+  height: var(--hokkori-night-height);
 }
 
 .drift-bottle-arrival {
@@ -1670,18 +1697,18 @@ body {
     --bottle-hotspot-top: 42%;
     --bottle-hotspot-width: 34%;
     --bottle-hotspot-height: 16%;
-    --wish-hotspot-left: 16%;
-    --wish-hotspot-top: 80%;
-    --wish-hotspot-width: 22%;
-    --wish-hotspot-height: 8%;
+    --wish-hotspot-left: 1.85%;
+    --wish-hotspot-top: 65.52%;
+    --wish-hotspot-width: 46.76%;
+    --wish-hotspot-height: 20.47%;
     --hokkori-day-left: 55%;
     --hokkori-day-top: 48%;
     --hokkori-day-width: 24%;
     --hokkori-day-height: 14%;
-    --hokkori-night-left: 59%;
-    --hokkori-night-top: 74%;
-    --hokkori-night-width: 30%;
-    --hokkori-night-height: 11%;
+    --hokkori-night-left: 70.46%;
+    --hokkori-night-top: 66.77%;
+    --hokkori-night-width: 23.43%;
+    --hokkori-night-height: 12.55%;
     width: min(100vw, calc(100dvh * 9 / 16));
     height: auto;
     max-height: 100dvh;
@@ -1709,23 +1736,23 @@ body {
   }
 
   .fairy-area {
-    left: 60%;
-    bottom: 5.5vh;
-    width: min(78vw, 300px);
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    transform: translateX(-50%);
+    inset: 0;
+    width: auto;
+    transform: none;
   }
 
   .fairy {
-    width: 96px;
+    left: 40.46%;
+    top: 48.91%;
+    width: 33.06%;
   }
 
   .fairy-balloon {
-    width: min(78vw, 300px);
-    min-width: min(68vw, 240px);
-    max-width: 300px;
+    left: 26.02%;
+    top: 37.6%;
+    width: 49.81%;
+    min-width: 0;
+    max-width: none;
     padding: 11px 14px;
     font-size: 13px;
     line-height: 1.6;
@@ -1754,13 +1781,6 @@ body {
     bottom: 0;
     width: 50%;
     height: 30%;
-  }
-
-  .wish-hokkori-hotspot {
-    right: 0;
-    bottom: 0;
-    width: 50%;
-    height: 32%;
   }
 
   .hokkori-board {

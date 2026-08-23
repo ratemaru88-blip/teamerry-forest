@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "ここでは、ボトルメールを書いて森へ流せるんだよ。"
       ],
       nightMessages: [
-        "夜の星風テラスでは、願い星を書いて空へ届けられるんだよ。"
+        "夜の空には、みんなの願いが輝いているよ。"
       ]
     },
     {
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedFairy = fairies.find((fairy) => fairy.name === "リル") || fairies[0];
   const messages = isNight ? selectedFairy.nightMessages : selectedFairy.dayMessages;
   const selectedMessage = isNight
-    ? "夜の星風テラスでは、願い星を書いて空へ届けられるんだよ。"
+    ? "夜の空には、みんなの願いが輝いているよ。"
     : "ここでは、ボトルメールを書いて森へ流せるんだよ。";
   const forestWhispers = isNight
     ? [
@@ -2103,7 +2103,12 @@ document.addEventListener("DOMContentLoaded", () => {
   renderRandomHokkoriFairies(wishHokkoriCharacters, "wish");
   renderWishHokkoriStars();
 
-  if (new URLSearchParams(window.location.search).get("hokkori") === "1") {
+  const initialViewParams = new URLSearchParams(window.location.search);
+  if (initialViewParams.get("wish") === "1") {
+    showView(wishWriteView);
+  } else if (initialViewParams.get("bottle") === "1") {
+    showView(bottleWriteView);
+  } else if (initialViewParams.get("hokkori") === "1") {
     showView(isNight ? wishHokkoriView : bottleHokkoriView);
   }
 
