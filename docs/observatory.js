@@ -1437,7 +1437,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return false;
   }
   function openCurrentHokkoriView() {
-    showView(isNight ? wishHokkoriView : bottleHokkoriView);
+    showView(bottleHokkoriView);
+    renderHokkoriView(bottleHokkoriView, "bottle");
   }
 
   function setVideoReturnFocus(element) {
@@ -1999,8 +2000,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (wishHokkoriButton) {
     wishHokkoriButton.addEventListener("click", () => {
-      showView(wishHokkoriView);
-      renderHokkoriView(wishHokkoriView, "wish");
+      showView(bottleHokkoriView);
+      renderHokkoriView(bottleHokkoriView, "bottle");
     });
   }
 
@@ -2109,7 +2110,8 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (initialViewParams.get("bottle") === "1") {
     showView(bottleWriteView);
   } else if (initialViewParams.get("hokkori") === "1") {
-    showView(isNight ? wishHokkoriView : bottleHokkoriView);
+    showView(bottleHokkoriView);
+    renderHokkoriView(bottleHokkoriView, "bottle");
   }
 
   scheduleDriftBottleArrival();
