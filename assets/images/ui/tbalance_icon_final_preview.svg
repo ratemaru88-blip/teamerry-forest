@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 64" role="img" aria-labelledby="title desc">
+  <title id="title">TBalance Final Preview icon</title>
+  <desc id="desc">A cream plaque with a script F that also suggests T, paired with a green leaf for final checking and optimization.</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff9e9"/>
+      <stop offset="1" stop-color="#f0dca7"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#b9c46f"/>
+      <stop offset="1" stop-color="#5f7f2b"/>
+    </linearGradient>
+  </defs>
+  <rect x="3" y="6" width="70" height="52" rx="10" fill="url(#paper)" stroke="#d8bd72" stroke-width="2"/>
+  <path d="M18 47c6-15 14-28 29-39" fill="none" stroke="#284817" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M18 17c11-6 24-3 37-8" fill="none" stroke="#284817" stroke-width="3" stroke-linecap="round"/>
+  <path d="M15 46c-4 5-8 5-9 1 4 2 7-1 10-6" fill="none" stroke="#284817" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M20 20c-6-1-8-6-2-9 6-3 15-1 20 4" fill="none" stroke="#284817" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M27 40c7-15 17-25 31-30" fill="none" stroke="#4f6f26" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M33 36c7-14 17-21 29-21-3 11-12 20-25 23Z" fill="url(#leaf)"/>
+  <path d="M38 35c7-7 13-12 22-18" fill="none" stroke="#e7e3a5" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+  <path d="M43 27c-2 3-4 6-5 9M50 23c-2 2-5 5-8 8" fill="none" stroke="#486d28" stroke-width=".9" stroke-linecap="round" opacity=".55"/>
+  <path d="M39 47c9 3 18-1 22-8" fill="none" stroke="#284817" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

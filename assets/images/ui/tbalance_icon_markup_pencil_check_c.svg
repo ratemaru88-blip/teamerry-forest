@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">TBalance instruction icon draft C</title>
+  <desc id="desc">A document with a red check mark and red-blue pencil for markup instructions.</desc>
+  <defs>
+    <linearGradient id="pencil" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff7669"/>
+      <stop offset="0.48" stop-color="#ff3b2e"/>
+      <stop offset="0.52" stop-color="#2e6fb8"/>
+      <stop offset="1" stop-color="#20b7e8"/>
+    </linearGradient>
+    <filter id="softShadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <path d="M8 13h33c4 0 7 3 7 7v24c0 4-3 7-7 7H8V13Z" fill="none" stroke="#f7fbfb" stroke-width="3" stroke-linejoin="round" opacity="0.88"/>
+    <path d="M11 31 22 42 42 15" fill="none" stroke="#ff1f1b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="rotate(-45 42 40)">
+      <path d="M20 36h28l5 5-5 5H20l-5-5 5-5Z" fill="url(#pencil)" stroke="#f7fbfb" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M15 41 9 41" stroke="#ff3b2e" stroke-width="4.8" stroke-linecap="round"/>
+      <path d="M47.5 36 56 41l-8.5 5" fill="#ffd994" stroke="#f7fbfb" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M33 36v10" stroke="#f7fbfb" stroke-width="2.4" opacity="0.72"/>
+    </g>
+    <path d="M52 31.2 59.2 24 63.8 24 56.6 31.2Z" fill="#20b7e8"/>
+  </g>
+</svg>

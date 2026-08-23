@@ -2103,7 +2103,12 @@ document.addEventListener("DOMContentLoaded", () => {
   renderRandomHokkoriFairies(wishHokkoriCharacters, "wish");
   renderWishHokkoriStars();
 
-  if (new URLSearchParams(window.location.search).get("hokkori") === "1") {
+  const initialViewParams = new URLSearchParams(window.location.search);
+  if (initialViewParams.get("wish") === "1") {
+    showView(wishWriteView);
+  } else if (initialViewParams.get("bottle") === "1") {
+    showView(bottleWriteView);
+  } else if (initialViewParams.get("hokkori") === "1") {
     showView(isNight ? wishHokkoriView : bottleHokkoriView);
   }
 

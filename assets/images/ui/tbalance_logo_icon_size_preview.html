@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TBalance Logo Icon Size Preview</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --ink: #17191b;
+      --muted: #5f6b69;
+      --line: rgba(20, 24, 24, 0.14);
+      --panel: #ffffff;
+      --dark: #101315;
+      --soft: #f6f7f6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f5f3;
+      color: var(--ink);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+    }
+
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    section {
+      margin-top: 24px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 22px;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 18px;
+    }
+
+    .sample {
+      display: grid;
+      min-height: 116px;
+      place-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      padding: 16px;
+    }
+
+    .sample.dark {
+      background: var(--dark);
+      color: #fff;
+    }
+
+    .label {
+      color: inherit;
+      font-size: 12px;
+      opacity: 0.72;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .button-sample {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      border: 1px solid rgba(20, 24, 24, 0.16);
+      background: #fff;
+      padding: 9px 18px;
+      color: #1a1b1d;
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+
+    .button-sample.dark {
+      border-color: rgba(255, 255, 255, 0.26);
+      background: #101315;
+      color: #fff;
+    }
+
+    .full-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .full-sample {
+      display: grid;
+      min-height: 220px;
+      place-items: center;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      padding: 20px;
+    }
+
+    .full-sample.dark {
+      background: var(--dark);
+    }
+
+    @media (max-width: 700px) {
+      main {
+        padding: 28px 14px;
+      }
+
+      .grid,
+      .full-row {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>TBalance Logo Version A Size Preview</h1>
+    <p>Version A is the current 95-point logo. This page checks whether the mark still reads clearly at common icon sizes.</p>
+
+    <section>
+      <h2>Mark On Light Background</h2>
+      <div class="grid">
+        <div class="sample"><img src="tbalance_logo_mark_a.svg" width="24" height="24" alt="TBalance mark 24px"><span class="label">24px</span></div>
+        <div class="sample"><img src="tbalance_logo_mark_a.svg" width="32" height="32" alt="TBalance mark 32px"><span class="label">32px</span></div>
+        <div class="sample"><img src="tbalance_logo_mark_a.svg" width="48" height="48" alt="TBalance mark 48px"><span class="label">48px</span></div>
+        <div class="sample"><img src="tbalance_logo_mark_a.svg" width="64" height="64" alt="TBalance mark 64px"><span class="label">64px</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Mark On Dark Background</h2>
+      <div class="grid">
+        <div class="sample dark"><img src="tbalance_logo_mark_a.svg" width="24" height="24" alt="TBalance mark 24px on dark"><span class="label">24px</span></div>
+        <div class="sample dark"><img src="tbalance_logo_mark_a.svg" width="32" height="32" alt="TBalance mark 32px on dark"><span class="label">32px</span></div>
+        <div class="sample dark"><img src="tbalance_logo_mark_a.svg" width="48" height="48" alt="TBalance mark 48px on dark"><span class="label">48px</span></div>
+        <div class="sample dark"><img src="tbalance_logo_mark_a.svg" width="64" height="64" alt="TBalance mark 64px on dark"><span class="label">64px</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Button Mockups</h2>
+      <div class="button-row">
+        <div class="button-sample"><img src="tbalance_logo_mark_a.svg" width="24" height="24" alt="">TEST</div>
+        <div class="button-sample"><img src="tbalance_logo_mark_a.svg" width="32" height="32" alt="">TEST</div>
+        <div class="button-sample dark"><img src="tbalance_logo_mark_a.svg" width="24" height="24" alt="">TEST</div>
+        <div class="button-sample dark"><img src="tbalance_logo_mark_a.svg" width="32" height="32" alt="">TEST</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Full Logo Reference</h2>
+      <div class="full-row">
+        <div class="full-sample"><img src="tbalance_logo_full_a.svg" width="240" alt="TBalance full logo"></div>
+        <div class="full-sample dark"><img src="tbalance_logo_full_a.svg" width="240" alt="TBalance full logo on dark"></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

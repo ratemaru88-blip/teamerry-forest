@@ -1008,7 +1008,8 @@ body {
 }
 
 .wish-hokkori-star {
-  --star-copy-y: -1px;
+  --star-copy-x: 0px;
+  --star-copy-y: 18px;
   position: absolute;
   z-index: 0;
   box-sizing: border-box;
@@ -1052,28 +1053,30 @@ body {
 
 .wish-hokkori-star__name {
   display: block;
-  max-width: 100%;
+  max-width: 92%;
   color: rgba(96, 59, 29, 0.82);
   font-size: 8.5px;
   line-height: 1.1;
   white-space: nowrap;
-  transform: translateY(var(--star-copy-y));
+  transform: translate(var(--star-copy-x), var(--star-copy-y));
 }
 
 .wish-hokkori-star__body {
   display: -webkit-box;
-  max-width: 100%;
-  max-height: 4.9em;
+  max-width: 92%;
+  max-height: 3.7em;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   text-wrap: balance;
-  transform: translateY(var(--star-copy-y));
+  transform: translate(var(--star-copy-x), var(--star-copy-y));
 }
 
 .wish-hokkori-star--1 {
-  left: 12%;
-  top: 30%;
+  --star-copy-x: 12px;
+  --star-copy-y: 24px;
+  left: 10%;
+  top: 24.5%;
   transform: rotate(-8deg);
 }
 
@@ -1083,8 +1086,10 @@ body {
 }
 
 .wish-hokkori-star--2 {
-  left: 69%;
-  top: 33%;
+  --star-copy-x: -3px;
+  --star-copy-y: 23px;
+  left: 72%;
+  top: 24.5%;
   transform: translateX(-50%) rotate(5deg);
 }
 
@@ -1094,14 +1099,16 @@ body {
 }
 
 .wish-hokkori-star--3 {
-  right: 25%;
-  top: 54%;
-  transform: rotate(-3deg);
+  --star-copy-x: -3px;
+  --star-copy-y: 22px;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) rotate(-3deg);
 }
 
 .wish-hokkori-star--3:hover,
 .wish-hokkori-star--3:focus-visible {
-  transform: rotate(-3deg) translateY(-2px);
+  transform: translateX(-50%) rotate(-3deg) translateY(-2px);
 }
 
 .hokkori-board {
@@ -1900,7 +1907,6 @@ body {
   }
 
   .wish-hokkori-star {
-    --star-copy-y: calc(-1 * min(0.3vw, 0.16dvh, 1px));
     width: min(36vw, 19dvh, 132px);
     height: min(32vw, 17dvh, 118px);
     padding: 0 min(8vw, 4.3dvh, 31px);

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">TBalance logo</title>
+  <desc id="desc">TBalance logo with the layered translucent T mark and the tagline Design with Balance.</desc>
+  <defs>
+    <filter id="markShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#111616" flood-opacity="0.14"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#ffffff" flood-opacity="0.48"/>
+    </filter>
+    <filter id="textShadow" x="-10%" y="-20%" width="120%" height="150%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.7" flood-color="#0b0c0c" flood-opacity="0.18"/>
+    </filter>
+    <filter id="centerGlow" x="-35%" y="-35%" width="170%" height="170%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#ff8a2d" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffffff" flood-opacity="0.56"/>
+    </filter>
+    <linearGradient id="coral" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff9a89"/>
+      <stop offset="0.5" stop-color="#ff6f45"/>
+      <stop offset="1" stop-color="#ff7f57"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffad55"/>
+      <stop offset="0.48" stop-color="#ff8b22"/>
+      <stop offset="1" stop-color="#ffb55c"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffd577"/>
+      <stop offset="0.54" stop-color="#f5b42b"/>
+      <stop offset="1" stop-color="#ffe08b"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#95c8bc"/>
+      <stop offset="0.52" stop-color="#4f9a8d"/>
+      <stop offset="1" stop-color="#7eb7aa"/>
+    </linearGradient>
+    <linearGradient id="whiteT" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.72" stop-color="#fffdf7"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <path id="tShape" d="M119 72c0-10 8-18 18-18h238c10 0 18 8 18 18v38c0 10-8 18-18 18h-83v194c0 11-9 20-20 20h-32c-11 0-20-9-20-20V128h-83c-10 0-18-8-18-18V72z"/>
+  </defs>
+
+  <g transform="translate(0 -8) scale(0.74) translate(88 0)" filter="url(#markShadow)">
+    <use href="#tShape" fill="url(#teal)" opacity="0.62" transform="translate(-58 34)"/>
+    <use href="#tShape" fill="url(#teal)" opacity="0.46" transform="translate(-18 74)"/>
+    <use href="#tShape" fill="url(#coral)" opacity="0.68" transform="translate(0 -18)"/>
+    <use href="#tShape" fill="url(#coral)" opacity="0.45" transform="translate(37 18)"/>
+    <use href="#tShape" fill="url(#gold)" opacity="0.62" transform="translate(58 32)"/>
+    <use href="#tShape" fill="url(#orange)" opacity="0.56" transform="translate(22 64)"/>
+  </g>
+  <path d="M145 133c0-9 7-16 16-16h190c9 0 16 7 16 16v33c0 9-7 16-16 16h-67v154c0 10-8 18-18 18h-20c-10 0-18-8-18-18V182h-67c-9 0-16-7-16-16v-33z" fill="url(#whiteT)" filter="url(#centerGlow)" transform="translate(0 -8) scale(0.74) translate(88 0)"/>
+
+  <g filter="url(#textShadow)">
+    <text x="256" y="395" text-anchor="middle" fill="#17191b" font-family="'Helvetica Neue', Arial, sans-serif" font-size="78" font-weight="300" letter-spacing="6">TBalance</text>
+  </g>
+  <text x="256" y="449" text-anchor="middle" fill="#5b9d8f" font-family="'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="400" letter-spacing="1.8">Design with Balance.</text>
+</svg>
