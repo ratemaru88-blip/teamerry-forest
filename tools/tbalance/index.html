@@ -1347,6 +1347,25 @@
               まだMappingは確定していません。
             </div>
           </section>
+          <section class="tb-analyzer-mapping" aria-label="Manifest">
+            <div class="tb-analyzer-mapping-head">
+              <strong>Manifest</strong>
+              <span id="manifestMappingCount">0件</span>
+            </div>
+            <div class="tb-manifest-panel">
+              <div class="tb-manifest-grid">
+                <label>Project ID<input id="manifestProjectId" type="text" value="sample-project" spellcheck="false"></label>
+                <label>Page ID<input id="manifestPageId" type="text" value="page-home" spellcheck="false"></label>
+              </div>
+              <div class="tb-manifest-actions">
+                <button id="exportManifest" type="button">Export Manifest</button>
+                <button id="importManifest" type="button">Import Manifest</button>
+                <button id="clearRuntimeMappings" type="button">Runtime Clear</button>
+              </div>
+              <input id="manifestImportFile" type="file" accept="application/json,.json" hidden>
+              <p id="manifestStatus" class="tb-manifest-status">Manifestは明示操作でExport / Importします。</p>
+            </div>
+          </section>
         </aside>
       </div>
     </section>
@@ -1354,6 +1373,6 @@
 
   <script src="./tbalance-renderer.js?v=20260824-v1-close"></script>
   <script src="./analyzer/read-only-analyzer.js?v=20260824-analyzer-v01-safe"></script>
-  <script src="./tbalance.js?v=20260824-v1-confirmed-mapping"></script>
+  <script src="./tbalance.js?v=20260824-v1-manifest-v01"></script>
 </body>
 </html>

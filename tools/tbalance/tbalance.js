@@ -207,6 +207,9 @@
       message: "",
       confirmedMappings: [],
       mappingWarning: "",
+      manifestProjectId: "sample-project",
+      manifestPageId: "page-home",
+      manifestWarning: "",
     },
     dirty: false,
     autosaveError: "",
@@ -447,6 +450,14 @@
     mappingCandidatePanel: $("mappingCandidatePanel"),
     confirmedMappingCount: $("confirmedMappingCount"),
     confirmedMappingList: $("confirmedMappingList"),
+    manifestMappingCount: $("manifestMappingCount"),
+    manifestProjectId: $("manifestProjectId"),
+    manifestPageId: $("manifestPageId"),
+    exportManifest: $("exportManifest"),
+    importManifest: $("importManifest"),
+    clearRuntimeMappings: $("clearRuntimeMappings"),
+    manifestImportFile: $("manifestImportFile"),
+    manifestStatus: $("manifestStatus"),
   };
 
   async function start() {
@@ -514,6 +525,18 @@
     els.analyzerElementList?.addEventListener("click", handleAnalyzerElementListClick);
     els.mappingCandidatePanel?.addEventListener("click", handleMappingCandidateClick);
     els.confirmedMappingList?.addEventListener("click", handleConfirmedMappingListClick);
+    els.exportManifest?.addEventListener("click", exportAnalyzerManifest);
+    els.importManifest?.addEventListener("click", () => els.manifestImportFile?.click());
+    els.manifestImportFile?.addEventListener("change", importAnalyzerManifestFromFile);
+    els.clearRuntimeMappings?.addEventListener("click", clearRuntimeConfirmedMappings);
+    els.manifestProjectId?.addEventListener("input", () => {
+      state.analyzer.manifestProjectId = sanitizeManifestId(els.manifestProjectId.value || "sample-project", "sample-project");
+      renderManifestPanel();
+    });
+    els.manifestPageId?.addEventListener("input", () => {
+      state.analyzer.manifestPageId = sanitizeManifestId(els.manifestPageId.value || "page-home", "page-home");
+      renderManifestPanel();
+    });
     els.balanceCheckButton.addEventListener("click", cycleBalanceMode);
     els.previewButton.addEventListener("click", toggleTestMode);
     els.settingsButton.addEventListener("click", () => {
@@ -1118,6 +1141,7 @@
     state.analyzer.result = null;
     state.analyzer.selectedId = "";
     state.analyzer.mappingWarning = "";
+    syncManifestInputsToAnalyzerPage();
     if (els.analyzerFrame) {
       setAnalyzerFrameSandbox(false);
       els.analyzerFrame.removeAttribute("src");
@@ -1136,6 +1160,7 @@
     state.analyzer.result = null;
     state.analyzer.selectedId = "";
     state.analyzer.mappingWarning = "";
+    syncManifestInputsToAnalyzerPage();
     if (els.analyzerFrame) {
       setAnalyzerFrameSandbox(Boolean(meta.allowScripts));
       els.analyzerFrame.removeAttribute("srcdoc");
@@ -1271,6 +1296,7 @@
       els.analyzerElementDetail.textContent = "未解析";
       renderMappingCandidate(null);
       renderConfirmedMappings();
+      renderManifestPanel();
       return;
     }
     const statusCounts = result.elements.reduce((counts, element) => {
@@ -1309,6 +1335,7 @@
       : "要素を選択してください。";
     renderMappingCandidate(selectedElement);
     renderConfirmedMappings();
+    renderManifestPanel();
   }
 
   function handleMappingCandidateClick(event) {
@@ -1382,8 +1409,8 @@
     if (!els.confirmedMappingList || !els.confirmedMappingCount) {
       return;
     }
-    const pageKey = getAnalyzerPageKey();
-    const mappings = state.analyzer.confirmedMappings.filter((mapping) => mapping.pageId === pageKey);
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const mappings = getVisibleConfirmedMappings(pageMeta);
     els.confirmedMappingCount.textContent = `${mappings.length}件`;
     if (!mappings.length) {
       els.confirmedMappingList.textContent = "まだMappingは確定していません。";
@@ -1394,7 +1421,7 @@
       return `<article class="tb-confirmed-mapping${missing ? " is-missing" : ""}">
         <div>
           <strong>${escapeHtml(mapping.tbId)}</strong>
-          <small>${escapeHtml(mapping.domRef)}${missing ? " / Mapping Missing" : ""}</small>
+          <small>${escapeHtml(mapping.domRef)}${mapping.viewState ? ` / ${escapeHtml(mapping.viewState)}` : " / common"}${missing ? " / Mapping Missing" : ""}</small>
         </div>
         <span>${escapeHtml(mapping.role || "visual")}</span>
         <button type="button" data-remove-mapping="${escapeAttr(mapping.mappingId)}">解除</button>
@@ -1414,13 +1441,14 @@
     const domRef = els.mappingCandidatePanel?.querySelector("#mappingDomRef")?.value || candidate.domRef;
     const selectorQuality = els.mappingCandidatePanel?.querySelector("#mappingSelectorQuality")?.value || candidate.selectorQuality;
     const behaviorRefInput = (els.mappingCandidatePanel?.querySelector("#mappingBehaviorRef")?.value || "").trim();
+    const pageMeta = getAnalyzerManifestPageMeta();
     const mapping = {
       mappingId: `mapping_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-      pageId: getAnalyzerPageKey(),
+      pageId: pageMeta.pageId,
       page: {
         path: state.analyzer.result?.page?.path || state.analyzer.effectiveUrl || state.analyzer.loadedPath || "",
-        sourcePath: state.analyzer.result?.page?.sourcePath || state.analyzer.sourcePath || "",
-        viewState: state.analyzer.result?.page?.viewState || state.analyzer.viewState || "",
+        sourcePath: pageMeta.sourcePath,
+        viewState: pageMeta.currentViewState,
       },
       sourceAuthority: "standard-web",
       tbId,
@@ -1430,6 +1458,7 @@
       editableProperties: getCheckedMappingValues("editable"),
       protectedProperties: getCheckedMappingValues("protected"),
       behaviorRef: behaviorRefInput || null,
+      viewState: pageMeta.currentViewState || "",
       analyzer: {
         candidateId: element.candidateId,
         statusAtConfirmation: element.inferred.analysisStatus,
@@ -1451,9 +1480,10 @@
       setAnalyzerStatus("error", `Mapping重複: ${state.analyzer.mappingWarning}`);
       return;
     }
+    const scopeWarnings = getMappingScopeWarnings(mapping);
     state.analyzer.confirmedMappings.push(mapping);
-    state.analyzer.mappingWarning = "";
-    setAnalyzerStatus("success", `Confirmed Mappingを追加しました: ${mapping.tbId}`);
+    state.analyzer.mappingWarning = scopeWarnings.join(" / ");
+    setAnalyzerStatus("success", `Confirmed Mappingを追加しました: ${mapping.tbId}${scopeWarnings.length ? ` / Warning: ${scopeWarnings.join(" / ")}` : ""}`);
     renderAnalyzerResult();
   }
 
@@ -1485,8 +1515,9 @@
       || observed.tag
       || "element";
     const base = sanitizeTbId(raw);
+    const pageMeta = getAnalyzerManifestPageMeta();
     const used = new Set(state.analyzer.confirmedMappings
-      .filter((mapping) => mapping.pageId === getAnalyzerPageKey())
+      .filter((mapping) => mapping.pageId === pageMeta.pageId && (mapping.viewState || "") === (pageMeta.currentViewState || ""))
       .map((mapping) => mapping.tbId));
     if (!used.has(base)) {
       return base;
@@ -1559,14 +1590,36 @@
   }
 
   function getMappingDuplicateWarnings(mapping) {
-    const pageKey = mapping.pageId || getAnalyzerPageKey();
-    const mappings = state.analyzer.confirmedMappings.filter((item) => item.pageId === pageKey);
+    const pageKey = mapping.pageId || getAnalyzerManifestPageMeta().pageId;
+    const viewState = mapping.viewState || "";
+    const mappings = state.analyzer.confirmedMappings.filter((item) => item.pageId === pageKey && (item.viewState || "") === viewState);
     const warnings = [];
     if (mapping.tbId && mappings.some((item) => item.tbId === mapping.tbId)) {
       warnings.push(`tbId "${mapping.tbId}" は同一Pageで使用済みです`);
     }
     if (mapping.domRef && mappings.some((item) => item.domRef === mapping.domRef)) {
       warnings.push(`DOM "${mapping.domRef}" は既にMapping済みです`);
+    }
+    return warnings;
+  }
+
+  function getMappingScopeWarnings(mapping) {
+    const pageKey = mapping.pageId || getAnalyzerManifestPageMeta().pageId;
+    const viewState = mapping.viewState || "";
+    const mappings = state.analyzer.confirmedMappings.filter((item) => item.pageId === pageKey);
+    const warnings = [];
+    const commonConflict = mappings.find((item) => {
+      const itemViewState = item.viewState || "";
+      if (itemViewState === viewState) {
+        return false;
+      }
+      if (itemViewState && viewState) {
+        return false;
+      }
+      return (mapping.tbId && item.tbId === mapping.tbId) || (mapping.domRef && item.domRef === mapping.domRef);
+    });
+    if (commonConflict) {
+      warnings.push("共通MappingとView専用Mappingに同じtbIdまたはDOMがあります。v0.1では上書きせず両方保持します");
     }
     return warnings;
   }
@@ -1579,6 +1632,351 @@
       page.viewState || state.analyzer.viewState || "",
     ].filter(Boolean).join("?");
   }
+
+  function getAnalyzerManifestPageMeta() {
+    const result = state.analyzer.result;
+    const page = result?.page || {};
+    const sourcePath = page.sourcePath || state.analyzer.sourcePath || deriveSourcePathFromAnalyzer();
+    const currentViewState = page.viewState || state.analyzer.viewState || "";
+    const candidatePageId = suggestManifestPageId(sourcePath || state.analyzer.loadedKind || "page");
+    const pageId = sanitizeManifestId(els.manifestPageId?.value || state.analyzer.manifestPageId || candidatePageId, candidatePageId);
+    const projectId = sanitizeManifestId(els.manifestProjectId?.value || state.analyzer.manifestProjectId || "sample-project", "sample-project");
+    return {
+      runtimeKey: getAnalyzerPageKey(),
+      projectId,
+      pageId,
+      sourcePath: sourcePath || "unknown.html",
+      currentViewState,
+      sourceAuthority: "standard-web",
+    };
+  }
+
+  function deriveSourcePathFromAnalyzer() {
+    if (state.analyzer.loadedKind === "generic-test") {
+      return "generic-test";
+    }
+    const raw = state.analyzer.sourcePath || state.analyzer.loadedPath || state.analyzer.effectiveUrl || "";
+    if (!raw) {
+      return "";
+    }
+    try {
+      const url = new URL(raw, window.location.href);
+      return url.pathname.split("/").filter(Boolean).pop() || "index.html";
+    } catch (error) {
+      return String(raw).split("?")[0].split("#")[0] || "unknown.html";
+    }
+  }
+
+  function suggestManifestPageId(sourcePath) {
+    const rawName = String(sourcePath || "page")
+      .split("?")[0]
+      .split("#")[0]
+      .split(/[\\/]/)
+      .pop()
+      .replace(/\.[^.]+$/, "");
+    return sanitizeManifestId(`page-${rawName || "page"}`, "page-home");
+  }
+
+  function sanitizeManifestId(value, fallback) {
+    const normalized = String(value || fallback || "id")
+      .trim()
+      .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return normalized || fallback || "id";
+  }
+
+  function syncManifestInputsToAnalyzerPage() {
+    const sourcePath = deriveSourcePathFromAnalyzer();
+    const pageId = suggestManifestPageId(sourcePath || state.analyzer.loadedKind || "page");
+    if (els.manifestPageId) {
+      els.manifestPageId.value = pageId;
+    }
+    state.analyzer.manifestPageId = pageId;
+    if (els.manifestProjectId && !els.manifestProjectId.value) {
+      els.manifestProjectId.value = state.analyzer.manifestProjectId || "sample-project";
+    }
+  }
+
+  function getVisibleConfirmedMappings(pageMeta = getAnalyzerManifestPageMeta()) {
+    return state.analyzer.confirmedMappings.filter((mapping) => {
+      if (mapping.pageId !== pageMeta.pageId) {
+        return false;
+      }
+      const mappingViewState = mapping.viewState || "";
+      return !mappingViewState || mappingViewState === pageMeta.currentViewState;
+    });
+  }
+
+  function renderManifestPanel() {
+    if (!els.manifestMappingCount) {
+      return;
+    }
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const mappings = getVisibleConfirmedMappings(pageMeta);
+    els.manifestMappingCount.textContent = `${mappings.length}件`;
+    if (els.manifestProjectId && els.manifestProjectId.value !== pageMeta.projectId) {
+      els.manifestProjectId.value = pageMeta.projectId;
+    }
+    if (els.manifestPageId && els.manifestPageId.value !== pageMeta.pageId) {
+      els.manifestPageId.value = pageMeta.pageId;
+    }
+    if (els.manifestStatus && state.analyzer.manifestWarning) {
+      els.manifestStatus.textContent = state.analyzer.manifestWarning;
+      els.manifestStatus.dataset.status = "warning";
+    }
+  }
+
+  function buildAnalyzerManifest() {
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const mappings = state.analyzer.confirmedMappings;
+    const pagesById = new Map();
+    mappings.forEach((mapping) => {
+      const pageId = mapping.pageId || pageMeta.pageId;
+      if (!pagesById.has(pageId)) {
+        pagesById.set(pageId, {
+          pageId,
+          sourcePath: mapping.page?.sourcePath || pageMeta.sourcePath,
+          sourceAuthority: mapping.sourceAuthority || "standard-web",
+          components: [],
+        });
+      }
+      const page = pagesById.get(pageId);
+      const component = {
+        tbId: mapping.tbId,
+        domRef: mapping.domRef,
+        role: mapping.role || "visual",
+        editableProperties: Array.isArray(mapping.editableProperties) ? mapping.editableProperties : [],
+        protectedProperties: Array.isArray(mapping.protectedProperties) ? mapping.protectedProperties : [],
+        behaviorRef: mapping.behaviorRef || null,
+      };
+      if (mapping.viewState) {
+        component.viewState = mapping.viewState;
+      }
+      page.components.push(component);
+    });
+    if (!pagesById.size) {
+      pagesById.set(pageMeta.pageId, {
+        pageId: pageMeta.pageId,
+        sourcePath: pageMeta.sourcePath,
+        sourceAuthority: pageMeta.sourceAuthority,
+        components: [],
+      });
+    }
+    return {
+      compatibilitySpecVersion: "1.0",
+      projectId: pageMeta.projectId,
+      pages: Array.from(pagesById.values()),
+    };
+  }
+
+  function exportAnalyzerManifest() {
+    const manifest = buildAnalyzerManifest();
+    const validation = validateAnalyzerManifest(manifest);
+    if (validation.errors.length) {
+      setManifestStatus(`Manifest Export不可: ${validation.errors.join(" / ")}`, "error");
+      renderManifestPanel();
+      return;
+    }
+    downloadBlob(JSON.stringify(manifest, null, 2), "tbalance.manifest.json", "application/json");
+    setManifestStatus(`ManifestをExportしました: ${manifest.pages.reduce((sum, page) => sum + page.components.length, 0)}件${validation.warnings.length ? ` / Warning: ${validation.warnings.join(" / ")}` : ""}`, validation.warnings.length ? "warning" : "success");
+    renderManifestPanel();
+  }
+
+  function importAnalyzerManifestFromFile(event) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const manifest = JSON.parse(String(reader.result || ""));
+        applyAnalyzerManifest(manifest);
+      } catch (error) {
+        setManifestStatus(`Manifest Import不可: JSONとして読めません。${error.message || error}`, "error");
+      } finally {
+        if (els.manifestImportFile) {
+          els.manifestImportFile.value = "";
+        }
+      }
+    };
+    reader.onerror = () => {
+      setManifestStatus("Manifest Import不可: ファイルを読めません。", "error");
+      if (els.manifestImportFile) {
+        els.manifestImportFile.value = "";
+      }
+    };
+    reader.readAsText(file, "utf-8");
+  }
+
+  function applyAnalyzerManifest(manifest) {
+    const validation = validateAnalyzerManifest(manifest);
+    if (validation.errors.length) {
+      setManifestStatus(`Manifest Import不可: ${validation.errors.join(" / ")}`, "error");
+      return { imported: false, validation, count: state.analyzer.confirmedMappings.length };
+    }
+    restoreConfirmedMappingsFromManifest(manifest);
+    state.analyzer.manifestProjectId = sanitizeManifestId(manifest.projectId, "sample-project");
+    if (els.manifestProjectId) {
+      els.manifestProjectId.value = state.analyzer.manifestProjectId;
+    }
+    setManifestStatus(`ManifestをImportしました: ${state.analyzer.confirmedMappings.length}件${validation.warnings.length ? ` / Warning: ${validation.warnings.join(" / ")}` : ""}`, validation.warnings.length ? "warning" : "success");
+    renderAnalyzerResult();
+    return { imported: true, validation, count: state.analyzer.confirmedMappings.length };
+  }
+
+  function validateAnalyzerManifest(manifest) {
+    const errors = [];
+    const warnings = [];
+    if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) {
+      return { errors: ["Manifest root must be object"], warnings };
+    }
+    if (!manifest.compatibilitySpecVersion) {
+      errors.push("compatibilitySpecVersionがありません");
+    } else if (manifest.compatibilitySpecVersion !== "1.0") {
+      warnings.push(`compatibilitySpecVersion ${manifest.compatibilitySpecVersion} は現在対応Version 1.0と異なります`);
+    }
+    if (!manifest.projectId || typeof manifest.projectId !== "string") {
+      errors.push("projectIdがありません");
+    }
+    if (!Array.isArray(manifest.pages)) {
+      errors.push("pagesがArrayではありません");
+      return { errors, warnings };
+    }
+    manifest.pages.forEach((page, pageIndex) => {
+      if (!page || typeof page !== "object") {
+        errors.push(`pages[${pageIndex}]がObjectではありません`);
+        return;
+      }
+      if (!page.pageId) {
+        errors.push(`pages[${pageIndex}].pageIdがありません`);
+      }
+      if (!page.sourcePath) {
+        errors.push(`${page.pageId || `pages[${pageIndex}]`}.sourcePathがありません`);
+      }
+      if (!["standard-web", "tbalance"].includes(page.sourceAuthority)) {
+        errors.push(`${page.pageId || `pages[${pageIndex}]`}.sourceAuthorityが不正です`);
+      }
+      if (page.sourcePath && /[?#]/.test(page.sourcePath)) {
+        errors.push(`${page.pageId || `pages[${pageIndex}]`}.sourcePathにquery/hashを含めないでください`);
+      }
+      if (!Array.isArray(page.components)) {
+        errors.push(`${page.pageId || `pages[${pageIndex}]`}.componentsがArrayではありません`);
+        return;
+      }
+      const exactTbIds = new Set();
+      const exactDomRefs = new Set();
+      const commonTbIds = new Set();
+      const commonDomRefs = new Set();
+      const viewTbIds = new Set();
+      const viewDomRefs = new Set();
+      page.components.forEach((component, componentIndex) => {
+        const label = `${page.pageId || `pages[${pageIndex}]`}.components[${componentIndex}]`;
+        if (!component || typeof component !== "object") {
+          errors.push(`${label}がObjectではありません`);
+          return;
+        }
+        if (!component.tbId) {
+          errors.push(`${label}.tbIdがありません`);
+        }
+        if (!component.domRef) {
+          errors.push(`${label}.domRefがありません`);
+        }
+        const viewState = component.viewState || "";
+        const tbKey = `${viewState}\n${component.tbId || ""}`;
+        const domKey = `${viewState}\n${component.domRef || ""}`;
+        if (component.tbId) {
+          if (exactTbIds.has(tbKey)) {
+            errors.push(`${page.pageId}.tbId "${component.tbId}" が同一Viewで重複しています`);
+          }
+          exactTbIds.add(tbKey);
+          if (viewState) {
+            viewTbIds.add(component.tbId);
+          } else {
+            commonTbIds.add(component.tbId);
+          }
+        }
+        if (component.domRef) {
+          if (exactDomRefs.has(domKey)) {
+            errors.push(`${page.pageId}.domRef "${component.domRef}" が同一Viewで重複しています`);
+          }
+          exactDomRefs.add(domKey);
+          if (viewState) {
+            viewDomRefs.add(component.domRef);
+          } else {
+            commonDomRefs.add(component.domRef);
+          }
+        }
+      });
+      commonTbIds.forEach((tbId) => {
+        if (viewTbIds.has(tbId)) {
+          warnings.push(`${page.pageId}.tbId "${tbId}" は共通MappingとView専用Mappingの両方にあります`);
+        }
+      });
+      commonDomRefs.forEach((domRef) => {
+        if (viewDomRefs.has(domRef)) {
+          warnings.push(`${page.pageId}.domRef "${domRef}" は共通MappingとView専用Mappingの両方にあります`);
+        }
+      });
+    });
+    return { errors, warnings };
+  }
+
+  function restoreConfirmedMappingsFromManifest(manifest) {
+    const restored = [];
+    manifest.pages.forEach((page) => {
+      page.components.forEach((component) => {
+        restored.push({
+          mappingId: `mapping_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          pageId: page.pageId,
+          page: {
+            path: page.sourcePath,
+            sourcePath: page.sourcePath,
+            viewState: component.viewState || "",
+          },
+          sourceAuthority: page.sourceAuthority || "standard-web",
+          tbId: component.tbId,
+          domRef: component.domRef,
+          selectorQuality: getSelectorQuality(component.domRef),
+          role: component.role || "visual",
+          editableProperties: Array.isArray(component.editableProperties) ? component.editableProperties : [],
+          protectedProperties: Array.isArray(component.protectedProperties) ? component.protectedProperties : [],
+          behaviorRef: component.behaviorRef || null,
+          viewState: component.viewState || "",
+          importedFromManifest: true,
+        });
+      });
+    });
+    state.analyzer.confirmedMappings = restored;
+  }
+
+  function clearRuntimeConfirmedMappings() {
+    state.analyzer.confirmedMappings = [];
+    state.analyzer.mappingWarning = "";
+    state.analyzer.manifestWarning = "";
+    setManifestStatus("Runtime Confirmed Mappingをクリアしました。Existing HTML/CSS/JSは変更していません。", "success");
+    renderAnalyzerResult();
+  }
+
+  function setManifestStatus(message, status = "idle") {
+    state.analyzer.manifestWarning = status === "warning" ? message : "";
+    if (!els.manifestStatus) {
+      return;
+    }
+    els.manifestStatus.textContent = message;
+    els.manifestStatus.dataset.status = status;
+  }
+
+  window.TBalanceManifestDebug = {
+    build: buildAnalyzerManifest,
+    validate: validateAnalyzerManifest,
+    import: applyAnalyzerManifest,
+    clear: clearRuntimeConfirmedMappings,
+    getConfirmedMappings: () => state.analyzer.confirmedMappings.map((mapping) => ({ ...mapping })),
+    getVisibleMappings: () => getVisibleConfirmedMappings(getAnalyzerManifestPageMeta()).map((mapping) => ({ ...mapping })),
+  };
 
   function isMappingDomMissing(mapping) {
     const frame = els.analyzerFrame;
