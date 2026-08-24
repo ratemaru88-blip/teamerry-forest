@@ -195,6 +195,17 @@
     panelResize: null,
     paintSurfaces: new Map(),
     finalPreviewComplete: false,
+    analyzer: {
+      open: false,
+      result: null,
+      selectedId: "",
+      loadedPath: "",
+      loadedKind: "",
+      effectiveUrl: "",
+      sourcePath: "",
+      viewState: "",
+      message: "",
+    },
     dirty: false,
     autosaveError: "",
     autosaveStorage: "",
@@ -418,6 +429,18 @@
     sendBack: $("sendBack"),
     renameLayer: $("renameLayer"),
     deleteLayer: $("deleteLayer"),
+    analyzerPanel: $("analyzerPanel"),
+    closeAnalyzerPanel: $("closeAnalyzerPanel"),
+    analyzerPath: $("analyzerPath"),
+    loadAnalyzerPage: $("loadAnalyzerPage"),
+    runAnalyzer: $("runAnalyzer"),
+    loadAnalyzerGenericTest: $("loadAnalyzerGenericTest"),
+    loadAnalyzerTeaMerryTest: $("loadAnalyzerTeaMerryTest"),
+    analyzerStatus: $("analyzerStatus"),
+    analyzerFrame: $("analyzerFrame"),
+    analyzerSummary: $("analyzerSummary"),
+    analyzerElementList: $("analyzerElementList"),
+    analyzerElementDetail: $("analyzerElementDetail"),
   };
 
   async function start() {
@@ -476,6 +499,13 @@
     els.refreshAiPrompt?.addEventListener("click", refreshAiCollabPanel);
     els.copyAiPrompt?.addEventListener("click", copyAiPrompt);
     els.downloadAiPrompt?.addEventListener("click", downloadAiPrompt);
+    els.closeAnalyzerPanel?.addEventListener("click", closeAnalyzerPanel);
+    els.loadAnalyzerPage?.addEventListener("click", loadAnalyzerPageFromInput);
+    els.runAnalyzer?.addEventListener("click", runReadOnlyAnalyzer);
+    els.loadAnalyzerGenericTest?.addEventListener("click", loadAnalyzerGenericTest);
+    els.loadAnalyzerTeaMerryTest?.addEventListener("click", loadAnalyzerTeaMerryTest);
+    els.analyzerFrame?.addEventListener("load", handleAnalyzerFrameLoad);
+    els.analyzerElementList?.addEventListener("click", handleAnalyzerElementListClick);
     els.balanceCheckButton.addEventListener("click", cycleBalanceMode);
     els.previewButton.addEventListener("click", toggleTestMode);
     els.settingsButton.addEventListener("click", () => {
@@ -965,6 +995,10 @@
       renderAll();
       return;
     }
+    if (action === "analyzer") {
+      openAnalyzerPanel();
+      return;
+    }
     if (action === "grid") {
       state.uiSettings.showGrid = !state.uiSettings.showGrid;
       persistGridGuideSettings({ silent: true, skipInputs: true });
@@ -999,6 +1033,314 @@
       fullscreen: "フルスクリーン",
     };
     showModeToast(`${labels[action] || "表示操作"} は次の段階で接続します。`);
+  }
+
+  function openAnalyzerPanel() {
+    state.analyzer.open = true;
+    if (els.analyzerPanel) {
+      els.analyzerPanel.hidden = false;
+    }
+    setAnalyzerStatus("idle", "読み取り専用です。既存HTML/CSS/JSには書き込みません。");
+    renderAnalyzerResult();
+  }
+
+  function closeAnalyzerPanel() {
+    state.analyzer.open = false;
+    if (els.analyzerPanel) {
+      els.analyzerPanel.hidden = true;
+    }
+  }
+
+  function loadAnalyzerPageFromInput() {
+    const path = (els.analyzerPath?.value || "").trim();
+    if (!path) {
+      setAnalyzerStatus("error", "解析するページパスを入力してください。");
+      return;
+    }
+    loadAnalyzerUrl(path, "local");
+  }
+
+  function loadAnalyzerTeaMerryTest() {
+    const url = new URL("../../observatory.html?time=night", window.location.href).href;
+    if (els.analyzerPath) {
+      els.analyzerPath.value = url;
+    }
+    loadAnalyzerUrl(url, "teamerry-reference", {
+      sourcePath: "observatory.html",
+      viewState: "time=night",
+      allowScripts: true,
+    });
+  }
+
+  function loadAnalyzerGenericTest() {
+    const genericFixture = `<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>TBalance Analyzer Generic Test</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f7f2e6; color: #172033; }
+    main { display: grid; grid-template-columns: 1fr 280px; gap: 24px; min-height: 100vh; padding: 32px; }
+    .hero { position: relative; min-height: 360px; border-radius: 16px; background: linear-gradient(135deg, #dbeafe, #fef3c7); overflow: hidden; }
+    .badge { position: absolute; left: 32px; top: 32px; padding: 8px 14px; border-radius: 999px; background: #14532d; color: white; }
+    .card { display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 12px; background: rgba(255,255,255,.8); }
+    .float { position: absolute; right: 48px; bottom: 42px; width: 160px; height: 96px; background: #f97316; transform: rotate(-4deg); }
+  </style>
+</head>
+<body>
+  <main data-demo="generic">
+    <section class="hero" aria-label="読み取りテスト">
+      <p class="badge">safe visual candidate</p>
+      <div class="float" data-part="visual-box"></div>
+      <a href="#next" onclick="return false">リンク候補</a>
+    </section>
+    <aside class="card">
+      <h1>既存ページ解析</h1>
+      <button type="button" onclick="alert('blocked')">動作あり</button>
+      <form action="/demo"><input type="email" placeholder="mail@example.com"></form>
+    </aside>
+  </main>
+</body>
+</html>`;
+    state.analyzer.loadedPath = "generic-srcdoc-fixture";
+    state.analyzer.loadedKind = "generic-test";
+    state.analyzer.effectiveUrl = "srcdoc";
+    state.analyzer.sourcePath = "";
+    state.analyzer.viewState = "";
+    state.analyzer.result = null;
+    state.analyzer.selectedId = "";
+    if (els.analyzerFrame) {
+      setAnalyzerFrameSandbox(false);
+      els.analyzerFrame.removeAttribute("src");
+      els.analyzerFrame.srcdoc = genericFixture;
+    }
+    setAnalyzerStatus("loading", "Generic Testを読み込み中です。");
+    renderAnalyzerResult();
+  }
+
+  function loadAnalyzerUrl(path, kind = "local", meta = {}) {
+    state.analyzer.loadedPath = path;
+    state.analyzer.loadedKind = kind;
+    state.analyzer.effectiveUrl = "";
+    state.analyzer.sourcePath = meta.sourcePath || "";
+    state.analyzer.viewState = meta.viewState || "";
+    state.analyzer.result = null;
+    state.analyzer.selectedId = "";
+    if (els.analyzerFrame) {
+      setAnalyzerFrameSandbox(Boolean(meta.allowScripts));
+      els.analyzerFrame.removeAttribute("srcdoc");
+      els.analyzerFrame.src = path;
+    }
+    setAnalyzerStatus("loading", `${path} を読み込み中です。`);
+    renderAnalyzerResult();
+  }
+
+  function handleAnalyzerFrameLoad() {
+    installAnalyzerClickSelection();
+    let effectiveUrl = "";
+    try {
+      effectiveUrl = els.analyzerFrame?.contentWindow?.location?.href || "";
+    } catch (error) {
+      effectiveUrl = "";
+    }
+    state.analyzer.effectiveUrl = effectiveUrl || state.analyzer.loadedPath || els.analyzerFrame?.getAttribute("src") || "srcdoc";
+    setAnalyzerStatus("idle", `Page Load Success: ${state.analyzer.effectiveUrl} / AnalyzeでDOMを読み取ります。`);
+  }
+
+  function setAnalyzerFrameSandbox(allowScripts) {
+    if (!els.analyzerFrame) {
+      return;
+    }
+    const value = allowScripts ? "allow-same-origin allow-scripts" : "allow-same-origin";
+    if (els.analyzerFrame.getAttribute("sandbox") !== value) {
+      els.analyzerFrame.setAttribute("sandbox", value);
+    }
+  }
+
+  function installAnalyzerClickSelection() {
+    const frame = els.analyzerFrame;
+    if (!frame || !window.TBalanceReadOnlyAnalyzer) {
+      return;
+    }
+    let doc;
+    try {
+      doc = frame.contentDocument;
+    } catch (error) {
+      setAnalyzerStatus("error", "iframeのDOMへアクセスできません。localhostまたは同一プロジェクトのページで確認してください。");
+      return;
+    }
+    if (!doc || doc.__tbalanceAnalyzerInstalled) {
+      return;
+    }
+    doc.__tbalanceAnalyzerInstalled = true;
+    doc.addEventListener("click", handleAnalyzerFrameClick, true);
+    doc.addEventListener("submit", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    }, true);
+  }
+
+  function handleAnalyzerFrameClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const analyzer = window.TBalanceReadOnlyAnalyzer;
+    if (!analyzer || typeof analyzer.getSelectorCandidate !== "function") {
+      setAnalyzerStatus("error", "Analyzerモジュールを読み込めていません。");
+      return;
+    }
+    const selectedDomRef = analyzer.getSelectorCandidate(event.target);
+    runReadOnlyAnalyzer({ selectedDomRef });
+  }
+
+  function runReadOnlyAnalyzer(options = {}) {
+    if (options instanceof Event) {
+      options = {};
+    }
+    const analyzer = window.TBalanceReadOnlyAnalyzer;
+    if (!analyzer || typeof analyzer.analyzeDocument !== "function") {
+      setAnalyzerStatus("error", "Analyzerモジュールを読み込めていません。");
+      return;
+    }
+    const frame = els.analyzerFrame;
+    let doc;
+    try {
+      doc = frame?.contentDocument;
+    } catch (error) {
+      setAnalyzerStatus("error", "読み取りに失敗しました。file://制約またはクロスオリジンの可能性があります。localhostで開いてください。");
+      return;
+    }
+    if (!doc || !doc.documentElement) {
+      setAnalyzerStatus("error", "解析対象ページがまだ読み込まれていません。");
+      return;
+    }
+    try {
+      const result = analyzer.analyzeDocument(doc, {
+        path: state.analyzer.effectiveUrl || doc.location?.href || state.analyzer.loadedPath || "unknown",
+        sourcePath: state.analyzer.sourcePath,
+        viewState: state.analyzer.viewState,
+        scriptExecution: els.analyzerFrame?.sandbox?.contains("allow-scripts")
+          ? "enabled-in-readonly-frame"
+          : "blocked-by-sandbox",
+      });
+      state.analyzer.result = result;
+      const selected = options.selectedDomRef
+        ? result.elements.find((element) => element.observed.domRef === options.selectedDomRef)
+        : null;
+      state.analyzer.selectedId = selected?.candidateId || state.analyzer.selectedId || result.elements[0]?.candidateId || "";
+      setAnalyzerStatus("success", `解析完了: ${result.counts.elements}要素 / safe ${countAnalyzerStatus(result, "safe-visual-edit")} / 要確認 ${countAnalyzerStatus(result, "behavior-analysis-required")}`);
+      renderAnalyzerResult();
+    } catch (error) {
+      state.analyzer.result = null;
+      state.analyzer.selectedId = "";
+      setAnalyzerStatus("error", `解析に失敗しました: ${error.message || error}`);
+      renderAnalyzerResult();
+    }
+  }
+
+  function handleAnalyzerElementListClick(event) {
+    const item = event.target.closest("[data-analyzer-id]");
+    if (!item) {
+      return;
+    }
+    state.analyzer.selectedId = item.dataset.analyzerId || "";
+    renderAnalyzerResult();
+  }
+
+  function renderAnalyzerResult() {
+    if (!els.analyzerSummary || !els.analyzerElementList || !els.analyzerElementDetail) {
+      return;
+    }
+    const result = state.analyzer.result;
+    if (!result) {
+      els.analyzerSummary.textContent = state.analyzer.loadedPath
+        ? "ページ読み込み済み。解析ボタンを押してください。"
+        : "解析対象を読み込んでください。";
+      els.analyzerElementList.innerHTML = "";
+      els.analyzerElementDetail.textContent = "未解析";
+      return;
+    }
+    const statusCounts = result.elements.reduce((counts, element) => {
+      const status = element.inferred.analysisStatus;
+      counts[status] = (counts[status] || 0) + 1;
+      return counts;
+    }, {});
+    els.analyzerSummary.innerHTML = [
+      `<span>Analyzed Source: ${escapeHtml(result.page.path)}</span>`,
+      result.page.sourcePath ? `<span>Source Path: ${escapeHtml(result.page.sourcePath)}</span>` : "",
+      result.page.viewState ? `<span>View State: ${escapeHtml(result.page.viewState)}</span>` : "",
+      `<span>要素: ${result.counts.elements}</span>`,
+      `<span>safe: ${statusCounts["safe-visual-edit"] || 0}</span>`,
+      `<span>layout: ${statusCounts["layout-dependency"] || 0}</span>`,
+      `<span>behavior: ${statusCounts["behavior-analysis-required"] || 0}</span>`,
+      `<span>unknown: ${statusCounts.unknown || 0}</span>`,
+    ].join("");
+    els.analyzerElementList.innerHTML = result.elements.map((element) => {
+      const selected = element.candidateId === state.analyzer.selectedId;
+      const bounds = element.observed.bounds;
+      return `<button type="button" class="tb-analyzer-item${selected ? " is-selected" : ""}" data-analyzer-id="${escapeHtml(element.candidateId)}">
+        <span class="tb-analyzer-item-main">
+          <strong>${escapeHtml(getAnalyzerElementLabel(element))}</strong>
+          <em class="${escapeHtml(getAnalyzerStatusClass(element.inferred.analysisStatus))}">${escapeHtml(getAnalyzerStatusLabel(element.inferred.analysisStatus))}</em>
+        </span>
+        <small>${escapeHtml(`${bounds.x},${bounds.y} / ${bounds.width}x${bounds.height}`)}</small>
+      </button>`;
+    }).join("");
+    const selectedElement = getAnalyzerSelectedElement();
+    els.analyzerElementDetail.textContent = selectedElement
+      ? JSON.stringify({
+        candidateId: selectedElement.candidateId,
+        observed: selectedElement.observed,
+        inferred: selectedElement.inferred,
+      }, null, 2)
+      : "要素を選択してください。";
+  }
+
+  function getAnalyzerSelectedElement() {
+    const result = state.analyzer.result;
+    if (!result) {
+      return null;
+    }
+    return result.elements.find((element) => element.candidateId === state.analyzer.selectedId) || result.elements[0] || null;
+  }
+
+  function getAnalyzerElementLabel(element) {
+    const observed = element.observed;
+    if (observed.id) {
+      return `${observed.tag}#${observed.id}`;
+    }
+    const className = observed.className.split(/\s+/).find(Boolean);
+    if (className) {
+      return `${observed.tag}.${className}`;
+    }
+    return observed.domRef || observed.tag;
+  }
+
+  function getAnalyzerStatusLabel(status) {
+    const labels = {
+      "safe-visual-edit": "safe",
+      "layout-dependency": "layout",
+      "behavior-analysis-required": "behavior",
+      protected: "protected",
+      unknown: "unknown",
+    };
+    return labels[status] || status || "unknown";
+  }
+
+  function getAnalyzerStatusClass(status) {
+    return `tb-analyzer-status tb-analyzer-status-${String(status || "unknown").replace(/[^a-z0-9_-]+/gi, "-")}`;
+  }
+
+  function countAnalyzerStatus(result, status) {
+    return result.elements.filter((element) => element.inferred.analysisStatus === status).length;
+  }
+
+  function setAnalyzerStatus(status, message) {
+    state.analyzer.message = message;
+    if (!els.analyzerStatus) {
+      return;
+    }
+    els.analyzerStatus.dataset.status = status;
+    els.analyzerStatus.textContent = message;
   }
 
   function handleImageMenuAction(action) {

@@ -156,6 +156,8 @@
             <button type="button" data-view-action="grid-guide-settings">グリッド・ガイド設定</button>
             <button type="button" data-view-action="hit-area">当たり判定を表示</button>
             <span class="tb-header-menu-separator" aria-hidden="true"></span>
+            <button type="button" data-view-action="analyzer">Read Only Analyzer</button>
+            <span class="tb-header-menu-separator" aria-hidden="true"></span>
             <button type="button" data-view-action="left-toolbar">左ツールバーを表示</button>
             <button type="button" data-view-action="right-panel">右パネルを表示</button>
             <button type="button" data-view-action="status-bar">ステータスバーを表示</button>
@@ -1293,9 +1295,47 @@
         <p id="finalPreviewComplete" class="tb-complete-sign" hidden>Complete</p>
       </div>
     </section>
+
+    <section id="analyzerPanel" class="tb-analyzer-panel" aria-label="Read Only Analyzer" hidden>
+      <div class="tb-analyzer-head">
+        <div>
+          <h2>Read Only Analyzer</h2>
+          <p>Existing Pageを読み取り専用で解析します。</p>
+        </div>
+        <button id="closeAnalyzerPanel" class="tb-analyzer-close" type="button" title="閉じる">×</button>
+      </div>
+      <div class="tb-analyzer-source">
+        <label for="analyzerPath">Page / URL</label>
+        <input id="analyzerPath" type="text" value="../../index.html" spellcheck="false">
+        <button id="loadAnalyzerPage" type="button">読み込み</button>
+        <button id="runAnalyzer" type="button">Analyze</button>
+      </div>
+      <div class="tb-analyzer-tests">
+        <button id="loadAnalyzerGenericTest" type="button">Generic Test</button>
+        <button id="loadAnalyzerTeaMerryTest" type="button">TeaMerry Test</button>
+      </div>
+      <div id="analyzerStatus" class="tb-analyzer-status-line">未解析</div>
+      <div class="tb-analyzer-body">
+        <div class="tb-analyzer-preview">
+          <iframe id="analyzerFrame" title="Read Only Analyzer Preview" sandbox="allow-same-origin"></iframe>
+        </div>
+        <aside class="tb-analyzer-results">
+          <div class="tb-analyzer-summary">
+            <strong>Element一覧</strong>
+            <span id="analyzerSummary">0件</span>
+          </div>
+          <div id="analyzerElementList" class="tb-analyzer-list">ページを読み込んでAnalyzeしてください。</div>
+          <details class="tb-analyzer-detail" open>
+            <summary>Selected Element</summary>
+            <pre id="analyzerElementDetail">未選択</pre>
+          </details>
+        </aside>
+      </div>
+    </section>
   </main>
 
   <script src="./tbalance-renderer.js?v=20260824-v1-close"></script>
-  <script src="./tbalance.js?v=20260824-v1-close"></script>
+  <script src="./analyzer/read-only-analyzer.js?v=20260824-analyzer-v01-safe"></script>
+  <script src="./tbalance.js?v=20260824-v1-analyzer-safe"></script>
 </body>
 </html>
