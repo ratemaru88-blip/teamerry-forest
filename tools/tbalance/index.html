@@ -1329,6 +1329,24 @@
             <summary>Selected Element</summary>
             <pre id="analyzerElementDetail">未選択</pre>
           </details>
+          <section class="tb-analyzer-mapping" aria-label="Mapping Candidate">
+            <div class="tb-analyzer-mapping-head">
+              <strong>Mapping Candidate</strong>
+              <span id="mappingCandidateStatus">未選択</span>
+            </div>
+            <div id="mappingCandidatePanel" class="tb-mapping-candidate">
+              Elementを選択してください。
+            </div>
+          </section>
+          <section class="tb-analyzer-mapping" aria-label="Confirmed Mappings">
+            <div class="tb-analyzer-mapping-head">
+              <strong>Confirmed Mappings</strong>
+              <span id="confirmedMappingCount">0件</span>
+            </div>
+            <div id="confirmedMappingList" class="tb-confirmed-mapping-list">
+              まだMappingは確定していません。
+            </div>
+          </section>
         </aside>
       </div>
     </section>
@@ -1336,6 +1354,6 @@
 
   <script src="./tbalance-renderer.js?v=20260824-v1-close"></script>
   <script src="./analyzer/read-only-analyzer.js?v=20260824-analyzer-v01-safe"></script>
-  <script src="./tbalance.js?v=20260824-v1-analyzer-safe"></script>
+  <script src="./tbalance.js?v=20260824-v1-confirmed-mapping"></script>
 </body>
 </html>
