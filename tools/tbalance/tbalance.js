@@ -467,6 +467,13 @@
   const adapterRegistry = window.TBalanceAdapter?.createAdapterRegistry({
     getConfirmedMappings: () => state.analyzer.confirmedMappings.map((mapping) => ({ ...mapping })),
   }) || null;
+  if (adapterRegistry && window.TBalanceTeaMerryAdapter?.createTeaMerryAdapter) {
+    adapterRegistry.registerAdapter(window.TBalanceTeaMerryAdapter.createTeaMerryAdapter({
+      getConfirmedMappings: () => state.analyzer.confirmedMappings.map((mapping) => ({ ...mapping })),
+    }, {
+      genericAdapter: adapterRegistry.get("generic"),
+    }));
+  }
 
   async function start() {
     state.project = await loadAutosave() || renderer.normalizeProject();
@@ -1103,11 +1110,16 @@
   }
 
   function loadAnalyzerTeaMerryTest() {
-    const url = new URL("../../observatory.html?time=night", window.location.href).href;
+    const reference = adapterRegistry?.get("teamerry")?.getReferenceTarget?.("observatory-night", {
+      baseUrl: window.location.href,
+      currentUrl: window.location.href,
+      origin: window.location.origin,
+    });
+    const url = reference?.url || new URL("../../observatory.html?time=night", window.location.href).href;
     if (els.analyzerPath) {
       els.analyzerPath.value = url;
     }
-    loadAnalyzerUrl(url, "teamerry-reference", {
+    loadAnalyzerUrl(url, reference?.loadedKind || "teamerry-reference", reference?.meta || {
       sourcePath: "observatory.html",
       viewState: "time=night",
       allowScripts: true,
@@ -1801,7 +1813,7 @@
       `Capabilities: pages=${Boolean(capabilities.pages)}, links=${Boolean(capabilities.links)}, componentMapping=${Boolean(capabilities.componentMapping)}, protectedBehavior=${Boolean(capabilities.protectedBehavior)}, patch=${Boolean(capabilities.patch)}`,
       `Visible Confirmed Mapping: ${visibleMappings.length}`,
       `Known Pages: ${knownPages.length}`,
-      ...knownPages.slice(0, 5).map((page) => `- ${page.pageId} / ${page.sourcePath || "-"} / view:${page.viewStates?.join(",") || "common"} / ${page.componentCount}件`),
+      ...knownPages.slice(0, 5).map((page) => `- ${page.pageId} / ${page.label ? `${page.label} / ` : ""}${page.sourcePath || "-"} / view:${page.viewStates?.join(",") || "common"} / ${page.componentCount}件`),
     ];
     els.adapterInfo.textContent = lines.join("\n");
   }
@@ -2636,6 +2648,18 @@
 
   function getTeaMerryPageLink(value) {
     const raw = String(value || "").trim();
+    const adapterLink = adapterRegistry?.get("teamerry")?.getPageLink?.(raw);
+    if (adapterLink) {
+      return {
+        id: adapterLink.id,
+        label: adapterLink.label,
+        url: adapterLink.url,
+        aliases: Array.isArray(adapterLink.aliases) ? [...adapterLink.aliases] : [],
+        pageId: adapterLink.pageId,
+        sourcePath: adapterLink.sourcePath,
+        viewState: adapterLink.viewState || "",
+      };
+    }
     const normalizedUrl = normalizeTeaMerryUrl(raw);
     const normalizedText = normalizeTargetText(raw);
     return TEA_MERRY_PAGE_LINKS.find((link) => {
@@ -2652,6 +2676,14 @@
   }
 
   function getTeaMerryLocalTestUrl(value) {
+    const adapterResult = adapterRegistry?.get("teamerry")?.resolveTestUrl?.(value, {
+      baseUrl: window.location.href,
+      currentUrl: window.location.href,
+      origin: window.location.origin,
+    });
+    if (adapterResult?.status === "resolved" && adapterResult.url) {
+      return adapterResult.url;
+    }
     const link = getTeaMerryPageLink(value);
     const raw = String(link?.url || value || "").trim();
     if (!raw || !isTeamerryPageUrl(raw)) {
@@ -2689,6 +2721,10 @@
   }
 
   function shouldUseMobileModalForTeaMerryUrl(value) {
+    const adapter = adapterRegistry?.get("teamerry");
+    if (adapter?.shouldUseMobileModal?.(value)) {
+      return true;
+    }
     try {
       const url = new URL(value, "https://ratemaru88-blip.github.io/teamerry-forest/");
       const pathName = url.pathname.replace(/\/+$/, "");
@@ -2715,6 +2751,7 @@
     const raw = String(target || "").trim();
     const clean = normalizeTargetText(raw);
     const teaMerryLink = getTeaMerryPageLink(raw);
+    const adapterAliases = adapterRegistry?.get("teamerry")?.getClickTargetAliases?.(raw) || [];
     const aliases = {
       hokkori: ["今日のほっこり", "ほっこり", "hokkori"],
       wishstar: ["願い星を書く", "願い星", "wishstar", "wish"],
@@ -2722,7 +2759,7 @@
       forestmap: ["森の地図", "森マップ", "forestmap"],
       next: ["次へ", "next"],
     };
-    return [raw, clean, teaMerryLink?.id, teaMerryLink?.label, ...(teaMerryLink?.aliases || []), ...(aliases[clean] || [])].filter(Boolean);
+    return [raw, clean, teaMerryLink?.id, teaMerryLink?.label, ...(teaMerryLink?.aliases || []), ...adapterAliases, ...(aliases[clean] || [])].filter(Boolean);
   }
 
   function resolveTestTargetPage(target, windowKey) {
