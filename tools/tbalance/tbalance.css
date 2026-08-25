@@ -5409,6 +5409,45 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   background: rgba(127, 29, 29, 0.28);
 }
 
+.tb-adapter-panel {
+  display: grid;
+  gap: 8px;
+}
+
+.tb-adapter-panel label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  color: #bdd7f1;
+  font-weight: 800;
+}
+
+.tb-adapter-panel select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 6px;
+  padding: 6px 7px;
+  background: rgba(2, 6, 12, 0.96);
+  color: #eef6ff;
+  font: inherit;
+}
+
+.tb-adapter-info {
+  min-height: 86px;
+  max-height: 180px;
+  overflow: auto;
+  margin: 0;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  padding: 7px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #dbeafe;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
 @media (max-width: 1320px) {
   .tb-history-button span:last-child {
     display: none;

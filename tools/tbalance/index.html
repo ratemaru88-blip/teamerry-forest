@@ -1366,6 +1366,21 @@
               <p id="manifestStatus" class="tb-manifest-status">Manifestは明示操作でExport / Importします。</p>
             </div>
           </section>
+          <section class="tb-analyzer-mapping" aria-label="Adapter">
+            <div class="tb-analyzer-mapping-head">
+              <strong>Adapter</strong>
+              <span id="adapterStatus">None</span>
+            </div>
+            <div class="tb-adapter-panel">
+              <label>Adapter
+                <select id="adapterSelect">
+                  <option value="none">None</option>
+                  <option value="generic">Generic</option>
+                </select>
+              </label>
+              <pre id="adapterInfo" class="tb-adapter-info">Adapter固有解決は行いません。</pre>
+            </div>
+          </section>
         </aside>
       </div>
     </section>
@@ -1373,6 +1388,7 @@
 
   <script src="./tbalance-renderer.js?v=20260824-v1-close"></script>
   <script src="./analyzer/read-only-analyzer.js?v=20260824-analyzer-v01-safe"></script>
-  <script src="./tbalance.js?v=20260824-v1-manifest-v01"></script>
+  <script src="./adapters/generic-adapter.js?v=20260825-adapter-v01"></script>
+  <script src="./tbalance.js?v=20260825-v1-adapter-v01"></script>
 </body>
 </html>

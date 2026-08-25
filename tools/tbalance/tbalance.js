@@ -210,6 +210,7 @@
       manifestProjectId: "sample-project",
       manifestPageId: "page-home",
       manifestWarning: "",
+      adapterId: "none",
     },
     dirty: false,
     autosaveError: "",
@@ -458,7 +459,14 @@
     clearRuntimeMappings: $("clearRuntimeMappings"),
     manifestImportFile: $("manifestImportFile"),
     manifestStatus: $("manifestStatus"),
+    adapterSelect: $("adapterSelect"),
+    adapterStatus: $("adapterStatus"),
+    adapterInfo: $("adapterInfo"),
   };
+
+  const adapterRegistry = window.TBalanceAdapter?.createAdapterRegistry({
+    getConfirmedMappings: () => state.analyzer.confirmedMappings.map((mapping) => ({ ...mapping })),
+  }) || null;
 
   async function start() {
     state.project = await loadAutosave() || renderer.normalizeProject();
@@ -529,13 +537,16 @@
     els.importManifest?.addEventListener("click", () => els.manifestImportFile?.click());
     els.manifestImportFile?.addEventListener("change", importAnalyzerManifestFromFile);
     els.clearRuntimeMappings?.addEventListener("click", clearRuntimeConfirmedMappings);
+    els.adapterSelect?.addEventListener("change", () => setAnalyzerAdapter(els.adapterSelect.value || "none"));
     els.manifestProjectId?.addEventListener("input", () => {
       state.analyzer.manifestProjectId = sanitizeManifestId(els.manifestProjectId.value || "sample-project", "sample-project");
       renderManifestPanel();
+      renderAdapterPanel();
     });
     els.manifestPageId?.addEventListener("input", () => {
       state.analyzer.manifestPageId = sanitizeManifestId(els.manifestPageId.value || "page-home", "page-home");
       renderManifestPanel();
+      renderAdapterPanel();
     });
     els.balanceCheckButton.addEventListener("click", cycleBalanceMode);
     els.previewButton.addEventListener("click", toggleTestMode);
@@ -1297,6 +1308,7 @@
       renderMappingCandidate(null);
       renderConfirmedMappings();
       renderManifestPanel();
+      renderAdapterPanel();
       return;
     }
     const statusCounts = result.elements.reduce((counts, element) => {
@@ -1336,6 +1348,7 @@
     renderMappingCandidate(selectedElement);
     renderConfirmedMappings();
     renderManifestPanel();
+    renderAdapterPanel();
   }
 
   function handleMappingCandidateClick(event) {
@@ -1728,6 +1741,71 @@
     }
   }
 
+  function setAnalyzerAdapter(adapterId) {
+    const nextId = adapterRegistry?.get(adapterId) ? adapterId : "none";
+    adapterRegistry?.setActive?.(nextId);
+    state.analyzer.adapterId = nextId;
+    if (els.adapterSelect && els.adapterSelect.value !== nextId) {
+      els.adapterSelect.value = nextId;
+    }
+    renderAdapterPanel();
+  }
+
+  function getActiveAnalyzerAdapter() {
+    return adapterRegistry?.get(state.analyzer.adapterId) || adapterRegistry?.get("none") || null;
+  }
+
+  function getAnalyzerAdapterContext() {
+    const pageMeta = getAnalyzerManifestPageMeta();
+    return {
+      pageId: pageMeta.pageId,
+      sourcePath: pageMeta.sourcePath,
+      viewState: pageMeta.currentViewState,
+      sourceAuthority: pageMeta.sourceAuthority,
+      effectiveUrl: state.analyzer.effectiveUrl || "",
+      currentUrl: state.analyzer.effectiveUrl || state.analyzer.loadedPath || window.location.href,
+      baseUrl: state.analyzer.effectiveUrl || state.analyzer.loadedPath || window.location.href,
+    };
+  }
+
+  function renderAdapterPanel() {
+    if (!els.adapterStatus || !els.adapterInfo) {
+      return;
+    }
+    const adapter = getActiveAnalyzerAdapter();
+    if (!adapter) {
+      els.adapterStatus.textContent = "Unavailable";
+      els.adapterInfo.textContent = "Adapter moduleを読み込めていません。";
+      return;
+    }
+    if (els.adapterSelect && els.adapterSelect.value !== adapter.id) {
+      els.adapterSelect.value = adapter.id;
+    }
+    els.adapterStatus.textContent = `${adapter.label} v${adapter.version}`;
+    const capabilities = adapter.capabilities || {};
+    if (adapter.id === "none") {
+      els.adapterInfo.textContent = [
+        "Adapter固有解決は行いません。",
+        "Confirmed Mappingは保持したままです。",
+        "Patch: false",
+      ].join("\n");
+      return;
+    }
+    const context = getAnalyzerAdapterContext();
+    const knownPages = typeof adapter.getKnownPages === "function" ? adapter.getKnownPages(context) : [];
+    const visibleMappings = getVisibleConfirmedMappings(getAnalyzerManifestPageMeta());
+    const lines = [
+      `Active: ${adapter.label} v${adapter.version}`,
+      `Page: ${context.pageId}`,
+      `Source: ${context.sourcePath}${context.viewState ? ` / ${context.viewState}` : ""}`,
+      `Capabilities: pages=${Boolean(capabilities.pages)}, links=${Boolean(capabilities.links)}, componentMapping=${Boolean(capabilities.componentMapping)}, protectedBehavior=${Boolean(capabilities.protectedBehavior)}, patch=${Boolean(capabilities.patch)}`,
+      `Visible Confirmed Mapping: ${visibleMappings.length}`,
+      `Known Pages: ${knownPages.length}`,
+      ...knownPages.slice(0, 5).map((page) => `- ${page.pageId} / ${page.sourcePath || "-"} / view:${page.viewStates?.join(",") || "common"} / ${page.componentCount}件`),
+    ];
+    els.adapterInfo.textContent = lines.join("\n");
+  }
+
   function buildAnalyzerManifest() {
     const pageMeta = getAnalyzerManifestPageMeta();
     const mappings = state.analyzer.confirmedMappings;
@@ -1976,6 +2054,44 @@
     clear: clearRuntimeConfirmedMappings,
     getConfirmedMappings: () => state.analyzer.confirmedMappings.map((mapping) => ({ ...mapping })),
     getVisibleMappings: () => getVisibleConfirmedMappings(getAnalyzerManifestPageMeta()).map((mapping) => ({ ...mapping })),
+  };
+
+  window.TBalanceAdapterDebug = {
+    list: () => adapterRegistry?.list().map((adapter) => ({
+      id: adapter.id,
+      version: adapter.version,
+      label: adapter.label,
+      capabilities: { ...adapter.capabilities },
+    })) || [],
+    setActive: (adapterId) => {
+      setAnalyzerAdapter(adapterId);
+      const adapter = getActiveAnalyzerAdapter();
+      return adapter ? { id: adapter.id, label: adapter.label, version: adapter.version } : null;
+    },
+    getActive: () => {
+      const adapter = getActiveAnalyzerAdapter();
+      return adapter ? { id: adapter.id, label: adapter.label, version: adapter.version, capabilities: { ...adapter.capabilities } } : null;
+    },
+    getKnownPages: () => {
+      const adapter = getActiveAnalyzerAdapter();
+      return adapter?.getKnownPages?.(getAnalyzerAdapterContext()) || [];
+    },
+    resolveInternalLink: (target, context = {}) => {
+      const adapter = getActiveAnalyzerAdapter();
+      return adapter?.resolveInternalLink?.(target, { ...getAnalyzerAdapterContext(), ...context }) || null;
+    },
+    resolveTestUrl: (target, context = {}) => {
+      const adapter = getActiveAnalyzerAdapter();
+      return adapter?.resolveTestUrl?.(target, { ...getAnalyzerAdapterContext(), ...context }) || null;
+    },
+    getComponentMapping: (pageId, tbId, context = {}) => {
+      const adapter = getActiveAnalyzerAdapter();
+      return adapter?.getComponentMapping?.(pageId, tbId, { ...getAnalyzerAdapterContext(), ...context }) || null;
+    },
+    getProtectedBehavior: (pageId, tbId, context = {}) => {
+      const adapter = getActiveAnalyzerAdapter();
+      return adapter?.getProtectedBehavior?.(pageId, tbId, { ...getAnalyzerAdapterContext(), ...context }) || null;
+    },
   };
 
   function isMappingDomMissing(mapping) {
