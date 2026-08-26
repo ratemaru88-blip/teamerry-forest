@@ -1208,6 +1208,24 @@
         <button id="shareAiState" class="tb-ai-share-button" type="button">共有更新</button>
       </div>
       <div id="aiBridgeStatus" class="tb-ai-bridge-status" data-status="idle">共有未更新</div>
+      <section class="tb-ai-safe-share" aria-label="Safe Change Instruction共有">
+        <div class="tb-ai-safe-share-grid">
+          <label>AI
+            <select id="aiShareTarget">
+              <option value="chatgpt">ChatGPT</option>
+              <option value="codex">Codex</option>
+              <option value="other">Other AI</option>
+            </select>
+          </label>
+          <button id="shareSafeChangeWithAi" class="tb-ai-share-button" type="button">AIと共有</button>
+        </div>
+        <div id="aiSafeChangeSummary" class="tb-ai-safe-summary">Safe Change Instruction Required</div>
+        <details id="aiSafeChangeDetails" class="tb-ai-safe-details">
+          <summary>詳細</summary>
+          <pre id="aiSafeChangeDetailsPreview">Safe Change Instructionを生成してください。</pre>
+        </details>
+        <div id="aiShareMessage" class="tb-ai-bridge-status" data-status="idle">AI共有はClipboardへコピーします。</div>
+      </section>
       <section class="tb-ai-history" aria-label="WITH AI共有履歴">
         <div class="tb-ai-history-head">
           <strong>共有履歴</strong>
@@ -1441,6 +1459,7 @@
   <script src="./adapters/generic-adapter.js?v=20260825-adapter-v01"></script>
   <script src="./adapters/teamerry-adapter.js?v=20260825-teamerry-adapter-v01"></script>
   <script src="./safe-change/safe-change-instruction.js?v=20260826-safe-change-v01"></script>
-  <script src="./tbalance.js?v=20260826-v1-safe-change-v01"></script>
+  <script src="./with-ai/with-ai-share.js?v=20260826-with-ai-share-v01"></script>
+  <script src="./tbalance.js?v=20260826-v1-with-ai-share-v01"></script>
 </body>
 </html>

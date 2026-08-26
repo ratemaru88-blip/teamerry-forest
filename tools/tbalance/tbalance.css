@@ -4450,7 +4450,7 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   position: fixed;
   right: 18px;
   top: 88px;
-  z-index: 86;
+  z-index: 9300;
   display: grid;
   gap: 8px;
   width: min(300px, calc(100vw - 36px));
@@ -4648,6 +4648,88 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
 .tb-ai-bridge-status[data-status="error"] {
   border-color: rgba(255, 102, 102, 0.68);
   color: #ffcaca;
+}
+
+.tb-ai-safe-share {
+  display: grid;
+  gap: 6px;
+  padding: 7px;
+  border: 1px solid rgba(83, 116, 139, 0.38);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.028);
+}
+
+.tb-ai-safe-share-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(96px, 0.72fr);
+  gap: 6px;
+  align-items: end;
+}
+
+.tb-ai-safe-share label {
+  display: grid;
+  gap: 4px;
+  color: #cfe0ef;
+  font-size: 10.5px;
+  font-weight: 900;
+}
+
+.tb-ai-safe-share select {
+  min-height: 30px;
+  padding: 0 8px;
+  border: 1px solid rgba(83, 116, 139, 0.62);
+  border-radius: 7px;
+  background: rgba(2, 6, 10, 0.82);
+  color: #edf6ff;
+  font: 11px/1.2 "Noto Sans JP", "Yu Gothic", sans-serif;
+}
+
+.tb-ai-safe-summary {
+  min-height: 28px;
+  padding: 6px 8px;
+  border: 1px solid rgba(47, 210, 242, 0.34);
+  border-radius: 7px;
+  background: rgba(47, 210, 242, 0.05);
+  color: #dff7ff;
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.tb-ai-safe-summary[data-status="error"] {
+  border-color: rgba(255, 102, 102, 0.58);
+  color: #ffcaca;
+}
+
+.tb-ai-safe-summary[data-status="success"] {
+  border-color: rgba(69, 208, 130, 0.56);
+  color: #c9ffd9;
+}
+
+.tb-ai-safe-details {
+  border-top: 1px solid rgba(83, 116, 139, 0.24);
+  padding-top: 5px;
+}
+
+.tb-ai-safe-details summary {
+  cursor: pointer;
+  color: #bcd2e6;
+  font-size: 10.5px;
+  font-weight: 900;
+}
+
+.tb-ai-safe-details pre {
+  max-height: 210px;
+  overflow: auto;
+  margin: 6px 0 0;
+  padding: 7px;
+  border: 1px solid rgba(83, 116, 139, 0.36);
+  border-radius: 7px;
+  background: rgba(2, 6, 10, 0.76);
+  color: #dce9f6;
+  font: 10.5px/1.45 Consolas, "Courier New", monospace;
+  white-space: pre-wrap;
 }
 
 .tb-ai-actions {

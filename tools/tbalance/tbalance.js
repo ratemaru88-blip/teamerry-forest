@@ -157,6 +157,15 @@
     fillOpacity: 100,
     cloneSource: null,
     aiCollab: false,
+    withAiShare: {
+      targetAi: "chatgpt",
+      status: "idle",
+      message: "",
+      summary: "",
+      details: "",
+      package: null,
+      text: "",
+    },
     balanceMode: "side-by-side",
     preview: false,
     testWindow: "",
@@ -259,7 +268,13 @@
     aiPromptText: $("aiPromptText"),
     aiQuickNote: $("aiQuickNote"),
     aiBridgeStatus: $("aiBridgeStatus"),
+    aiShareTarget: $("aiShareTarget"),
+    aiSafeChangeSummary: $("aiSafeChangeSummary"),
+    aiSafeChangeDetails: $("aiSafeChangeDetails"),
+    aiSafeChangeDetailsPreview: $("aiSafeChangeDetailsPreview"),
+    aiShareMessage: $("aiShareMessage"),
     shareAiState: $("shareAiState"),
+    shareSafeChangeWithAi: $("shareSafeChangeWithAi"),
     loadAiSuggestion: $("loadAiSuggestion"),
     refreshAiHistory: $("refreshAiHistory"),
     aiShareHistoryList: $("aiShareHistoryList"),
@@ -550,6 +565,17 @@
     els.closeAiCollab?.addEventListener("click", closeAiCollabPanel);
     els.aiRequestMode?.addEventListener("change", refreshAiCollabPanel);
     els.shareAiState?.addEventListener("click", shareAiStateToBridge);
+    els.aiShareTarget?.addEventListener("change", () => {
+      state.withAiShare.targetAi = els.aiShareTarget.value || "chatgpt";
+      renderWithAiSafeChangeShare();
+    });
+    document.addEventListener("click", (event) => {
+      if (!event.target?.closest?.("#shareSafeChangeWithAi")) {
+        return;
+      }
+      event.preventDefault();
+      shareSafeChangeInstructionWithAi();
+    });
     els.loadAiSuggestion?.addEventListener("click", loadAiSuggestionFromBridge);
     els.refreshAiHistory?.addEventListener("click", refreshAiShareHistory);
     els.aiShareHistoryList?.addEventListener("click", handleAiHistoryClick);
@@ -1552,6 +1578,7 @@
     if (els.safeChangeSummaryPreview) {
       els.safeChangeSummaryPreview.textContent = safeState.summary || "未生成";
     }
+    renderWithAiSafeChangeShare();
   }
 
   function getSafeChangeEditableProperties(mapping) {
@@ -4469,6 +4496,7 @@
       `<span><b>選択中:</b> ${escapeHtml(data.selectedLabel)}</span>`,
     ].join("");
     els.aiPromptText.value = buildAiCollabPrompt(data);
+    renderWithAiSafeChangeShare();
   }
 
   function getAiQuickNote() {
@@ -4565,6 +4593,163 @@
       "【お願い】",
       "操作手順が必要な場合は、TBalance上でどのボタンを押すかまで具体的に説明してください。",
     ].join("\n");
+  }
+
+  function renderWithAiSafeChangeShare() {
+    if (!els.aiSafeChangeSummary || !els.aiSafeChangeDetailsPreview || !els.aiShareMessage) {
+      return;
+    }
+    if (els.aiShareTarget && els.aiShareTarget.value !== state.withAiShare.targetAi) {
+      els.aiShareTarget.value = state.withAiShare.targetAi;
+    }
+    const preview = getWithAiSafeChangeSharePreview();
+    state.withAiShare.package = preview.package || null;
+    state.withAiShare.text = preview.text || "";
+    state.withAiShare.summary = preview.summary || "";
+    state.withAiShare.details = preview.details || "";
+
+    els.aiSafeChangeSummary.textContent = preview.summary;
+    els.aiSafeChangeSummary.dataset.status = preview.ok ? "success" : "error";
+    els.aiSafeChangeDetailsPreview.textContent = preview.details || "Safe Change Instructionを生成してください。";
+    els.aiShareMessage.textContent = preview.ok
+      ? (state.withAiShare.message || preview.message || "AI共有はClipboardへコピーします。")
+      : (preview.message || "共有できるSafe Change Instructionがありません。");
+    els.aiShareMessage.dataset.status = preview.ok ? (state.withAiShare.status || "idle") : "error";
+    if (els.shareSafeChangeWithAi) {
+      els.shareSafeChangeWithAi.disabled = !preview.ok;
+      els.shareSafeChangeWithAi.title = preview.ok
+        ? "Safe Change InstructionをAI共有用テキストとしてコピーします。"
+        : preview.message;
+    }
+  }
+
+  function getWithAiSafeChangeSharePreview() {
+    const request = buildWithAiShareRequest();
+    const share = window.TBalanceWithAiShare;
+    if (!share?.buildWithAiSharePackage) {
+      return {
+        ok: false,
+        summary: "WITH AI Share module Required",
+        message: "WITH AI Share moduleを読み込めていません。",
+        details: "tools/tbalance/with-ai/with-ai-share.jsを確認してください。",
+      };
+    }
+    const result = share.buildWithAiSharePackage(request);
+    if (!result.ok) {
+      const message = result.errors.join(" / ") || "Safe Change Instructionを共有できません。";
+      return {
+        ok: false,
+        summary: "Safe Change Instruction Required",
+        message,
+        details: message,
+      };
+    }
+    const details = formatWithAiShareDetails(result.package);
+    return {
+      ok: true,
+      package: result.package,
+      text: result.text,
+      summary: result.summary,
+      message: "AI共有できます。共有前に詳細を確認してください。",
+      details,
+    };
+  }
+
+  function buildWithAiShareRequest() {
+    const instruction = state.analyzer.safeChange.json;
+    const mapping = getSafeChangeInstructionMapping(instruction);
+    const domResolved = mapping ? Boolean(resolveAnalyzerDomNode(mapping.domRef)) : false;
+    const ambiguousMapping = mapping ? isSafeChangeMappingAmbiguous(mapping) : false;
+    return {
+      targetAi: els.aiShareTarget?.value || state.withAiShare.targetAi || "chatgpt",
+      safeChangeInstruction: instruction,
+      humanSummary: state.analyzer.safeChange.summary || "",
+      mapping,
+      domResolved,
+      ambiguousMapping,
+      sharePolicy: {
+        automaticApplyAllowed: false,
+        sourceMutationAllowed: false,
+        aiApiCallAllowed: false,
+        automaticPatchAllowed: false,
+      },
+    };
+  }
+
+  function getSafeChangeInstructionMapping(instruction) {
+    if (!instruction?.target) {
+      return null;
+    }
+    const target = instruction.target;
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const mappings = getVisibleConfirmedMappings(pageMeta);
+    return mappings.find((mapping) => {
+      const mappingView = mapping.viewState || "";
+      const targetView = target.viewState || "";
+      return mapping.pageId === target.pageId
+        && mapping.tbId === target.tbId
+        && mapping.domRef === target.domRef
+        && mappingView === targetView;
+    }) || null;
+  }
+
+  function formatWithAiShareDetails(sharePackage) {
+    if (!sharePackage) {
+      return "";
+    }
+    const instruction = sharePackage.safeChangeInstruction || {};
+    return JSON.stringify({
+      targetAi: sharePackage.targetAi,
+      project: sharePackage.project,
+      page: sharePackage.page,
+      target: sharePackage.target,
+      userIntent: instruction.userIntent || "",
+      changes: instruction.changes || [],
+      allowedProperties: instruction.allowedProperties || [],
+      protectedProperties: instruction.protectedProperties || [],
+      doNotChange: instruction.doNotChange || [],
+      validationChecks: instruction.validationChecks || [],
+      sharePolicy: sharePackage.sharePolicy,
+      shareScope: sharePackage.shareScope,
+    }, null, 2);
+  }
+
+  async function shareSafeChangeInstructionWithAi() {
+    if (!state.aiCollab) {
+      setWithAiShareStatus("error", "WITH AIをONにしてからAI共有してください。");
+      renderWithAiSafeChangeShare();
+      return;
+    }
+    const preview = getWithAiSafeChangeSharePreview();
+    if (!preview.ok || !preview.text) {
+      setWithAiShareStatus("error", preview.message || "共有できるSafe Change Instructionがありません。");
+      renderWithAiSafeChangeShare();
+      return;
+    }
+    const ok = await copyTextToClipboard(preview.text, "Safe Change InstructionをAI共有用にコピーしました。");
+    if (!ok) {
+      setWithAiShareStatus("error", "Clipboardへコピーできませんでした。");
+      renderWithAiSafeChangeShare();
+      return;
+    }
+    state.withAiShare.package = preview.package;
+    state.withAiShare.text = preview.text;
+    setWithAiShareStatus("ok", `${getAiShareTargetLabel(preview.package?.targetAi)}共有用テキストをClipboardへコピーしました。`);
+    renderWithAiSafeChangeShare();
+  }
+
+  function setWithAiShareStatus(status, message) {
+    state.withAiShare.status = status;
+    state.withAiShare.message = message;
+  }
+
+  function getAiShareTargetLabel(targetAi) {
+    const labels = {
+      chatgpt: "ChatGPT",
+      codex: "Codex",
+      other: "Other AI",
+    };
+    return labels[targetAi] || "AI";
   }
 
   async function copyAiPrompt() {
