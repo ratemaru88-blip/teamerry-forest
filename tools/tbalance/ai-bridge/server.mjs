@@ -2,16 +2,28 @@ import http from "node:http";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createSourceWriter } from "../source-writer/source-writer.mjs";
 
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.TBALANCE_AI_BRIDGE_PORT || 8787);
 const MAX_BODY_BYTES = 24 * 1024 * 1024;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..");
 const STATE_PATH = path.join(__dirname, "current-state.json");
 const VIEW_PATH = path.join(__dirname, "current-view.webp");
 const SUGGESTION_PATH = path.join(__dirname, "ai-suggestion.json");
 const HISTORY_ROOT = path.join(__dirname, "history");
 const HISTORY_LIMIT = 5;
+const SOURCE_WRITER_ALLOWED_ORIGINS = new Set(
+  (process.env.TBALANCE_SOURCE_WRITER_ALLOWED_ORIGINS || "http://127.0.0.1:8788,http://localhost:8788")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
+const sourceWriter = await createSourceWriter({
+  repoRoot: REPO_ROOT,
+  writeEnabled: process.env.TBALANCE_SOURCE_WRITER_WRITE !== "0",
+});
 
 function setCorsHeaders(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -28,6 +40,60 @@ function sendJson(res, statusCode, data) {
     "Cache-Control": "no-store",
   });
   res.end(JSON.stringify(data, null, 2));
+}
+
+function isSourceWriterRoute(url) {
+  return url.pathname.startsWith("/api/tbalance/source-writer/");
+}
+
+function isAllowedSourceWriterOrigin(req) {
+  const origin = req.headers.origin;
+  if (!origin) {
+    return true;
+  }
+  return SOURCE_WRITER_ALLOWED_ORIGINS.has(origin);
+}
+
+function setSourceWriterCorsHeaders(req, res) {
+  const origin = req.headers.origin;
+  if (origin && SOURCE_WRITER_ALLOWED_ORIGINS.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Private-Network", "true");
+  res.setHeader("Access-Control-Max-Age", "600");
+}
+
+function sendSourceWriterJson(req, res, statusCode, data) {
+  setSourceWriterCorsHeaders(req, res);
+  res.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store",
+  });
+  res.end(JSON.stringify(data, null, 2));
+}
+
+function sendSourceWriterError(req, res, statusCode, error) {
+  const errorCode = error?.errorCode || "request-failed";
+  sendSourceWriterJson(req, res, statusCode, {
+    ok: false,
+    sourceWriterVersion: "0.1",
+    errorCode,
+    error: error?.publicMessage || error?.message || "Source Writer request failed.",
+    ...(error?.status ? { status: error.status } : {}),
+  });
+}
+
+function requireJsonRequest(req) {
+  const contentType = String(req.headers["content-type"] || "").toLowerCase();
+  if (!contentType.includes("application/json")) {
+    const error = new Error("Content-Type must be application/json.");
+    error.errorCode = "invalid-request";
+    error.publicMessage = error.message;
+    throw error;
+  }
 }
 
 function readRequestBody(req) {
@@ -324,8 +390,73 @@ async function saveSuggestion(req, res) {
   }
 }
 
+async function handleSourceWriterRequest(req, res, url) {
+  if (!isAllowedSourceWriterOrigin(req)) {
+    sendSourceWriterJson(req, res, 403, {
+      ok: false,
+      sourceWriterVersion: "0.1",
+      errorCode: "origin-not-allowed",
+      error: "This origin is not allowed to use Source Writer.",
+    });
+    return;
+  }
+
+  if (req.method === "OPTIONS") {
+    setSourceWriterCorsHeaders(req, res);
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/tbalance/source-writer/capabilities") {
+    sendSourceWriterJson(req, res, 200, sourceWriter.getCapabilities());
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/tbalance/source-writer/read") {
+    try {
+      requireJsonRequest(req);
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const result = await sourceWriter.readSource(payload);
+      console.log(`[source-writer] READ ${result.path} ok ${result.sha256.slice(0, 12)}`);
+      sendSourceWriterJson(req, res, 200, result);
+    } catch (error) {
+      console.warn(`[source-writer] READ failed ${error?.errorCode || "request-failed"}`);
+      sendSourceWriterError(req, res, 400, error);
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/tbalance/source-writer/write") {
+    try {
+      requireJsonRequest(req);
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const result = await sourceWriter.writeSource(payload);
+      console.log(`[source-writer] WRITE ${result.path} ${result.status} ${result.beforeSha256.slice(0, 12)} -> ${result.afterSha256.slice(0, 12)}`);
+      sendSourceWriterJson(req, res, 200, result);
+    } catch (error) {
+      console.warn(`[source-writer] WRITE failed ${error?.errorCode || "request-failed"}`);
+      sendSourceWriterError(req, res, 400, error);
+    }
+    return;
+  }
+
+  sendSourceWriterJson(req, res, 404, {
+    ok: false,
+    sourceWriterVersion: "0.1",
+    errorCode: "not-found",
+    error: "Source Writer endpoint was not found.",
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || "/", `http://${HOST}:${PORT}`);
+  if (isSourceWriterRoute(url)) {
+    await handleSourceWriterRequest(req, res, url);
+    return;
+  }
   setCorsHeaders(res);
 
   if (req.method === "OPTIONS") {
@@ -372,4 +503,8 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, HOST, () => {
   console.log(`TBalance AI bridge listening on http://${HOST}:${PORT}`);
+  console.log("Source Writer Bridge v0.1");
+  console.log(`Repo Root: ${sourceWriter.getCapabilities().read ? REPO_ROOT : "(unavailable)"}`);
+  console.log(`Allowed Source Types: ${sourceWriter.getCapabilities().allowedExtensions.join(", ")}`);
+  console.log(`Write: ${sourceWriter.getCapabilities().write ? "Enabled" : "Disabled"}`);
 });
