@@ -1347,6 +1347,55 @@
               まだMappingは確定していません。
             </div>
           </section>
+          <section class="tb-analyzer-mapping" aria-label="Safe Change Instruction">
+            <div class="tb-analyzer-mapping-head">
+              <strong>Safe Change</strong>
+              <span id="safeChangeStatus">未作成</span>
+            </div>
+            <div class="tb-safe-change-panel">
+              <label>Target
+                <select id="safeChangeTarget"></select>
+              </label>
+              <label>User Intent
+                <textarea id="safeChangeIntent" rows="2" placeholder="例: リルを少し中央へ移動したい"></textarea>
+              </label>
+              <div class="tb-safe-change-grid">
+                <label>Property
+                  <select id="safeChangeProperty"></select>
+                </label>
+                <label>Before Source
+                  <select id="safeChangeBeforeSource">
+                    <option value="observed">observed</option>
+                    <option value="user-confirmed">user-confirmed</option>
+                    <option value="runtime-confirmed">runtime-confirmed</option>
+                  </select>
+                </label>
+              </div>
+              <div class="tb-safe-change-grid">
+                <label>Before
+                  <textarea id="safeChangeBefore" rows="3" spellcheck="false"></textarea>
+                </label>
+                <label>After
+                  <textarea id="safeChangeAfter" rows="3" spellcheck="false"></textarea>
+                </label>
+              </div>
+              <div class="tb-safe-change-actions">
+                <button id="generateSafeChange" type="button">Generate Instruction</button>
+                <button id="copySafeChangeJson" type="button">Copy JSON</button>
+                <button id="copySafeChangeSummary" type="button">Copy Summary</button>
+                <button id="clearSafeChange" type="button">Clear</button>
+              </div>
+              <p id="safeChangeMessage" class="tb-safe-change-message">Confirmed Mappingを選ぶとInstructionを作成できます。</p>
+              <details class="tb-safe-change-preview" open>
+                <summary>JSON Preview</summary>
+                <pre id="safeChangeJsonPreview">未生成</pre>
+              </details>
+              <details class="tb-safe-change-preview">
+                <summary>Human Summary</summary>
+                <pre id="safeChangeSummaryPreview">未生成</pre>
+              </details>
+            </div>
+          </section>
           <section class="tb-analyzer-mapping" aria-label="Manifest">
             <div class="tb-analyzer-mapping-head">
               <strong>Manifest</strong>
@@ -1391,6 +1440,7 @@
   <script src="./analyzer/read-only-analyzer.js?v=20260824-analyzer-v01-safe"></script>
   <script src="./adapters/generic-adapter.js?v=20260825-adapter-v01"></script>
   <script src="./adapters/teamerry-adapter.js?v=20260825-teamerry-adapter-v01"></script>
-  <script src="./tbalance.js?v=20260825-v1-adapter-v01"></script>
+  <script src="./safe-change/safe-change-instruction.js?v=20260826-safe-change-v01"></script>
+  <script src="./tbalance.js?v=20260826-v1-safe-change-v01"></script>
 </body>
 </html>

@@ -5017,11 +5017,12 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
 
 .tb-analyzer-results {
   display: grid;
-  grid-template-rows: auto minmax(120px, 1fr) minmax(120px, 1fr) minmax(180px, 1fr) minmax(130px, 1fr);
+  grid-template-rows: auto minmax(110px, 0.8fr) minmax(110px, 0.8fr) minmax(160px, 0.95fr) minmax(120px, 0.8fr) minmax(250px, 1.2fr) minmax(130px, 0.8fr) minmax(130px, 0.8fr);
   min-width: 0;
   min-height: 0;
   padding: 12px;
   gap: 10px;
+  overflow: auto;
 }
 
 .tb-analyzer-status-line {
@@ -5326,6 +5327,107 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   background: rgba(15, 23, 42, 0.9);
   color: #eef6ff;
   font-weight: 700;
+}
+
+.tb-safe-change-panel {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+}
+
+.tb-safe-change-panel label {
+  display: grid;
+  gap: 4px;
+  color: #dbeafe;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tb-safe-change-panel select,
+.tb-safe-change-panel textarea {
+  min-width: 0;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: #050b12;
+  color: #f8fbff;
+  font-size: 11px;
+}
+
+.tb-safe-change-panel textarea {
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.tb-safe-change-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+}
+
+.tb-safe-change-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tb-safe-change-actions button {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #dbeafe;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tb-safe-change-actions button:first-child {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(14, 91, 62, 0.9);
+  color: #dcfce7;
+}
+
+.tb-safe-change-message {
+  margin: 0;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #bdd7f1;
+  font-size: 11px;
+}
+
+.tb-safe-change-message[data-status="success"] {
+  border-color: rgba(74, 222, 128, 0.45);
+  color: #dcfce7;
+}
+
+.tb-safe-change-message[data-status="error"] {
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fecaca;
+}
+
+.tb-safe-change-message[data-status="warning"] {
+  border-color: rgba(251, 191, 36, 0.5);
+  color: #fde68a;
+}
+
+.tb-safe-change-preview {
+  min-height: 0;
+  color: #dbeafe;
+  font-size: 11px;
+}
+
+.tb-safe-change-preview pre {
+  overflow: auto;
+  max-height: 180px;
+  margin: 6px 0 0;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 6px;
+  padding: 8px;
+  background: rgba(2, 6, 12, 0.88);
+  color: #e5edf7;
+  white-space: pre-wrap;
 }
 
 .tb-manifest-panel {

@@ -211,6 +211,18 @@
       manifestPageId: "page-home",
       manifestWarning: "",
       adapterId: "none",
+      safeChange: {
+        targetMappingId: "",
+        property: "",
+        beforeSource: "observed",
+        beforeText: "",
+        afterText: "",
+        intent: "",
+        status: "idle",
+        message: "",
+        json: null,
+        summary: "",
+      },
     },
     dirty: false,
     autosaveError: "",
@@ -451,6 +463,20 @@
     mappingCandidatePanel: $("mappingCandidatePanel"),
     confirmedMappingCount: $("confirmedMappingCount"),
     confirmedMappingList: $("confirmedMappingList"),
+    safeChangeStatus: $("safeChangeStatus"),
+    safeChangeTarget: $("safeChangeTarget"),
+    safeChangeIntent: $("safeChangeIntent"),
+    safeChangeProperty: $("safeChangeProperty"),
+    safeChangeBeforeSource: $("safeChangeBeforeSource"),
+    safeChangeBefore: $("safeChangeBefore"),
+    safeChangeAfter: $("safeChangeAfter"),
+    generateSafeChange: $("generateSafeChange"),
+    copySafeChangeJson: $("copySafeChangeJson"),
+    copySafeChangeSummary: $("copySafeChangeSummary"),
+    clearSafeChange: $("clearSafeChange"),
+    safeChangeMessage: $("safeChangeMessage"),
+    safeChangeJsonPreview: $("safeChangeJsonPreview"),
+    safeChangeSummaryPreview: $("safeChangeSummaryPreview"),
     manifestMappingCount: $("manifestMappingCount"),
     manifestProjectId: $("manifestProjectId"),
     manifestPageId: $("manifestPageId"),
@@ -540,6 +566,22 @@
     els.analyzerElementList?.addEventListener("click", handleAnalyzerElementListClick);
     els.mappingCandidatePanel?.addEventListener("click", handleMappingCandidateClick);
     els.confirmedMappingList?.addEventListener("click", handleConfirmedMappingListClick);
+    els.safeChangeTarget?.addEventListener("change", handleSafeChangeTargetChange);
+    els.safeChangeProperty?.addEventListener("change", handleSafeChangePropertyChange);
+    els.safeChangeBeforeSource?.addEventListener("change", handleSafeChangeBeforeSourceChange);
+    els.safeChangeIntent?.addEventListener("input", () => {
+      state.analyzer.safeChange.intent = els.safeChangeIntent.value;
+    });
+    els.safeChangeBefore?.addEventListener("input", () => {
+      state.analyzer.safeChange.beforeText = els.safeChangeBefore.value;
+    });
+    els.safeChangeAfter?.addEventListener("input", () => {
+      state.analyzer.safeChange.afterText = els.safeChangeAfter.value;
+    });
+    els.generateSafeChange?.addEventListener("click", generateSafeChangeInstruction);
+    els.copySafeChangeJson?.addEventListener("click", copySafeChangeJson);
+    els.copySafeChangeSummary?.addEventListener("click", copySafeChangeSummary);
+    els.clearSafeChange?.addEventListener("click", clearSafeChangeInstruction);
     els.exportManifest?.addEventListener("click", exportAnalyzerManifest);
     els.importManifest?.addEventListener("click", () => els.manifestImportFile?.click());
     els.manifestImportFile?.addEventListener("change", importAnalyzerManifestFromFile);
@@ -547,11 +589,13 @@
     els.adapterSelect?.addEventListener("change", () => setAnalyzerAdapter(els.adapterSelect.value || "none"));
     els.manifestProjectId?.addEventListener("input", () => {
       state.analyzer.manifestProjectId = sanitizeManifestId(els.manifestProjectId.value || "sample-project", "sample-project");
+      renderSafeChangePanel();
       renderManifestPanel();
       renderAdapterPanel();
     });
     els.manifestPageId?.addEventListener("input", () => {
       state.analyzer.manifestPageId = sanitizeManifestId(els.manifestPageId.value || "page-home", "page-home");
+      renderSafeChangePanel();
       renderManifestPanel();
       renderAdapterPanel();
     });
@@ -1319,6 +1363,7 @@
       els.analyzerElementDetail.textContent = "未解析";
       renderMappingCandidate(null);
       renderConfirmedMappings();
+      renderSafeChangePanel();
       renderManifestPanel();
       renderAdapterPanel();
       return;
@@ -1359,6 +1404,7 @@
       : "要素を選択してください。";
     renderMappingCandidate(selectedElement);
     renderConfirmedMappings();
+    renderSafeChangePanel();
     renderManifestPanel();
     renderAdapterPanel();
   }
@@ -1452,6 +1498,367 @@
         <button type="button" data-remove-mapping="${escapeAttr(mapping.mappingId)}">解除</button>
       </article>`;
     }).join("");
+  }
+
+  function renderSafeChangePanel() {
+    if (!els.safeChangeTarget || !els.safeChangeProperty || !els.safeChangeStatus) {
+      return;
+    }
+    const safeState = state.analyzer.safeChange;
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const mappings = getVisibleConfirmedMappings(pageMeta);
+    const previousTarget = safeState.targetMappingId;
+    els.safeChangeTarget.innerHTML = mappings.length
+      ? mappings.map((mapping) => `<option value="${escapeAttr(mapping.mappingId)}">${escapeHtml(`${mapping.tbId} / ${mapping.domRef}${mapping.viewState ? ` / ${mapping.viewState}` : " / common"}`)}</option>`).join("")
+      : `<option value="">Confirmed Mappingなし</option>`;
+    const selectedMapping = mappings.find((mapping) => mapping.mappingId === previousTarget) || mappings[0] || null;
+    safeState.targetMappingId = selectedMapping?.mappingId || "";
+    if (els.safeChangeTarget.value !== safeState.targetMappingId) {
+      els.safeChangeTarget.value = safeState.targetMappingId;
+    }
+
+    const properties = getSafeChangeEditableProperties(selectedMapping);
+    els.safeChangeProperty.innerHTML = properties.length
+      ? properties.map((property) => `<option value="${escapeAttr(property)}">${escapeHtml(property)}</option>`).join("")
+      : `<option value="">変更可能Propertyなし</option>`;
+    if (!properties.includes(safeState.property)) {
+      safeState.property = properties[0] || "";
+    }
+    if (els.safeChangeProperty.value !== safeState.property) {
+      els.safeChangeProperty.value = safeState.property;
+    }
+    if (els.safeChangeBeforeSource && els.safeChangeBeforeSource.value !== safeState.beforeSource) {
+      els.safeChangeBeforeSource.value = safeState.beforeSource;
+    }
+    if (els.safeChangeIntent && els.safeChangeIntent.value !== safeState.intent) {
+      els.safeChangeIntent.value = safeState.intent;
+    }
+    refreshSafeChangeBeforeFromObserved();
+    renderSafeChangePreview();
+  }
+
+  function renderSafeChangePreview() {
+    const safeState = state.analyzer.safeChange;
+    if (els.safeChangeStatus) {
+      els.safeChangeStatus.textContent = safeState.json ? "生成済み" : "未作成";
+    }
+    if (els.safeChangeMessage) {
+      els.safeChangeMessage.textContent = safeState.message || "Confirmed Mappingを選ぶとInstructionを作成できます。";
+      els.safeChangeMessage.dataset.status = safeState.status || "idle";
+    }
+    if (els.safeChangeJsonPreview) {
+      els.safeChangeJsonPreview.textContent = safeState.json ? JSON.stringify(safeState.json, null, 2) : "未生成";
+    }
+    if (els.safeChangeSummaryPreview) {
+      els.safeChangeSummaryPreview.textContent = safeState.summary || "未生成";
+    }
+  }
+
+  function getSafeChangeEditableProperties(mapping) {
+    if (!mapping) {
+      return [];
+    }
+    const supported = new Set(["position", "size", "visibility", "text"]);
+    const protectedProperties = new Set(mapping.protectedProperties || []);
+    return (mapping.editableProperties || [])
+      .filter((property) => supported.has(property) && !protectedProperties.has(property));
+  }
+
+  function handleSafeChangeTargetChange() {
+    state.analyzer.safeChange.targetMappingId = els.safeChangeTarget?.value || "";
+    state.analyzer.safeChange.property = "";
+    state.analyzer.safeChange.json = null;
+    state.analyzer.safeChange.summary = "";
+    renderSafeChangePanel();
+  }
+
+  function handleSafeChangePropertyChange() {
+    state.analyzer.safeChange.property = els.safeChangeProperty?.value || "";
+    state.analyzer.safeChange.json = null;
+    state.analyzer.safeChange.summary = "";
+    refreshSafeChangeBeforeFromObserved();
+    renderSafeChangePreview();
+  }
+
+  function handleSafeChangeBeforeSourceChange() {
+    state.analyzer.safeChange.beforeSource = els.safeChangeBeforeSource?.value || "observed";
+    refreshSafeChangeBeforeFromObserved();
+    renderSafeChangePreview();
+  }
+
+  function refreshSafeChangeBeforeFromObserved() {
+    const safeState = state.analyzer.safeChange;
+    const mapping = getSafeChangeSelectedMapping();
+    const property = safeState.property;
+    const beforeSource = els.safeChangeBeforeSource?.value || safeState.beforeSource || "observed";
+    safeState.beforeSource = beforeSource;
+    if (els.safeChangeBefore) {
+      els.safeChangeBefore.readOnly = beforeSource === "observed";
+    }
+    if (!mapping || !property) {
+      safeState.beforeText = "";
+      if (els.safeChangeBefore) {
+        els.safeChangeBefore.value = "";
+      }
+      return;
+    }
+    if (beforeSource !== "observed") {
+      if (els.safeChangeBefore && els.safeChangeBefore.value !== safeState.beforeText) {
+        els.safeChangeBefore.value = safeState.beforeText;
+      }
+      return;
+    }
+    const observed = getSafeChangeObservedBefore(mapping, property);
+    safeState.beforeText = observed.ok ? JSON.stringify(observed.value, null, 2) : "";
+    if (els.safeChangeBefore) {
+      els.safeChangeBefore.value = safeState.beforeText;
+    }
+    if (observed.ok && !safeState.afterText && els.safeChangeAfter) {
+      safeState.afterText = safeState.beforeText;
+      els.safeChangeAfter.value = safeState.afterText;
+    }
+  }
+
+  function getSafeChangeSelectedMapping() {
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const mappings = getVisibleConfirmedMappings(pageMeta);
+    const mappingId = state.analyzer.safeChange.targetMappingId || els.safeChangeTarget?.value || "";
+    return mappings.find((mapping) => mapping.mappingId === mappingId) || null;
+  }
+
+  function getSafeChangeObservedBefore(mapping, property) {
+    const element = findAnalyzerElementByDomRef(mapping.domRef);
+    const node = resolveAnalyzerDomNode(mapping.domRef);
+    if (!element && !node) {
+      return { ok: false, reason: "missing-dom" };
+    }
+    const bounds = element?.observed?.bounds || getDomNodeBounds(node);
+    if (property === "position") {
+      if (!bounds) {
+        return { ok: false, reason: "missing-bounds" };
+      }
+      return { ok: true, value: { x: bounds.x, y: bounds.y }, coordinateContext: "iframe-viewport-css-px" };
+    }
+    if (property === "size") {
+      if (!bounds) {
+        return { ok: false, reason: "missing-bounds" };
+      }
+      return { ok: true, value: { width: bounds.width, height: bounds.height }, coordinateContext: "iframe-viewport-css-px" };
+    }
+    if (property === "visibility") {
+      const style = element?.observed?.style || (node ? node.ownerDocument.defaultView.getComputedStyle(node) : null);
+      if (!style) {
+        return { ok: false, reason: "missing-style" };
+      }
+      return { ok: true, value: { display: style.display, visibility: style.visibility, opacity: style.opacity } };
+    }
+    if (property === "text") {
+      if (!node) {
+        return { ok: false, reason: "missing-dom" };
+      }
+      return { ok: true, value: node.textContent || "" };
+    }
+    return { ok: false, reason: "unsupported-property" };
+  }
+
+  function findAnalyzerElementByDomRef(domRef) {
+    if (!domRef || !state.analyzer.result?.elements) {
+      return null;
+    }
+    return state.analyzer.result.elements.find((element) => element.observed?.domRef === domRef) || null;
+  }
+
+  function resolveAnalyzerDomNode(domRef) {
+    const frame = els.analyzerFrame;
+    let doc;
+    try {
+      doc = frame?.contentDocument;
+    } catch (error) {
+      return null;
+    }
+    if (!doc || !domRef) {
+      return null;
+    }
+    try {
+      return doc.querySelector(domRef);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function getDomNodeBounds(node) {
+    if (!node || typeof node.getBoundingClientRect !== "function") {
+      return null;
+    }
+    const rect = node.getBoundingClientRect();
+    return {
+      x: Math.round(rect.x * 100) / 100,
+      y: Math.round(rect.y * 100) / 100,
+      width: Math.round(rect.width * 100) / 100,
+      height: Math.round(rect.height * 100) / 100,
+    };
+  }
+
+  function generateSafeChangeInstruction() {
+    const safeState = state.analyzer.safeChange;
+    const mapping = getSafeChangeSelectedMapping();
+    safeState.intent = els.safeChangeIntent?.value || "";
+    safeState.property = els.safeChangeProperty?.value || "";
+    safeState.beforeSource = els.safeChangeBeforeSource?.value || "observed";
+    safeState.beforeText = els.safeChangeBefore?.value || "";
+    safeState.afterText = els.safeChangeAfter?.value || "";
+    safeState.json = null;
+    safeState.summary = "";
+
+    if (!window.TBalanceSafeChange?.buildSafeChangeInstruction) {
+      setSafeChangeStatus("error", "Safe Change moduleを読み込めていません。");
+      renderSafeChangePreview();
+      return;
+    }
+    if (!mapping) {
+      setSafeChangeStatus("error", "Confirmed Mappingを選択してください。");
+      renderSafeChangePreview();
+      return;
+    }
+    const beforeParsed = parseSafeChangeValue(safeState.beforeText, safeState.property, "before");
+    const afterParsed = parseSafeChangeValue(safeState.afterText, safeState.property, "after");
+    if (!beforeParsed.ok || !afterParsed.ok) {
+      setSafeChangeStatus("error", [beforeParsed.error, afterParsed.error].filter(Boolean).join(" / "));
+      renderSafeChangePreview();
+      return;
+    }
+    const observed = getSafeChangeObservedBefore(mapping, safeState.property);
+    const adapterMapping = getAdapterComponentMappingForSafeChange(mapping);
+    const protectedBehavior = getAdapterProtectedBehaviorForSafeChange(mapping);
+    const ambiguousMapping = isSafeChangeMappingAmbiguous(mapping) || adapterMapping?.status === "ambiguous";
+    const result = window.TBalanceSafeChange.buildSafeChangeInstruction({
+      projectId: getAnalyzerManifestPageMeta().projectId,
+      sourcePath: mapping.page?.sourcePath || getAnalyzerManifestPageMeta().sourcePath,
+      sourceAuthority: mapping.sourceAuthority || "standard-web",
+      viewState: mapping.viewState || getAnalyzerManifestPageMeta().currentViewState,
+      mapping,
+      userIntent: safeState.intent,
+      domResolved: Boolean(resolveAnalyzerDomNode(mapping.domRef)),
+      ambiguousMapping,
+      protectedBehavior,
+      changes: [{
+        property: safeState.property,
+        before: beforeParsed.value,
+        after: afterParsed.value,
+        beforeSource: safeState.beforeSource,
+        ...(observed.coordinateContext ? { coordinateContext: observed.coordinateContext } : {}),
+      }],
+    });
+    if (!result.ok) {
+      setSafeChangeStatus("error", result.errors.join(" / "));
+      renderSafeChangePreview();
+      return;
+    }
+    safeState.json = result.instruction;
+    safeState.summary = result.summary;
+    setSafeChangeStatus(result.warnings.length ? "warning" : "success", result.warnings.length ? result.warnings.join(" / ") : "Safe Change Instructionを生成しました。");
+    renderSafeChangePreview();
+  }
+
+  function parseSafeChangeValue(text, property, label) {
+    const raw = String(text || "");
+    if (!raw.trim()) {
+      return { ok: false, error: `${label}が空です。` };
+    }
+    if (property === "text") {
+      try {
+        return { ok: true, value: JSON.parse(raw) };
+      } catch (error) {
+        return { ok: true, value: raw };
+      }
+    }
+    try {
+      return { ok: true, value: JSON.parse(raw) };
+    } catch (error) {
+      return { ok: false, error: `${label}はJSONとして入力してください。` };
+    }
+  }
+
+  function isSafeChangeMappingAmbiguous(mapping) {
+    if (!mapping) {
+      return false;
+    }
+    const pageMeta = getAnalyzerManifestPageMeta();
+    return getVisibleConfirmedMappings(pageMeta).some((item) => {
+      if (item.mappingId === mapping.mappingId) {
+        return false;
+      }
+      const sameIdentity = (item.tbId && item.tbId === mapping.tbId) || (item.domRef && item.domRef === mapping.domRef);
+      if (!sameIdentity) {
+        return false;
+      }
+      const itemView = item.viewState || "";
+      const mappingView = mapping.viewState || "";
+      return itemView !== mappingView || itemView === pageMeta.currentViewState;
+    });
+  }
+
+  function getAdapterComponentMappingForSafeChange(mapping) {
+    const adapter = getActiveAnalyzerAdapter();
+    if (!adapter || adapter.id === "none" || typeof adapter.getComponentMapping !== "function") {
+      return null;
+    }
+    return adapter.getComponentMapping(mapping.pageId, mapping.tbId, {
+      ...getAnalyzerAdapterContext(),
+      viewState: mapping.viewState || getAnalyzerAdapterContext().viewState,
+    });
+  }
+
+  function getAdapterProtectedBehaviorForSafeChange(mapping) {
+    const adapter = getActiveAnalyzerAdapter();
+    if (!adapter || adapter.id === "none" || typeof adapter.getProtectedBehavior !== "function") {
+      return null;
+    }
+    return adapter.getProtectedBehavior(mapping.pageId, mapping.tbId, {
+      ...getAnalyzerAdapterContext(),
+      viewState: mapping.viewState || getAnalyzerAdapterContext().viewState,
+    });
+  }
+
+  function setSafeChangeStatus(status, message) {
+    state.analyzer.safeChange.status = status;
+    state.analyzer.safeChange.message = message;
+  }
+
+  async function copySafeChangeJson() {
+    const json = state.analyzer.safeChange.json;
+    if (!json) {
+      setSafeChangeStatus("error", "コピーするJSONがありません。");
+      renderSafeChangePreview();
+      return;
+    }
+    await copyTextToClipboard(JSON.stringify(json, null, 2), "Safe Change JSONをコピーしました。");
+  }
+
+  async function copySafeChangeSummary() {
+    const summary = state.analyzer.safeChange.summary;
+    if (!summary) {
+      setSafeChangeStatus("error", "コピーするSummaryがありません。");
+      renderSafeChangePreview();
+      return;
+    }
+    await copyTextToClipboard(summary, "Safe Change Summaryをコピーしました。");
+  }
+
+  function clearSafeChangeInstruction() {
+    state.analyzer.safeChange = {
+      targetMappingId: state.analyzer.safeChange.targetMappingId,
+      property: state.analyzer.safeChange.property,
+      beforeSource: "observed",
+      beforeText: "",
+      afterText: "",
+      intent: "",
+      status: "idle",
+      message: "Safe Change Instructionをクリアしました。",
+      json: null,
+      summary: "",
+    };
+    renderSafeChangePanel();
   }
 
   function confirmSelectedMapping() {
@@ -1760,6 +2167,7 @@
     if (els.adapterSelect && els.adapterSelect.value !== nextId) {
       els.adapterSelect.value = nextId;
     }
+    renderSafeChangePanel();
     renderAdapterPanel();
   }
 
@@ -2104,6 +2512,25 @@
       const adapter = getActiveAnalyzerAdapter();
       return adapter?.getProtectedBehavior?.(pageId, tbId, { ...getAnalyzerAdapterContext(), ...context }) || null;
     },
+  };
+
+  window.TBalanceSafeChangeDebug = {
+    generateFromUi: generateSafeChangeInstruction,
+    clear: clearSafeChangeInstruction,
+    getCurrent: () => ({
+      safeChange: { ...state.analyzer.safeChange },
+      json: state.analyzer.safeChange.json ? JSON.parse(JSON.stringify(state.analyzer.safeChange.json)) : null,
+      summary: state.analyzer.safeChange.summary,
+    }),
+    getTargets: () => getVisibleConfirmedMappings(getAnalyzerManifestPageMeta()).map((mapping) => ({
+      mappingId: mapping.mappingId,
+      pageId: mapping.pageId,
+      viewState: mapping.viewState || "",
+      tbId: mapping.tbId,
+      domRef: mapping.domRef,
+      editableProperties: [...(mapping.editableProperties || [])],
+      protectedProperties: [...(mapping.protectedProperties || [])],
+    })),
   };
 
   function isMappingDomMissing(mapping) {
@@ -4152,6 +4579,34 @@
       els.aiPromptText.focus();
       els.aiPromptText.select();
       showModeToast("コピーできない場合は、選択された文章を手動でコピーしてください。");
+    }
+  }
+
+  async function copyTextToClipboard(text, successMessage) {
+    try {
+      await navigator.clipboard.writeText(text);
+      if (successMessage) {
+        showModeToast(successMessage);
+      }
+      return true;
+    } catch (error) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        const ok = document.execCommand("copy");
+        if (successMessage) {
+          showModeToast(ok ? successMessage : "コピーできない場合は、選択された文章を手動でコピーしてください。");
+        }
+        return ok;
+      } finally {
+        document.body.removeChild(textarea);
+      }
     }
   }
 
