@@ -1414,6 +1414,35 @@
               </details>
             </div>
           </section>
+          <section class="tb-analyzer-mapping" aria-label="Safe Patch Candidate">
+            <div class="tb-analyzer-mapping-head">
+              <strong>Safe Patch Candidate</strong>
+              <span id="safePatchStatus">未作成</span>
+            </div>
+            <div class="tb-safe-patch-panel">
+              <div class="tb-safe-patch-actions">
+                <button id="generateSafePatch" type="button">Generate Patch Candidate</button>
+                <button id="approveSafePatch" type="button">Approve Candidate</button>
+                <button id="rejectSafePatch" type="button">Reject</button>
+                <button id="copySafePatchCandidate" type="button">Copy Candidate</button>
+                <button id="copySafePatchDiff" type="button">Copy Diff</button>
+                <button id="clearSafePatch" type="button">Clear</button>
+              </div>
+              <p id="safePatchMessage" class="tb-safe-patch-message">Safe Change Instructionを生成してからPatch Candidateを作成します。</p>
+              <details class="tb-safe-patch-preview" open>
+                <summary>Review Summary</summary>
+                <pre id="safePatchSummaryPreview">未生成</pre>
+              </details>
+              <details class="tb-safe-patch-preview">
+                <summary>Candidate JSON</summary>
+                <pre id="safePatchJsonPreview">未生成</pre>
+              </details>
+              <details class="tb-safe-patch-preview">
+                <summary>Diff</summary>
+                <pre id="safePatchDiffPreview">未生成</pre>
+              </details>
+            </div>
+          </section>
           <section class="tb-analyzer-mapping" aria-label="Manifest">
             <div class="tb-analyzer-mapping-head">
               <strong>Manifest</strong>
@@ -1459,7 +1488,8 @@
   <script src="./adapters/generic-adapter.js?v=20260825-adapter-v01"></script>
   <script src="./adapters/teamerry-adapter.js?v=20260825-teamerry-adapter-v01"></script>
   <script src="./safe-change/safe-change-instruction.js?v=20260826-safe-change-v01"></script>
+  <script src="./safe-patch/safe-patch-candidate.js?v=20260827-safe-patch-v01"></script>
   <script src="./with-ai/with-ai-share.js?v=20260826-with-ai-share-v01"></script>
-  <script src="./tbalance.js?v=20260826-v1-with-ai-share-v01"></script>
+  <script src="./tbalance.js?v=20260827-v1-safe-patch-v01"></script>
 </body>
 </html>

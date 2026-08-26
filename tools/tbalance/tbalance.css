@@ -5512,6 +5512,88 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   white-space: pre-wrap;
 }
 
+.tb-safe-patch-panel {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+}
+
+.tb-safe-patch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tb-safe-patch-actions button {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #dbeafe;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tb-safe-patch-actions button:first-child {
+  border-color: rgba(14, 165, 233, 0.5);
+  background: rgba(12, 74, 110, 0.92);
+  color: #e0f2fe;
+}
+
+.tb-safe-patch-actions button:nth-child(2) {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(14, 91, 62, 0.9);
+  color: #dcfce7;
+}
+
+.tb-safe-patch-message {
+  margin: 0;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #bdd7f1;
+  font-size: 11px;
+}
+
+.tb-safe-patch-message[data-status="success"],
+.tb-safe-patch-message[data-status="approved"] {
+  border-color: rgba(74, 222, 128, 0.45);
+  color: #dcfce7;
+}
+
+.tb-safe-patch-message[data-status="error"],
+.tb-safe-patch-message[data-status="blocked"],
+.tb-safe-patch-message[data-status="stale"],
+.tb-safe-patch-message[data-status="rejected"] {
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fecaca;
+}
+
+.tb-safe-patch-message[data-status="warning"],
+.tb-safe-patch-message[data-status="pending"] {
+  border-color: rgba(251, 191, 36, 0.5);
+  color: #fde68a;
+}
+
+.tb-safe-patch-preview {
+  min-height: 0;
+  color: #dbeafe;
+  font-size: 11px;
+}
+
+.tb-safe-patch-preview pre {
+  overflow: auto;
+  max-height: 180px;
+  margin: 6px 0 0;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 6px;
+  padding: 8px;
+  background: rgba(2, 6, 12, 0.88);
+  color: #e5edf7;
+  white-space: pre-wrap;
+}
+
 .tb-manifest-panel {
   display: grid;
   gap: 8px;

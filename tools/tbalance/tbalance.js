@@ -232,6 +232,16 @@
         json: null,
         summary: "",
       },
+      safePatch: {
+        status: "idle",
+        message: "",
+        candidate: null,
+        diffText: "",
+        summary: "",
+        signature: "",
+        reviewStatus: "",
+        approvedSignature: "",
+      },
     },
     dirty: false,
     autosaveError: "",
@@ -492,6 +502,17 @@
     safeChangeMessage: $("safeChangeMessage"),
     safeChangeJsonPreview: $("safeChangeJsonPreview"),
     safeChangeSummaryPreview: $("safeChangeSummaryPreview"),
+    safePatchStatus: $("safePatchStatus"),
+    generateSafePatch: $("generateSafePatch"),
+    approveSafePatch: $("approveSafePatch"),
+    rejectSafePatch: $("rejectSafePatch"),
+    copySafePatchCandidate: $("copySafePatchCandidate"),
+    copySafePatchDiff: $("copySafePatchDiff"),
+    clearSafePatch: $("clearSafePatch"),
+    safePatchMessage: $("safePatchMessage"),
+    safePatchSummaryPreview: $("safePatchSummaryPreview"),
+    safePatchJsonPreview: $("safePatchJsonPreview"),
+    safePatchDiffPreview: $("safePatchDiffPreview"),
     manifestMappingCount: $("manifestMappingCount"),
     manifestProjectId: $("manifestProjectId"),
     manifestPageId: $("manifestPageId"),
@@ -597,17 +618,26 @@
     els.safeChangeBeforeSource?.addEventListener("change", handleSafeChangeBeforeSourceChange);
     els.safeChangeIntent?.addEventListener("input", () => {
       state.analyzer.safeChange.intent = els.safeChangeIntent.value;
+      invalidateSafePatchReview("Safe Change Intentが変更されました。");
     });
     els.safeChangeBefore?.addEventListener("input", () => {
       state.analyzer.safeChange.beforeText = els.safeChangeBefore.value;
+      invalidateSafePatchReview("Safe Change Beforeが変更されました。");
     });
     els.safeChangeAfter?.addEventListener("input", () => {
       state.analyzer.safeChange.afterText = els.safeChangeAfter.value;
+      invalidateSafePatchReview("Safe Change Afterが変更されました。");
     });
     els.generateSafeChange?.addEventListener("click", generateSafeChangeInstruction);
     els.copySafeChangeJson?.addEventListener("click", copySafeChangeJson);
     els.copySafeChangeSummary?.addEventListener("click", copySafeChangeSummary);
     els.clearSafeChange?.addEventListener("click", clearSafeChangeInstruction);
+    els.generateSafePatch?.addEventListener("click", generateSafePatchCandidate);
+    els.approveSafePatch?.addEventListener("click", approveSafePatchCandidate);
+    els.rejectSafePatch?.addEventListener("click", rejectSafePatchCandidate);
+    els.copySafePatchCandidate?.addEventListener("click", copySafePatchCandidate);
+    els.copySafePatchDiff?.addEventListener("click", copySafePatchDiff);
+    els.clearSafePatch?.addEventListener("click", clearSafePatchCandidate);
     els.exportManifest?.addEventListener("click", exportAnalyzerManifest);
     els.importManifest?.addEventListener("click", () => els.manifestImportFile?.click());
     els.manifestImportFile?.addEventListener("change", importAnalyzerManifestFromFile);
@@ -1209,12 +1239,14 @@
     .badge { position: absolute; left: 32px; top: 32px; padding: 8px 14px; border-radius: 999px; background: #14532d; color: white; }
     .card { display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 12px; background: rgba(255,255,255,.8); }
     .float { position: absolute; right: 48px; bottom: 42px; width: 160px; height: 96px; background: #f97316; transform: rotate(-4deg); }
+    .patch-safe-box { position: absolute; left: 220px; top: 180px; width: 80px; height: 48px; background: #22c55e; }
   </style>
 </head>
 <body>
   <main data-demo="generic">
     <section class="hero" aria-label="読み取りテスト">
       <p class="badge">safe visual candidate</p>
+      <div class="patch-safe-box" data-part="patch-safe-box"></div>
       <div class="float" data-part="visual-box"></div>
       <a href="#next" onclick="return false">リンク候補</a>
     </section>
@@ -1578,6 +1610,7 @@
     if (els.safeChangeSummaryPreview) {
       els.safeChangeSummaryPreview.textContent = safeState.summary || "未生成";
     }
+    renderSafePatchPanel();
     renderWithAiSafeChangeShare();
   }
 
@@ -1596,6 +1629,7 @@
     state.analyzer.safeChange.property = "";
     state.analyzer.safeChange.json = null;
     state.analyzer.safeChange.summary = "";
+    invalidateSafePatchReview("Safe Change Targetが変更されました。");
     renderSafeChangePanel();
   }
 
@@ -1603,12 +1637,14 @@
     state.analyzer.safeChange.property = els.safeChangeProperty?.value || "";
     state.analyzer.safeChange.json = null;
     state.analyzer.safeChange.summary = "";
+    invalidateSafePatchReview("Safe Change Propertyが変更されました。");
     refreshSafeChangeBeforeFromObserved();
     renderSafeChangePreview();
   }
 
   function handleSafeChangeBeforeSourceChange() {
     state.analyzer.safeChange.beforeSource = els.safeChangeBeforeSource?.value || "observed";
+    invalidateSafePatchReview("Safe Change Before Sourceが変更されました。");
     refreshSafeChangeBeforeFromObserved();
     renderSafeChangePreview();
   }
@@ -1885,7 +1921,466 @@
       json: null,
       summary: "",
     };
+    clearSafePatchCandidate(false);
     renderSafeChangePanel();
+  }
+
+  function renderSafePatchPanel() {
+    const patchState = state.analyzer.safePatch;
+    if (!els.safePatchStatus) {
+      return;
+    }
+    const candidate = patchState.candidate;
+    const reviewLabel = patchState.reviewStatus ? ` / ${patchState.reviewStatus}` : "";
+    els.safePatchStatus.textContent = candidate ? `${candidate.status}${reviewLabel}` : "未作成";
+    if (els.safePatchMessage) {
+      els.safePatchMessage.textContent = patchState.message || "Safe Change Instructionを生成してからPatch Candidateを作成します。";
+      els.safePatchMessage.dataset.status = patchState.reviewStatus || patchState.status || "idle";
+    }
+    if (els.safePatchSummaryPreview) {
+      els.safePatchSummaryPreview.textContent = patchState.summary || "未生成";
+    }
+    if (els.safePatchJsonPreview) {
+      els.safePatchJsonPreview.textContent = candidate ? JSON.stringify(candidate, null, 2) : "未生成";
+    }
+    if (els.safePatchDiffPreview) {
+      els.safePatchDiffPreview.textContent = patchState.diffText || "未生成";
+    }
+  }
+
+  function generateSafePatchCandidate() {
+    const instruction = state.analyzer.safeChange.json;
+    const mapping = instruction ? findMappingForSafePatchInstruction(instruction) : null;
+    if (!window.TBalanceSafePatch?.buildPatchCandidate) {
+      setSafePatchStatus("error", "Safe Patch moduleを読み込めていません。");
+      renderSafePatchPanel();
+      return null;
+    }
+    if (!instruction) {
+      setSafePatchStatus("error", "先にSafe Change Instructionを生成してください。");
+      renderSafePatchPanel();
+      return null;
+    }
+    const change = instruction.changes?.[0] || null;
+    const currentObserved = mapping && change ? getSafeChangeObservedBefore(mapping, change.property) : { ok: false, reason: "missing-mapping" };
+    const sourceResolution = mapping && change
+      ? resolveSafePatchSource(instruction, mapping, change)
+      : { status: "unresolved", reason: "missing-mapping", message: "Confirmed Mappingが見つかりません。" };
+    const adapterMapping = mapping ? getAdapterComponentMappingForSafeChange(mapping) : null;
+    const result = window.TBalanceSafePatch.buildPatchCandidate({
+      instruction,
+      mapping,
+      pageMeta: getAnalyzerManifestPageMeta(),
+      domResolved: mapping ? Boolean(resolveAnalyzerDomNode(mapping.domRef)) : false,
+      ambiguousMapping: Boolean(mapping && (isSafeChangeMappingAmbiguous(mapping) || adapterMapping?.status === "ambiguous")),
+      currentObserved,
+      sourceResolution,
+    });
+    state.analyzer.safePatch.candidate = result.candidate;
+    state.analyzer.safePatch.diffText = result.diffText;
+    state.analyzer.safePatch.summary = buildSafePatchSummary(result.candidate);
+    state.analyzer.safePatch.signature = result.signature;
+    state.analyzer.safePatch.reviewStatus = "pending";
+    state.analyzer.safePatch.approvedSignature = "";
+    setSafePatchStatus(result.ok ? "pending" : result.candidate.status, result.ok ? "Patch Candidateを生成しました。Applyは行いません。" : `Patch Candidate blocked: ${result.candidate.blockReason?.code || "unknown"}`);
+    renderSafePatchPanel();
+    return result;
+  }
+
+  function findMappingForSafePatchInstruction(instruction) {
+    const target = instruction?.target || {};
+    return state.analyzer.confirmedMappings.find((mapping) => (
+      mapping.pageId === target.pageId
+      && mapping.tbId === target.tbId
+      && mapping.domRef === target.domRef
+      && (mapping.viewState || "") === (target.viewState || "")
+      && (mapping.page?.sourcePath || getAnalyzerManifestPageMeta().sourcePath || "") === (target.sourcePath || "")
+    )) || null;
+  }
+
+  function approveSafePatchCandidate() {
+    const patchState = state.analyzer.safePatch;
+    if (!patchState.candidate) {
+      setSafePatchStatus("error", "ApproveするPatch Candidateがありません。");
+      renderSafePatchPanel();
+      return;
+    }
+    if (patchState.candidate.status !== "ready-for-review") {
+      setSafePatchStatus("blocked", "Blocked CandidateはApproveできません。");
+      renderSafePatchPanel();
+      return;
+    }
+    patchState.reviewStatus = "approved";
+    patchState.approvedSignature = patchState.signature;
+    patchState.candidate.review = {
+      status: "approved",
+      approvedAt: new Date().toISOString(),
+      rejectedAt: null,
+    };
+    setSafePatchStatus("approved", "Patch Candidateを承認しました。v0.1ではファイルへ適用しません。");
+    renderSafePatchPanel();
+  }
+
+  function rejectSafePatchCandidate() {
+    const patchState = state.analyzer.safePatch;
+    if (!patchState.candidate) {
+      setSafePatchStatus("error", "RejectするPatch Candidateがありません。");
+      renderSafePatchPanel();
+      return;
+    }
+    patchState.reviewStatus = "rejected";
+    patchState.approvedSignature = "";
+    patchState.candidate.review = {
+      status: "rejected",
+      approvedAt: null,
+      rejectedAt: new Date().toISOString(),
+    };
+    setSafePatchStatus("rejected", "Patch CandidateをRejectしました。");
+    renderSafePatchPanel();
+  }
+
+  async function copySafePatchCandidate() {
+    const candidate = state.analyzer.safePatch.candidate;
+    if (!candidate) {
+      setSafePatchStatus("error", "コピーするPatch Candidateがありません。");
+      renderSafePatchPanel();
+      return;
+    }
+    await copyTextToClipboard(JSON.stringify(candidate, null, 2), "Patch Candidate JSONをコピーしました。");
+  }
+
+  async function copySafePatchDiff() {
+    const diffText = state.analyzer.safePatch.diffText;
+    if (!diffText) {
+      setSafePatchStatus("error", "コピーするDiffがありません。");
+      renderSafePatchPanel();
+      return;
+    }
+    await copyTextToClipboard(diffText, "Patch Candidate Diffをコピーしました。");
+  }
+
+  function clearSafePatchCandidate(render = true) {
+    state.analyzer.safePatch = {
+      status: "idle",
+      message: "Patch Candidateをクリアしました。",
+      candidate: null,
+      diffText: "",
+      summary: "",
+      signature: "",
+      reviewStatus: "",
+      approvedSignature: "",
+    };
+    if (render) {
+      renderSafePatchPanel();
+    }
+  }
+
+  function invalidateSafePatchReview(message) {
+    const patchState = state.analyzer.safePatch;
+    if (!patchState.candidate || patchState.reviewStatus !== "approved") {
+      return;
+    }
+    patchState.reviewStatus = "pending";
+    patchState.approvedSignature = "";
+    patchState.candidate.review = {
+      status: "pending",
+      approvedAt: null,
+      rejectedAt: null,
+    };
+    setSafePatchStatus("pending", message || "Patch Candidateが変更されたため承認をpendingに戻しました。");
+    renderSafePatchPanel();
+  }
+
+  function setSafePatchStatus(status, message) {
+    state.analyzer.safePatch.status = status;
+    state.analyzer.safePatch.message = message;
+  }
+
+  function buildSafePatchSummary(candidate) {
+    if (!candidate) {
+      return "";
+    }
+    const target = candidate.target || {};
+    const lines = [
+      `Status: ${candidate.status}`,
+      `Target: ${target.pageId || "-"} / ${target.sourcePath || "-"}${target.viewState ? ` / ${target.viewState}` : ""} / ${target.tbId || "-"}`,
+      `DOM: ${target.domRef || "-"}`,
+      `Intent: ${candidate.userIntent || "-"}`,
+    ];
+    if (candidate.blockReason) {
+      lines.push(`Block: ${candidate.blockReason.code} / ${candidate.blockReason.message}`);
+    }
+    if (candidate.semanticDiff?.length) {
+      lines.push("Semantic Diff:");
+      candidate.semanticDiff.forEach((change) => {
+        lines.push(`- ${change.property}: ${JSON.stringify(change.before)} -> ${JSON.stringify(change.after)} (${change.beforeSource})`);
+      });
+    }
+    if (candidate.operations?.length) {
+      lines.push("Source Change:");
+      candidate.operations.forEach((operation) => {
+        const sourceRef = operation.sourceRef || operation.source || {};
+        lines.push(`- ${sourceRef.sourcePath || sourceRef.path || "-"} :: ${sourceRef.selector || "-"} { ${operation.property}: ${JSON.stringify(operation.before)} -> ${JSON.stringify(operation.after)} }`);
+      });
+    }
+    if (candidate.doNotChange?.length) {
+      lines.push("Do Not Change:");
+      candidate.doNotChange.forEach((item) => {
+        lines.push(`- ${item.type}: ${item.name || item.behaviorRef || item.description || "protected"}`);
+      });
+    }
+    return lines.join("\n");
+  }
+
+  function resolveSafePatchSource(instruction, mapping, change) {
+    const node = resolveAnalyzerDomNode(mapping.domRef);
+    if (!node) {
+      return { status: "unresolved", reason: "missing-dom", message: "対象DOMが見つかりません。" };
+    }
+    const property = change.property;
+    if (!["position", "size", "visibility"].includes(property)) {
+      return { status: "unsupported", reason: "unsupported-property", message: `"${property}" はSafe Patch v0.1のCSS宣言候補化では未対応です。` };
+    }
+    const declarations = getPatchCssDeclarationsForChange(property, change);
+    if (!declarations.length) {
+      return { status: "unsupported", reason: "unsupported-property", message: `"${property}" をCSS宣言へ安全に変換できません。` };
+    }
+    if (hasUnsafeLayoutDependency(node, declarations)) {
+      return { status: "unresolved", reason: "layout-dependency", message: "flex/grid/transform等のLayout依存があるためv0.1ではPatch化しません。" };
+    }
+    const operations = [];
+    for (const declaration of declarations) {
+      const source = findUniqueCssDeclarationSource(node, declaration.cssProperty);
+      if (source.status !== "resolved") {
+        return source;
+      }
+      const operation = buildCssPatchOperation(instruction, mapping, change, declaration, source);
+      if (!operation) {
+        return { status: "unresolved", reason: "source-location-unresolved", message: `${declaration.cssProperty} の変更値を作れません。` };
+      }
+      operations.push(operation);
+    }
+    return {
+      status: "resolved",
+      sourceLocation: operations.map((operation) => operation.sourceRef),
+      operations,
+    };
+  }
+
+  function getPatchCssDeclarationsForChange(property, change) {
+    if (property === "position") {
+      const before = change.before || {};
+      const after = change.after || {};
+      const declarations = [];
+      if (Number.isFinite(Number(before.x)) && Number.isFinite(Number(after.x)) && Number(before.x) !== Number(after.x)) {
+        declarations.push({ cssProperty: "left", delta: Number(after.x) - Number(before.x), unit: "px" });
+      }
+      if (Number.isFinite(Number(before.y)) && Number.isFinite(Number(after.y)) && Number(before.y) !== Number(after.y)) {
+        declarations.push({ cssProperty: "top", delta: Number(after.y) - Number(before.y), unit: "px" });
+      }
+      return declarations;
+    }
+    if (property === "size") {
+      const before = change.before || {};
+      const after = change.after || {};
+      const declarations = [];
+      if (Number.isFinite(Number(after.width)) && Number(before.width) !== Number(after.width)) {
+        declarations.push({ cssProperty: "width", exactValue: `${Number(after.width)}px` });
+      }
+      if (Number.isFinite(Number(after.height)) && Number(before.height) !== Number(after.height)) {
+        declarations.push({ cssProperty: "height", exactValue: `${Number(after.height)}px` });
+      }
+      return declarations;
+    }
+    if (property === "visibility") {
+      const before = change.before || {};
+      const after = change.after || {};
+      return ["display", "visibility", "opacity"]
+        .filter((cssProperty) => Object.prototype.hasOwnProperty.call(after, cssProperty) && before[cssProperty] !== after[cssProperty])
+        .map((cssProperty) => ({ cssProperty, exactValue: String(after[cssProperty]) }));
+    }
+    return [];
+  }
+
+  function hasUnsafeLayoutDependency(node, declarations) {
+    const win = node.ownerDocument.defaultView;
+    const style = win.getComputedStyle(node);
+    const parentStyle = node.parentElement ? win.getComputedStyle(node.parentElement) : null;
+    const declarationNames = new Set(declarations.map((item) => item.cssProperty));
+    if (style.transform && style.transform !== "none" && (declarationNames.has("left") || declarationNames.has("top"))) {
+      return true;
+    }
+    if (parentStyle && ["flex", "inline-flex", "grid", "inline-grid"].includes(parentStyle.display)) {
+      return true;
+    }
+    return false;
+  }
+
+  function findUniqueCssDeclarationSource(node, cssProperty) {
+    const candidates = [];
+    const inlineValue = node.style?.getPropertyValue(cssProperty);
+    if (inlineValue) {
+      candidates.push({
+        kind: "inline-style",
+        path: getAnalyzerManifestPageMeta().sourcePath,
+        selector: getInlinePatchSelector(node),
+        property: cssProperty,
+        value: inlineValue.trim(),
+        priority: node.style.getPropertyPriority(cssProperty) || "",
+      });
+    }
+    candidates.push(...findStylesheetDeclarationSources(node, cssProperty));
+    if (candidates.length === 1) {
+      return { status: "resolved", source: candidates[0] };
+    }
+    if (candidates.length > 1) {
+      return {
+        status: "multiple",
+        reason: "multiple-source-candidates",
+        message: `${cssProperty} のCSS宣言候補が複数あります。`,
+        candidates,
+      };
+    }
+    return {
+      status: "unresolved",
+      reason: "source-location-unresolved",
+      message: `${cssProperty} の直接CSS宣言を見つけられません。`,
+    };
+  }
+
+  function findStylesheetDeclarationSources(node, cssProperty) {
+    const doc = node.ownerDocument;
+    const sources = [];
+    Array.from(doc.styleSheets || []).forEach((sheet) => {
+      let rules;
+      try {
+        rules = Array.from(sheet.cssRules || []);
+      } catch (error) {
+        return;
+      }
+      collectCssRuleDeclarationSources(rules, node, cssProperty, sheet, sources);
+    });
+    return sources;
+  }
+
+  function collectCssRuleDeclarationSources(rules, node, cssProperty, sheet, sources, mediaText = "") {
+    rules.forEach((rule) => {
+      if (rule.type === CSSRule.MEDIA_RULE || rule.type === CSSRule.SUPPORTS_RULE) {
+        collectCssRuleDeclarationSources(Array.from(rule.cssRules || []), node, cssProperty, sheet, sources, rule.conditionText || rule.media?.mediaText || mediaText);
+        return;
+      }
+      if (!rule.selectorText || !rule.style || !rule.style.getPropertyValue(cssProperty)) {
+        return;
+      }
+      let matches = false;
+      try {
+        matches = node.matches(rule.selectorText);
+      } catch (error) {
+        matches = false;
+      }
+      if (!matches) {
+        return;
+      }
+      sources.push({
+        kind: "stylesheet-rule",
+        path: getStylesheetSourcePath(sheet),
+        selector: rule.selectorText,
+        property: cssProperty,
+        value: rule.style.getPropertyValue(cssProperty).trim(),
+        priority: rule.style.getPropertyPriority(cssProperty) || "",
+        media: mediaText || "",
+      });
+    });
+  }
+
+  function buildCssPatchOperation(instruction, mapping, change, declaration, sourceResult) {
+    const source = sourceResult.source;
+    const before = source.value;
+    let after = declaration.exactValue;
+    if (!after && Number.isFinite(Number(declaration.delta))) {
+      const parsed = parseCssPxValue(before);
+      if (!parsed.ok) {
+        return null;
+      }
+      after = `${roundPatchNumber(parsed.value + declaration.delta)}${parsed.unit}`;
+    }
+    if (before === after) {
+      return null;
+    }
+    return {
+      type: "set-css-declaration",
+      target: {
+        pageId: instruction.target.pageId,
+        sourcePath: instruction.target.sourcePath,
+        viewState: instruction.target.viewState || "",
+        tbId: mapping.tbId,
+        domRef: mapping.domRef,
+      },
+      sourceRef: {
+        sourceType: source.kind,
+        sourcePath: source.path,
+        selector: source.selector,
+        property: declaration.cssProperty,
+        currentValue: before,
+        media: source.media || null,
+      },
+      source: {
+        kind: source.kind,
+        path: source.path,
+        selector: source.selector,
+        media: source.media || "",
+      },
+      property: declaration.cssProperty,
+      before,
+      after,
+      priority: source.priority || "",
+    };
+  }
+
+  function getInlinePatchSelector(node) {
+    if (node.id) {
+      return `#${node.id}`;
+    }
+    return getSafeChangeSelectedMapping()?.domRef || getDomPathSelector(node);
+  }
+
+  function getDomPathSelector(node) {
+    const parts = [];
+    let current = node;
+    while (current && current.nodeType === Node.ELEMENT_NODE && parts.length < 4) {
+      let label = current.tagName.toLowerCase();
+      if (current.classList?.length) {
+        label += `.${Array.from(current.classList).slice(0, 2).join(".")}`;
+      }
+      parts.unshift(label);
+      current = current.parentElement;
+    }
+    return parts.join(" > ");
+  }
+
+  function getStylesheetSourcePath(sheet) {
+    if (!sheet.href) {
+      return "inline-style-block";
+    }
+    try {
+      const pageUrl = new URL(state.analyzer.effectiveUrl || state.analyzer.loadedPath || window.location.href, window.location.href);
+      const sheetUrl = new URL(sheet.href, pageUrl);
+      return sheetUrl.pathname.split("/").filter(Boolean).pop() || sheetUrl.href;
+    } catch (error) {
+      return sheet.href;
+    }
+  }
+
+  function parseCssPxValue(value) {
+    const match = String(value || "").trim().match(/^(-?\d+(?:\.\d+)?)(px)$/i);
+    if (!match) {
+      return { ok: false };
+    }
+    return { ok: true, value: Number(match[1]), unit: match[2] };
+  }
+
+  function roundPatchNumber(value) {
+    return Math.round(Number(value) * 1000) / 1000;
   }
 
   function confirmSelectedMapping() {
@@ -2558,6 +3053,28 @@
       editableProperties: [...(mapping.editableProperties || [])],
       protectedProperties: [...(mapping.protectedProperties || [])],
     })),
+  };
+
+  window.TBalanceSafePatchDebug = {
+    generateFromUi: generateSafePatchCandidate,
+    approve: approveSafePatchCandidate,
+    reject: rejectSafePatchCandidate,
+    clear: clearSafePatchCandidate,
+    getCurrent: () => ({
+      safePatch: { ...state.analyzer.safePatch },
+      candidate: state.analyzer.safePatch.candidate ? JSON.parse(JSON.stringify(state.analyzer.safePatch.candidate)) : null,
+      diffText: state.analyzer.safePatch.diffText,
+      summary: state.analyzer.safePatch.summary,
+    }),
+    resolveSourceForCurrentInstruction: () => {
+      const instruction = state.analyzer.safeChange.json;
+      const mapping = instruction ? findMappingForSafePatchInstruction(instruction) : null;
+      const change = instruction?.changes?.[0] || null;
+      if (!instruction || !mapping || !change) {
+        return { status: "unresolved", reason: "missing-instruction" };
+      }
+      return resolveSafePatchSource(instruction, mapping, change);
+    },
   };
 
   function isMappingDomMissing(mapping) {
