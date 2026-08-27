@@ -5594,6 +5594,94 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   white-space: pre-wrap;
 }
 
+.tb-safe-apply-panel {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+}
+
+.tb-safe-apply-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tb-safe-apply-actions button {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #dbeafe;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tb-safe-apply-actions button:first-child {
+  border-color: rgba(14, 165, 233, 0.5);
+  background: rgba(12, 74, 110, 0.92);
+  color: #e0f2fe;
+}
+
+.tb-safe-apply-actions button:nth-child(2) {
+  border-color: rgba(251, 191, 36, 0.55);
+  background: rgba(120, 53, 15, 0.92);
+  color: #fef3c7;
+}
+
+.tb-safe-apply-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.tb-safe-apply-message {
+  margin: 0;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #bdd7f1;
+  font-size: 11px;
+}
+
+.tb-safe-apply-message[data-status="applied"],
+.tb-safe-apply-message[data-status="ready-to-apply"] {
+  border-color: rgba(74, 222, 128, 0.45);
+  color: #dcfce7;
+}
+
+.tb-safe-apply-message[data-status="preflight-blocked"],
+.tb-safe-apply-message[data-status="source-changed"],
+.tb-safe-apply-message[data-status="validation-failed"],
+.tb-safe-apply-message[data-status="failed"],
+.tb-safe-apply-message[data-status="rollback-failed"] {
+  border-color: rgba(248, 113, 113, 0.55);
+  color: #fecaca;
+}
+
+.tb-safe-apply-message[data-status="cancelled"],
+.tb-safe-apply-message[data-status="validation-partial"] {
+  border-color: rgba(251, 191, 36, 0.5);
+  color: #fde68a;
+}
+
+.tb-safe-apply-preview {
+  min-height: 0;
+  color: #dbeafe;
+  font-size: 11px;
+}
+
+.tb-safe-apply-preview pre {
+  overflow: auto;
+  max-height: 180px;
+  margin: 6px 0 0;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 6px;
+  padding: 8px;
+  background: rgba(2, 6, 12, 0.88);
+  color: #e5edf7;
+  white-space: pre-wrap;
+}
+
 .tb-manifest-panel {
   display: grid;
   gap: 8px;

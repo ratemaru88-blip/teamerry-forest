@@ -13,6 +13,7 @@
   const AI_BRIDGE_HISTORY_URL = "http://127.0.0.1:8787/api/tbalance/history";
   const AI_BRIDGE_RESTORE_URL = "http://127.0.0.1:8787/api/tbalance/history/restore";
   const AI_BRIDGE_SUGGESTION_URL = "http://127.0.0.1:8787/api/tbalance/suggestion";
+  const SOURCE_WRITER_URL = "http://127.0.0.1:8787/api/tbalance/source-writer";
   const AI_SHARE_HISTORY_LIMIT = 5;
   const HISTORY_LIMIT = 100;
   const DEFAULT_DROP_SIZE = { width: 360, height: 240 };
@@ -241,6 +242,13 @@
         signature: "",
         reviewStatus: "",
         approvedSignature: "",
+      },
+      safeApply: {
+        status: "idle",
+        message: "",
+        preflight: null,
+        result: null,
+        diffText: "",
       },
     },
     dirty: false,
@@ -513,6 +521,13 @@
     safePatchSummaryPreview: $("safePatchSummaryPreview"),
     safePatchJsonPreview: $("safePatchJsonPreview"),
     safePatchDiffPreview: $("safePatchDiffPreview"),
+    safeApplyStatus: $("safeApplyStatus"),
+    runSafeApplyPreflight: $("runSafeApplyPreflight"),
+    applySafePatchCandidate: $("applySafePatchCandidate"),
+    clearSafeApply: $("clearSafeApply"),
+    safeApplyMessage: $("safeApplyMessage"),
+    safeApplyDiffPreview: $("safeApplyDiffPreview"),
+    safeApplyResultPreview: $("safeApplyResultPreview"),
     manifestMappingCount: $("manifestMappingCount"),
     manifestProjectId: $("manifestProjectId"),
     manifestPageId: $("manifestPageId"),
@@ -638,6 +653,9 @@
     els.copySafePatchCandidate?.addEventListener("click", copySafePatchCandidate);
     els.copySafePatchDiff?.addEventListener("click", copySafePatchDiff);
     els.clearSafePatch?.addEventListener("click", clearSafePatchCandidate);
+    els.runSafeApplyPreflight?.addEventListener("click", runSafeApplyPreflight);
+    els.applySafePatchCandidate?.addEventListener("click", applySafePatchCandidate);
+    els.clearSafeApply?.addEventListener("click", clearSafeApplyState);
     els.exportManifest?.addEventListener("click", exportAnalyzerManifest);
     els.importManifest?.addEventListener("click", () => els.manifestImportFile?.click());
     els.manifestImportFile?.addEventListener("change", importAnalyzerManifestFromFile);
@@ -1946,6 +1964,7 @@
     if (els.safePatchDiffPreview) {
       els.safePatchDiffPreview.textContent = patchState.diffText || "未生成";
     }
+    renderSafeApplyPanel();
   }
 
   function generateSafePatchCandidate() {
@@ -1982,6 +2001,7 @@
     state.analyzer.safePatch.signature = result.signature;
     state.analyzer.safePatch.reviewStatus = "pending";
     state.analyzer.safePatch.approvedSignature = "";
+    clearSafeApplyState(false);
     setSafePatchStatus(result.ok ? "pending" : result.candidate.status, result.ok ? "Patch Candidateを生成しました。Applyは行いません。" : `Patch Candidate blocked: ${result.candidate.blockReason?.code || "unknown"}`);
     renderSafePatchPanel();
     return result;
@@ -2018,6 +2038,7 @@
       rejectedAt: null,
     };
     setSafePatchStatus("approved", "Patch Candidateを承認しました。v0.1ではファイルへ適用しません。");
+    clearSafeApplyState(false);
     renderSafePatchPanel();
   }
 
@@ -2036,6 +2057,7 @@
       rejectedAt: new Date().toISOString(),
     };
     setSafePatchStatus("rejected", "Patch CandidateをRejectしました。");
+    clearSafeApplyState(false);
     renderSafePatchPanel();
   }
 
@@ -2070,6 +2092,7 @@
       reviewStatus: "",
       approvedSignature: "",
     };
+    clearSafeApplyState(false);
     if (render) {
       renderSafePatchPanel();
     }
@@ -2088,12 +2111,138 @@
       rejectedAt: null,
     };
     setSafePatchStatus("pending", message || "Patch Candidateが変更されたため承認をpendingに戻しました。");
+    clearSafeApplyState(false);
     renderSafePatchPanel();
   }
 
   function setSafePatchStatus(status, message) {
     state.analyzer.safePatch.status = status;
     state.analyzer.safePatch.message = message;
+  }
+
+  function renderSafeApplyPanel() {
+    const applyState = state.analyzer.safeApply;
+    if (!els.safeApplyStatus) {
+      return;
+    }
+    els.safeApplyStatus.textContent = applyState.status === "idle" ? "未実行" : applyState.status;
+    if (els.safeApplyMessage) {
+      els.safeApplyMessage.textContent = applyState.message || "Approved Candidateだけ実Sourceへ適用できます。";
+      els.safeApplyMessage.dataset.status = applyState.status || "idle";
+    }
+    if (els.safeApplyDiffPreview) {
+      els.safeApplyDiffPreview.textContent = applyState.diffText || "未生成";
+    }
+    if (els.safeApplyResultPreview) {
+      els.safeApplyResultPreview.textContent = applyState.result ? JSON.stringify(applyState.result, null, 2) : "未生成";
+    }
+    if (els.applySafePatchCandidate) {
+      els.applySafePatchCandidate.disabled = !(applyState.preflight?.ok && applyState.status === "ready-to-apply");
+    }
+  }
+
+  function getSafeApplyClient() {
+    return window.TBalanceSafeApply?.createSourceWriterClient?.({ baseUrl: SOURCE_WRITER_URL }) || null;
+  }
+
+  async function runSafeApplyPreflight() {
+    if (!window.TBalanceSafeApply?.runApplyPreflight) {
+      setSafeApplyStatus("failed", "Safe Apply moduleを読み込めていません。");
+      renderSafeApplyPanel();
+      return null;
+    }
+    const client = getSafeApplyClient();
+    if (!client) {
+      setSafeApplyStatus("failed", "Source Writer Clientを作成できません。");
+      renderSafeApplyPanel();
+      return null;
+    }
+    setSafeApplyStatus("checking", "Safe Apply Preflightを確認中です。");
+    renderSafeApplyPanel();
+    const result = await window.TBalanceSafeApply.runApplyPreflight({
+      candidate: state.analyzer.safePatch.candidate,
+      approvedSignature: state.analyzer.safePatch.approvedSignature,
+      sourceWriterClient: client,
+      createSignature: window.TBalanceSafePatch?.createCandidateSignature,
+    });
+    state.analyzer.safeApply.preflight = result.ok ? result : null;
+    state.analyzer.safeApply.result = result;
+    state.analyzer.safeApply.diffText = result.diffText || "";
+    setSafeApplyStatus(result.status || "failed", result.message || "Preflightを完了しました。");
+    renderSafeApplyPanel();
+    return result;
+  }
+
+  async function applySafePatchCandidate() {
+    const preflight = state.analyzer.safeApply.preflight;
+    if (!preflight?.ok) {
+      setSafeApplyStatus("preflight-blocked", "先にApply Preflightを成功させてください。");
+      renderSafeApplyPanel();
+      return null;
+    }
+    const change = preflight.sourceChange || {};
+    const ok = window.confirm([
+      "SAFE APPLY",
+      "",
+      "この変更は実Source Fileを書き換えます。",
+      "",
+      `File: ${preflight.source?.path || "-"}`,
+      `Selector: ${change.selector || "-"}`,
+      `Property: ${change.property || "-"}`,
+      "",
+      `${change.before} -> ${change.after}`,
+      "",
+      "この変更を適用しますか？",
+    ].join("\n"));
+    if (!ok) {
+      const cancelled = {
+        ok: false,
+        safeApplyVersion: "0.1",
+        status: "cancelled",
+        message: "UserがSafe Applyをキャンセルしました。Source Writer Writeは呼び出していません。",
+        candidateSignature: preflight.candidateSignature,
+        policy: {
+          gitCommitPerformed: false,
+          pushPerformed: false,
+          publishPerformed: false,
+          automaticApplyAllowed: false,
+        },
+      };
+      state.analyzer.safeApply.result = cancelled;
+      setSafeApplyStatus("cancelled", cancelled.message);
+      renderSafeApplyPanel();
+      return cancelled;
+    }
+    const client = getSafeApplyClient();
+    setSafeApplyStatus("applying", "Source Writer Bridge経由で実Sourceへ適用中です。");
+    renderSafeApplyPanel();
+    const result = await window.TBalanceSafeApply.applyApprovedCandidate({
+      preflight,
+      sourceWriterClient: client,
+    });
+    state.analyzer.safeApply.result = result;
+    state.analyzer.safeApply.preflight = null;
+    setSafeApplyStatus(result.status || "failed", result.message || "Safe Applyを完了しました。");
+    renderSafeApplyPanel();
+    return result;
+  }
+
+  function clearSafeApplyState(render = true) {
+    state.analyzer.safeApply = {
+      status: "idle",
+      message: "Safe Applyをクリアしました。",
+      preflight: null,
+      result: null,
+      diffText: "",
+    };
+    if (render) {
+      renderSafeApplyPanel();
+    }
+  }
+
+  function setSafeApplyStatus(status, message) {
+    state.analyzer.safeApply.status = status;
+    state.analyzer.safeApply.message = message;
   }
 
   function buildSafePatchSummary(candidate) {
@@ -2365,7 +2514,10 @@
     try {
       const pageUrl = new URL(state.analyzer.effectiveUrl || state.analyzer.loadedPath || window.location.href, window.location.href);
       const sheetUrl = new URL(sheet.href, pageUrl);
-      return sheetUrl.pathname.split("/").filter(Boolean).pop() || sheetUrl.href;
+      if (sheetUrl.origin === pageUrl.origin) {
+        return decodeURIComponent(sheetUrl.pathname).replace(/^\/+/, "") || sheetUrl.href;
+      }
+      return sheetUrl.href;
     } catch (error) {
       return sheet.href;
     }
@@ -2996,6 +3148,16 @@
     clear: clearRuntimeConfirmedMappings,
     getConfirmedMappings: () => state.analyzer.confirmedMappings.map((mapping) => ({ ...mapping })),
     getVisibleMappings: () => getVisibleConfirmedMappings(getAnalyzerManifestPageMeta()).map((mapping) => ({ ...mapping })),
+  };
+
+  window.TBalanceSafeApplyDebug = {
+    getState: () => ({
+      ...state.analyzer.safeApply,
+      preflight: state.analyzer.safeApply.preflight ? JSON.parse(JSON.stringify(state.analyzer.safeApply.preflight)) : null,
+      result: state.analyzer.safeApply.result ? JSON.parse(JSON.stringify(state.analyzer.safeApply.result)) : null,
+    }),
+    preflight: runSafeApplyPreflight,
+    clear: clearSafeApplyState,
   };
 
   window.TBalanceAdapterDebug = {

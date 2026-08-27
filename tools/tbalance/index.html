@@ -1443,6 +1443,28 @@
               </details>
             </div>
           </section>
+          <section class="tb-analyzer-mapping" aria-label="Safe Apply">
+            <div class="tb-analyzer-mapping-head">
+              <strong>SAFE APPLY</strong>
+              <span id="safeApplyStatus">未実行</span>
+            </div>
+            <div class="tb-safe-apply-panel">
+              <div class="tb-safe-apply-actions">
+                <button id="runSafeApplyPreflight" type="button">Apply Preflight</button>
+                <button id="applySafePatchCandidate" type="button" disabled>Apply Approved Change</button>
+                <button id="clearSafeApply" type="button">Clear</button>
+              </div>
+              <p id="safeApplyMessage" class="tb-safe-apply-message">Approved Candidateだけ実Sourceへ適用できます。</p>
+              <details class="tb-safe-apply-preview" open>
+                <summary>Source Diff Preview</summary>
+                <pre id="safeApplyDiffPreview">未生成</pre>
+              </details>
+              <details class="tb-safe-apply-preview">
+                <summary>Apply Result</summary>
+                <pre id="safeApplyResultPreview">未生成</pre>
+              </details>
+            </div>
+          </section>
           <section class="tb-analyzer-mapping" aria-label="Manifest">
             <div class="tb-analyzer-mapping-head">
               <strong>Manifest</strong>
@@ -1489,7 +1511,8 @@
   <script src="./adapters/teamerry-adapter.js?v=20260825-teamerry-adapter-v01"></script>
   <script src="./safe-change/safe-change-instruction.js?v=20260826-safe-change-v01"></script>
   <script src="./safe-patch/safe-patch-candidate.js?v=20260827-safe-patch-v01"></script>
+  <script src="./safe-apply/safe-apply.js?v=20260827-safe-apply-v01"></script>
   <script src="./with-ai/with-ai-share.js?v=20260826-with-ai-share-v01"></script>
-  <script src="./tbalance.js?v=20260827-v1-safe-patch-v01"></script>
+  <script src="./tbalance.js?v=20260827-v1-safe-apply-v01"></script>
 </body>
 </html>
