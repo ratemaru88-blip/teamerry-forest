@@ -488,6 +488,15 @@
     loadAnalyzerGenericTest: $("loadAnalyzerGenericTest"),
     loadAnalyzerTeaMerryTest: $("loadAnalyzerTeaMerryTest"),
     analyzerStatus: $("analyzerStatus"),
+    safeWorkflowPanel: $("safeWorkflowPanel"),
+    safeWorkflowContext: $("safeWorkflowContext"),
+    safeWorkflowOverall: $("safeWorkflowOverall"),
+    safeWorkflowSteps: $("safeWorkflowSteps"),
+    safeWorkflowTarget: $("safeWorkflowTarget"),
+    safeWorkflowChange: $("safeWorkflowChange"),
+    safeWorkflowReview: $("safeWorkflowReview"),
+    safeWorkflowApply: $("safeWorkflowApply"),
+    safeWorkflowNextAction: $("safeWorkflowNextAction"),
     analyzerFrame: $("analyzerFrame"),
     analyzerSummary: $("analyzerSummary"),
     analyzerElementList: $("analyzerElementList"),
@@ -661,6 +670,8 @@
     els.manifestImportFile?.addEventListener("change", importAnalyzerManifestFromFile);
     els.clearRuntimeMappings?.addEventListener("click", clearRuntimeConfirmedMappings);
     els.adapterSelect?.addEventListener("change", () => setAnalyzerAdapter(els.adapterSelect.value || "none"));
+    els.safeWorkflowSteps?.addEventListener("click", handleSafeWorkflowStepClick);
+    els.safeWorkflowPanel?.addEventListener("click", handleSafeWorkflowFocusClick);
     els.manifestProjectId?.addEventListener("input", () => {
       state.analyzer.manifestProjectId = sanitizeManifestId(els.manifestProjectId.value || "sample-project", "sample-project");
       renderSafeChangePanel();
@@ -1442,6 +1453,7 @@
       renderSafeChangePanel();
       renderManifestPanel();
       renderAdapterPanel();
+      renderSafeWorkflowPanel();
       return;
     }
     const statusCounts = result.elements.reduce((counts, element) => {
@@ -1483,6 +1495,7 @@
     renderSafeChangePanel();
     renderManifestPanel();
     renderAdapterPanel();
+    renderSafeWorkflowPanel();
   }
 
   function handleMappingCandidateClick(event) {
@@ -2139,6 +2152,7 @@
     if (els.applySafePatchCandidate) {
       els.applySafePatchCandidate.disabled = !(applyState.preflight?.ok && applyState.status === "ready-to-apply");
     }
+    renderSafeWorkflowPanel();
   }
 
   function getSafeApplyClient() {
@@ -2243,6 +2257,180 @@
   function setSafeApplyStatus(status, message) {
     state.analyzer.safeApply.status = status;
     state.analyzer.safeApply.message = message;
+  }
+
+  function renderSafeWorkflowPanel() {
+    if (!els.safeWorkflowPanel || !window.TBalanceSafeWorkflow?.buildSafeWorkflowState) {
+      return;
+    }
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const workflow = window.TBalanceSafeWorkflow.buildSafeWorkflowState({
+      analyzer: state.analyzer,
+      pageMeta,
+      selectedElement: getAnalyzerSelectedElement(),
+      selectedMapping: getSafeChangeSelectedMapping(),
+      visibleMappings: getVisibleConfirmedMappings(pageMeta),
+      adapter: getActiveAnalyzerAdapter(),
+      manifest: {
+        projectId: pageMeta.projectId,
+        pageId: pageMeta.pageId,
+        sourcePath: pageMeta.sourcePath,
+        viewState: pageMeta.currentViewState,
+      },
+    });
+    els.safeWorkflowPanel.dataset.currentStep = workflow.currentStep || "";
+    if (els.safeWorkflowContext) {
+      const target = workflow.target || {};
+      els.safeWorkflowContext.textContent = [
+        `Adapter: ${workflow.context?.adapterLabel || "None"}`,
+        target.pageId ? `Page: ${target.pageId}` : "",
+        target.viewState ? `View: ${target.viewState}` : "",
+      ].filter(Boolean).join(" / ");
+    }
+    if (els.safeWorkflowOverall) {
+      els.safeWorkflowOverall.textContent = formatWorkflowStatus(workflow.overallStatus);
+      els.safeWorkflowOverall.dataset.status = workflow.overallStatus || "not-ready";
+    }
+    renderSafeWorkflowSteps(workflow);
+    if (els.safeWorkflowTarget) {
+      const target = workflow.target || {};
+      els.safeWorkflowTarget.textContent = target.hasConfirmedMapping
+        ? `${target.tbId || "-"} / ${target.domRef || "-"}`
+        : (target.domRef || target.selectedLabel || "Not selected");
+      els.safeWorkflowTarget.title = [
+        target.pageId,
+        target.sourcePath,
+        target.viewState,
+        target.tbId,
+        target.domRef,
+      ].filter(Boolean).join(" / ");
+    }
+    if (els.safeWorkflowChange) {
+      const change = workflow.change || {};
+      els.safeWorkflowChange.textContent = change.property
+        ? `${change.property}: ${shortWorkflowValue(change.before)} -> ${shortWorkflowValue(change.after)}`
+        : (change.intent || "未作成");
+      els.safeWorkflowChange.title = change.intent || "";
+    }
+    if (els.safeWorkflowReview) {
+      const review = workflow.review || {};
+      els.safeWorkflowReview.textContent = [
+        review.status ? formatWorkflowStatus(review.status) : "未作成",
+        review.reviewStatus ? `/ ${review.reviewStatus}` : "",
+        review.reason ? `/ ${review.reason}` : "",
+      ].join(" ").replace(/\s+/g, " ").trim();
+      els.safeWorkflowReview.title = [review.source, review.change, review.message].filter(Boolean).join("\n");
+    }
+    if (els.safeWorkflowApply) {
+      const apply = workflow.apply || {};
+      els.safeWorkflowApply.textContent = `${formatWorkflowStatus(apply.status || "idle")} / Preflight: ${apply.preflight || "Not yet"}`;
+      els.safeWorkflowApply.title = apply.message || "";
+    }
+    if (els.safeWorkflowNextAction) {
+      els.safeWorkflowNextAction.textContent = workflow.nextAction?.message || "";
+      els.safeWorkflowNextAction.dataset.status = workflow.steps?.[workflow.currentStep]?.status || "";
+    }
+  }
+
+  function renderSafeWorkflowSteps(workflow) {
+    if (!els.safeWorkflowSteps) {
+      return;
+    }
+    els.safeWorkflowSteps.querySelectorAll("[data-workflow-step]").forEach((button) => {
+      const key = button.dataset.workflowStep || "";
+      const step = workflow.steps?.[key] || {};
+      const marker = getWorkflowStatusMarker(step.status);
+      button.textContent = `${marker} ${buttonTextWorkflowStep(key)}`;
+      button.dataset.status = step.status || "not-ready";
+      button.dataset.current = String(workflow.currentStep === key);
+      button.title = step.reason ? `${step.reason}: ${step.message || ""}` : (step.message || "");
+    });
+  }
+
+  function handleSafeWorkflowStepClick(event) {
+    const step = event.target.closest("[data-workflow-step]")?.dataset.workflowStep;
+    if (!step) {
+      return;
+    }
+    focusSafeWorkflowPanel(step);
+  }
+
+  function handleSafeWorkflowFocusClick(event) {
+    const focus = event.target.closest("[data-workflow-focus]")?.dataset.workflowFocus;
+    if (!focus) {
+      return;
+    }
+    if (focus === "with-ai") {
+      if (!state.aiCollab) {
+        toggleAiCollab();
+      }
+      els.aiCollabPanel?.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+      return;
+    }
+    focusSafeWorkflowPanel(focus);
+  }
+
+  function focusSafeWorkflowPanel(step) {
+    if (step === "analyze") {
+      els.analyzerPath?.focus();
+      return;
+    }
+    const targetStep = step === "confirm" ? "confirm" : step;
+    const panel = els.analyzerPanel?.querySelector?.(`[data-workflow-panel="${targetStep}"]`);
+    panel?.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+    const firstField = panel?.querySelector?.("button, input, select, textarea");
+    firstField?.focus?.({ preventScroll: true });
+  }
+
+  function buttonTextWorkflowStep(step) {
+    const labels = {
+      analyze: "1 Analyze",
+      confirm: "2 Confirm",
+      change: "3 Change",
+      review: "4 Review",
+      apply: "5 Apply",
+    };
+    return labels[step] || step;
+  }
+
+  function getWorkflowStatusMarker(status) {
+    if (status === "complete") {
+      return "✓";
+    }
+    if (status === "blocked") {
+      return "!";
+    }
+    if (status === "current") {
+      return "●";
+    }
+    if (status === "ready") {
+      return "○";
+    }
+    return "–";
+  }
+
+  function formatWorkflowStatus(status) {
+    const labels = {
+      idle: "Idle",
+      "not-ready": "Not Ready",
+      ready: "Ready",
+      current: "Current",
+      complete: "Complete",
+      blocked: "Blocked",
+      applied: "Applied",
+      pending: "Pending",
+      approved: "Approved",
+      rejected: "Rejected",
+      cancelled: "Cancelled",
+      "ready-for-review": "Ready for Review",
+      "ready-to-apply": "Ready to Apply",
+    };
+    return labels[status] || status || "Not Ready";
+  }
+
+  function shortWorkflowValue(value) {
+    const text = typeof value === "string" ? value : JSON.stringify(value ?? "");
+    return text.length > 36 ? `${text.slice(0, 33)}...` : text;
   }
 
   function buildSafePatchSummary(candidate) {

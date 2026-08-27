@@ -1333,6 +1333,47 @@
         <button id="loadAnalyzerTeaMerryTest" type="button">TeaMerry Test</button>
       </div>
       <div id="analyzerStatus" class="tb-analyzer-status-line">未解析</div>
+      <section id="safeWorkflowPanel" class="tb-safe-workflow" aria-label="Safe Workflow">
+        <div class="tb-safe-workflow-head">
+          <div>
+            <strong>SAFE WORKFLOW</strong>
+            <span id="safeWorkflowContext">Adapter: None</span>
+          </div>
+          <span id="safeWorkflowOverall">Not Ready</span>
+        </div>
+        <div id="safeWorkflowSteps" class="tb-safe-workflow-steps">
+          <button type="button" data-workflow-step="analyze">1 Analyze</button>
+          <button type="button" data-workflow-step="confirm">2 Confirm</button>
+          <button type="button" data-workflow-step="change">3 Change</button>
+          <button type="button" data-workflow-step="review">4 Review</button>
+          <button type="button" data-workflow-step="apply">5 Apply</button>
+        </div>
+        <div class="tb-safe-workflow-grid">
+          <div>
+            <small>Target</small>
+            <p id="safeWorkflowTarget">Not selected</p>
+          </div>
+          <div>
+            <small>Change</small>
+            <p id="safeWorkflowChange">未作成</p>
+          </div>
+          <div>
+            <small>Review</small>
+            <p id="safeWorkflowReview">未作成</p>
+          </div>
+          <div>
+            <small>Apply</small>
+            <p id="safeWorkflowApply">未実行</p>
+          </div>
+        </div>
+        <div id="safeWorkflowNextAction" class="tb-safe-workflow-next">次の操作: Existing Pageを読み込み、Analyzeを実行してください。</div>
+        <div class="tb-safe-workflow-actions">
+          <button type="button" data-workflow-focus="change">Safe Changeを開く</button>
+          <button type="button" data-workflow-focus="with-ai">WITH AI</button>
+          <button type="button" data-workflow-focus="review">Reviewを開く</button>
+          <button type="button" data-workflow-focus="apply">Applyを開く</button>
+        </div>
+      </section>
       <div class="tb-analyzer-body">
         <div class="tb-analyzer-preview">
           <iframe id="analyzerFrame" title="Read Only Analyzer Preview" sandbox="allow-same-origin"></iframe>
@@ -1347,7 +1388,7 @@
             <summary>Selected Element</summary>
             <pre id="analyzerElementDetail">未選択</pre>
           </details>
-          <section class="tb-analyzer-mapping" aria-label="Mapping Candidate">
+          <section class="tb-analyzer-mapping" aria-label="Mapping Candidate" data-workflow-panel="confirm">
             <div class="tb-analyzer-mapping-head">
               <strong>Mapping Candidate</strong>
               <span id="mappingCandidateStatus">未選択</span>
@@ -1356,7 +1397,7 @@
               Elementを選択してください。
             </div>
           </section>
-          <section class="tb-analyzer-mapping" aria-label="Confirmed Mappings">
+          <section class="tb-analyzer-mapping" aria-label="Confirmed Mappings" data-workflow-panel="confirm">
             <div class="tb-analyzer-mapping-head">
               <strong>Confirmed Mappings</strong>
               <span id="confirmedMappingCount">0件</span>
@@ -1365,7 +1406,7 @@
               まだMappingは確定していません。
             </div>
           </section>
-          <section class="tb-analyzer-mapping" aria-label="Safe Change Instruction">
+          <section class="tb-analyzer-mapping" aria-label="Safe Change Instruction" data-workflow-panel="change">
             <div class="tb-analyzer-mapping-head">
               <strong>Safe Change</strong>
               <span id="safeChangeStatus">未作成</span>
@@ -1414,7 +1455,7 @@
               </details>
             </div>
           </section>
-          <section class="tb-analyzer-mapping" aria-label="Safe Patch Candidate">
+          <section class="tb-analyzer-mapping" aria-label="Safe Patch Candidate" data-workflow-panel="review">
             <div class="tb-analyzer-mapping-head">
               <strong>Safe Patch Candidate</strong>
               <span id="safePatchStatus">未作成</span>
@@ -1443,7 +1484,7 @@
               </details>
             </div>
           </section>
-          <section class="tb-analyzer-mapping" aria-label="Safe Apply">
+          <section class="tb-analyzer-mapping" aria-label="Safe Apply" data-workflow-panel="apply">
             <div class="tb-analyzer-mapping-head">
               <strong>SAFE APPLY</strong>
               <span id="safeApplyStatus">未実行</span>
@@ -1512,7 +1553,8 @@
   <script src="./safe-change/safe-change-instruction.js?v=20260826-safe-change-v01"></script>
   <script src="./safe-patch/safe-patch-candidate.js?v=20260827-safe-patch-v01"></script>
   <script src="./safe-apply/safe-apply.js?v=20260827-safe-apply-v01"></script>
+  <script src="./safe-workflow/safe-workflow.js?v=20260827-safe-workflow-v01"></script>
   <script src="./with-ai/with-ai-share.js?v=20260826-with-ai-share-v01"></script>
-  <script src="./tbalance.js?v=20260827-v1-safe-apply-v01"></script>
+  <script src="./tbalance.js?v=20260827-v1-safe-workflow-v01"></script>
 </body>
 </html>
