@@ -251,6 +251,15 @@
         diffText: "",
       },
     },
+    siteMap: {
+      open: false,
+      status: "idle",
+      message: "未生成",
+      graph: null,
+      selectedPageId: "",
+      filter: "all",
+      lastScanAt: "",
+    },
     dirty: false,
     autosaveError: "",
     autosaveStorage: "",
@@ -537,6 +546,20 @@
     safeApplyMessage: $("safeApplyMessage"),
     safeApplyDiffPreview: $("safeApplyDiffPreview"),
     safeApplyResultPreview: $("safeApplyResultPreview"),
+    siteMapButton: $("siteMapButton"),
+    siteMapPanel: $("siteMapPanel"),
+    closeSiteMapPanel: $("closeSiteMapPanel"),
+    refreshSiteMap: $("refreshSiteMap"),
+    siteMapStatus: $("siteMapStatus"),
+    siteMapStats: $("siteMapStats"),
+    siteMapContext: $("siteMapContext"),
+    siteMapPageCount: $("siteMapPageCount"),
+    siteMapPageCards: $("siteMapPageCards"),
+    siteMapLinkCount: $("siteMapLinkCount"),
+    siteMapLinkList: $("siteMapLinkList"),
+    siteMapSelectedDetail: $("siteMapSelectedDetail"),
+    siteMapDiagnosticCount: $("siteMapDiagnosticCount"),
+    siteMapDiagnostics: $("siteMapDiagnostics"),
     manifestMappingCount: $("manifestMappingCount"),
     manifestProjectId: $("manifestProjectId"),
     manifestPageId: $("manifestPageId"),
@@ -665,6 +688,13 @@
     els.runSafeApplyPreflight?.addEventListener("click", runSafeApplyPreflight);
     els.applySafePatchCandidate?.addEventListener("click", applySafePatchCandidate);
     els.clearSafeApply?.addEventListener("click", clearSafeApplyState);
+    els.siteMapButton?.addEventListener("click", openSiteMapPanel);
+    els.closeSiteMapPanel?.addEventListener("click", closeSiteMapPanel);
+    els.refreshSiteMap?.addEventListener("click", refreshSiteMap);
+    els.siteMapPageCards?.addEventListener("click", handleSiteMapPageClick);
+    document.querySelectorAll("[data-site-map-filter]").forEach((button) => {
+      button.addEventListener("click", () => setSiteMapFilter(button.dataset.siteMapFilter || "all"));
+    });
     els.exportManifest?.addEventListener("click", exportAnalyzerManifest);
     els.importManifest?.addEventListener("click", () => els.manifestImportFile?.click());
     els.manifestImportFile?.addEventListener("change", importAnalyzerManifestFromFile);
@@ -1454,6 +1484,7 @@
       renderManifestPanel();
       renderAdapterPanel();
       renderSafeWorkflowPanel();
+      renderSiteMapPanel();
       return;
     }
     const statusCounts = result.elements.reduce((counts, element) => {
@@ -1496,6 +1527,7 @@
     renderManifestPanel();
     renderAdapterPanel();
     renderSafeWorkflowPanel();
+    renderSiteMapPanel();
   }
 
   function handleMappingCandidateClick(event) {
@@ -3031,6 +3063,7 @@
     }
     renderSafeChangePanel();
     renderAdapterPanel();
+    renderSiteMapPanel();
   }
 
   function getActiveAnalyzerAdapter() {
@@ -3086,6 +3119,409 @@
       ...knownPages.slice(0, 5).map((page) => `- ${page.pageId} / ${page.label ? `${page.label} / ` : ""}${page.sourcePath || "-"} / view:${page.viewStates?.join(",") || "common"} / ${page.componentCount}件`),
     ];
     els.adapterInfo.textContent = lines.join("\n");
+  }
+
+  function openSiteMapPanel() {
+    state.siteMap.open = true;
+    if (els.siteMapPanel) {
+      els.siteMapPanel.hidden = false;
+    }
+    if (els.siteMapButton) {
+      els.siteMapButton.setAttribute("aria-pressed", "true");
+    }
+    renderSiteMapPanel();
+  }
+
+  function closeSiteMapPanel() {
+    state.siteMap.open = false;
+    if (els.siteMapPanel) {
+      els.siteMapPanel.hidden = true;
+    }
+    if (els.siteMapButton) {
+      els.siteMapButton.setAttribute("aria-pressed", "false");
+    }
+  }
+
+  async function refreshSiteMap() {
+    if (!window.TBalanceSiteMap?.buildGraph || !window.TBalanceSiteMap?.scanHtml) {
+      setSiteMapStatus("Site Map moduleを読み込めていません。", "error");
+      return null;
+    }
+    setSiteMapStatus("Known Pagesを読み取り中...", "idle");
+    const adapter = getActiveAnalyzerAdapter();
+    const context = getAnalyzerAdapterContext();
+    const pageSources = buildSiteMapPageSources(adapter, context);
+    const scans = {};
+    for (const page of pageSources) {
+      if (!page.sourcePath || page.sourcePath === "generic-test" || isSiteMapPlaceholderSource(page.sourcePath)) {
+        continue;
+      }
+      const scanKey = window.TBalanceSiteMap.normalizeSourcePath(page.sourcePath);
+      if (scans[scanKey]) {
+        continue;
+      }
+      const fetchResult = await fetchSiteMapHtml(page.sourcePath);
+      if (!fetchResult.ok) {
+        scans[scanKey] = {
+          sourcePath: scanKey,
+          title: page.label || page.sourcePath,
+          links: [],
+          dynamic: [],
+          diagnostics: [{
+            severity: "warning",
+            code: "fetch-failed",
+            sourcePath: page.sourcePath,
+            message: fetchResult.message,
+          }],
+        };
+        continue;
+      }
+      const scan = window.TBalanceSiteMap.scanHtml(fetchResult.html, page.sourcePath);
+      scan.links = scan.links.map((link) => resolveSiteMapLinkWithAdapter(link, page, adapter, context));
+      scans[scanKey] = scan;
+    }
+    const graph = window.TBalanceSiteMap.buildGraph({
+      projectId: getAnalyzerManifestPageMeta().projectId,
+      adapterId: adapter?.id || "none",
+      pages: pageSources,
+      scans,
+    });
+    state.siteMap.graph = graph;
+    state.siteMap.selectedPageId = state.siteMap.selectedPageId || graph.pages[0]?.pageId || "";
+    state.siteMap.lastScanAt = graph.generatedAt;
+    setSiteMapStatus(`生成済み: ${new Date(graph.generatedAt).toLocaleTimeString()}`, "success");
+    renderSiteMapPanel();
+    return graph;
+  }
+
+  function buildSiteMapPageSources(adapter, context) {
+    const sources = [];
+    const manifest = buildAnalyzerManifest();
+    manifest.pages.forEach((page) => {
+      if (isSiteMapPlaceholderSource(page.sourcePath)) {
+        sources.push({
+          sourcePath: page.sourcePath,
+          source: "manifest-current",
+          unresolvedReason: "page metadata不足",
+        });
+        return;
+      }
+      sources.push({
+        pageId: page.pageId,
+        label: page.pageId,
+        sourcePath: page.sourcePath,
+        sourceAuthority: page.sourceAuthority || "standard-web",
+        componentCount: page.components.length,
+        viewStates: Array.from(new Set(page.components.map((component) => component.viewState).filter(Boolean))),
+        identityStatus: page.components.length ? "confirmed" : "candidate",
+        source: page.components.length ? "manifest" : "manifest-current",
+      });
+    });
+    const knownPages = typeof adapter?.getKnownPages === "function" ? adapter.getKnownPages(context) : [];
+    knownPages.forEach((page) => {
+      if (isSiteMapPlaceholderSource(page.sourcePath || page.path || page.url)) {
+        sources.push({
+          sourcePath: page.sourcePath || page.path || page.url || "",
+          source: `adapter:${adapter?.id || "none"}`,
+          unresolvedReason: "Adapter page source未確定",
+        });
+        return;
+      }
+      sources.push({
+        ...page,
+        identityStatus: page.componentCount ? "confirmed" : "candidate",
+        source: `adapter:${adapter?.id || "none"}`,
+      });
+    });
+    const analyzerPage = state.analyzer.result?.page || null;
+    const analyzerSourcePath = analyzerPage?.sourcePath || state.analyzer.sourcePath || els.analyzerFrame?.src;
+    if (analyzerSourcePath) {
+      if (isSiteMapPlaceholderSource(analyzerSourcePath)) {
+        sources.push({
+          sourcePath: analyzerSourcePath,
+          source: "current-analyzer",
+          unresolvedReason: "Analyzer page source未確定",
+        });
+      } else {
+        const analyzerViewState = getAnalyzerSiteMapViewState(analyzerPage);
+      sources.push({
+        pageId: getAnalyzerManifestPageMeta().pageId,
+        label: analyzerPage?.title || analyzerPage?.sourcePath || state.analyzer.sourcePath,
+          sourcePath: analyzerSourcePath,
+        sourceAuthority: "standard-web",
+          viewStateDetails: analyzerViewState ? [{ value: analyzerViewState, source: "analyzer-observed" }] : [],
+        componentCount: getVisibleConfirmedMappings().length,
+        identityStatus: "candidate",
+        source: "current-analyzer",
+      });
+      }
+    }
+    return sources.filter((page) => page.sourcePath);
+  }
+
+  function isSiteMapPlaceholderSource(value) {
+    if (window.TBalanceSiteMap?.isPlaceholderSourcePath) {
+      return window.TBalanceSiteMap.isPlaceholderSourcePath(value);
+    }
+    const raw = String(value || "").trim().toLowerCase().split("?")[0].split("#")[0];
+    return !raw || raw === "unknown" || raw === "unknown.html" || raw === "unknown-page" || raw === "page";
+  }
+
+  function getAnalyzerSiteMapViewState(analyzerPage = null) {
+    const explicit = analyzerPage?.viewState || state.analyzer.viewState || "";
+    if (explicit) {
+      return explicit;
+    }
+    const candidates = [
+      analyzerPage?.url,
+      analyzerPage?.effectiveUrl,
+      state.analyzer.effectiveUrl,
+      state.analyzer.loadedPath,
+      state.analyzer.sourcePath,
+      els.analyzerFrame?.src,
+    ].filter(Boolean);
+    for (const value of candidates) {
+      const query = getQueryFromResolvedPath(value);
+      if (query) {
+        return query;
+      }
+    }
+    return "";
+  }
+
+  function resolveSiteMapLinkWithAdapter(link, page, adapter, context) {
+    if (!link || !adapter || adapter.id === "none" || typeof adapter.resolveInternalLink !== "function") {
+      return link;
+    }
+    const pageUrl = getSiteMapPageUrl(page.sourcePath);
+    const adapterContext = {
+      ...context,
+      sourcePath: page.sourcePath,
+      currentUrl: pageUrl,
+      baseUrl: pageUrl,
+      effectiveUrl: pageUrl,
+    };
+    const result = adapter.resolveInternalLink(link.rawHref, adapterContext);
+    if (!result || !["resolved", "external"].includes(result.status)) {
+      return link;
+    }
+    if (result.status === "external" || result.isExternal) {
+      return {
+        ...link,
+        kind: "external",
+        externalUrl: result.url || link.externalUrl,
+        reason: result.reason || "external-url",
+      };
+    }
+    const sourcePath = result.sourcePath || window.TBalanceSiteMap.normalizeSourcePath(result.path || link.targetSourcePath || "");
+    return {
+      ...link,
+      kind: "internal",
+      targetPageId: result.pageId || link.targetPageId,
+      targetSourcePath: sourcePath || link.targetSourcePath,
+      targetState: {
+        ...(link.targetState || {}),
+        query: getQueryFromResolvedPath(result.path || result.url || link.rawHref),
+        hash: getHashFromResolvedPath(result.path || result.url || link.rawHref),
+        viewState: result.viewState || link.targetState?.viewState || getQueryFromResolvedPath(result.path || result.url || link.rawHref),
+      },
+    };
+  }
+
+  async function fetchSiteMapHtml(sourcePath) {
+    const url = getSiteMapPageUrl(sourcePath);
+    try {
+      const resolved = new URL(url);
+      if (resolved.origin !== window.location.origin) {
+        return { ok: false, message: `same-origin外のため読み取りません: ${resolved.href}` };
+      }
+      const response = await fetch(resolved.href, { cache: "no-store" });
+      if (!response.ok) {
+        return { ok: false, message: `HTTP ${response.status}: ${resolved.pathname}` };
+      }
+      return { ok: true, html: await response.text(), url: resolved.href };
+    } catch (error) {
+      return { ok: false, message: error.message || String(error) };
+    }
+  }
+
+  function getSiteMapPageUrl(sourcePath) {
+    const clean = window.TBalanceSiteMap?.normalizeSourcePath
+      ? window.TBalanceSiteMap.normalizeSourcePath(sourcePath)
+      : String(sourcePath || "index.html").split("?")[0].split("#")[0];
+    return new URL(clean, new URL("../../", window.location.href)).href;
+  }
+
+  function getQueryFromResolvedPath(value) {
+    try {
+      return new URL(String(value || ""), "https://tbalance.local/").search.replace(/^\?/, "");
+    } catch (error) {
+      const match = String(value || "").match(/\?([^#]+)/);
+      return match ? match[1] : "";
+    }
+  }
+
+  function getHashFromResolvedPath(value) {
+    try {
+      return new URL(String(value || ""), "https://tbalance.local/").hash.replace(/^#/, "");
+    } catch (error) {
+      const match = String(value || "").match(/#(.+)$/);
+      return match ? match[1] : "";
+    }
+  }
+
+  function setSiteMapStatus(message, status = "idle") {
+    state.siteMap.message = message;
+    state.siteMap.status = status;
+    renderSiteMapPanel();
+  }
+
+  function setSiteMapFilter(filter) {
+    state.siteMap.filter = filter || "all";
+    renderSiteMapPanel();
+  }
+
+  function handleSiteMapPageClick(event) {
+    const button = event.target.closest("[data-site-map-page-id]");
+    if (!button) {
+      return;
+    }
+    state.siteMap.selectedPageId = button.dataset.siteMapPageId || "";
+    renderSiteMapPanel();
+  }
+
+  function renderSiteMapPanel() {
+    if (!els.siteMapPanel) {
+      return;
+    }
+    if (els.siteMapPanel.hidden !== !state.siteMap.open) {
+      els.siteMapPanel.hidden = !state.siteMap.open;
+    }
+    if (els.siteMapButton) {
+      els.siteMapButton.setAttribute("aria-pressed", state.siteMap.open ? "true" : "false");
+    }
+    const graph = state.siteMap.graph;
+    const adapter = getActiveAnalyzerAdapter();
+    if (els.siteMapStatus) {
+      els.siteMapStatus.textContent = state.siteMap.message || "未生成";
+      els.siteMapStatus.dataset.status = state.siteMap.status || "idle";
+    }
+    if (els.siteMapContext) {
+      els.siteMapContext.textContent = `Adapter: ${adapter?.label || "None"} / Project: ${getAnalyzerManifestPageMeta().projectId}`;
+    }
+    if (!graph) {
+      if (els.siteMapStats) els.siteMapStats.textContent = "Pages: 0 / Links: 0 / Diagnostics: 0";
+      if (els.siteMapPageCount) els.siteMapPageCount.textContent = "0";
+      if (els.siteMapLinkCount) els.siteMapLinkCount.textContent = "0";
+      if (els.siteMapDiagnosticCount) els.siteMapDiagnosticCount.textContent = "0";
+      if (els.siteMapPageCards) els.siteMapPageCards.textContent = "Scan Known Pagesを押してください。";
+      if (els.siteMapLinkList) els.siteMapLinkList.textContent = "未生成";
+      if (els.siteMapSelectedDetail) els.siteMapSelectedDetail.textContent = "未選択";
+      if (els.siteMapDiagnostics) els.siteMapDiagnostics.textContent = "診断なし";
+      renderSiteMapFilterButtons();
+      return;
+    }
+    const filteredLinks = filterSiteMapLinks(graph.links || []);
+    if (els.siteMapStats) {
+      els.siteMapStats.textContent = `Pages: ${graph.pages.length} / Links: ${graph.links.length} / Diagnostics: ${graph.diagnostics.total}`;
+    }
+    if (els.siteMapPageCount) els.siteMapPageCount.textContent = String(graph.pages.length);
+    if (els.siteMapLinkCount) els.siteMapLinkCount.textContent = String(filteredLinks.length);
+    if (els.siteMapDiagnosticCount) els.siteMapDiagnosticCount.textContent = String(graph.diagnostics.total);
+    renderSiteMapFilterButtons();
+    renderSiteMapPages(graph);
+    renderSiteMapLinks(filteredLinks);
+    renderSiteMapDetails(graph);
+    renderSiteMapDiagnostics(graph);
+  }
+
+  function renderSiteMapFilterButtons() {
+    document.querySelectorAll("[data-site-map-filter]").forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.siteMapFilter === state.siteMap.filter);
+    });
+  }
+
+  function filterSiteMapLinks(links) {
+    if (state.siteMap.filter === "problems") {
+      return links.filter((link) => ["missing-target", "unresolved", "dynamic"].includes(link.status));
+    }
+    if (state.siteMap.filter === "external") {
+      return links.filter((link) => link.status === "external");
+    }
+    return links;
+  }
+
+  function renderSiteMapPages(graph) {
+    if (!els.siteMapPageCards) {
+      return;
+    }
+    els.siteMapPageCards.innerHTML = graph.pages.map((page) => {
+      const selected = page.pageId === state.siteMap.selectedPageId;
+      const outgoing = graph.links.filter((link) => link.fromPageId === page.pageId).length;
+      const incoming = graph.links.filter((link) => link.toPageId === page.pageId).length;
+      return `<button class="tb-site-map-page-card${selected ? " is-selected" : ""}" type="button" data-site-map-page-id="${escapeAttr(page.pageId)}">
+        <strong>${escapeHtml(page.label || page.pageId)}</strong>
+        <small>${escapeHtml(page.pageId)} / ${escapeHtml(page.sourcePath)}</small>
+        <div class="tb-site-map-badges">
+          <span>${escapeHtml(page.identityStatus || "candidate")}</span>
+          <span>out:${outgoing}</span>
+          <span>in:${incoming}</span>
+          ${(page.viewStates || []).map((viewState) => `<span>${escapeHtml(viewState)}</span>`).join("")}
+        </div>
+      </button>`;
+    }).join("") || "Page候補がありません。";
+  }
+
+  function renderSiteMapLinks(links) {
+    if (!els.siteMapLinkList) {
+      return;
+    }
+    els.siteMapLinkList.innerHTML = links.map((link) => {
+      const target = link.status === "external"
+        ? link.externalUrl
+        : `${link.toPageId || "unresolved"}${link.targetState?.viewState ? ` / ${link.targetState.viewState}` : ""}${link.targetState?.hash ? ` #${link.targetState.hash}` : ""}`;
+      return `<article class="tb-site-map-link-row">
+        <strong>${escapeHtml(link.fromPageId)} → ${escapeHtml(target)}</strong>
+        <small>${escapeHtml(link.label || link.rawHref || "-")} / ${escapeHtml(link.domRef || "-")}</small>
+        <div class="tb-site-map-badges">
+          <span class="tb-site-map-link-status" data-status="${escapeAttr(link.status)}">${escapeHtml(link.status)}</span>
+          <span>${escapeHtml(link.kind)}</span>
+          ${link.rawHref ? `<span>${escapeHtml(link.rawHref)}</span>` : ""}
+        </div>
+      </article>`;
+    }).join("") || "該当リンクはありません。";
+  }
+
+  function renderSiteMapDetails(graph) {
+    if (!els.siteMapSelectedDetail) {
+      return;
+    }
+    const page = graph.pages.find((item) => item.pageId === state.siteMap.selectedPageId) || graph.pages[0] || null;
+    if (!page) {
+      els.siteMapSelectedDetail.textContent = "未選択";
+      return;
+    }
+    if (!state.siteMap.selectedPageId) {
+      state.siteMap.selectedPageId = page.pageId;
+    }
+    const outgoing = graph.links.filter((link) => link.fromPageId === page.pageId);
+    const incoming = graph.links.filter((link) => link.toPageId === page.pageId);
+    els.siteMapSelectedDetail.textContent = JSON.stringify({
+      page,
+      outgoing,
+      incoming,
+    }, null, 2);
+  }
+
+  function renderSiteMapDiagnostics(graph) {
+    if (!els.siteMapDiagnostics) {
+      return;
+    }
+    const items = graph.diagnostics.items || [];
+    els.siteMapDiagnostics.innerHTML = items.map((item) => `<article class="tb-site-map-diagnostic">
+      <strong>${escapeHtml(item.severity)} / ${escapeHtml(item.code)}</strong>
+      <small>${escapeHtml(item.sourcePath)}: ${escapeHtml(item.message)}</small>
+    </article>`).join("") || "診断なし";
   }
 
   function buildAnalyzerManifest() {
@@ -3336,6 +3772,21 @@
     clear: clearRuntimeConfirmedMappings,
     getConfirmedMappings: () => state.analyzer.confirmedMappings.map((mapping) => ({ ...mapping })),
     getVisibleMappings: () => getVisibleConfirmedMappings(getAnalyzerManifestPageMeta()).map((mapping) => ({ ...mapping })),
+  };
+
+  window.TBalanceSiteMapRuntime = {
+    refresh: refreshSiteMap,
+    open: openSiteMapPanel,
+    close: closeSiteMapPanel,
+    getCurrentSiteMap: () => state.siteMap.graph ? JSON.parse(JSON.stringify(state.siteMap.graph)) : null,
+    getStatus: () => ({
+      open: state.siteMap.open,
+      status: state.siteMap.status,
+      message: state.siteMap.message,
+      selectedPageId: state.siteMap.selectedPageId,
+      filter: state.siteMap.filter,
+      lastScanAt: state.siteMap.lastScanAt,
+    }),
   };
 
   window.TBalanceSafeApplyDebug = {
@@ -6530,6 +6981,7 @@
     renderRetouchControls();
     renderLayerList();
     renderSettings();
+    renderSiteMapPanel();
     updateViewMenuState();
     updateButtons();
     updateStatus();

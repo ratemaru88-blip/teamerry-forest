@@ -74,6 +74,11 @@
           </span>
         </button>
 
+        <button id="siteMapButton" class="tb-command-button tb-command-button--site-map" type="button" aria-pressed="false" title="Project Page / Internal Link Graph">
+          <span class="tb-site-map-icon" aria-hidden="true">◎</span>
+          <span class="tb-command-copy"><strong>SITE MAP</strong><small>Link Graph</small></span>
+        </button>
+
         <button id="previewButton" class="tb-test-button tb-command-button" type="button" title="制作中の軽い確認">
           <img class="tb-mini-logo" src="../../assets/images/ui/tbalance_logo_mark.svg" alt="" aria-hidden="true">
           <span>TEST</span>
@@ -1254,6 +1259,56 @@
       </details>
     </section>
 
+    <section id="siteMapPanel" class="tb-site-map-panel" aria-label="SITE MAP" hidden>
+      <div class="tb-site-map-head">
+        <div>
+          <h2>SITE MAP</h2>
+          <p>Project Page / Internal Link Graphを読み取り専用で確認します。</p>
+        </div>
+        <div class="tb-site-map-head-actions">
+          <button id="refreshSiteMap" type="button">Scan Known Pages</button>
+          <button id="closeSiteMapPanel" type="button" title="閉じる">×</button>
+        </div>
+      </div>
+      <div class="tb-site-map-summary">
+        <span id="siteMapStatus">未生成</span>
+        <span id="siteMapStats">Pages: 0 / Links: 0 / Diagnostics: 0</span>
+        <span id="siteMapContext">Adapter: None</span>
+      </div>
+      <div class="tb-site-map-filters" role="group" aria-label="Site Map filter">
+        <button type="button" data-site-map-filter="all" class="is-active">All</button>
+        <button type="button" data-site-map-filter="problems">Problems</button>
+        <button type="button" data-site-map-filter="external">External</button>
+      </div>
+      <div class="tb-site-map-layout">
+        <section class="tb-site-map-pages" aria-label="Pages">
+          <div class="tb-site-map-section-head">
+            <strong>Pages</strong>
+            <small id="siteMapPageCount">0</small>
+          </div>
+          <div id="siteMapPageCards" class="tb-site-map-page-cards">Scan Known Pagesを押してください。</div>
+        </section>
+        <section class="tb-site-map-links" aria-label="Internal Links">
+          <div class="tb-site-map-section-head">
+            <strong>Links</strong>
+            <small id="siteMapLinkCount">0</small>
+          </div>
+          <div id="siteMapLinkList" class="tb-site-map-link-list">未生成</div>
+        </section>
+        <aside class="tb-site-map-detail" aria-label="Selected Page">
+          <div class="tb-site-map-section-head">
+            <strong>Selected Page</strong>
+          </div>
+          <pre id="siteMapSelectedDetail">未選択</pre>
+          <div class="tb-site-map-section-head">
+            <strong>Diagnostics</strong>
+            <small id="siteMapDiagnosticCount">0</small>
+          </div>
+          <div id="siteMapDiagnostics" class="tb-site-map-diagnostics">診断なし</div>
+        </aside>
+      </div>
+    </section>
+
     <section id="newCanvasModal" class="tb-new-canvas-modal" aria-label="新規キャンバス作成" hidden>
       <div class="tb-new-canvas-dialog" role="dialog" aria-modal="true" aria-labelledby="newCanvasTitle">
         <div class="tb-new-canvas-head">
@@ -1554,7 +1609,8 @@
   <script src="./safe-patch/safe-patch-candidate.js?v=20260827-safe-patch-v01"></script>
   <script src="./safe-apply/safe-apply.js?v=20260827-safe-apply-v01"></script>
   <script src="./safe-workflow/safe-workflow.js?v=20260827-safe-workflow-v01"></script>
+  <script src="./site-map/site-map.js?v=20260829-site-map-v01-foundation"></script>
   <script src="./with-ai/with-ai-share.js?v=20260826-with-ai-share-v01"></script>
-  <script src="./tbalance.js?v=20260827-v1-safe-workflow-v01"></script>
+  <script src="./tbalance.js?v=20260829-v1-site-map-foundation"></script>
 </body>
 </html>
