@@ -261,6 +261,13 @@
       viewState: "",
       targetState: null,
       adapterId: "none",
+      mode: "edit",
+      selected: null,
+      preview: {
+        active: false,
+        changes: [],
+      },
+      drag: null,
     },
     siteMap: {
       open: false,
@@ -369,8 +376,13 @@
     existingWebFrame: $("existingWebFrame"),
     existingWebTitle: $("existingWebTitle"),
     existingWebMeta: $("existingWebMeta"),
+    existingWebEditMode: $("existingWebEditMode"),
+    existingWebTestMode: $("existingWebTestMode"),
     existingWebAnalyze: $("existingWebAnalyze"),
+    existingWebCreateSafeChange: $("existingWebCreateSafeChange"),
+    existingWebResetPreview: $("existingWebResetPreview"),
     existingWebBackToCanvas: $("existingWebBackToCanvas"),
+    existingWebSelectionSummary: $("existingWebSelectionSummary"),
     existingWebOpenModal: $("existingWebOpenModal"),
     existingWebSourcePath: $("existingWebSourcePath"),
     existingWebOpenSubmit: $("existingWebOpenSubmit"),
@@ -667,7 +679,11 @@
     els.pageNameInput?.addEventListener("blur", commitPageNameEdit);
     bindNewCanvasDialog();
     els.openFile.addEventListener("change", openProjectFile);
+    els.existingWebEditMode?.addEventListener("click", () => setExistingWebMode("edit"));
+    els.existingWebTestMode?.addEventListener("click", () => setExistingWebMode("test"));
     els.existingWebAnalyze?.addEventListener("click", openExistingWebInAnalyzer);
+    els.existingWebCreateSafeChange?.addEventListener("click", sendExistingWebPreviewToSafeChange);
+    els.existingWebResetPreview?.addEventListener("click", resetExistingWebPreview);
     els.existingWebBackToCanvas?.addEventListener("click", closeExistingWebView);
     els.existingWebFrame?.addEventListener("load", handleExistingWebFrameLoad);
     els.existingWebOpenSubmit?.addEventListener("click", submitExistingWebDialog);
@@ -1499,6 +1515,13 @@
       viewState: info.viewState,
       targetState: info.targetState,
       adapterId: info.adapterId || state.analyzer.adapterId || "none",
+      mode: "edit",
+      selected: null,
+      preview: {
+        active: false,
+        changes: [],
+      },
+      drag: null,
     };
     prepareAnalyzerForExistingWeb(info);
     state.windowMode = "single";
@@ -1671,6 +1694,8 @@
   }
 
   function closeExistingWebView() {
+    resetExistingWebPreview();
+    uninstallExistingWebSelection();
     state.existingWeb.active = false;
     renderAll();
   }
@@ -1679,7 +1704,540 @@
     if (!state.existingWeb.active) {
       return;
     }
+    state.existingWeb.selected = null;
+    state.existingWeb.drag = null;
+    state.existingWeb.preview = {
+      active: false,
+      changes: [],
+    };
+    installExistingWebEditMode();
     showModeToast(`${state.existingWeb.label || state.existingWeb.sourcePath} を表示しました。`);
+    renderAll();
+  }
+
+  function setExistingWebMode(mode) {
+    if (!state.existingWeb.active) {
+      return;
+    }
+    state.existingWeb.mode = mode === "test" ? "test" : "edit";
+    state.existingWeb.drag = null;
+    installExistingWebEditMode();
+    renderAll();
+  }
+
+  function installExistingWebEditMode() {
+    const frame = els.existingWebFrame;
+    let doc;
+    try {
+      doc = frame?.contentDocument;
+    } catch (error) {
+      doc = null;
+    }
+    if (!doc || !doc.documentElement) {
+      return;
+    }
+    ensureExistingWebRuntimeStyle(doc);
+    uninstallExistingWebSelectionListeners(doc);
+    if (state.existingWeb.mode === "edit") {
+      doc.addEventListener("pointerdown", handleExistingWebPointerDown, true);
+      doc.addEventListener("pointermove", handleExistingWebPointerMove, true);
+      doc.addEventListener("pointerup", handleExistingWebPointerUp, true);
+      doc.addEventListener("click", handleExistingWebClick, true);
+      doc.addEventListener("submit", stopExistingWebNativeAction, true);
+      doc.addEventListener("keydown", handleExistingWebKeydown, true);
+      doc.__tbExistingWebSelectionInstalled = true;
+    }
+    applyExistingWebSelectionClass();
+  }
+
+  function uninstallExistingWebSelection() {
+    const doc = getExistingWebDocument();
+    if (doc) {
+      uninstallExistingWebSelectionListeners(doc);
+      clearExistingWebSelectionClass(doc);
+    }
+  }
+
+  function uninstallExistingWebSelectionListeners(doc) {
+    if (!doc?.__tbExistingWebSelectionInstalled) {
+      return;
+    }
+    doc.removeEventListener("pointerdown", handleExistingWebPointerDown, true);
+    doc.removeEventListener("pointermove", handleExistingWebPointerMove, true);
+    doc.removeEventListener("pointerup", handleExistingWebPointerUp, true);
+    doc.removeEventListener("click", handleExistingWebClick, true);
+    doc.removeEventListener("submit", stopExistingWebNativeAction, true);
+    doc.removeEventListener("keydown", handleExistingWebKeydown, true);
+    doc.__tbExistingWebSelectionInstalled = false;
+  }
+
+  function ensureExistingWebRuntimeStyle(doc) {
+    if (doc.getElementById("__tb_existing_web_runtime_style")) {
+      return;
+    }
+    const style = doc.createElement("style");
+    style.id = "__tb_existing_web_runtime_style";
+    style.textContent = `
+      .__tb_existing_web_selected {
+        outline: 3px solid #22d3ee !important;
+        outline-offset: 3px !important;
+        box-shadow: 0 0 0 2px rgba(3, 7, 18, 0.78), 0 0 18px rgba(34, 211, 238, 0.48) !important;
+      }
+      .__tb_existing_web_preview {
+        outline: 3px dashed #fbbf24 !important;
+        outline-offset: 5px !important;
+      }
+    `;
+    doc.head?.appendChild(style);
+  }
+
+  function getExistingWebDocument() {
+    try {
+      return els.existingWebFrame?.contentDocument || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function handleExistingWebPointerDown(event) {
+    if (!state.existingWeb.active || state.existingWeb.mode !== "edit") {
+      return;
+    }
+    stopExistingWebNativeAction(event);
+    const selection = selectExistingWebElement(resolveExistingWebSelectableNode(event.target, event.clientX, event.clientY));
+    if (!selection || !canExistingWebPreviewProperty(selection, "position")) {
+      renderAll();
+      return;
+    }
+    state.existingWeb.drag = {
+      domRef: selection.domRef,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      beforeBounds: { ...selection.bounds },
+      beforeInline: captureExistingWebInlineStyle(selection.node),
+    };
+    selection.node.setPointerCapture?.(event.pointerId);
+  }
+
+  function handleExistingWebClick(event) {
+    if (!state.existingWeb.active || state.existingWeb.mode !== "edit") {
+      return;
+    }
+    stopExistingWebNativeAction(event);
+    selectExistingWebElement(resolveExistingWebSelectableNode(event.target, event.clientX, event.clientY));
+    renderAll();
+  }
+
+  function handleExistingWebPointerMove(event) {
+    if (handleExistingWebDragMove(event)) {
+      stopExistingWebNativeAction(event);
+    }
+  }
+
+  function handleExistingWebPointerUp(event) {
+    if (endExistingWebDrag()) {
+      stopExistingWebNativeAction(event);
+    }
+  }
+
+  function handleExistingWebKeydown(event) {
+    if (!state.existingWeb.active || state.existingWeb.mode !== "edit") {
+      return;
+    }
+    const target = event.target;
+    if (target?.closest?.("a, button, input, textarea, select, summary, details")) {
+      stopExistingWebNativeAction(event);
+    }
+  }
+
+  function stopExistingWebNativeAction(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation?.();
+  }
+
+  function handleExistingWebDragMove(event) {
+    const drag = state.existingWeb.drag;
+    if (!drag || state.existingWeb.mode !== "edit") {
+      return false;
+    }
+    const selected = state.existingWeb.selected;
+    if (!selected || selected.domRef !== drag.domRef || !selected.node?.isConnected) {
+      state.existingWeb.drag = null;
+      return false;
+    }
+    const dx = Math.round((event.clientX - drag.startClientX) * 100) / 100;
+    const dy = Math.round((event.clientY - drag.startClientY) * 100) / 100;
+    applyExistingWebPreviewPosition(selected, drag.beforeBounds.x + dx, drag.beforeBounds.y + dy, drag.beforeInline);
+    return true;
+  }
+
+  function endExistingWebDrag() {
+    if (!state.existingWeb.drag) {
+      return false;
+    }
+    const selected = state.existingWeb.selected;
+    if (selected?.node?.isConnected) {
+      selected.bounds = getDomNodeBounds(selected.node) || selected.bounds;
+      recordExistingWebPreviewChange("position", state.existingWeb.drag.beforeBounds, selected.bounds, "runtime-confirmed");
+    }
+    state.existingWeb.drag = null;
+    renderAll();
+    return true;
+  }
+
+  function selectExistingWebElement(node) {
+    const doc = getExistingWebDocument();
+    if (!doc || !node || node.nodeType !== 1) {
+      return null;
+    }
+    clearExistingWebSelectionClass(doc);
+    const analyzer = window.TBalanceReadOnlyAnalyzer;
+    const domRef = typeof analyzer?.getSelectorCandidate === "function"
+      ? analyzer.getSelectorCandidate(node)
+      : getFallbackDomRef(node);
+    const analysis = analyzeExistingWebDocument();
+    const element = analysis?.elements?.find((item) => item.observed?.domRef === domRef) || null;
+    const mapping = findExistingWebMapping(domRef);
+    const bounds = element?.observed?.bounds || getDomNodeBounds(node) || {};
+    const computed = element?.observed?.computed || getExistingWebComputed(node);
+    const protectedBehavior = getExistingWebProtectedBehavior(mapping);
+    const selected = {
+      domRef,
+      node,
+      tag: node.tagName.toLowerCase(),
+      id: node.id || "",
+      className: typeof node.className === "string" ? node.className : "",
+      bounds,
+      computed,
+      pageId: state.existingWeb.pageId,
+      sourcePath: state.existingWeb.sourcePath,
+      viewState: state.existingWeb.viewState,
+      analyzerElement: element,
+      analyzerStatus: element?.inferred?.analysisStatus || "unknown",
+      mapping,
+      protectedBehavior,
+      editableProperties: getExistingWebEditableProperties(mapping, element),
+      blockedReasons: getExistingWebEditBlockReasons(mapping, element, protectedBehavior),
+    };
+    state.existingWeb.selected = selected;
+    applyExistingWebSelectionClass();
+    return selected;
+  }
+
+  function resolveExistingWebSelectableNode(target, clientX, clientY) {
+    if (!target || target.nodeType !== 1) {
+      return target;
+    }
+    const doc = target.ownerDocument || getExistingWebDocument();
+    const candidates = Array.from(doc?.body?.querySelectorAll?.("*") || target.querySelectorAll?.("*") || [])
+      .concat(target)
+      .filter((node) => {
+        if (!node || node.nodeType !== 1 || typeof node.getBoundingClientRect !== "function") {
+          return false;
+        }
+        const rect = node.getBoundingClientRect();
+        return rect.width >= 1
+          && rect.height >= 1
+          && clientX >= rect.left
+          && clientX <= rect.right
+          && clientY >= rect.top
+          && clientY <= rect.bottom;
+      })
+      .sort((a, b) => {
+        const aScore = getExistingWebSelectableScore(a);
+        const bScore = getExistingWebSelectableScore(b);
+        if (aScore !== bScore) {
+          return bScore - aScore;
+        }
+        const aRect = a.getBoundingClientRect();
+        const bRect = b.getBoundingClientRect();
+        return (aRect.width * aRect.height) - (bRect.width * bRect.height);
+      });
+    return candidates[0] || target;
+  }
+
+  function getExistingWebSelectableScore(node) {
+    const tag = node.tagName;
+    let score = 0;
+    if (node.id) score += 8;
+    if (["A", "BUTTON", "INPUT", "TEXTAREA", "SELECT"].includes(tag)) score += 20;
+    if (["IMG", "SVG", "PICTURE"].includes(tag)) score += 10;
+    if (node.getAttribute("role")) score += 5;
+    if (node.textContent?.trim()) score += 2;
+    if (node.children?.length) score -= Math.min(6, node.children.length);
+    return score;
+  }
+
+  function analyzeExistingWebDocument() {
+    const doc = getExistingWebDocument();
+    const analyzer = window.TBalanceReadOnlyAnalyzer;
+    if (!doc || typeof analyzer?.analyzeDocument !== "function") {
+      return null;
+    }
+    try {
+      const result = analyzer.analyzeDocument(doc, {
+        path: state.existingWeb.currentUrl || doc.location?.href || "",
+        sourcePath: state.existingWeb.sourcePath,
+        viewState: state.existingWeb.viewState,
+        sourceAuthority: state.existingWeb.sourceAuthority || "standard-web",
+        scriptExecution: "allowed-runtime-edit-mode",
+      });
+      state.analyzer.loadedPath = state.existingWeb.currentUrl;
+      state.analyzer.loadedKind = "existing-web";
+      state.analyzer.effectiveUrl = state.existingWeb.currentUrl;
+      state.analyzer.sourcePath = state.existingWeb.sourcePath;
+      state.analyzer.viewState = state.existingWeb.viewState || "";
+      state.analyzer.manifestPageId = state.existingWeb.pageId;
+      state.analyzer.result = result;
+      state.analyzer.selectedId = result.elements.find((item) => item.observed?.domRef === state.existingWeb.selected?.domRef)?.candidateId || state.analyzer.selectedId;
+      syncManifestInputsToAnalyzerPage();
+      return result;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function applyExistingWebSelectionClass() {
+    const doc = getExistingWebDocument();
+    if (!doc) {
+      return;
+    }
+    clearExistingWebSelectionClass(doc);
+    const selectedNode = state.existingWeb.selected?.node;
+    if (state.existingWeb.mode === "edit" && selectedNode?.isConnected) {
+      selectedNode.classList.add("__tb_existing_web_selected");
+      if (state.existingWeb.preview?.active) {
+        selectedNode.classList.add("__tb_existing_web_preview");
+      }
+    }
+  }
+
+  function clearExistingWebSelectionClass(doc) {
+    doc.querySelectorAll?.(".__tb_existing_web_selected, .__tb_existing_web_preview").forEach((node) => {
+      node.classList.remove("__tb_existing_web_selected", "__tb_existing_web_preview");
+    });
+  }
+
+  function findExistingWebMapping(domRef) {
+    const pageMeta = {
+      pageId: state.existingWeb.pageId,
+      sourcePath: state.existingWeb.sourcePath,
+      currentViewState: state.existingWeb.viewState || "",
+      sourceAuthority: "standard-web",
+    };
+    return getVisibleConfirmedMappings(pageMeta).find((mapping) => mapping.domRef === domRef) || null;
+  }
+
+  function getExistingWebProtectedBehavior(mapping) {
+    if (!mapping) {
+      return null;
+    }
+    const adapter = getActiveAnalyzerAdapter();
+    if (typeof adapter?.getProtectedBehavior !== "function") {
+      return null;
+    }
+    const result = adapter.getProtectedBehavior({
+      ...getExistingWebLookupContext(state.existingWeb.sourcePath),
+      pageId: state.existingWeb.pageId,
+      viewState: state.existingWeb.viewState || "",
+      mapping,
+      tbId: mapping.tbId,
+    });
+    return result?.status === "resolved" ? result.protectedBehavior || result.behavior || result : null;
+  }
+
+  function getExistingWebEditableProperties(mapping, element) {
+    if (!mapping || element?.inferred?.analysisStatus !== "safe-visual-edit") {
+      return [];
+    }
+    const protectedProperties = new Set(mapping.protectedProperties || []);
+    return (mapping.editableProperties || []).filter((property) => ["position", "size", "width", "height"].includes(property) && !protectedProperties.has(property));
+  }
+
+  function getExistingWebEditBlockReasons(mapping, element, protectedBehavior) {
+    const reasons = [];
+    if (!mapping) {
+      reasons.push("Confirmed Mappingなし");
+    }
+    const status = element?.inferred?.analysisStatus || "unknown";
+    if (status !== "safe-visual-edit") {
+      reasons.push(`Analyzer Status: ${status}`);
+    }
+    if (!mapping?.editableProperties?.length) {
+      reasons.push("editableProperties未設定");
+    }
+    return Array.from(new Set(reasons));
+  }
+
+  function canExistingWebPreviewProperty(selection, property) {
+    return Boolean(selection?.editableProperties?.includes(property) && !selection.blockedReasons?.length);
+  }
+
+  function applyExistingWebPreviewPosition(selection, viewportX, viewportY, beforeInline) {
+    const node = selection?.node;
+    if (!node) {
+      return;
+    }
+    const computed = getExistingWebComputed(node);
+    if (!["absolute", "fixed", "relative"].includes(computed.positionType)) {
+      return;
+    }
+    const dx = Math.round((viewportX - selection.bounds.x) * 100) / 100;
+    const dy = Math.round((viewportY - selection.bounds.y) * 100) / 100;
+    const currentLeft = parseCssPx(beforeInline?.left || selection.computed?.left || computed.left, 0);
+    const currentTop = parseCssPx(beforeInline?.top || selection.computed?.top || computed.top, 0);
+    node.style.position = computed.positionType;
+    node.style.left = `${Math.round((currentLeft + dx) * 100) / 100}px`;
+    node.style.top = `${Math.round((currentTop + dy) * 100) / 100}px`;
+    node.classList.add("__tb_existing_web_preview");
+    state.existingWeb.preview.active = true;
+    state.existingWeb.preview.beforeInline = beforeInline;
+  }
+
+  function nudgeExistingWebSelection(dx, dy) {
+    const selected = state.existingWeb.selected;
+    if (!selected || !canExistingWebPreviewProperty(selected, "position")) {
+      showModeToast("この要素はv0.1では移動Previewできません。");
+      renderAll();
+      return;
+    }
+    const before = getDomNodeBounds(selected.node) || selected.bounds;
+    const beforeInline = captureExistingWebInlineStyle(selected.node);
+    applyExistingWebPreviewPosition(selected, before.x + dx, before.y + dy, beforeInline);
+    selected.bounds = getDomNodeBounds(selected.node) || before;
+    recordExistingWebPreviewChange("position", before, selected.bounds, "runtime-confirmed");
+    renderAll();
+  }
+
+  function resizeExistingWebSelection(dw, dh) {
+    const selected = state.existingWeb.selected;
+    if (!selected || !canExistingWebPreviewProperty(selected, "size")) {
+      showModeToast("この要素はv0.1ではサイズPreviewできません。");
+      renderAll();
+      return;
+    }
+    const before = getDomNodeBounds(selected.node) || selected.bounds;
+    const beforeInline = captureExistingWebInlineStyle(selected.node);
+    selected.node.style.width = `${Math.max(1, Math.round((before.width + dw) * 100) / 100)}px`;
+    selected.node.style.height = `${Math.max(1, Math.round((before.height + dh) * 100) / 100)}px`;
+    selected.node.classList.add("__tb_existing_web_preview");
+    state.existingWeb.preview.active = true;
+    state.existingWeb.preview.beforeInline = beforeInline;
+    selected.bounds = getDomNodeBounds(selected.node) || before;
+    recordExistingWebPreviewChange("size", before, selected.bounds, "runtime-confirmed");
+    renderAll();
+  }
+
+  function recordExistingWebPreviewChange(property, beforeBounds, afterBounds, beforeSource) {
+    const before = property === "size"
+      ? { width: beforeBounds.width, height: beforeBounds.height }
+      : { x: beforeBounds.x, y: beforeBounds.y };
+    const after = property === "size"
+      ? { width: afterBounds.width, height: afterBounds.height }
+      : { x: afterBounds.x, y: afterBounds.y };
+    state.existingWeb.preview.changes = [{
+      property,
+      before,
+      after,
+      beforeSource,
+      coordinateContext: "iframe-viewport-css-px",
+    }];
+    applyExistingWebSelectionClass();
+  }
+
+  function resetExistingWebPreview() {
+    const selected = state.existingWeb.selected;
+    const inline = state.existingWeb.preview?.beforeInline;
+    if (selected?.node?.isConnected && inline) {
+      restoreExistingWebInlineStyle(selected.node, inline);
+      selected.bounds = getDomNodeBounds(selected.node) || selected.bounds;
+    }
+    state.existingWeb.preview = {
+      active: false,
+      changes: [],
+    };
+    state.existingWeb.drag = null;
+    applyExistingWebSelectionClass();
+    renderLayerList();
+  }
+
+  function sendExistingWebPreviewToSafeChange() {
+    const selected = state.existingWeb.selected;
+    const change = state.existingWeb.preview?.changes?.[0];
+    if (!selected?.mapping || !change) {
+      showModeToast("Safe Changeへ送るには、Confirmed MappingとPreview変更が必要です。");
+      return;
+    }
+    openAnalyzerPanel();
+    state.analyzer.safeChange.targetMappingId = selected.mapping.mappingId;
+    state.analyzer.safeChange.property = change.property;
+    state.analyzer.safeChange.intent = "既存Web編集モードのRuntime Previewを安全な変更指示へ変換";
+    state.analyzer.safeChange.beforeSource = change.beforeSource || "runtime-confirmed";
+    state.analyzer.safeChange.beforeText = JSON.stringify(change.before);
+    state.analyzer.safeChange.afterText = JSON.stringify(change.after);
+    state.analyzer.safeChange.json = null;
+    state.analyzer.safeChange.summary = "";
+    state.analyzer.safeChange.status = "idle";
+    state.analyzer.safeChange.message = "既存Web編集モードのPreviewをSafe Changeに渡しました。Generateを実行してください。";
+    renderSafeChangePanel();
+    showModeToast("Safe ChangeにPreview内容をセットしました。");
+  }
+
+  function handleExistingWebLayerAction(action) {
+    if (action === "nudge-left") nudgeExistingWebSelection(-10, 0);
+    if (action === "nudge-right") nudgeExistingWebSelection(10, 0);
+    if (action === "nudge-up") nudgeExistingWebSelection(0, -10);
+    if (action === "nudge-down") nudgeExistingWebSelection(0, 10);
+    if (action === "size-smaller") resizeExistingWebSelection(-10, -10);
+    if (action === "size-larger") resizeExistingWebSelection(10, 10);
+    if (action === "reset-preview") resetExistingWebPreview();
+    if (action === "safe-change") sendExistingWebPreviewToSafeChange();
+  }
+
+  function getFallbackDomRef(node) {
+    if (node.id) {
+      return `#${CSS.escape(node.id)}`;
+    }
+    const tag = node.tagName.toLowerCase();
+    const className = typeof node.className === "string" ? node.className.trim().split(/\s+/).filter(Boolean)[0] : "";
+    return className ? `${tag}.${CSS.escape(className)}` : tag;
+  }
+
+  function getExistingWebComputed(node) {
+    const style = node.ownerDocument.defaultView.getComputedStyle(node);
+    return {
+      display: style.display,
+      visibility: style.visibility,
+      opacity: style.opacity,
+      positionType: style.position,
+      left: style.left,
+      top: style.top,
+      width: style.width,
+      height: style.height,
+      transform: style.transform === "none" ? "" : style.transform,
+    };
+  }
+
+  function captureExistingWebInlineStyle(node) {
+    return {
+      position: node.style.position,
+      left: node.style.left,
+      top: node.style.top,
+      width: node.style.width,
+      height: node.style.height,
+    };
+  }
+
+  function restoreExistingWebInlineStyle(node, inline) {
+    ["position", "left", "top", "width", "height"].forEach((key) => {
+      node.style[key] = inline?.[key] || "";
+    });
+  }
+
+  function parseCssPx(value, fallback = 0) {
+    const parsed = Number.parseFloat(String(value || ""));
+    return Number.isFinite(parsed) ? parsed : fallback;
   }
 
   function handleAnalyzerFrameLoad() {
@@ -2123,7 +2681,7 @@
   }
 
   function resolveAnalyzerDomNode(domRef) {
-    const frame = els.analyzerFrame;
+    const frame = state.existingWeb.active ? els.existingWebFrame : els.analyzerFrame;
     let doc;
     try {
       doc = frame?.contentDocument;
@@ -8320,6 +8878,28 @@
         `Adapter: ${adapter?.label || "None"}`,
       ].filter(Boolean).join(" / ");
     }
+    if (els.existingWebViewer) {
+      els.existingWebViewer.dataset.mode = state.existingWeb.mode || "edit";
+    }
+    if (els.existingWebEditMode) {
+      const activeEdit = state.existingWeb.mode !== "test";
+      els.existingWebEditMode.classList.toggle("is-active", activeEdit);
+      els.existingWebEditMode.setAttribute("aria-pressed", activeEdit ? "true" : "false");
+    }
+    if (els.existingWebTestMode) {
+      const activeTest = state.existingWeb.mode === "test";
+      els.existingWebTestMode.classList.toggle("is-active", activeTest);
+      els.existingWebTestMode.setAttribute("aria-pressed", activeTest ? "true" : "false");
+    }
+    if (els.existingWebCreateSafeChange) {
+      els.existingWebCreateSafeChange.disabled = !state.existingWeb.selected?.mapping || !state.existingWeb.preview?.changes?.length;
+    }
+    if (els.existingWebResetPreview) {
+      els.existingWebResetPreview.disabled = !state.existingWeb.preview?.active;
+    }
+    if (els.existingWebSelectionSummary) {
+      els.existingWebSelectionSummary.innerHTML = buildExistingWebSelectionSummary("compact");
+    }
   }
 
   function renderSecondaryWindow(page) {
@@ -9186,6 +9766,10 @@
   }
 
   function renderLayerList() {
+    if (state.existingWeb.active) {
+      renderExistingWebLayerPanel();
+      return;
+    }
     const page = getCurrentPage();
     keepMarkupLayersOnTop(page);
     els.layerList.innerHTML = "";
@@ -9242,7 +9826,99 @@
     });
   }
 
+  function renderExistingWebLayerPanel() {
+    els.layerList.innerHTML = `
+      <section class="tb-existing-web-layer-panel">
+        <strong>既存Webページ編集中</strong>
+        ${buildExistingWebSelectionSummary(state.editorMode === "custom" ? "custom" : "normal")}
+      </section>
+    `;
+  }
+
+  function buildExistingWebSelectionSummary(detailMode = "normal") {
+    if (!state.existingWeb.active) {
+      return "";
+    }
+    const selected = state.existingWeb.selected;
+    if (!selected) {
+      return `<p class="tb-existing-web-empty">DOM要素を選択してください。編集モード中はクリックしてもページ本来の動作は発火しません。</p>`;
+    }
+    const title = selected.mapping?.tbId || selected.id || selected.className || selected.tag || selected.domRef;
+    const editable = selected.editableProperties || [];
+    const protectedItems = [
+      ...(selected.mapping?.protectedProperties || []),
+      ...(selected.mapping?.behaviorRef ? [selected.mapping.behaviorRef] : []),
+      ...(selected.protectedBehavior ? ["adapter-protected-behavior"] : []),
+    ];
+    const blockedReasons = selected.blockedReasons || [];
+    const preview = state.existingWeb.preview?.changes?.[0] || null;
+    if (detailMode === "compact") {
+      return `<span><b>選択中:</b> ${escapeHtml(title)}</span>
+        <span>${editable.length ? `編集候補: ${editable.map(escapeHtml).join(", ")}` : "編集不可 / Analyzer確認が必要"}</span>`;
+    }
+    const actionHtml = selected && !blockedReasons.length ? `
+      <div class="tb-existing-web-action-grid">
+        <button type="button" data-existing-web-action="nudge-left">左へ</button>
+        <button type="button" data-existing-web-action="nudge-right">右へ</button>
+        <button type="button" data-existing-web-action="nudge-up">上へ</button>
+        <button type="button" data-existing-web-action="nudge-down">下へ</button>
+        <button type="button" data-existing-web-action="size-smaller">縮小</button>
+        <button type="button" data-existing-web-action="size-larger">拡大</button>
+        <button type="button" data-existing-web-action="reset-preview">Preview解除</button>
+        <button type="button" data-existing-web-action="safe-change"${preview ? "" : " disabled"}>Safe Changeへ</button>
+      </div>` : "";
+    const customHtml = detailMode === "custom" ? `
+      <pre class="tb-existing-web-custom">${escapeHtml(JSON.stringify({
+        domRef: selected.domRef,
+        tag: selected.tag,
+        id: selected.id,
+        className: selected.className,
+        bounds: selected.bounds,
+        computed: selected.computed,
+        pageId: selected.pageId,
+        sourcePath: selected.sourcePath,
+        viewState: selected.viewState,
+        mapping: selected.mapping ? {
+          tbId: selected.mapping.tbId,
+          role: selected.mapping.role,
+          editableProperties: selected.mapping.editableProperties,
+          protectedProperties: selected.mapping.protectedProperties,
+          behaviorRef: selected.mapping.behaviorRef,
+        } : null,
+        analyzerStatus: selected.analyzerStatus,
+        analyzerInferred: selected.analyzerElement?.inferred || null,
+        preview,
+      }, null, 2))}</pre>` : "";
+    return `
+      <article class="tb-existing-web-selection-card">
+        <h3>選択中: ${escapeHtml(title)}</h3>
+        <p>${escapeHtml(selected.domRef)} / ${escapeHtml(selected.pageId)} / ${escapeHtml(selected.sourcePath)}${selected.viewState ? `?${escapeHtml(selected.viewState)}` : ""}</p>
+        <div class="tb-existing-web-badges">
+          <span data-status="${escapeAttr(selected.analyzerStatus)}">${escapeHtml(selected.analyzerStatus)}</span>
+          <span>${selected.mapping ? "Confirmed Mappingあり" : "Mappingなし"}</span>
+        </div>
+        <dl>
+          <dt>編集できる項目</dt>
+          <dd>${editable.length ? editable.map((item) => `<span>OK ${escapeHtml(item)}</span>`).join("") : "安全な編集範囲を確認できません"}</dd>
+          <dt>保護 / Block</dt>
+          <dd>${protectedItems.length || blockedReasons.length
+            ? [...protectedItems, ...blockedReasons].map((item) => `<span>LOCK ${escapeHtml(item)}</span>`).join("")
+            : "保護対象なし"}</dd>
+          <dt>Preview</dt>
+          <dd>${preview ? `${escapeHtml(preview.property)}: ${escapeHtml(JSON.stringify(preview.before))} -> ${escapeHtml(JSON.stringify(preview.after))}` : "未変更"}</dd>
+        </dl>
+        ${actionHtml}
+        ${customHtml}
+      </article>
+    `;
+  }
+
   function handleLayerListClick(event) {
+    const existingWebAction = event.target.closest("[data-existing-web-action]");
+    if (existingWebAction && state.existingWeb.active) {
+      handleExistingWebLayerAction(existingWebAction.dataset.existingWebAction || "");
+      return;
+    }
     const row = event.target.closest(".tb-layer-row");
     if (!row) {
       return;
@@ -9496,6 +10172,19 @@
   }
 
   function updateStatus() {
+    if (state.existingWeb.active) {
+      const selected = state.existingWeb.selected;
+      els.statusText.textContent = selected
+        ? `DOM: ${selected.mapping?.tbId || selected.domRef}`
+        : "既存Web: DOM要素を選択してください";
+      els.rotationStatus.textContent = state.existingWeb.mode === "test"
+        ? "TEST: 元ページの動作を確認"
+        : "編集: click/button/linkを抑止";
+      updateCanvasSizeLabel();
+      els.saveState.textContent = state.autosaveError || (state.dirty ? "未保存の変更があります" : state.autosaveStorage || "保存済み");
+      updateSizeStatus();
+      return;
+    }
     const selectedCount = getSelectedIds().length;
     const layer = getSelectedLayer();
     if (selectedCount > 1) {
@@ -11552,6 +12241,9 @@
 
   function handlePointerMove(event) {
     updateBrushPreview(event);
+    if (handleExistingWebDragMove(event)) {
+      return;
+    }
     if (state.panelResize) {
       const rect = els.rightPanel.getBoundingClientRect();
       const next = renderer.clamp((event.clientY - rect.top) / Math.max(1, rect.height), 0.26, 0.72);
@@ -11627,6 +12319,9 @@
   }
 
   function endPointer() {
+    if (endExistingWebDrag()) {
+      return;
+    }
     if (state.pointer?.type === "pen-draw") {
       finishPenStroke();
     }

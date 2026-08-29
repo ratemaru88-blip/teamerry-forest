@@ -1010,10 +1010,15 @@
               <small id="existingWebMeta">standard-web</small>
             </div>
             <div class="tb-existing-web-actions">
+              <button id="existingWebEditMode" type="button" aria-pressed="true">編集</button>
+              <button id="existingWebTestMode" type="button" aria-pressed="false">TEST</button>
               <button id="existingWebAnalyze" type="button">Analyzerで開く</button>
+              <button id="existingWebCreateSafeChange" type="button">Safe Changeへ送る</button>
+              <button id="existingWebResetPreview" type="button">Preview解除</button>
               <button id="existingWebBackToCanvas" type="button">通常キャンバスへ戻る</button>
             </div>
           </div>
+          <div id="existingWebSelectionSummary" class="tb-existing-web-selection-summary">DOM要素を選択してください。</div>
           <iframe id="existingWebFrame" title="Existing Web Preview" sandbox="allow-same-origin allow-scripts"></iframe>
         </section>
       </div>
