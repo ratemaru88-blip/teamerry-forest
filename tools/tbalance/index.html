@@ -1259,7 +1259,7 @@
       </details>
     </section>
 
-    <section id="siteMapPanel" class="tb-site-map-panel" aria-label="SITE MAP" hidden>
+    <section id="siteMapPanel" class="tb-site-map-panel tb-site-map-panel--v02" aria-label="SITE MAP" hidden>
       <div class="tb-site-map-head">
         <div>
           <h2>SITE MAP</h2>
@@ -1267,6 +1267,7 @@
         </div>
         <div class="tb-site-map-head-actions">
           <button id="refreshSiteMap" type="button">Scan Known Pages</button>
+          <button id="siteMapFitView" type="button">全体表示</button>
           <button id="closeSiteMapPanel" type="button" title="閉じる">×</button>
         </div>
       </div>
@@ -1274,39 +1275,68 @@
         <span id="siteMapStatus">未生成</span>
         <span id="siteMapStats">Pages: 0 / Links: 0 / Diagnostics: 0</span>
         <span id="siteMapContext">Adapter: None</span>
+        <label class="tb-site-map-adapter-control">Adapter
+          <select id="siteMapAdapterSelect" aria-label="Site Map Adapter">
+            <option value="none">None</option>
+            <option value="generic">Generic</option>
+            <option value="teamerry">TeaMerry Forest</option>
+          </select>
+        </label>
       </div>
-      <div class="tb-site-map-filters" role="group" aria-label="Site Map filter">
-        <button type="button" data-site-map-filter="all" class="is-active">All</button>
-        <button type="button" data-site-map-filter="problems">Problems</button>
-        <button type="button" data-site-map-filter="external">External</button>
+      <div class="tb-site-map-toolbar">
+        <label class="tb-site-map-search">ページ検索
+          <input id="siteMapSearch" type="search" placeholder="ページ名で検索" spellcheck="false">
+        </label>
+        <div class="tb-site-map-filters" role="group" aria-label="Site Map filter">
+          <button type="button" data-site-map-filter="all" class="is-active">すべて</button>
+          <button type="button" data-site-map-filter="warning">要確認</button>
+          <button type="button" data-site-map-filter="problem">問題あり</button>
+          <button type="button" data-site-map-filter="external">外部リンク</button>
+        </div>
+        <div class="tb-site-map-layout-tools" role="group" aria-label="Site Map layout">
+          <button id="siteMapAutoLayout" type="button">自動整列</button>
+          <button id="siteMapFreeLayout" type="button">自由配置</button>
+          <button id="siteMapResetLayout" type="button">配置リセット</button>
+        </div>
       </div>
-      <div class="tb-site-map-layout">
-        <section class="tb-site-map-pages" aria-label="Pages">
-          <div class="tb-site-map-section-head">
-            <strong>Pages</strong>
-            <small id="siteMapPageCount">0</small>
+      <div class="tb-site-map-workspace">
+        <section class="tb-site-map-graph-wrap" aria-label="Page Graph">
+          <div id="siteMapGraphViewport" class="tb-site-map-graph-viewport">
+            <div id="siteMapGraphCanvas" class="tb-site-map-graph-canvas">
+              <svg id="siteMapGraphEdges" class="tb-site-map-graph-edges" aria-hidden="true"></svg>
+              <div id="siteMapGraphLinks" class="tb-site-map-graph-links" aria-label="Navigation links"></div>
+              <div id="siteMapPageCards" class="tb-site-map-page-cards">Scan Known Pagesを押してください。</div>
+            </div>
           </div>
-          <div id="siteMapPageCards" class="tb-site-map-page-cards">Scan Known Pagesを押してください。</div>
         </section>
-        <section class="tb-site-map-links" aria-label="Internal Links">
-          <div class="tb-site-map-section-head">
-            <strong>Links</strong>
-            <small id="siteMapLinkCount">0</small>
+        <aside class="tb-site-map-detail" aria-label="Selected Page or Link">
+          <div class="tb-site-map-detail-tabs" role="group" aria-label="Site Map detail mode">
+            <button type="button" data-site-map-detail-mode="normal" class="is-active">Normal</button>
+            <button type="button" data-site-map-detail-mode="custom">Custom</button>
           </div>
-          <div id="siteMapLinkList" class="tb-site-map-link-list">未生成</div>
-        </section>
-        <aside class="tb-site-map-detail" aria-label="Selected Page">
-          <div class="tb-site-map-section-head">
-            <strong>Selected Page</strong>
-          </div>
-          <pre id="siteMapSelectedDetail">未選択</pre>
-          <div class="tb-site-map-section-head">
-            <strong>Diagnostics</strong>
-            <small id="siteMapDiagnosticCount">0</small>
-          </div>
-          <div id="siteMapDiagnostics" class="tb-site-map-diagnostics">診断なし</div>
+          <div id="siteMapSelectedDetail" class="tb-site-map-selected-detail">未選択</div>
         </aside>
       </div>
+      <details id="siteMapDebugDetails" class="tb-site-map-debug">
+        <summary>Debug / 既存一覧</summary>
+        <div class="tb-site-map-debug-grid">
+          <section class="tb-site-map-links" aria-label="Internal Links">
+            <div class="tb-site-map-section-head">
+              <strong>Links</strong>
+              <small id="siteMapLinkCount">0</small>
+            </div>
+            <div id="siteMapLinkList" class="tb-site-map-link-list">未生成</div>
+          </section>
+          <section class="tb-site-map-debug-diagnostics" aria-label="Diagnostics">
+            <div class="tb-site-map-section-head">
+              <strong>Diagnostics</strong>
+              <small id="siteMapDiagnosticCount">0</small>
+            </div>
+            <div id="siteMapDiagnostics" class="tb-site-map-diagnostics">診断なし</div>
+          </section>
+        </div>
+      </details>
+      <span id="siteMapPageCount" hidden>0</span>
     </section>
 
     <section id="newCanvasModal" class="tb-new-canvas-modal" aria-label="新規キャンバス作成" hidden>
@@ -1609,8 +1639,8 @@
   <script src="./safe-patch/safe-patch-candidate.js?v=20260827-safe-patch-v01"></script>
   <script src="./safe-apply/safe-apply.js?v=20260827-safe-apply-v01"></script>
   <script src="./safe-workflow/safe-workflow.js?v=20260827-safe-workflow-v01"></script>
-  <script src="./site-map/site-map.js?v=20260829-site-map-v01-foundation"></script>
+  <script src="./site-map/site-map.js?v=20260829-site-map-v02-ui"></script>
   <script src="./with-ai/with-ai-share.js?v=20260826-with-ai-share-v01"></script>
-  <script src="./tbalance.js?v=20260829-v1-site-map-foundation"></script>
+  <script src="./tbalance.js?v=20260829-v1-site-map-v02-ui"></script>
 </body>
 </html>

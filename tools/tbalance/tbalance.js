@@ -257,7 +257,17 @@
       message: "未生成",
       graph: null,
       selectedPageId: "",
+      selectedLinkId: "",
+      detailMode: "normal",
       filter: "all",
+      search: "",
+      layoutMode: "auto",
+      zoom: 1,
+      panX: 0,
+      panY: 0,
+      positions: {},
+      dragging: null,
+      panning: null,
       lastScanAt: "",
     },
     dirty: false,
@@ -553,6 +563,16 @@
     siteMapStatus: $("siteMapStatus"),
     siteMapStats: $("siteMapStats"),
     siteMapContext: $("siteMapContext"),
+    siteMapAdapterSelect: $("siteMapAdapterSelect"),
+    siteMapSearch: $("siteMapSearch"),
+    siteMapFitView: $("siteMapFitView"),
+    siteMapAutoLayout: $("siteMapAutoLayout"),
+    siteMapFreeLayout: $("siteMapFreeLayout"),
+    siteMapResetLayout: $("siteMapResetLayout"),
+    siteMapGraphViewport: $("siteMapGraphViewport"),
+    siteMapGraphCanvas: $("siteMapGraphCanvas"),
+    siteMapGraphEdges: $("siteMapGraphEdges"),
+    siteMapGraphLinks: $("siteMapGraphLinks"),
     siteMapPageCount: $("siteMapPageCount"),
     siteMapPageCards: $("siteMapPageCards"),
     siteMapLinkCount: $("siteMapLinkCount"),
@@ -692,8 +712,35 @@
     els.closeSiteMapPanel?.addEventListener("click", closeSiteMapPanel);
     els.refreshSiteMap?.addEventListener("click", refreshSiteMap);
     els.siteMapPageCards?.addEventListener("click", handleSiteMapPageClick);
+    els.siteMapPageCards?.addEventListener("dblclick", handleSiteMapPageDoubleClick);
+    els.siteMapPageCards?.addEventListener("pointerdown", handleSiteMapPagePointerDown);
+    els.siteMapLinkList?.addEventListener("click", handleSiteMapLinkClick);
+    els.siteMapGraphEdges?.addEventListener("click", handleSiteMapLinkClick);
+    els.siteMapGraphLinks?.addEventListener("click", handleSiteMapLinkClick);
+    els.siteMapSearch?.addEventListener("input", () => {
+      state.siteMap.search = els.siteMapSearch.value || "";
+      renderSiteMapPanel();
+    });
+    els.siteMapFitView?.addEventListener("click", fitSiteMapView);
+    els.siteMapAutoLayout?.addEventListener("click", () => setSiteMapLayoutMode("auto"));
+    els.siteMapFreeLayout?.addEventListener("click", () => setSiteMapLayoutMode("free"));
+    els.siteMapResetLayout?.addEventListener("click", resetSiteMapLayout);
+    els.siteMapGraphViewport?.addEventListener("wheel", handleSiteMapWheel, { passive: false });
+    els.siteMapGraphViewport?.addEventListener("pointerdown", handleSiteMapPanStart);
+    document.addEventListener("pointermove", handleSiteMapPointerMove);
+    document.addEventListener("pointerup", handleSiteMapPointerUp);
+    els.siteMapAdapterSelect?.addEventListener("change", () => {
+      setAnalyzerAdapter(els.siteMapAdapterSelect.value || "none");
+      state.siteMap.selectedPageId = "";
+      state.siteMap.selectedLinkId = "";
+      setSiteMapStatus("Adapterを切り替えました。Scan Known Pagesを押してください。", "idle");
+      renderSiteMapPanel();
+    });
     document.querySelectorAll("[data-site-map-filter]").forEach((button) => {
       button.addEventListener("click", () => setSiteMapFilter(button.dataset.siteMapFilter || "all"));
+    });
+    document.querySelectorAll("[data-site-map-detail-mode]").forEach((button) => {
+      button.addEventListener("click", () => setSiteMapDetailMode(button.dataset.siteMapDetailMode || "normal"));
     });
     els.exportManifest?.addEventListener("click", exportAnalyzerManifest);
     els.importManifest?.addEventListener("click", () => els.manifestImportFile?.click());
@@ -3061,6 +3108,9 @@
     if (els.adapterSelect && els.adapterSelect.value !== nextId) {
       els.adapterSelect.value = nextId;
     }
+    if (els.siteMapAdapterSelect && els.siteMapAdapterSelect.value !== nextId) {
+      els.siteMapAdapterSelect.value = nextId;
+    }
     renderSafeChangePanel();
     renderAdapterPanel();
     renderSiteMapPanel();
@@ -3244,16 +3294,27 @@
         });
       } else {
         const analyzerViewState = getAnalyzerSiteMapViewState(analyzerPage);
-      sources.push({
-        pageId: getAnalyzerManifestPageMeta().pageId,
-        label: analyzerPage?.title || analyzerPage?.sourcePath || state.analyzer.sourcePath,
-          sourcePath: analyzerSourcePath,
-        sourceAuthority: "standard-web",
+        const normalizedAnalyzerSourcePath = window.TBalanceSiteMap.normalizeSourcePath(analyzerSourcePath);
+        const knownAnalyzerPage = knownPages.find((page) => (
+          !isSiteMapPlaceholderSource(page.sourcePath || page.path || page.url)
+          && window.TBalanceSiteMap.normalizeSourcePath(page.sourcePath || page.path || page.url) === normalizedAnalyzerSourcePath
+        ));
+        const analyzerPageId = knownAnalyzerPage?.pageId || getAnalyzerManifestPageMeta().pageId;
+        sources.push({
+          pageId: analyzerPageId,
+          label: knownAnalyzerPage?.label || analyzerPage?.title || analyzerPage?.sourcePath || state.analyzer.sourcePath,
+          sourcePath: normalizedAnalyzerSourcePath,
+          sourceAuthority: "standard-web",
           viewStateDetails: analyzerViewState ? [{ value: analyzerViewState, source: "analyzer-observed" }] : [],
-        componentCount: getVisibleConfirmedMappings().length,
-        identityStatus: "candidate",
-        source: "current-analyzer",
-      });
+          componentCount: getVisibleConfirmedMappings({
+            ...getAnalyzerManifestPageMeta(),
+            pageId: analyzerPageId,
+            sourcePath: normalizedAnalyzerSourcePath,
+            currentViewState: analyzerViewState,
+          }).length,
+          identityStatus: "candidate",
+          source: "current-analyzer",
+        });
       }
     }
     return sources.filter((page) => page.sourcePath);
@@ -3278,6 +3339,7 @@
       state.analyzer.effectiveUrl,
       state.analyzer.loadedPath,
       state.analyzer.sourcePath,
+      els.analyzerPath?.value,
       els.analyzerFrame?.src,
     ].filter(Boolean);
     for (const value of candidates) {
@@ -3381,13 +3443,173 @@
     renderSiteMapPanel();
   }
 
+  function setSiteMapDetailMode(mode) {
+    state.siteMap.detailMode = mode === "custom" ? "custom" : "normal";
+    renderSiteMapPanel();
+  }
+
+  function setSiteMapLayoutMode(mode) {
+    state.siteMap.layoutMode = mode === "free" ? "free" : "auto";
+    if (state.siteMap.layoutMode === "auto") {
+      applySiteMapAutoLayout(state.siteMap.graph);
+    }
+    saveSiteMapLayoutSettings();
+    renderSiteMapPanel();
+  }
+
+  function resetSiteMapLayout() {
+    state.siteMap.positions = {};
+    state.siteMap.zoom = 1;
+    state.siteMap.panX = 0;
+    state.siteMap.panY = 0;
+    state.siteMap.layoutMode = "auto";
+    applySiteMapAutoLayout(state.siteMap.graph);
+    saveSiteMapLayoutSettings();
+    renderSiteMapPanel();
+  }
+
+  function fitSiteMapView() {
+    state.siteMap.zoom = 1;
+    state.siteMap.panX = 0;
+    state.siteMap.panY = 0;
+    saveSiteMapLayoutSettings();
+    renderSiteMapPanel();
+  }
+
   function handleSiteMapPageClick(event) {
     const button = event.target.closest("[data-site-map-page-id]");
     if (!button) {
       return;
     }
     state.siteMap.selectedPageId = button.dataset.siteMapPageId || "";
+    state.siteMap.selectedLinkId = "";
+    const issue = event.target.closest("[data-site-map-issue]");
+    state.siteMap.selectedIssue = issue?.dataset.siteMapIssue || "";
     renderSiteMapPanel();
+  }
+
+  function handleSiteMapPageDoubleClick(event) {
+    const button = event.target.closest("[data-site-map-page-id]");
+    if (!button) {
+      return;
+    }
+    const page = state.siteMap.graph?.pages?.find((item) => item.pageId === button.dataset.siteMapPageId);
+    if (!page) {
+      return;
+    }
+    state.siteMap.selectedPageId = page.pageId;
+    state.siteMap.selectedLinkId = "";
+    setSiteMapStatus(`開く候補: ${page.label || page.pageId} / ${getSiteMapPageUrl(page.sourcePath)}`, "success");
+    renderSiteMapPanel();
+  }
+
+  function handleSiteMapLinkClick(event) {
+    const row = event.target.closest("[data-site-map-link-id]");
+    if (!row) {
+      return;
+    }
+    selectSiteMapLink(row.dataset.siteMapLinkId || "");
+  }
+
+  function selectSiteMapLink(edgeId) {
+    state.siteMap.selectedLinkId = edgeId || "";
+    state.siteMap.selectedPageId = "";
+    state.siteMap.selectedIssue = "";
+    renderSiteMapPanel();
+  }
+
+  function handleSiteMapPagePointerDown(event) {
+    const card = event.target.closest("[data-site-map-page-id]");
+    if (!card || event.button !== 0 || state.siteMap.layoutMode !== "free") {
+      return;
+    }
+    event.preventDefault();
+    const pageId = card.dataset.siteMapPageId || "";
+    const point = getSiteMapPointerPoint(event);
+    const current = state.siteMap.positions[pageId] || { x: 0, y: 0 };
+    state.siteMap.dragging = {
+      pageId,
+      startX: point.x,
+      startY: point.y,
+      baseX: current.x,
+      baseY: current.y,
+    };
+  }
+
+  function handleSiteMapPanStart(event) {
+    if (event.button !== 0 || !event.target.closest("#siteMapGraphViewport") || event.target.closest("[data-site-map-page-id]") || event.target.closest("[data-site-map-link-id]")) {
+      return;
+    }
+    event.preventDefault();
+    state.siteMap.panning = {
+      startX: event.clientX,
+      startY: event.clientY,
+      baseX: state.siteMap.panX,
+      baseY: state.siteMap.panY,
+    };
+  }
+
+  function handleSiteMapPointerMove(event) {
+    if (state.siteMap.dragging) {
+      const point = getSiteMapPointerPoint(event);
+      const drag = state.siteMap.dragging;
+      const scale = state.siteMap.zoom || 1;
+      state.siteMap.positions[drag.pageId] = {
+        x: drag.baseX + ((point.x - drag.startX) / scale),
+        y: drag.baseY + ((point.y - drag.startY) / scale),
+      };
+      renderSiteMapPanel();
+      return;
+    }
+    if (state.siteMap.panning) {
+      const pan = state.siteMap.panning;
+      state.siteMap.panX = pan.baseX + (event.clientX - pan.startX);
+      state.siteMap.panY = pan.baseY + (event.clientY - pan.startY);
+      renderSiteMapPanel();
+    }
+  }
+
+  function handleSiteMapPointerUp() {
+    if (!state.siteMap.dragging && !state.siteMap.panning) {
+      return;
+    }
+    state.siteMap.dragging = null;
+    state.siteMap.panning = null;
+    saveSiteMapLayoutSettings();
+  }
+
+  function handleSiteMapWheel(event) {
+    if (!state.siteMap.open) {
+      return;
+    }
+    event.preventDefault();
+    const currentZoom = Number(state.siteMap.zoom || 1);
+    const delta = Number(event.deltaY) || 0;
+    if (!delta) {
+      return;
+    }
+    const minZoom = 0.55;
+    const maxZoom = 1.5;
+    const pointer = getSiteMapPointerPoint(event);
+    const contentX = (pointer.x - (state.siteMap.panX || 0)) / currentZoom;
+    const contentY = (pointer.y - (state.siteMap.panY || 0)) / currentZoom;
+    const normalizedSteps = Math.min(1, Math.max(0.25, Math.abs(delta) / 100));
+    const zoomFactor = 1 + (0.055 * normalizedSteps);
+    const rawZoom = delta < 0 ? currentZoom * zoomFactor : currentZoom / zoomFactor;
+    const nextZoom = Math.min(maxZoom, Math.max(minZoom, Number(rawZoom.toFixed(3))));
+    state.siteMap.zoom = nextZoom;
+    state.siteMap.panX = pointer.x - (contentX * nextZoom);
+    state.siteMap.panY = pointer.y - (contentY * nextZoom);
+    saveSiteMapLayoutSettings();
+    renderSiteMapPanel();
+  }
+
+  function getSiteMapPointerPoint(event) {
+    const rect = els.siteMapGraphViewport?.getBoundingClientRect?.() || { left: 0, top: 0 };
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
   }
 
   function renderSiteMapPanel() {
@@ -3407,7 +3629,10 @@
       els.siteMapStatus.dataset.status = state.siteMap.status || "idle";
     }
     if (els.siteMapContext) {
-      els.siteMapContext.textContent = `Adapter: ${adapter?.label || "None"} / Project: ${getAnalyzerManifestPageMeta().projectId}`;
+      els.siteMapContext.textContent = `Adapter: ${adapter?.label || "None"} / Project: ${getSiteMapProjectDisplayName(adapter)}`;
+    }
+    if (els.siteMapAdapterSelect && els.siteMapAdapterSelect.value !== (adapter?.id || "none")) {
+      els.siteMapAdapterSelect.value = adapter?.id || "none";
     }
     if (!graph) {
       if (els.siteMapStats) els.siteMapStats.textContent = "Pages: 0 / Links: 0 / Diagnostics: 0";
@@ -3415,24 +3640,36 @@
       if (els.siteMapLinkCount) els.siteMapLinkCount.textContent = "0";
       if (els.siteMapDiagnosticCount) els.siteMapDiagnosticCount.textContent = "0";
       if (els.siteMapPageCards) els.siteMapPageCards.textContent = "Scan Known Pagesを押してください。";
+      if (els.siteMapGraphEdges) els.siteMapGraphEdges.innerHTML = "";
+      if (els.siteMapGraphLinks) els.siteMapGraphLinks.innerHTML = "";
       if (els.siteMapLinkList) els.siteMapLinkList.textContent = "未生成";
       if (els.siteMapSelectedDetail) els.siteMapSelectedDetail.textContent = "未選択";
       if (els.siteMapDiagnostics) els.siteMapDiagnostics.textContent = "診断なし";
       renderSiteMapFilterButtons();
+      renderSiteMapDetailModeButtons();
+      renderSiteMapLayoutButtons();
+      applySiteMapTransform();
       return;
     }
+    ensureSiteMapLayout(graph);
+    const visiblePages = filterSiteMapPages(graph);
     const filteredLinks = filterSiteMapLinks(graph.links || []);
     if (els.siteMapStats) {
-      els.siteMapStats.textContent = `Pages: ${graph.pages.length} / Links: ${graph.links.length} / Diagnostics: ${graph.diagnostics.total}`;
+      const issueCounts = getSiteMapIssueCounts(graph);
+      els.siteMapStats.textContent = `ページ ${graph.pages.length} / リンク ${graph.links.length} / 要確認 ${issueCounts.warnings} / 問題 ${issueCounts.problems}`;
     }
-    if (els.siteMapPageCount) els.siteMapPageCount.textContent = String(graph.pages.length);
+    if (els.siteMapPageCount) els.siteMapPageCount.textContent = String(visiblePages.length);
     if (els.siteMapLinkCount) els.siteMapLinkCount.textContent = String(filteredLinks.length);
     if (els.siteMapDiagnosticCount) els.siteMapDiagnosticCount.textContent = String(graph.diagnostics.total);
     renderSiteMapFilterButtons();
-    renderSiteMapPages(graph);
+    renderSiteMapDetailModeButtons();
+    renderSiteMapLayoutButtons();
+    renderSiteMapPages(graph, visiblePages);
+    renderSiteMapGraphEdges(graph, visiblePages);
     renderSiteMapLinks(filteredLinks);
     renderSiteMapDetails(graph);
     renderSiteMapDiagnostics(graph);
+    applySiteMapTransform();
   }
 
   function renderSiteMapFilterButtons() {
@@ -3441,9 +3678,27 @@
     });
   }
 
+  function renderSiteMapDetailModeButtons() {
+    document.querySelectorAll("[data-site-map-detail-mode]").forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.siteMapDetailMode === state.siteMap.detailMode);
+    });
+  }
+
+  function renderSiteMapLayoutButtons() {
+    if (els.siteMapAutoLayout) {
+      els.siteMapAutoLayout.classList.toggle("is-active", state.siteMap.layoutMode !== "free");
+    }
+    if (els.siteMapFreeLayout) {
+      els.siteMapFreeLayout.classList.toggle("is-active", state.siteMap.layoutMode === "free");
+    }
+  }
+
   function filterSiteMapLinks(links) {
-    if (state.siteMap.filter === "problems") {
-      return links.filter((link) => ["missing-target", "unresolved", "dynamic"].includes(link.status));
+    if (state.siteMap.filter === "warning") {
+      return links.filter((link) => ["unresolved", "dynamic"].includes(link.status));
+    }
+    if (state.siteMap.filter === "problem") {
+      return links.filter((link) => link.status === "missing-target");
     }
     if (state.siteMap.filter === "external") {
       return links.filter((link) => link.status === "external");
@@ -3451,25 +3706,122 @@
     return links;
   }
 
-  function renderSiteMapPages(graph) {
+  function filterSiteMapPages(graph) {
+    const search = String(state.siteMap.search || "").trim().toLowerCase();
+    return (graph.pages || []).filter((page) => {
+      const summary = getSiteMapPageSummary(page, graph);
+      const searchText = [page.label, page.pageId, page.sourcePath, ...(page.viewStates || [])].join(" ").toLowerCase();
+      if (search && !searchText.includes(search)) {
+        return false;
+      }
+      if (state.siteMap.filter === "warning") {
+        return [summary.display, summary.assets, summary.navigation].some((item) => item.level === "warning");
+      }
+      if (state.siteMap.filter === "problem") {
+        return [summary.display, summary.assets, summary.navigation].some((item) => item.level === "problem");
+      }
+      if (state.siteMap.filter === "external") {
+        return (graph.links || []).some((link) => link.fromPageId === page.pageId && link.status === "external");
+      }
+      return true;
+    });
+  }
+
+  function renderSiteMapPages(graph, pages) {
     if (!els.siteMapPageCards) {
       return;
     }
-    els.siteMapPageCards.innerHTML = graph.pages.map((page) => {
+    const compact = (state.siteMap.zoom || 1) < 0.75;
+    els.siteMapPageCards.innerHTML = pages.map((page) => {
       const selected = page.pageId === state.siteMap.selectedPageId;
-      const outgoing = graph.links.filter((link) => link.fromPageId === page.pageId).length;
-      const incoming = graph.links.filter((link) => link.toPageId === page.pageId).length;
-      return `<button class="tb-site-map-page-card${selected ? " is-selected" : ""}" type="button" data-site-map-page-id="${escapeAttr(page.pageId)}">
+      const summary = getSiteMapPageSummary(page, graph);
+      const position = state.siteMap.positions[page.pageId] || { x: 0, y: 0 };
+      return `<button class="tb-site-map-page-card${selected ? " is-selected" : ""}${compact ? " is-compact" : ""}" type="button" data-site-map-page-id="${escapeAttr(page.pageId)}" style="left:${Math.round(position.x)}px;top:${Math.round(position.y)}px;">
         <strong>${escapeHtml(page.label || page.pageId)}</strong>
-        <small>${escapeHtml(page.pageId)} / ${escapeHtml(page.sourcePath)}</small>
-        <div class="tb-site-map-badges">
-          <span>${escapeHtml(page.identityStatus || "candidate")}</span>
-          <span>out:${outgoing}</span>
-          <span>in:${incoming}</span>
-          ${(page.viewStates || []).map((viewState) => `<span>${escapeHtml(viewState)}</span>`).join("")}
+        <div class="tb-site-map-card-checks">
+          ${renderSiteMapCheck("表示", summary.display, compact)}
+          ${renderSiteMapCheck("画像・素材", summary.assets, compact)}
+          ${renderSiteMapCheck("移動先", summary.navigation, compact)}
         </div>
       </button>`;
     }).join("") || "Page候補がありません。";
+  }
+
+  function renderSiteMapCheck(label, item, compact) {
+    const icon = getSiteMapLevelIcon(item.level);
+    const shortLabel = label === "画像・素材" ? "素材" : label === "移動先" ? "移動" : label;
+    const text = compact
+      ? `<b aria-label="${escapeAttr(shortLabel)}">${icon}</b>`
+      : `${escapeHtml(shortLabel)} <b>${icon}</b>`;
+    return `<span class="tb-site-map-check" data-level="${escapeAttr(item.level)}" data-site-map-issue="${escapeAttr(label)}">${text}</span>`;
+  }
+
+  function renderSiteMapGraphEdges(graph, pages) {
+    if (!els.siteMapGraphEdges) {
+      return;
+    }
+    const visibleIds = new Set(pages.map((page) => page.pageId));
+    const hierarchy = getSiteMapHierarchy(graph);
+    const cardW = getSiteMapCardWidth();
+    const cardH = getSiteMapCardHeight();
+    const visibleLinks = (graph.links || []).filter((link) => visibleIds.has(link.fromPageId));
+    const markers = [];
+    const externalGroups = new Map();
+    els.siteMapGraphEdges.innerHTML = visibleLinks.map((link, index) => {
+      const from = state.siteMap.positions[link.fromPageId];
+      const to = link.status === "external" || !visibleIds.has(link.toPageId) ? null : state.siteMap.positions[link.toPageId];
+      if (!from) {
+        return "";
+      }
+      const edgeKind = getSiteMapEdgeKind(link, hierarchy);
+      const label = link.status === "external" ? "↗ 外部" : getSiteMapLevelIcon(getSiteMapLinkLevel(link));
+      const linkId = escapeAttr(link.edgeId);
+      if (!to) {
+        if (link.status === "external") {
+          const group = externalGroups.get(link.fromPageId) || { from, links: [] };
+          group.links.push(link);
+          externalGroups.set(link.fromPageId, group);
+          return "";
+        }
+        const markerX = from.x + cardW + 10;
+        const markerY = from.y + 17 + ((index % 2) * 22);
+        markers.push(`<button class="tb-site-map-link-marker${isSiteMapLinkSelected(link) ? " is-selected" : ""}" type="button" data-site-map-link-id="${linkId}" data-status="${escapeAttr(link.status)}" style="left:${Math.round(markerX)}px;top:${Math.round(markerY)}px;">${escapeHtml(label)}</button>`);
+        return "";
+      }
+      const points = getSiteMapEdgePoints(from, to, cardW, cardH, index, edgeKind);
+      markers.push(`<button class="tb-site-map-link-marker${isSiteMapLinkSelected(link) ? " is-selected" : ""}" type="button" data-site-map-link-id="${linkId}" data-status="${escapeAttr(link.status)}" data-edge-kind="${escapeAttr(edgeKind)}" style="left:${Math.round(points.markerX)}px;top:${Math.round(points.markerY)}px;">${escapeHtml(label)}</button>`);
+      return `<g class="tb-site-map-edge${isSiteMapLinkSelected(link) ? " is-selected" : ""}" data-site-map-link-id="${escapeAttr(link.edgeId)}" data-status="${escapeAttr(link.status)}" data-edge-kind="${escapeAttr(edgeKind)}">
+        <path class="tb-site-map-edge-hit" data-site-map-link-id="${linkId}" d="${points.path}" />
+        <path data-site-map-link-id="${linkId}" d="${points.path}" />
+        <polygon data-site-map-link-id="${linkId}" points="${points.arrow}" />
+      </g>`;
+    }).join("");
+    externalGroups.forEach((group) => {
+      const firstLink = group.links[0];
+      const count = group.links.length;
+      const markerX = group.from.x + cardW + 10;
+      const markerY = group.from.y + 16;
+      const selected = group.links.some((link) => isSiteMapLinkSelected(link));
+      const label = `↗ 外部 ${count}`;
+      markers.push(`<button class="tb-site-map-link-marker tb-site-map-link-marker--external-group${selected ? " is-selected" : ""}" type="button" data-site-map-link-id="${escapeAttr(firstLink.edgeId)}" data-status="external" style="left:${Math.round(markerX)}px;top:${Math.round(markerY)}px;">${escapeHtml(label)}</button>`);
+    });
+    if (els.siteMapGraphLinks) {
+      els.siteMapGraphLinks.innerHTML = markers.join("");
+      els.siteMapGraphLinks.querySelectorAll("[data-site-map-link-id]").forEach((item) => {
+        item.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          selectSiteMapLink(item.dataset.siteMapLinkId || "");
+        });
+      });
+    }
+    els.siteMapGraphEdges.querySelectorAll("[data-site-map-link-id]").forEach((item) => {
+      item.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        selectSiteMapLink(item.dataset.siteMapLinkId || "");
+      });
+    });
   }
 
   function renderSiteMapLinks(links) {
@@ -3480,7 +3832,7 @@
       const target = link.status === "external"
         ? link.externalUrl
         : `${link.toPageId || "unresolved"}${link.targetState?.viewState ? ` / ${link.targetState.viewState}` : ""}${link.targetState?.hash ? ` #${link.targetState.hash}` : ""}`;
-      return `<article class="tb-site-map-link-row">
+      return `<article class="tb-site-map-link-row" data-site-map-link-id="${escapeAttr(link.edgeId)}">
         <strong>${escapeHtml(link.fromPageId)} → ${escapeHtml(target)}</strong>
         <small>${escapeHtml(link.label || link.rawHref || "-")} / ${escapeHtml(link.domRef || "-")}</small>
         <div class="tb-site-map-badges">
@@ -3496,6 +3848,11 @@
     if (!els.siteMapSelectedDetail) {
       return;
     }
+    if (state.siteMap.selectedLinkId) {
+      const link = (graph.links || []).find((item) => item.edgeId === state.siteMap.selectedLinkId);
+      renderSiteMapLinkDetails(graph, link);
+      return;
+    }
     const page = graph.pages.find((item) => item.pageId === state.siteMap.selectedPageId) || graph.pages[0] || null;
     if (!page) {
       els.siteMapSelectedDetail.textContent = "未選択";
@@ -3506,11 +3863,400 @@
     }
     const outgoing = graph.links.filter((link) => link.fromPageId === page.pageId);
     const incoming = graph.links.filter((link) => link.toPageId === page.pageId);
-    els.siteMapSelectedDetail.textContent = JSON.stringify({
-      page,
-      outgoing,
-      incoming,
-    }, null, 2);
+    els.siteMapSelectedDetail.innerHTML = state.siteMap.detailMode === "custom"
+      ? renderSiteMapPageCustomDetail(graph, page, outgoing, incoming)
+      : renderSiteMapPageNormalDetail(graph, page, outgoing, incoming);
+  }
+
+  function renderSiteMapLinkDetails(graph, link) {
+    if (!link) {
+      els.siteMapSelectedDetail.textContent = "未選択";
+      return;
+    }
+    if (state.siteMap.detailMode === "custom") {
+      els.siteMapSelectedDetail.innerHTML = `<div class="tb-site-map-detail-block">
+        <h3>Navigation詳細</h3>
+        <dl>
+          <dt>From</dt><dd>${escapeHtml(link.fromPageId || "-")}</dd>
+          <dt>To</dt><dd>${escapeHtml(link.toPageId || link.externalUrl || "-")}</dd>
+          <dt>href</dt><dd>${escapeHtml(link.rawHref || "-")}</dd>
+          <dt>selector</dt><dd>${escapeHtml(link.domRef || "-")}</dd>
+          <dt>targetState</dt><dd>${escapeHtml(link.targetState?.viewState || link.targetState?.query || link.targetState?.hash || "-")}</dd>
+          <dt>status</dt><dd>${escapeHtml(link.status || "-")}</dd>
+          <dt>kind</dt><dd>${escapeHtml(link.kind || "-")}</dd>
+        </dl>
+      </div>`;
+      return;
+    }
+    const status = getSiteMapLinkNormalStatus(link);
+    els.siteMapSelectedDetail.innerHTML = `<div class="tb-site-map-detail-block">
+      <h3>移動先</h3>
+      <p>${escapeHtml(link.label || "このボタン")} → ${escapeHtml(link.status === "external" ? "外部サイト" : getPageLabel(graph, link.toPageId))}</p>
+      <p class="tb-site-map-normal-status" data-level="${escapeAttr(status.level)}">${getSiteMapLevelIcon(status.level)} ${escapeHtml(status.text)}</p>
+    </div>`;
+  }
+
+  function getSiteMapProjectDisplayName(adapter) {
+    const projectId = getAnalyzerManifestPageMeta().projectId;
+    if ((!projectId || projectId === "sample-project") && adapter?.id === "teamerry") {
+      return "TeaMerry Forest";
+    }
+    return projectId || adapter?.label || "未確定";
+  }
+
+  function getSiteMapIssueCounts(graph) {
+    const diagnostics = graph?.diagnostics || {};
+    const warningLinks = (graph?.links || []).filter((link) => ["unresolved", "dynamic"].includes(link.status)).length;
+    const problemLinks = (graph?.links || []).filter((link) => link.status === "missing-target").length;
+    return {
+      warnings: Math.max(Number(diagnostics.warnings || 0), warningLinks),
+      problems: Math.max(Number(diagnostics.errors || 0), problemLinks),
+    };
+  }
+
+  function ensureSiteMapLayout(graph) {
+    if (!graph?.pages?.length) {
+      return;
+    }
+    loadSiteMapLayoutSettings(graph);
+    const missing = graph.pages.some((page) => !state.siteMap.positions[page.pageId]);
+    if (state.siteMap.layoutMode !== "free" || missing) {
+      applySiteMapAutoLayout(graph, { keepExisting: state.siteMap.layoutMode === "free" });
+    }
+  }
+
+  function applySiteMapAutoLayout(graph, options = {}) {
+    if (!graph?.pages?.length) {
+      return;
+    }
+    const positions = options.keepExisting ? { ...(state.siteMap.positions || {}) } : {};
+    const hierarchy = getSiteMapHierarchy(graph);
+    hierarchy.layoutPages.forEach((page) => {
+      if (options.keepExisting && positions[page.pageId]) {
+        return;
+      }
+      positions[page.pageId] = {
+        x: page.x,
+        y: page.y,
+      };
+    });
+    state.siteMap.positions = positions;
+  }
+
+  function getSiteMapHierarchy(graph) {
+    const pages = graph?.pages || [];
+    const pageIds = new Set(pages.map((page) => page.pageId));
+    const treeLinks = (graph?.links || []).filter((link) => (
+      link.status === "resolved"
+      && link.fromPageId
+      && link.toPageId
+      && link.fromPageId !== link.toPageId
+      && pageIds.has(link.fromPageId)
+      && pageIds.has(link.toPageId)
+    ));
+    const incoming = new Map(pages.map((page) => [page.pageId, 0]));
+    treeLinks.forEach((link) => incoming.set(link.toPageId, (incoming.get(link.toPageId) || 0) + 1));
+    const homePages = pages.filter((page) => isSiteMapHomePage(page));
+    const rootPages = homePages.length
+      ? homePages
+      : pages.filter((page) => !incoming.get(page.pageId)).slice(0, 3);
+    if (!rootPages.length && pages[0]) {
+      rootPages.push(pages[0]);
+    }
+
+    const levels = new Map();
+    const parents = new Map();
+    const queue = rootPages.map((page) => ({ pageId: page.pageId, level: 0 }));
+    rootPages.forEach((page) => levels.set(page.pageId, 0));
+    while (queue.length) {
+      const current = queue.shift();
+      treeLinks
+        .filter((link) => link.fromPageId === current.pageId)
+        .forEach((link) => {
+          const nextLevel = current.level + 1;
+          const existingLevel = levels.get(link.toPageId);
+          if (existingLevel === undefined || nextLevel < existingLevel) {
+            levels.set(link.toPageId, nextLevel);
+            parents.set(link.toPageId, current.pageId);
+            queue.push({ pageId: link.toPageId, level: nextLevel });
+          }
+        });
+    }
+
+    const fallbackLevel = Math.max(0, ...Array.from(levels.values())) + 1;
+    pages.forEach((page) => {
+      if (!levels.has(page.pageId)) {
+        levels.set(page.pageId, fallbackLevel);
+      }
+    });
+
+    const childOrder = new Map();
+    treeLinks.forEach((link, index) => {
+      if (!childOrder.has(link.toPageId)) {
+        childOrder.set(link.toPageId, index);
+      }
+    });
+    const groups = new Map();
+    pages.forEach((page) => {
+      const level = levels.get(page.pageId) || 0;
+      if (!groups.has(level)) {
+        groups.set(level, []);
+      }
+      groups.get(level).push(page);
+    });
+
+    const cardW = getSiteMapCardWidth();
+    const xGap = 56;
+    const yGap = 132;
+    const canvasWidth = 1800;
+    const layoutPages = [];
+    Array.from(groups.keys()).sort((a, b) => a - b).forEach((level) => {
+      const rowPages = groups.get(level).sort((a, b) => {
+        const parentCompare = String(parents.get(a.pageId) || "").localeCompare(String(parents.get(b.pageId) || ""));
+        if (parentCompare) {
+          return parentCompare;
+        }
+        return (childOrder.get(a.pageId) ?? 9999) - (childOrder.get(b.pageId) ?? 9999)
+          || String(a.label || a.pageId).localeCompare(String(b.label || b.pageId));
+      });
+      const totalWidth = (rowPages.length * cardW) + (Math.max(0, rowPages.length - 1) * xGap);
+      const startX = Math.max(44, Math.round((canvasWidth - totalWidth) / 2));
+      rowPages.forEach((page, index) => {
+        layoutPages.push({
+          pageId: page.pageId,
+          x: startX + (index * (cardW + xGap)),
+          y: 44 + (level * yGap),
+        });
+      });
+    });
+
+    return { levels, parents, layoutPages };
+  }
+
+  function isSiteMapHomePage(page) {
+    const id = String(page?.pageId || "").toLowerCase();
+    const sourcePath = String(page?.sourcePath || "").toLowerCase();
+    return id === "page-home" || id === "home" || sourcePath === "index.html" || sourcePath.endsWith("/index.html");
+  }
+
+  function getSiteMapEdgeKind(link, hierarchy) {
+    if (link.status !== "resolved") {
+      return link.status || "other";
+    }
+    if (hierarchy.parents.get(link.toPageId) === link.fromPageId) {
+      return "tree";
+    }
+    return "cross";
+  }
+
+  function isSiteMapLinkSelected(link) {
+    if (!link) {
+      return false;
+    }
+    if (state.siteMap.selectedLinkId) {
+      return state.siteMap.selectedLinkId === link.edgeId;
+    }
+    if (!state.siteMap.selectedPageId) {
+      return false;
+    }
+    return link.fromPageId === state.siteMap.selectedPageId || link.toPageId === state.siteMap.selectedPageId;
+  }
+
+  function getSiteMapCardWidth() {
+    return 156;
+  }
+
+  function getSiteMapCardHeight() {
+    return 78;
+  }
+
+  function getSiteMapEdgePoints(from, to, cardW, cardH, index, edgeKind) {
+    const fromCenterX = from.x + (cardW / 2);
+    const toCenterX = to.x + (cardW / 2);
+    const startY = edgeKind === "tree" ? from.y + cardH : from.y + cardH / 2;
+    const endY = edgeKind === "tree" ? to.y : to.y + cardH / 2;
+    const startX = edgeKind === "tree" ? fromCenterX : from.x + cardW;
+    const endX = edgeKind === "tree" ? toCenterX : to.x;
+    if (edgeKind === "tree") {
+      const midY = Math.round(startY + Math.max(18, (endY - startY) / 2));
+      return {
+        path: `M ${Math.round(startX)} ${Math.round(startY)} V ${midY} H ${Math.round(endX)} V ${Math.round(endY)}`,
+        arrow: `${Math.round(endX)},${Math.round(endY)} ${Math.round(endX - 6)},${Math.round(endY - 8)} ${Math.round(endX + 6)},${Math.round(endY - 8)}`,
+        markerX: endX + 8,
+        markerY: endY - 12,
+      };
+    }
+    const lane = 28 + ((index % 4) * 10);
+    const midX = Math.max(startX, endX) + lane;
+    return {
+      path: `M ${Math.round(startX)} ${Math.round(startY)} H ${Math.round(midX)} V ${Math.round(endY)} H ${Math.round(endX)}`,
+      arrow: `${Math.round(endX)},${Math.round(endY)} ${Math.round(endX + 8)},${Math.round(endY - 5)} ${Math.round(endX + 8)},${Math.round(endY + 5)}`,
+      markerX: midX + 6,
+      markerY: endY - 12,
+    };
+  }
+
+  function applySiteMapTransform() {
+    if (!els.siteMapGraphCanvas) {
+      return;
+    }
+    els.siteMapGraphCanvas.style.transform = `translate(${Math.round(state.siteMap.panX || 0)}px, ${Math.round(state.siteMap.panY || 0)}px) scale(${state.siteMap.zoom || 1})`;
+  }
+
+  function getSiteMapLayoutStorageKey(graph = state.siteMap.graph) {
+    const projectId = graph?.projectId || getAnalyzerManifestPageMeta().projectId || "sample-project";
+    const adapterId = graph?.adapterId || getActiveAnalyzerAdapter()?.id || "none";
+    return `tbalance.siteMap.v02.${projectId}.${adapterId}`;
+  }
+
+  function loadSiteMapLayoutSettings(graph) {
+    if (state.siteMap.layoutLoadedFor === getSiteMapLayoutStorageKey(graph)) {
+      return;
+    }
+    state.siteMap.layoutLoadedFor = getSiteMapLayoutStorageKey(graph);
+    try {
+      const text = localStorage.getItem(state.siteMap.layoutLoadedFor);
+      if (!text) {
+        return;
+      }
+      const parsed = JSON.parse(text);
+      state.siteMap.layoutMode = parsed.layoutMode === "free" ? "free" : "auto";
+      state.siteMap.zoom = Number(parsed.zoom) || 1;
+      state.siteMap.panX = Number(parsed.panX) || 0;
+      state.siteMap.panY = Number(parsed.panY) || 0;
+      state.siteMap.positions = parsed.positions && typeof parsed.positions === "object" ? parsed.positions : {};
+    } catch (error) {
+      state.siteMap.positions = {};
+    }
+  }
+
+  function saveSiteMapLayoutSettings() {
+    try {
+      localStorage.setItem(getSiteMapLayoutStorageKey(), JSON.stringify({
+        layoutMode: state.siteMap.layoutMode,
+        zoom: state.siteMap.zoom,
+        panX: state.siteMap.panX,
+        panY: state.siteMap.panY,
+        positions: state.siteMap.positions || {},
+      }));
+    } catch (error) {
+      // Site Map layout is a UI preference only; storage failure must not affect analysis.
+    }
+  }
+
+  function getSiteMapPageSummary(page, graph) {
+    const pageDiagnostics = (graph.diagnostics?.items || []).filter((item) => item.sourcePath === page.sourcePath);
+    const outgoing = (graph.links || []).filter((link) => link.fromPageId === page.pageId);
+    const displayProblem = pageDiagnostics.find((item) => item.code === "fetch-failed" || item.code === "empty-html");
+    const missing = outgoing.filter((link) => link.status === "missing-target").length;
+    const uncertain = outgoing.filter((link) => ["unresolved", "dynamic"].includes(link.status)).length;
+    return {
+      display: displayProblem
+        ? { level: "problem", shortLabel: "問題あり", text: displayProblem.message }
+        : { level: "ok", shortLabel: "OK", text: "現在のTEST環境で読み込みを確認しました。" },
+      assets: { level: "ok", shortLabel: "読み込みOK", text: "v0.2ではページ読み込み範囲で確認しています。外部依存の詳細検査は今後対象です。" },
+      navigation: missing
+        ? { level: "problem", shortLabel: `問題あり ${missing}件`, text: "存在しない移動先があります。" }
+        : uncertain
+          ? { level: "warning", shortLabel: `要確認 ${uncertain}件`, text: "JS経由など、TBalanceだけでは移動先を確定できない要素があります。" }
+          : { level: "ok", shortLabel: "OK", text: "移動先を安全に解決できました。" },
+    };
+  }
+
+  function getSiteMapLinkLevel(link) {
+    if (link.status === "missing-target") {
+      return "problem";
+    }
+    if (["unresolved", "dynamic"].includes(link.status)) {
+      return "warning";
+    }
+    return "ok";
+  }
+
+  function getSiteMapLinkNormalStatus(link) {
+    if (link.status === "missing-target") {
+      return { level: "problem", text: "指定された移動先Pageを確認できません。" };
+    }
+    if (link.status === "external") {
+      return { level: "ok", text: "外部リンクとして識別しました。内部Pageとしては扱いません。" };
+    }
+    if (["unresolved", "dynamic"].includes(link.status)) {
+      return { level: "warning", text: "JS経由または未確定のため、移動先の確認が必要です。" };
+    }
+    return { level: "ok", text: "移動先確認済みです。" };
+  }
+
+  function getSiteMapLevelIcon(level) {
+    if (level === "problem") {
+      return "❌";
+    }
+    if (level === "warning") {
+      return "⚠️";
+    }
+    return "✅";
+  }
+
+  function getSiteMapPreviewLabel(page) {
+    return page.sourcePath ? "Previewなし" : "未取得";
+  }
+
+  function getPageLabel(graph, pageId) {
+    const page = graph.pages.find((item) => item.pageId === pageId);
+    return page?.label || pageId || "未解決";
+  }
+
+  function renderSiteMapPageNormalDetail(graph, page, outgoing, incoming) {
+    const summary = getSiteMapPageSummary(page, graph);
+    const states = page.viewStateDetails?.length
+      ? page.viewStateDetails.map((item) => `<li>${escapeHtml(item.value)} <small>${escapeHtml(item.source || "")}</small></li>`).join("")
+      : (page.viewStates || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    const problemItems = [summary.display, summary.assets, summary.navigation].filter((item) => item.level !== "ok");
+    return `<div class="tb-site-map-detail-block">
+      <h3>${escapeHtml(page.label || page.pageId)}</h3>
+      <div class="tb-site-map-normal-list">
+        ${renderSiteMapNormalLine("表示", summary.display)}
+        ${renderSiteMapNormalLine("画像・素材", summary.assets)}
+        ${renderSiteMapNormalLine("移動先", summary.navigation)}
+      </div>
+      ${problemItems.length ? `<div class="tb-site-map-problems">${problemItems.map((item) => `<p data-level="${escapeAttr(item.level)}">${getSiteMapLevelIcon(item.level)} ${escapeHtml(item.text)}</p>`).join("")}</div>` : `<p class="tb-site-map-normal-status" data-level="ok">OK 問題は見つかりませんでした</p>`}
+      <h4>状態</h4>
+      <ul>${states || "<li>共通表示</li>"}</ul>
+      <h4>移動</h4>
+      <p>出ていく移動先: ${outgoing.length} / 入ってくる移動元: ${incoming.length}</p>
+    </div>`;
+  }
+
+  function renderSiteMapNormalLine(label, item) {
+    return `<p data-level="${escapeAttr(item.level)}"><strong>${escapeHtml(label)}</strong><span>${getSiteMapLevelIcon(item.level)} ${escapeHtml(item.shortLabel)}</span></p>`;
+  }
+
+  function renderSiteMapPageCustomDetail(graph, page, outgoing, incoming) {
+    const adapter = getActiveAnalyzerAdapter();
+    const diagnostics = (graph.diagnostics?.items || []).filter((item) => item.sourcePath === page.sourcePath);
+    const visibleMappings = getVisibleConfirmedMappings(getAnalyzerManifestPageMeta()).filter((mapping) => mapping.pageId === page.pageId);
+    const states = page.viewStateDetails?.length
+      ? page.viewStateDetails.map((item) => `<li>${escapeHtml(item.value)} <small>${escapeHtml(item.source || "")}</small></li>`).join("")
+      : (page.viewStates || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    return `<div class="tb-site-map-detail-block tb-site-map-detail-block--custom">
+      <h3>Page情報</h3>
+      <dl>
+        <dt>表示名</dt><dd>${escapeHtml(page.label || "-")}</dd>
+        <dt>Page ID</dt><dd>${escapeHtml(page.pageId || "-")}</dd>
+        <dt>sourcePath</dt><dd>${escapeHtml(page.sourcePath || "-")}</dd>
+        <dt>View State</dt><dd>${states ? `<ul>${states}</ul>` : "共通表示"}</dd>
+        <dt>Source Authority</dt><dd>${escapeHtml(page.sourceAuthority || "-")}</dd>
+        <dt>Adapter</dt><dd>${escapeHtml(adapter?.label || "None")}</dd>
+      </dl>
+      <h3>構成・素材</h3>
+      <p>HTML: ${escapeHtml(page.sourcePath || "-")} / Images・Video・Fonts: 詳細検査は今後対象 / Missing Assets: ${diagnostics.filter((item) => item.code === "missing-asset").length}</p>
+      <h3>Navigation</h3>
+      ${outgoing.map((link) => `<details><summary>${escapeHtml(link.label || link.rawHref || link.edgeId)} / ${escapeHtml(link.status)}</summary><pre>${escapeHtml(JSON.stringify(link, null, 2))}</pre></details>`).join("") || "<p>出ていくNavigationなし</p>"}
+      <h3>TBalance解析</h3>
+      <p>Confirmed Mapping: ${visibleMappings.length}</p>
+      ${visibleMappings.map((mapping) => `<details><summary>${escapeHtml(mapping.tbId)} / ${escapeHtml(mapping.domRef)}</summary><pre>${escapeHtml(JSON.stringify(mapping, null, 2))}</pre></details>`).join("")}
+      <h3>Diagnostics</h3>
+      ${diagnostics.map((item) => `<details><summary>${escapeHtml(item.severity)} / ${escapeHtml(item.code)}</summary><pre>${escapeHtml(JSON.stringify(item, null, 2))}</pre></details>`).join("") || "<p>診断なし</p>"}
+    </div>`;
   }
 
   function renderSiteMapDiagnostics(graph) {

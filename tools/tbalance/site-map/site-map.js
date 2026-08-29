@@ -224,10 +224,11 @@
       byKey.set(key, {
         ...existing,
         ...normalized,
-        label: existing.label || normalized.label,
+        label: chooseBetterLabel(existing, normalized),
         sourcePath: chooseBetterSourcePath(existing.sourcePath, normalized.sourcePath),
         viewStates: unique([...(existing.viewStates || []), ...(normalized.viewStates || [])]),
         viewStateDetails: mergeStateDetails(existing.viewStateDetails, normalized.viewStateDetails),
+        componentCount: Math.max(Number(existing.componentCount || 0), Number(normalized.componentCount || 0)),
         sources: unique([...(existing.sources || []), ...(normalized.sources || [])]),
         identityStatus: existing.identityStatus === "confirmed" || normalized.identityStatus === "confirmed" ? "confirmed" : existing.identityStatus,
       });
@@ -253,6 +254,23 @@
       return currentPath;
     }
     return currentPath;
+  }
+
+  function chooseBetterLabel(current = {}, next = {}) {
+    const currentLabel = String(current.label || "").trim();
+    const nextLabel = String(next.label || "").trim();
+    if (!currentLabel) {
+      return nextLabel;
+    }
+    if (!nextLabel) {
+      return currentLabel;
+    }
+    const currentIsTechnical = currentLabel === current.pageId || currentLabel === current.sourcePath;
+    const nextIsTechnical = nextLabel === next.pageId || nextLabel === next.sourcePath;
+    if (currentIsTechnical && !nextIsTechnical) {
+      return nextLabel;
+    }
+    return currentLabel;
   }
 
   function normalizePage(page = {}) {
