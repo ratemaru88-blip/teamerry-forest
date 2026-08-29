@@ -75,7 +75,16 @@
         </button>
 
         <button id="siteMapButton" class="tb-command-button tb-command-button--site-map" type="button" aria-pressed="false" title="Project Page / Internal Link Graph">
-          <span class="tb-site-map-icon" aria-hidden="true">◎</span>
+          <svg class="tb-site-map-icon" viewBox="0 0 300 300" aria-hidden="true">
+            <g>
+              <rect x="130.5" y="87.5" width="39" height="39"/>
+              <rect x="130.5" y="173.5" width="39" height="39"/>
+              <rect x="76" y="173.5" width="39" height="39"/>
+              <rect x="185" y="173.5" width="39" height="39"/>
+              <polyline points="95,171.5 95,150.5 204,150.5 204,171.5"/>
+              <line x1="149.5" y1="126.5" x2="149.5" y2="171.5"/>
+            </g>
+          </svg>
           <span class="tb-command-copy"><strong>SITE MAP</strong><small>Link Graph</small></span>
         </button>
 
@@ -128,7 +137,8 @@
             <button type="button" data-file-action="new">新規</button>
             <button type="button" data-file-action="template" disabled title="今後追加予定">テンプレートから開く</button>
             <span class="tb-header-menu-separator" aria-hidden="true"></span>
-            <button type="button" data-file-action="open">開く</button>
+            <button type="button" data-file-action="open">TBalanceファイルを開く</button>
+            <button type="button" data-file-action="open-existing-web">既存Webプロジェクトを開く</button>
             <button type="button" data-file-action="screenshot">スクリーンショット</button>
             <button type="button" data-file-action="close">閉じる</button>
             <span class="tb-header-menu-separator" aria-hidden="true"></span>
@@ -993,6 +1003,19 @@
         <div id="secondaryCanvasScaler" class="tb-canvas-scaler tb-secondary-canvas-scaler" hidden>
           <div id="secondaryCanvas" class="tb-canvas tb-secondary-canvas" tabindex="0" aria-label="別ウィンドウ"></div>
         </div>
+        <section id="existingWebViewer" class="tb-existing-web-viewer" aria-label="既存Webページ" hidden>
+          <div class="tb-existing-web-toolbar">
+            <div>
+              <strong id="existingWebTitle">既存Webページ</strong>
+              <small id="existingWebMeta">standard-web</small>
+            </div>
+            <div class="tb-existing-web-actions">
+              <button id="existingWebAnalyze" type="button">Analyzerで開く</button>
+              <button id="existingWebBackToCanvas" type="button">通常キャンバスへ戻る</button>
+            </div>
+          </div>
+          <iframe id="existingWebFrame" title="Existing Web Preview" sandbox="allow-same-origin allow-scripts"></iframe>
+        </section>
       </div>
     </section>
 
@@ -1396,6 +1419,31 @@
         <div class="tb-progress"><span id="finalPreviewProgress"></span></div>
         <ul id="finalPreviewChecklist" class="tb-final-checklist"></ul>
         <p id="finalPreviewComplete" class="tb-complete-sign" hidden>Complete</p>
+      </div>
+    </section>
+
+    <section id="existingWebOpenModal" class="tb-existing-web-open-modal" aria-label="既存Webプロジェクトを開く" hidden>
+      <div class="tb-existing-web-open-dialog" role="dialog" aria-modal="true" aria-labelledby="existingWebOpenTitle">
+        <div class="tb-new-canvas-head">
+          <div>
+            <h2 id="existingWebOpenTitle">既存Webプロジェクトを開く</h2>
+            <p>localhost配下のHTMLをTBalance中央に読み取り専用で表示します。</p>
+          </div>
+          <button id="existingWebOpenCancelTop" class="tb-new-canvas-close" type="button" title="閉じる">×</button>
+        </div>
+        <label>入口HTML / sourcePath
+          <input id="existingWebSourcePath" type="text" value="index.html" spellcheck="false">
+        </label>
+        <div class="tb-existing-web-presets" aria-label="既存Web候補">
+          <button type="button" data-existing-web-source="index.html">トップページ</button>
+          <button type="button" data-existing-web-source="observatory.html?time=night">星風テラス 夜</button>
+          <button type="button" data-existing-web-source="tea_room.html">ティールーム</button>
+        </div>
+        <p class="tb-existing-web-note">HTML/CSS/JSへは書き込みません。MappingはAnalyzerで確認してから確定します。</p>
+        <div class="tb-new-canvas-actions">
+          <button id="existingWebOpenCancel" type="button">キャンセル</button>
+          <button id="existingWebOpenSubmit" type="button">開く</button>
+        </div>
       </div>
     </section>
 

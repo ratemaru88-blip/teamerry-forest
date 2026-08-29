@@ -519,21 +519,22 @@ select {
   flex-basis: 92px;
   width: 92px;
   justify-content: flex-start;
+  gap: 2px;
+  padding-inline: 2px 4px;
   border-color: rgba(45, 212, 191, 0.45);
   background: linear-gradient(180deg, rgba(15, 78, 87, 0.72), rgba(7, 28, 39, 0.92));
 }
 
 .tb-site-map-icon {
-  display: grid;
-  place-items: center;
   flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-  border: 1px solid rgba(94, 234, 212, 0.52);
-  border-radius: 7px;
+  width: 31px;
+  height: 31px;
   color: #99f6e4;
-  font-size: 16px;
-  font-weight: 900;
+  fill: none;
+  stroke: currentColor;
+  stroke-linejoin: round;
+  stroke-miterlimit: 10;
+  stroke-width: 16;
 }
 
 .tb-balance-modes {
@@ -2133,6 +2134,12 @@ body[data-show-tool-descriptions="false"] .tb-tool-button::after {
   justify-content: flex-start;
 }
 
+.tb-canvas-viewport.is-existing-web-view {
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 28px 32px 28px 44px;
+}
+
 body.is-space-panning .tb-canvas-viewport {
   cursor: grab;
 }
@@ -2211,6 +2218,82 @@ body.is-space-panning .tb-canvas-viewport {
   border-color: rgba(48, 211, 126, 0.88);
   background: rgba(9, 31, 20, 0.9);
   box-shadow: 0 0 18px rgba(48, 211, 126, 0.42);
+}
+
+.tb-existing-web-viewer[hidden] {
+  display: none;
+}
+
+.tb-existing-web-viewer {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(45, 212, 191, 0.52);
+  border-radius: 8px;
+  background: rgba(5, 10, 18, 0.92);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.58);
+}
+
+.tb-existing-web-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(10, 18, 28, 0.96);
+}
+
+.tb-existing-web-toolbar > div:first-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tb-existing-web-toolbar strong,
+.tb-existing-web-toolbar small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-existing-web-toolbar strong {
+  color: #f8fbff;
+  font-size: 14px;
+}
+
+.tb-existing-web-toolbar small {
+  color: #9fb2c8;
+  font-size: 11px;
+}
+
+.tb-existing-web-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.tb-existing-web-actions button {
+  min-height: 30px;
+  border: 1px solid rgba(45, 212, 191, 0.4);
+  border-radius: 7px;
+  padding: 0 10px;
+  background: rgba(13, 78, 73, 0.88);
+  color: #eafffb;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tb-existing-web-viewer iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  background: white;
 }
 
 body.is-eyedropper-active .tb-canvas,
@@ -3860,11 +3943,38 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   display: none;
 }
 
+.tb-existing-web-open-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(2, 7, 11, 0.58);
+}
+
+.tb-existing-web-open-modal[hidden] {
+  display: none;
+}
+
 .tb-new-canvas-dialog {
   width: min(620px, calc(100vw - 40px));
   max-height: calc(100vh - 48px);
   overflow: auto;
   border: 1px solid rgba(84, 176, 219, 0.34);
+  border-radius: 9px;
+  background: rgba(13, 20, 27, 0.99);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+}
+
+.tb-existing-web-open-dialog {
+  display: grid;
+  gap: 12px;
+  width: min(560px, calc(100vw - 40px));
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  border: 1px solid rgba(45, 212, 191, 0.44);
   border-radius: 9px;
   background: rgba(13, 20, 27, 0.99);
   box-shadow: 0 28px 90px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -4029,6 +4139,12 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
 .tb-new-canvas-actions #newCanvasCreate {
   border-color: rgba(47, 140, 255, 0.78);
   background: linear-gradient(180deg, rgba(49, 138, 255, 0.72), rgba(21, 76, 142, 0.9));
+  color: #fff;
+}
+
+.tb-new-canvas-actions #existingWebOpenSubmit {
+  border-color: rgba(45, 212, 191, 0.74);
+  background: linear-gradient(180deg, rgba(20, 184, 166, 0.72), rgba(17, 94, 89, 0.92));
   color: #fff;
 }
 
@@ -5065,6 +5181,50 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   font-weight: 800;
 }
 
+.tb-existing-web-open-dialog > label {
+  display: grid;
+  gap: 7px;
+  padding: 2px 18px 0;
+  color: #d9e8f2;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.tb-existing-web-open-dialog input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(108, 139, 166, 0.46);
+  border-radius: 7px;
+  background: rgba(4, 10, 16, 0.86);
+  color: #f3fbff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.tb-existing-web-presets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 18px;
+}
+
+.tb-existing-web-presets button {
+  min-height: 34px;
+  border-color: rgba(45, 212, 191, 0.34);
+  color: #eafffb;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tb-existing-web-note {
+  margin: 0;
+  padding: 0 18px;
+  color: var(--text-sub);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 #closeSiteMapPanel {
   width: 34px;
   padding: 0;
@@ -5095,17 +5255,20 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .tb-site-map-adapter-control select {
   min-width: 0;
-  height: 26px;
+  height: 30px;
   border: 1px solid rgba(56, 189, 248, 0.38);
   border-radius: 6px;
   background: rgba(2, 8, 16, 0.96);
   color: #f8fbff;
+  font-size: 11px;
   font-weight: 800;
+  line-height: 1.2;
+  padding: 0 24px 0 8px;
 }
 
 #siteMapStatus[data-status="success"] {

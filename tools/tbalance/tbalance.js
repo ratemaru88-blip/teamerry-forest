@@ -251,6 +251,17 @@
         diffText: "",
       },
     },
+    existingWeb: {
+      active: false,
+      pageId: "",
+      label: "",
+      sourcePath: "",
+      sourceAuthority: "standard-web",
+      currentUrl: "",
+      viewState: "",
+      targetState: null,
+      adapterId: "none",
+    },
     siteMap: {
       open: false,
       status: "idle",
@@ -354,6 +365,17 @@
     canvas: $("canvas"),
     secondaryCanvasScaler: $("secondaryCanvasScaler"),
     secondaryCanvas: $("secondaryCanvas"),
+    existingWebViewer: $("existingWebViewer"),
+    existingWebFrame: $("existingWebFrame"),
+    existingWebTitle: $("existingWebTitle"),
+    existingWebMeta: $("existingWebMeta"),
+    existingWebAnalyze: $("existingWebAnalyze"),
+    existingWebBackToCanvas: $("existingWebBackToCanvas"),
+    existingWebOpenModal: $("existingWebOpenModal"),
+    existingWebSourcePath: $("existingWebSourcePath"),
+    existingWebOpenSubmit: $("existingWebOpenSubmit"),
+    existingWebOpenCancel: $("existingWebOpenCancel"),
+    existingWebOpenCancelTop: $("existingWebOpenCancelTop"),
     zoomOut: $("zoomOut"),
     zoomIn: $("zoomIn"),
     fitCanvas: $("fitCanvas"),
@@ -645,6 +667,24 @@
     els.pageNameInput?.addEventListener("blur", commitPageNameEdit);
     bindNewCanvasDialog();
     els.openFile.addEventListener("change", openProjectFile);
+    els.existingWebAnalyze?.addEventListener("click", openExistingWebInAnalyzer);
+    els.existingWebBackToCanvas?.addEventListener("click", closeExistingWebView);
+    els.existingWebFrame?.addEventListener("load", handleExistingWebFrameLoad);
+    els.existingWebOpenSubmit?.addEventListener("click", submitExistingWebDialog);
+    els.existingWebOpenCancel?.addEventListener("click", closeExistingWebDialog);
+    els.existingWebOpenCancelTop?.addEventListener("click", closeExistingWebDialog);
+    els.existingWebOpenModal?.addEventListener("pointerdown", (event) => {
+      if (event.target === els.existingWebOpenModal) {
+        closeExistingWebDialog();
+      }
+    });
+    document.querySelectorAll("[data-existing-web-source]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (els.existingWebSourcePath) {
+          els.existingWebSourcePath.value = button.dataset.existingWebSource || "index.html";
+        }
+      });
+    });
     els.saveProject.addEventListener("click", () => downloadProject("tbalance"));
     els.saveJson.addEventListener("click", () => downloadProject("json"));
     els.undoButton.addEventListener("click", undo);
@@ -1061,6 +1101,10 @@
       els.openFile.click();
       return;
     }
+    if (action === "open-existing-web") {
+      openExistingWebFromMenu();
+      return;
+    }
     if (action === "save") {
       downloadProject("tbalance");
       return;
@@ -1399,6 +1443,243 @@
     }
     setAnalyzerStatus("loading", `${path} を読み込み中です。`);
     renderAnalyzerResult();
+  }
+
+  function openExistingWebFromMenu() {
+    openExistingWebDialog();
+  }
+
+  function openExistingWebDialog() {
+    if (els.existingWebSourcePath) {
+      els.existingWebSourcePath.value = getExistingWebDefaultSourcePath();
+    }
+    if (els.existingWebOpenModal) {
+      els.existingWebOpenModal.hidden = false;
+    }
+    requestAnimationFrame(() => {
+      els.existingWebSourcePath?.focus();
+      els.existingWebSourcePath?.select();
+    });
+  }
+
+  function closeExistingWebDialog() {
+    if (els.existingWebOpenModal) {
+      els.existingWebOpenModal.hidden = true;
+    }
+  }
+
+  function submitExistingWebDialog() {
+    const sourcePath = String(els.existingWebSourcePath?.value || "").trim();
+    if (!sourcePath) {
+      alert("index.html などの入口HTMLを入力してください。");
+      return;
+    }
+    const opened = openExistingWebPage(sourcePath, { autoSelectAdapter: true });
+    if (opened) {
+      closeExistingWebDialog();
+    }
+  }
+
+  function openExistingWebPage(target, options = {}) {
+    const info = resolveExistingWebPageInfo(target, options);
+    if (!info || !info.sourcePath || isSiteMapPlaceholderSource(info.sourcePath)) {
+      alert("既存Webページを開けませんでした。\nindex.html など、localhost配下で確認できるHTMLを指定してください。");
+      return null;
+    }
+    if (info.adapterId && info.adapterId !== state.analyzer.adapterId) {
+      setAnalyzerAdapter(info.adapterId);
+    }
+    state.existingWeb = {
+      active: true,
+      pageId: info.pageId,
+      label: info.label,
+      sourcePath: info.sourcePath,
+      sourceAuthority: "standard-web",
+      currentUrl: info.currentUrl,
+      viewState: info.viewState,
+      targetState: info.targetState,
+      adapterId: info.adapterId || state.analyzer.adapterId || "none",
+    };
+    prepareAnalyzerForExistingWeb(info);
+    state.windowMode = "single";
+    state.windowLayout = "horizontal";
+    state.secondaryWindow = null;
+    state.suspendedWindow = null;
+    clearSelection();
+    renderAll();
+    showModeToast(`${info.label || info.sourcePath} を既存Webページとして開きました。`);
+    return info;
+  }
+
+  function resolveExistingWebPageInfo(target, options = {}) {
+    const raw = typeof target === "string"
+      ? target
+      : target?.sourcePath || target?.path || target?.url || target?.currentUrl || "";
+    const split = splitExistingWebTarget(raw, target?.targetState || null);
+    const sourcePath = normalizeExistingWebSourcePath(target?.sourcePath || split.sourcePath || raw);
+    const knownPage = target?.pageId ? target : findKnownPageBySourcePath(sourcePath);
+    const adapterId = options.autoSelectAdapter === false
+      ? state.analyzer.adapterId
+      : findAdapterIdForExistingPage(sourcePath) || state.analyzer.adapterId || "none";
+    const pageId = target?.pageId || knownPage?.pageId || suggestManifestPageId(sourcePath);
+    const label = target?.label || knownPage?.label || getExistingWebLabel(sourcePath);
+    const viewState = normalizeExistingWebViewState(target?.viewState || target?.targetState?.viewState || split.viewState || "");
+    const hash = target?.targetState?.hash || split.hash || "";
+    return {
+      pageId,
+      label,
+      sourcePath,
+      viewState,
+      currentUrl: buildExistingWebUrl(sourcePath, viewState, hash),
+      targetState: {
+        query: viewState,
+        hash,
+        viewState,
+      },
+      adapterId,
+    };
+  }
+
+  function splitExistingWebTarget(raw, targetState = null) {
+    const value = String(raw || "").trim();
+    try {
+      const url = new URL(value, getExistingWebBaseUrl());
+      return {
+        sourcePath: url.pathname.split("/").filter(Boolean).pop() || "index.html",
+        viewState: targetState?.viewState || url.search.replace(/^\?/, ""),
+        hash: targetState?.hash || url.hash.replace(/^#/, ""),
+      };
+    } catch (error) {
+      const query = getQueryFromResolvedPath(value);
+      const hash = getHashFromResolvedPath(value);
+      return {
+        sourcePath: value.split("?")[0].split("#")[0],
+        viewState: targetState?.viewState || query,
+        hash: targetState?.hash || hash,
+      };
+    }
+  }
+
+  function normalizeExistingWebSourcePath(value) {
+    if (window.TBalanceSiteMap?.normalizeSourcePath) {
+      return window.TBalanceSiteMap.normalizeSourcePath(value || "index.html");
+    }
+    return String(value || "index.html").replace(/\\/g, "/").replace(/^[./]+/, "").split("?")[0].split("#")[0] || "index.html";
+  }
+
+  function normalizeExistingWebViewState(value) {
+    return String(value || "").trim().replace(/^\?/, "");
+  }
+
+  function buildExistingWebUrl(sourcePath, viewState = "", hash = "") {
+    const url = new URL(normalizeExistingWebSourcePath(sourcePath), getExistingWebBaseUrl());
+    if (viewState) {
+      url.search = viewState;
+    }
+    if (hash) {
+      url.hash = hash;
+    }
+    return url.href;
+  }
+
+  function getExistingWebBaseUrl() {
+    if (window.location.protocol === "file:") {
+      return "http://127.0.0.1:8788/";
+    }
+    return new URL("../../", window.location.href).href;
+  }
+
+  function getExistingWebDefaultSourcePath() {
+    const adapter = getActiveAnalyzerAdapter();
+    const knownPages = typeof adapter?.getKnownPages === "function" ? adapter.getKnownPages(getAnalyzerAdapterContext()) : [];
+    return knownPages.find((page) => page.pageId === "page-home")?.sourcePath
+      || knownPages[0]?.sourcePath
+      || state.existingWeb.sourcePath
+      || "index.html";
+  }
+
+  function findKnownPageBySourcePath(sourcePath) {
+    const clean = normalizeExistingWebSourcePath(sourcePath);
+    const adapters = adapterRegistry?.list?.() || [];
+    const context = getExistingWebLookupContext(sourcePath);
+    for (const adapter of adapters) {
+      const pages = typeof adapter?.getKnownPages === "function" ? adapter.getKnownPages(context) : [];
+      const match = pages.find((page) => normalizeExistingWebSourcePath(page.sourcePath || page.path || page.url) === clean);
+      if (match) {
+        return match;
+      }
+    }
+    return null;
+  }
+
+  function findAdapterIdForExistingPage(sourcePath) {
+    const clean = normalizeExistingWebSourcePath(sourcePath);
+    const context = getExistingWebLookupContext(sourcePath);
+    const matches = (adapterRegistry?.list?.() || [])
+      .filter((adapter) => adapter?.id && adapter.id !== "none")
+      .filter((adapter) => {
+        const pages = typeof adapter.getKnownPages === "function" ? adapter.getKnownPages(context) : [];
+        return pages.some((page) => normalizeExistingWebSourcePath(page.sourcePath || page.path || page.url) === clean);
+      });
+    return matches.length === 1 ? matches[0].id : "";
+  }
+
+  function getExistingWebLookupContext(sourcePath = "") {
+    const clean = normalizeExistingWebSourcePath(sourcePath || state.analyzer.sourcePath || state.existingWeb.sourcePath || "index.html");
+    return {
+      pageId: state.existingWeb.pageId || suggestManifestPageId(clean),
+      sourcePath: clean,
+      viewState: state.existingWeb.viewState || state.analyzer.viewState || "",
+      sourceAuthority: "standard-web",
+      effectiveUrl: state.existingWeb.currentUrl || buildExistingWebUrl(clean),
+      currentUrl: state.existingWeb.currentUrl || buildExistingWebUrl(clean),
+      baseUrl: state.existingWeb.currentUrl || buildExistingWebUrl(clean),
+    };
+  }
+
+  function getExistingWebLabel(sourcePath) {
+    const clean = normalizeExistingWebSourcePath(sourcePath);
+    return clean === "index.html" ? "トップページ" : clean;
+  }
+
+  function prepareAnalyzerForExistingWeb(info) {
+    state.analyzer.loadedPath = info.currentUrl;
+    state.analyzer.loadedKind = "existing-web";
+    state.analyzer.effectiveUrl = info.currentUrl;
+    state.analyzer.sourcePath = info.sourcePath;
+    state.analyzer.viewState = info.viewState || "";
+    state.analyzer.result = null;
+    state.analyzer.selectedId = "";
+    state.analyzer.mappingWarning = "";
+    state.analyzer.manifestPageId = info.pageId;
+    if (els.analyzerPath) {
+      els.analyzerPath.value = info.currentUrl;
+    }
+    syncManifestInputsToAnalyzerPage();
+  }
+
+  function openExistingWebInAnalyzer() {
+    if (!state.existingWeb.active || !state.existingWeb.currentUrl) {
+      return;
+    }
+    openAnalyzerPanel();
+    loadAnalyzerUrl(state.existingWeb.currentUrl, "existing-web", {
+      sourcePath: state.existingWeb.sourcePath,
+      viewState: state.existingWeb.viewState,
+      allowScripts: true,
+    });
+  }
+
+  function closeExistingWebView() {
+    state.existingWeb.active = false;
+    renderAll();
+  }
+
+  function handleExistingWebFrameLoad() {
+    if (!state.existingWeb.active) {
+      return;
+    }
+    showModeToast(`${state.existingWeb.label || state.existingWeb.sourcePath} を表示しました。`);
   }
 
   function handleAnalyzerFrameLoad() {
@@ -3009,9 +3290,10 @@
   function getAnalyzerManifestPageMeta() {
     const result = state.analyzer.result;
     const page = result?.page || {};
-    const sourcePath = page.sourcePath || state.analyzer.sourcePath || deriveSourcePathFromAnalyzer();
+    const sourcePath = page.sourcePath || state.analyzer.sourcePath || (state.existingWeb.active ? state.existingWeb.sourcePath : "") || deriveSourcePathFromAnalyzer();
     const currentViewState = page.viewState || state.analyzer.viewState || "";
-    const candidatePageId = suggestManifestPageId(sourcePath || state.analyzer.loadedKind || "page");
+    const knownPage = findKnownPageBySourcePath(sourcePath);
+    const candidatePageId = knownPage?.pageId || state.existingWeb.pageId || suggestManifestPageId(sourcePath || state.analyzer.loadedKind || "page");
     const pageId = sanitizeManifestId(els.manifestPageId?.value || state.analyzer.manifestPageId || candidatePageId, candidatePageId);
     const projectId = sanitizeManifestId(els.manifestProjectId?.value || state.analyzer.manifestProjectId || "sample-project", "sample-project");
     return {
@@ -3062,7 +3344,8 @@
 
   function syncManifestInputsToAnalyzerPage() {
     const sourcePath = deriveSourcePathFromAnalyzer();
-    const pageId = suggestManifestPageId(sourcePath || state.analyzer.loadedKind || "page");
+    const knownPage = findKnownPageBySourcePath(sourcePath);
+    const pageId = knownPage?.pageId || suggestManifestPageId(sourcePath || state.analyzer.loadedKind || "page");
     if (els.manifestPageId) {
       els.manifestPageId.value = pageId;
     }
@@ -3481,6 +3764,15 @@
     if (!button) {
       return;
     }
+    if (event.detail >= 2) {
+      const page = state.siteMap.graph?.pages?.find((item) => item.pageId === button.dataset.siteMapPageId);
+      if (page) {
+        state.siteMap.selectedPageId = page.pageId;
+        state.siteMap.selectedLinkId = "";
+        openExistingWebPage(page);
+      }
+      return;
+    }
     state.siteMap.selectedPageId = button.dataset.siteMapPageId || "";
     state.siteMap.selectedLinkId = "";
     const issue = event.target.closest("[data-site-map-issue]");
@@ -3499,8 +3791,7 @@
     }
     state.siteMap.selectedPageId = page.pageId;
     state.siteMap.selectedLinkId = "";
-    setSiteMapStatus(`開く候補: ${page.label || page.pageId} / ${getSiteMapPageUrl(page.sourcePath)}`, "success");
-    renderSiteMapPanel();
+    openExistingWebPage(page);
   }
 
   function handleSiteMapLinkClick(event) {
@@ -7854,6 +8145,14 @@
 
   function renderPageSelect() {
     els.pageSelect.innerHTML = "";
+    if (state.existingWeb.active) {
+      const option = document.createElement("option");
+      option.value = state.existingWeb.pageId || "existing-web";
+      option.textContent = `${state.existingWeb.label || state.existingWeb.sourcePath} / 既存Web`;
+      option.selected = true;
+      els.pageSelect.appendChild(option);
+      return;
+    }
     state.project.pages.forEach((page) => {
       const option = document.createElement("option");
       option.value = page.id;
@@ -7908,6 +8207,11 @@
   }
 
   function renderCanvas(page) {
+    if (state.existingWeb.active) {
+      renderExistingWebView();
+      return;
+    }
+    renderExistingWebView();
     const primaryPage = getPrimaryPage();
     const primaryRenderPage = state.preview ? getTestPageById(state.testPageIds?.primary) || primaryPage : primaryPage;
     const activeWindow = getActiveWindowKey();
@@ -7976,6 +8280,46 @@
     renderCloneSourceMarker(els.canvas, primaryRenderPage, mainViewport);
     renderTestOverlay(els.canvas, "primary");
     renderSecondaryWindow(primaryPage);
+  }
+
+  function renderExistingWebView() {
+    if (!els.existingWebViewer) {
+      return;
+    }
+    const active = Boolean(state.existingWeb.active);
+    els.existingWebViewer.hidden = !active;
+    if (els.canvasScaler) {
+      els.canvasScaler.hidden = active;
+    }
+    if (els.secondaryCanvasScaler) {
+      els.secondaryCanvasScaler.hidden = true;
+    }
+    if (!active) {
+      if (els.canvasViewport) {
+        els.canvasViewport.classList.remove("is-existing-web-view");
+      }
+      return;
+    }
+    if (els.canvasViewport) {
+      els.canvasViewport.classList.remove("is-split-view", "is-split-vertical");
+      els.canvasViewport.classList.add("is-existing-web-view");
+    }
+    if (els.existingWebFrame && els.existingWebFrame.src !== state.existingWeb.currentUrl) {
+      els.existingWebFrame.src = state.existingWeb.currentUrl;
+    }
+    if (els.existingWebTitle) {
+      els.existingWebTitle.textContent = state.existingWeb.label || state.existingWeb.sourcePath || "既存Webページ";
+    }
+    if (els.existingWebMeta) {
+      const adapter = adapterRegistry?.get(state.existingWeb.adapterId);
+      els.existingWebMeta.textContent = [
+        state.existingWeb.pageId,
+        state.existingWeb.sourcePath,
+        state.existingWeb.viewState ? `view:${state.existingWeb.viewState}` : "",
+        `Source: ${state.existingWeb.sourceAuthority || "standard-web"}`,
+        `Adapter: ${adapter?.label || "None"}`,
+      ].filter(Boolean).join(" / ");
+    }
   }
 
   function renderSecondaryWindow(page) {
@@ -9180,6 +9524,10 @@
 
   function updateCanvasSizeLabel() {
     if (!els.canvasSizeLabel) {
+      return;
+    }
+    if (state.existingWeb.active) {
+      els.canvasSizeLabel.textContent = `Existing Web: ${state.existingWeb.sourcePath}${state.existingWeb.viewState ? `?${state.existingWeb.viewState}` : ""}`;
       return;
     }
     const page = getCurrentPage();
@@ -13191,9 +13539,13 @@
       return;
     }
     file.text().then((text) => {
+      if (looksLikeHtmlDocument(text, file.name)) {
+        throw new Error("not-tbalance-html");
+      }
       const parsed = renderer.normalizeProject(JSON.parse(text));
       applyOpenedFileName(parsed, file.name);
       pushHistory();
+      state.existingWeb.active = false;
       state.project = parsed;
       state.uiSettings = resolveUiSettings(parsed);
       state.editorMode = getStartupMode(parsed);
@@ -13210,9 +13562,21 @@
       markDirty();
       renderAll();
     }).catch((error) => {
-      alert(`TBalanceファイルを開けませんでした。\n${error.message}`);
+      const message = error.message === "not-tbalance-html"
+        ? "これはTBalanceファイルではありません。\n既存HTML/CSS/JSページは「ファイル → 既存Webプロジェクトを開く」を使用してください。"
+        : `TBalanceファイルを開けませんでした。\n.tbalance またはTBalance JSONファイルを選択してください。`;
+      alert(message);
     });
     event.target.value = "";
+  }
+
+  function looksLikeHtmlDocument(text, fileName = "") {
+    const lowerName = String(fileName || "").toLowerCase();
+    const head = String(text || "").trimStart().slice(0, 120).toLowerCase();
+    return lowerName.endsWith(".html")
+      || lowerName.endsWith(".htm")
+      || head.startsWith("<!doctype")
+      || head.startsWith("<html");
   }
 
   async function createNewProject(options) {
@@ -13246,6 +13610,7 @@
   }
 
   function resetToBlankProject(options) {
+    state.existingWeb.active = false;
     state.project = renderer.createBlankProject(options);
     state.project.name = options?.name || "未命名";
     if (state.project.pages?.[0]) {
