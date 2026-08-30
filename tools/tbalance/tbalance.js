@@ -339,6 +339,11 @@
     aiSafeChangeDetails: $("aiSafeChangeDetails"),
     aiSafeChangeDetailsPreview: $("aiSafeChangeDetailsPreview"),
     aiShareMessage: $("aiShareMessage"),
+    aiExistingWebImport: $("aiExistingWebImport"),
+    aiExistingWebResultText: $("aiExistingWebResultText"),
+    pasteExistingWebAiResult: $("pasteExistingWebAiResult"),
+    applyExistingWebAiResult: $("applyExistingWebAiResult"),
+    aiExistingWebImportStatus: $("aiExistingWebImportStatus"),
     shareAiState: $("shareAiState"),
     shareSafeChangeWithAi: $("shareSafeChangeWithAi"),
     cancelExistingWebAiShare: $("cancelExistingWebAiShare"),
@@ -748,6 +753,8 @@
       shareSafeChangeInstructionWithAi();
     });
     els.cancelExistingWebAiShare?.addEventListener("click", cancelExistingWebAiShare);
+    els.pasteExistingWebAiResult?.addEventListener("click", pasteExistingWebAiResultFromClipboard);
+    els.applyExistingWebAiResult?.addEventListener("click", importExistingWebAiReviewResult);
     els.loadAiSuggestion?.addEventListener("click", loadAiSuggestionFromBridge);
     els.refreshAiHistory?.addEventListener("click", refreshAiShareHistory);
     els.aiShareHistoryList?.addEventListener("click", handleAiHistoryClick);
@@ -2142,14 +2149,6 @@
   }
 
   function getExistingWebLayerAssessment(element, node, mapping, protectedBehavior, check = null) {
-    if (check) {
-      return {
-        status: check.status,
-        editableProperties: check.editableProperties || [],
-        protectedProperties: check.protectedProperties || [],
-        blockedReasons: check.blockedReasons || [],
-      };
-    }
     const aiReview = getExistingWebAiReview(element?.observed?.domRef);
     if (aiReview?.finalCheck) {
       return {
@@ -2157,6 +2156,22 @@
         editableProperties: aiReview.finalCheck.editableProperties || [],
         protectedProperties: aiReview.finalCheck.protectedProperties || [],
         blockedReasons: aiReview.finalCheck.blockedReasons || [],
+      };
+    }
+    if (aiReview?.status === "shared") {
+      return {
+        status: { key: "ai-needed", label: "AIで確認中" },
+        editableProperties: [],
+        protectedProperties: aiReview.package?.tbalanceAssessment?.protectedProperties || [],
+        blockedReasons: ["AI回答の取り込み待ちです"],
+      };
+    }
+    if (check) {
+      return {
+        status: check.status,
+        editableProperties: check.editableProperties || [],
+        protectedProperties: check.protectedProperties || [],
+        blockedReasons: check.blockedReasons || [],
       };
     }
     const light = runExistingWebLayerCheck(element, node, mapping, protectedBehavior, { level: "light" });
@@ -2246,18 +2261,18 @@
     };
   }
 
-  function getExistingWebRuntimeEditableProperties(element, node) {
+  function getExistingWebRuntimeEditableProperties(element, node, options = {}) {
     const observed = element?.observed || {};
     const computed = observed.computed || getExistingWebComputed(node);
     const tag = String(observed.tag || node?.tagName || "").toLowerCase();
     const bounds = observed.bounds || getDomNodeBounds(node);
     const safePosition = ["absolute", "fixed"].includes(computed.positionType)
-      && !computed.transform
+      && (options.allowTransformAnimation || !computed.transform)
       && !observed.layout?.flexChild
       && !observed.layout?.gridChild
       && Number(bounds?.width || 0) > 0
       && Number(bounds?.height || 0) > 0
-      && !isExistingWebBehaviorProtected(element, node);
+      && (options.allowBehaviorProtectedVisual || !isExistingWebBehaviorProtected(element, node));
     const staticVisual = isExistingWebStaticVisualElement(element, node);
     if (!safePosition || !staticVisual) {
       return [];
@@ -2969,9 +2984,28 @@
         sourcePath: state.existingWeb.sourcePath,
         viewState: state.existingWeb.viewState || "",
         currentUrl: state.existingWeb.currentUrl,
+        sourceFingerprint: getExistingWebFingerprint(),
+        requestRevision: createExistingWebAiRequestId(targets.map((item) => item.target?.domRef).join("|")),
       },
       targets,
       userIntent: "AI確認が必要な要素だけ、位置変更またはサイズ変更の安全性をproperty単位で確認したい。",
+      responseFormat: {
+        schemaVersion: "1.0",
+        pageId: state.existingWeb.pageId,
+        sourcePath: state.existingWeb.sourcePath,
+        viewState: state.existingWeb.viewState || "",
+        sourceFingerprint: getExistingWebFingerprint(),
+        requestRevision: createExistingWebAiRequestId(targets.map((item) => item.target?.domRef).join("|")),
+        targets: targets.map((targetPackage) => ({
+          domRef: targetPackage.target.domRef,
+          properties: {
+            position: { result: "ok|caution|unknown|protected", reason: "" },
+            width: { result: "ok|caution|unknown|protected", reason: "" },
+            height: { result: "ok|caution|unknown|protected", reason: "" },
+            click: { result: "protected", reason: "" },
+          },
+        })),
+      },
       safetyPolicy: {
         automaticApplyAllowed: false,
         sourceMutationAllowed: false,
@@ -3008,6 +3042,8 @@
         sourcePath: selected.sourcePath,
         viewState: selected.viewState || "",
         currentUrl: state.existingWeb.currentUrl,
+        sourceFingerprint: getExistingWebFingerprint(),
+        requestRevision: createExistingWebAiRequestId(selected.domRef),
       },
       target: {
         name: getExistingWebSelectionTitle(selected),
@@ -3056,6 +3092,23 @@
         clickBehavior: "クリック動作は保護対象として触らない",
       },
       aiResultContract: ["AI_RESULT_OK", "AI_RESULT_CAUTION", "AI_RESULT_UNKNOWN"],
+      responseFormat: {
+        schemaVersion: "1.0",
+        pageId: selected.pageId,
+        sourcePath: selected.sourcePath,
+        viewState: selected.viewState || "",
+        sourceFingerprint: getExistingWebFingerprint(),
+        requestRevision: createExistingWebAiRequestId(selected.domRef),
+        targets: [{
+          domRef: selected.domRef,
+          properties: {
+            position: { result: "ok|caution|unknown|protected", reason: "" },
+            width: { result: "ok|caution|unknown|protected", reason: "" },
+            height: { result: "ok|caution|unknown|protected", reason: "" },
+            click: { result: "protected", reason: "" },
+          },
+        }],
+      },
       safetyPolicy: {
         automaticApplyAllowed: false,
         sourceMutationAllowed: false,
@@ -3081,6 +3134,7 @@
         "【確認してほしいこと】",
         "各対象について position / width / height / click behavior をproperty単位で見てください。",
         "AIの回答だけで自動許可はしません。TBalance側で再照合します。",
+        "回答は共有データ内の responseFormat と同じJSON形式だけで返してください。",
         "",
         "【共有データ】",
         JSON.stringify(packageData, null, 2),
@@ -3104,6 +3158,7 @@
       "【確認してほしいこと】",
       "position / width / height / click behavior をproperty単位で見てください。",
       "AIの回答だけで自動許可はしません。TBalance側で再照合します。",
+      "回答は共有データ内の responseFormat と同じJSON形式だけで返してください。",
       "",
       "【共有データ】",
       JSON.stringify(packageData, null, 2),
@@ -3130,6 +3185,11 @@
     }
     packageData.targetAi = els.aiShareTarget?.value || state.withAiShare.targetAi || packageData.targetAi || "chatgpt";
     const isBatch = packageData.type === "existing-web-ai-review-batch";
+    if (isBatch) {
+      (packageData.targets || []).forEach((targetPackage) => {
+        targetPackage.targetAi = packageData.targetAi;
+      });
+    }
     return {
       ok: true,
       package: packageData,
@@ -3161,92 +3221,345 @@
     showModeToast("AI確認の共有をキャンセルしました。");
   }
 
-  function applyExistingWebAiReviewResult(payload = {}) {
-    const selected = state.existingWeb.selected;
-    if (!state.existingWeb.active || !selected) {
-      return { ok: false, message: "Existing Webの選択要素がありません。" };
+  function createExistingWebAiRequestId(seed = "") {
+    return createStableHash([
+      state.existingWeb.pageId || "",
+      state.existingWeb.sourcePath || "",
+      state.existingWeb.viewState || "",
+      getExistingWebFingerprint(),
+      seed || "",
+    ].join("\n"));
+  }
+
+  async function pasteExistingWebAiResultFromClipboard() {
+    if (!els.aiExistingWebResultText) {
+      return;
     }
-    const normalized = normalizeExistingWebAiReviewResult(payload);
-    const localCheck = runExistingWebLayerCheck(selected.analyzerElement, selected.node, selected.mapping, selected.protectedBehavior, { level: "confirm" });
-    const runtimeEditable = getExistingWebRuntimeEditableProperties(selected.analyzerElement, selected.node);
-    const protectedProperties = new Set(localCheck.protectedProperties || []);
-    const aiAllowed = new Set(normalized.allowedProperties);
-    const editableProperties = runtimeEditable.filter((property) => aiAllowed.has(property) && !protectedProperties.has(property));
-    let finalCheck;
-    if (normalized.type === "AI_RESULT_OK" && editableProperties.length) {
-      finalCheck = {
-        ...localCheck,
-        level: "ai-review",
-        status: { key: "editable", label: "編集OK" },
-        editableProperties,
-        blockedReasons: [],
-        message: "AI確認結果をTBalanceで照合しました。許可候補の範囲だけRuntime Previewできます。",
-        checks: getExistingWebPropertyChecks(editableProperties, Array.from(protectedProperties), []),
-      };
-    } else if (normalized.type === "AI_RESULT_CAUTION") {
-      finalCheck = {
-        ...localCheck,
-        level: "ai-review",
-        status: { key: "ai-needed", label: "注意が必要" },
-        editableProperties: [],
-        blockedReasons: normalized.reasons.length ? normalized.reasons : ["AI確認でも注意が必要です"],
-        message: "AI確認では注意が必要です。現在は編集できません。",
-        checks: getExistingWebPropertyChecks([], Array.from(protectedProperties), ["未確定"]),
-      };
-    } else {
-      finalCheck = {
-        ...localCheck,
-        level: "ai-review",
-        status: { key: "protected", label: "保護" },
-        editableProperties: [],
-        blockedReasons: normalized.reasons.length ? normalized.reasons : ["AIでも安全を確認できませんでした"],
-        message: "AIでも安全を確認できませんでした。現在は編集できません。",
-        checks: getExistingWebPropertyChecks([], Array.from(protectedProperties), ["未確定"]),
-      };
+    try {
+      const text = await navigator.clipboard.readText();
+      els.aiExistingWebResultText.value = text || "";
+      setExistingWebAiImportStatus("idle", text ? "Clipboardから貼り付けました。内容を確認して取り込んでください。" : "Clipboardにテキストがありません。");
+    } catch (error) {
+      setExistingWebAiImportStatus("error", "Clipboardを読めませんでした。AI回答を手動で貼り付けてください。");
     }
-    setExistingWebAiReview(selected.domRef, {
-      ...(getExistingWebAiReview(selected.domRef) || {}),
-      status: "result",
-      result: normalized,
-      finalCheck,
-    });
-    setExistingWebCheck(selected.domRef, finalCheck);
-    applyExistingWebCheckToSelection(selected);
+  }
+
+  function importExistingWebAiReviewResult() {
+    const text = els.aiExistingWebResultText?.value || "";
+    const result = applyExistingWebAiReviewResult(text);
+    setExistingWebAiImportStatus(result.ok ? "ok" : "error", result.message || (result.ok ? "AI回答を取り込みました。" : "AI回答を取り込めませんでした。"));
+    if (result.ok) {
+      showModeToast(result.message || "AI回答をTBalanceで再照合しました。");
+    }
+  }
+
+  function setExistingWebAiImportStatus(status, message) {
+    if (!els.aiExistingWebImportStatus) {
+      return;
+    }
+    els.aiExistingWebImportStatus.dataset.status = status;
+    els.aiExistingWebImportStatus.textContent = message;
+  }
+
+  function applyExistingWebAiReviewResult(input = {}) {
+    if (!state.existingWeb.active) {
+      return { ok: false, message: "Existing Webを開いてからAI回答を取り込んでください。" };
+    }
+    const parsed = parseExistingWebAiReviewPayload(input);
+    if (!parsed.ok) {
+      return { ok: false, message: parsed.message };
+    }
+    const normalized = normalizeExistingWebAiReviewResult(parsed.payload);
+    const validation = validateExistingWebAiReviewContext(normalized);
+    if (!validation.ok) {
+      return { ok: false, message: validation.message };
+    }
+    const applied = normalized.targets.map((target) => reconcileExistingWebAiTarget(target, normalized)).filter(Boolean);
+    if (!applied.length) {
+      return { ok: false, message: "取り込めるAI確認対象がありませんでした。" };
+    }
     refreshExistingWebVirtualLayers();
+    if (state.existingWeb.selected) {
+      applyExistingWebCheckToSelection(state.existingWeb.selected);
+    }
     renderAll();
-    return { ok: true, result: normalized.type, editableProperties: finalCheck.editableProperties || [] };
+    const editableCount = applied.reduce((sum, item) => sum + (item.finalCheck.editableProperties?.length || 0), 0);
+    return {
+      ok: true,
+      result: "AI_REVIEW_IMPORTED",
+      targets: applied.length,
+      editableProperties: editableCount,
+      message: `AI回答を${applied.length}件取り込み、TBalanceで再照合しました。`,
+    };
+  }
+
+  function parseExistingWebAiReviewPayload(input) {
+    if (input && typeof input === "object" && !Array.isArray(input)) {
+      return { ok: true, payload: input };
+    }
+    const text = String(input || "").trim();
+    if (!text) {
+      return { ok: false, message: "AI回答が空です。回答を貼り付けてください。" };
+    }
+    const direct = parseExistingWebAiJson(text);
+    if (direct.ok) {
+      return direct;
+    }
+    const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (fenced) {
+      const parsed = parseExistingWebAiJson(fenced[1]);
+      if (parsed.ok) {
+        return parsed;
+      }
+    }
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start !== -1 && end > start) {
+      const parsed = parseExistingWebAiJson(text.slice(start, end + 1));
+      if (parsed.ok) {
+        return parsed;
+      }
+    }
+    return { ok: false, message: "構造化されたAI回答を読み取れませんでした。JSON形式の回答を貼り付けてください。" };
+  }
+
+  function parseExistingWebAiJson(text) {
+    try {
+      return { ok: true, payload: JSON.parse(text) };
+    } catch (error) {
+      return { ok: false, message: "JSONとして解析できませんでした。" };
+    }
   }
 
   function normalizeExistingWebAiReviewResult(payload = {}) {
-    const rawType = String(payload.type || payload.result || payload.status || "").toUpperCase();
-    const type = rawType.includes("OK")
-      ? "AI_RESULT_OK"
-      : rawType.includes("CAUTION")
-        ? "AI_RESULT_CAUTION"
-        : "AI_RESULT_UNKNOWN";
-    const allowed = payload.allowedProperties || payload.editableProperties || payload.properties || [];
-    const denied = payload.protectedProperties || payload.deniedProperties || [];
-    const reasons = payload.reasons || payload.reason || payload.message || "";
+    const root = payload.response || payload.aiReview || payload;
+    const targets = Array.isArray(root.targets)
+      ? root.targets
+      : root.domRef || root.properties
+        ? [root]
+        : [];
     return {
-      type,
-      allowedProperties: normalizeExistingWebAiProperties(allowed),
-      protectedProperties: normalizeExistingWebAiProperties(denied),
-      reasons: Array.isArray(reasons) ? reasons.map(String) : String(reasons || "").trim() ? [String(reasons)] : [],
-      normalMessage: payload.normalMessage || getExistingWebAiResultNormalMessage(type),
+      schemaVersion: String(root.schemaVersion || "1.0"),
+      pageId: root.pageId || root.page?.pageId || "",
+      sourcePath: normalizeExistingWebSourcePath(root.sourcePath || root.page?.sourcePath || ""),
+      viewState: normalizeExistingWebViewState(root.viewState || root.page?.viewState || ""),
+      sourceFingerprint: String(root.sourceFingerprint || root.page?.sourceFingerprint || ""),
+      requestRevision: String(root.requestRevision || root.page?.requestRevision || ""),
+      targets: targets.map(normalizeExistingWebAiReviewTarget).filter((target) => target.domRef),
       raw: payload,
     };
+  }
+
+  function normalizeExistingWebAiReviewTarget(target = {}) {
+    const properties = target.properties && typeof target.properties === "object"
+      ? target.properties
+      : buildExistingWebAiPropertiesFromLegacy(target);
+    return {
+      domRef: String(target.domRef || target.target?.domRef || ""),
+      name: String(target.name || target.target?.name || ""),
+      properties: Object.fromEntries(Object.entries(properties || {}).map(([property, value]) => {
+        const normalizedProperty = normalizeExistingWebAiPropertyName(property);
+        const item = typeof value === "object" && value !== null ? value : { result: value };
+        return [normalizedProperty, {
+          result: normalizeExistingWebAiPropertyResult(item.result || item.status || item.value),
+          reason: String(item.reason || item.message || ""),
+        }];
+      }).filter(([property]) => property)),
+    };
+  }
+
+  function buildExistingWebAiPropertiesFromLegacy(target = {}) {
+    const allowed = normalizeExistingWebAiProperties(target.allowedProperties || target.editableProperties || []);
+    const denied = normalizeExistingWebAiProperties(target.protectedProperties || target.deniedProperties || []);
+    const entries = {};
+    allowed.forEach((property) => { entries[property] = { result: "ok", reason: target.reason || "" }; });
+    denied.forEach((property) => { entries[property] = { result: "protected", reason: target.reason || "" }; });
+    if (!Object.keys(entries).length && (target.type || target.result || target.status)) {
+      normalizeExistingWebAiProperties(target.properties || ["position", "width", "height"]).forEach((property) => {
+        entries[property] = { result: target.type || target.result || target.status, reason: target.reason || "" };
+      });
+    }
+    return entries;
+  }
+
+  function validateExistingWebAiReviewContext(normalized) {
+    if (!normalized.targets.length) {
+      return { ok: false, message: "AI回答に対象レイヤーが含まれていません。" };
+    }
+    if (normalized.pageId && normalized.pageId !== state.existingWeb.pageId) {
+      return { ok: false, message: "AI回答のページが現在のページと一致しません。AI確認をやり直してください。" };
+    }
+    if (normalized.sourcePath && normalizeExistingWebSourcePath(normalized.sourcePath) !== normalizeExistingWebSourcePath(state.existingWeb.sourcePath)) {
+      return { ok: false, message: "AI回答のSourceが現在のSourceと一致しません。AI確認をやり直してください。" };
+    }
+    if ((normalized.viewState || "") !== (state.existingWeb.viewState || "")) {
+      return { ok: false, message: "AI回答の表示状態が現在の表示状態と一致しません。AI確認をやり直してください。" };
+    }
+    const fingerprint = getExistingWebFingerprint();
+    if (normalized.sourceFingerprint && normalized.sourceFingerprint !== fingerprint) {
+      state.existingWeb.pageCheck = {
+        ...(state.existingWeb.pageCheck || {}),
+        status: "changed",
+        fingerprint,
+        summary: null,
+      };
+      return { ok: false, message: "ページが変更されています。AI確認をやり直してください。" };
+    }
+    const expectedRevision = getExpectedExistingWebAiRequestRevision(normalized.targets.map((target) => target.domRef));
+    if (normalized.requestRevision && normalized.requestRevision !== expectedRevision) {
+      return { ok: false, message: "AI回答の依頼Revisionが現在の確認内容と一致しません。AI確認をやり直してください。" };
+    }
+    return { ok: true };
+  }
+
+  function getExpectedExistingWebAiRequestRevision(domRefs) {
+    const refs = (domRefs || []).filter(Boolean).join("|");
+    return createExistingWebAiRequestId(refs);
+  }
+
+  function reconcileExistingWebAiTarget(target, normalized) {
+    const node = getExistingWebNodeByDomRef(target.domRef);
+    if (!node) {
+      return null;
+    }
+    const analysis = analyzeExistingWebDocument();
+    const element = analysis?.elements?.find((item) => item.observed?.domRef === target.domRef) || null;
+    const mapping = findExistingWebMapping(target.domRef);
+    const protectedBehavior = getExistingWebProtectedBehavior(mapping);
+    const localCheck = runExistingWebLayerCheck(element, node, mapping, protectedBehavior, { level: "confirm" });
+    const finalCheck = buildExistingWebFinalCheckFromAi(target, localCheck, element, node);
+    setExistingWebAiReview(target.domRef, {
+      ...(getExistingWebAiReview(target.domRef) || {}),
+      status: "result",
+      result: {
+        type: finalCheck.status.key === "editable" ? "AI_RESULT_OK" : finalCheck.status.key === "protected" ? "AI_RESULT_UNKNOWN" : "AI_RESULT_CAUTION",
+        schemaVersion: normalized.schemaVersion,
+        sourceFingerprint: normalized.sourceFingerprint,
+        requestRevision: normalized.requestRevision,
+        target,
+        normalMessage: finalCheck.message,
+        raw: normalized.raw,
+      },
+      finalCheck,
+      importedAt: new Date().toISOString(),
+    });
+    setExistingWebCheck(target.domRef, finalCheck);
+    return { domRef: target.domRef, finalCheck };
+  }
+
+  function buildExistingWebFinalCheckFromAi(target, localCheck, element, node) {
+    const protectedProperties = new Set(localCheck.protectedProperties || []);
+    if (localCheck.status?.key === "protected") {
+      protectedProperties.add("click");
+    }
+    const runtimeEditable = new Set(getExistingWebRuntimeEditableProperties(element, node, {
+      allowBehaviorProtectedVisual: true,
+      allowTransformAnimation: true,
+    }));
+    const aiOk = new Set();
+    const aiProtected = new Set();
+    const cautions = [];
+    Object.entries(target.properties || {}).forEach(([property, result]) => {
+      const prop = normalizeExistingWebAiPropertyName(property);
+      if (!prop) {
+        return;
+      }
+      const value = normalizeExistingWebAiPropertyResult(result?.result);
+      if (value === "ok") {
+        aiOk.add(prop);
+      } else if (value === "protected") {
+        aiProtected.add(prop);
+      } else {
+        cautions.push(result?.reason || `${prop} は安全確認できませんでした`);
+      }
+    });
+    aiProtected.forEach((property) => protectedProperties.add(property));
+    protectedProperties.add("click");
+    const editableProperties = [];
+    if (aiOk.has("position") && runtimeEditable.has("position") && !protectedProperties.has("position")) {
+      editableProperties.push("position");
+    }
+    const sizeOk = (aiOk.has("size") || (aiOk.has("width") && aiOk.has("height")))
+      && (runtimeEditable.has("size") || runtimeEditable.has("width") || runtimeEditable.has("height"))
+      && !protectedProperties.has("size")
+      && !protectedProperties.has("width")
+      && !protectedProperties.has("height");
+    if (sizeOk) {
+      editableProperties.push("size");
+    }
+    const propertyChecks = getExistingWebAiPropertyChecks(target.properties, editableProperties, Array.from(protectedProperties), cautions);
+    if (editableProperties.length) {
+      return {
+        ...localCheck,
+        level: "ai-review",
+        status: { key: "editable", label: "一部編集できます" },
+        editableProperties,
+        protectedProperties: Array.from(protectedProperties),
+        blockedReasons: [],
+        message: "AI確認結果をTBalanceで再照合しました。許可候補の範囲だけRuntime Previewできます。",
+        checks: propertyChecks,
+      };
+    }
+    return {
+      ...localCheck,
+      level: "ai-review",
+      status: { key: "protected", label: "現在は編集できません" },
+      editableProperties: [],
+      protectedProperties: Array.from(protectedProperties),
+      blockedReasons: cautions.length ? cautions : ["AIでも安全を確認できませんでした"],
+      message: "AIでも安全を確認できませんでした。現在は編集できません。",
+      checks: propertyChecks,
+    };
+  }
+
+  function getExistingWebAiPropertyChecks(aiProperties, editableProperties, protectedProperties, cautions) {
+    const editable = new Set(editableProperties || []);
+    const protectedSet = new Set(protectedProperties || []);
+    const resultFor = (property) => normalizeExistingWebAiPropertyResult(aiProperties?.[property]?.result || aiProperties?.[property]?.status);
+    const reasonFor = (property) => aiProperties?.[property]?.reason || "";
+    return [
+      {
+        label: "位置",
+        state: editable.has("position") ? "ok" : protectedSet.has("position") ? "protected" : resultFor("position") === "unknown" ? "warning" : "warning",
+        text: editable.has("position") ? "AI確認済み" : protectedSet.has("position") ? "保護" : reasonFor("position") || cautions?.[0] || "編集できません",
+      },
+      {
+        label: "サイズ",
+        state: editable.has("size") ? "ok" : (protectedSet.has("size") || protectedSet.has("width") || protectedSet.has("height")) ? "protected" : "warning",
+        text: editable.has("size") ? "AI確認済み" : (reasonFor("width") || reasonFor("height") || cautions?.[0] || "編集できません"),
+      },
+      {
+        label: "クリック",
+        state: "protected",
+        text: reasonFor("click") || "保護",
+      },
+    ];
   }
 
   function normalizeExistingWebAiProperties(value) {
     const list = Array.isArray(value) ? value : String(value || "").split(/[,\s]+/);
     return Array.from(new Set(list.map((item) => {
-      const key = String(item || "").toLowerCase();
-      if (["position", "pos", "move", "x", "y", "位置"].includes(key)) return "position";
-      if (["size", "resize", "サイズ"].includes(key)) return "size";
-      if (["width", "w", "幅"].includes(key)) return "width";
-      if (["height", "h", "高さ"].includes(key)) return "height";
-      return key;
+      return normalizeExistingWebAiPropertyName(item);
     }).filter(Boolean)));
+  }
+
+  function normalizeExistingWebAiPropertyName(value) {
+    const key = String(value || "").toLowerCase().trim();
+    if (["position", "pos", "move", "x", "y", "left", "top", "位置"].includes(key)) return "position";
+    if (["size", "resize", "scale", "サイズ"].includes(key)) return "size";
+    if (["width", "w", "幅"].includes(key)) return "width";
+    if (["height", "h", "高さ"].includes(key)) return "height";
+    if (["click", "clickbehavior", "click_behavior", "button", "link", "クリック"].includes(key)) return "click";
+    if (["behavior", "behaviour", "動作"].includes(key)) return "behavior";
+    return key;
+  }
+
+  function normalizeExistingWebAiPropertyResult(value) {
+    const key = String(value || "").toLowerCase().trim();
+    if (["ok", "safe", "allowed", "editable", "編集可能", "編集できます"].includes(key)) return "ok";
+    if (["caution", "warn", "warning", "maybe", "注意"].includes(key)) return "caution";
+    if (["protected", "deny", "denied", "blocked", "lock", "保護"].includes(key)) return "protected";
+    return "unknown";
   }
 
   function getExistingWebAiResultNormalMessage(type) {
@@ -8625,6 +8938,12 @@
     if (els.cancelExistingWebAiShare) {
       els.cancelExistingWebAiShare.hidden = state.withAiShare.mode !== "existing-web-ai-review";
     }
+    if (els.aiExistingWebImport) {
+      els.aiExistingWebImport.hidden = state.withAiShare.mode !== "existing-web-ai-review";
+    }
+    if (els.aiExistingWebImportStatus && state.withAiShare.mode === "existing-web-ai-review" && !els.aiExistingWebImportStatus.textContent.trim()) {
+      setExistingWebAiImportStatus("idle", "AI回答を貼り付けて取り込めます。");
+    }
   }
 
   function getWithAiSafeChangeSharePreview() {
@@ -8734,8 +9053,9 @@
       return;
     }
     const targetLabel = getAiShareTargetLabel(preview.package?.targetAi || els.aiShareTarget?.value);
-    const ok = await copyTextToClipboard(preview.text, preview.package?.type === "existing-web-ai-review"
-      ? `${targetLabel}共有用テキストをClipboardへコピーしました。`
+    const existingWebAiShare = preview.package?.type === "existing-web-ai-review" || preview.package?.type === "existing-web-ai-review-batch";
+    const ok = await copyTextToClipboard(preview.text, existingWebAiShare
+      ? `${targetLabel}確認用データをClipboardへコピーしました。AIへ貼り付けてください。`
       : "Safe Change InstructionをAI共有用にコピーしました。");
     if (!ok) {
       setWithAiShareStatus("error", "Clipboardへコピーできませんでした。");
@@ -8744,7 +9064,9 @@
     }
     state.withAiShare.package = preview.package;
     state.withAiShare.text = preview.text;
-    setWithAiShareStatus("ok", `${targetLabel}共有用テキストをClipboardへコピーしました。`);
+    setWithAiShareStatus("ok", existingWebAiShare
+      ? `${targetLabel}確認用データをClipboardへコピーしました。AIへ貼り付けて、回答を取り込んでください。`
+      : `${targetLabel}共有用テキストをClipboardへコピーしました。`);
     if (preview.package?.type === "existing-web-ai-review" && state.existingWeb.selected?.domRef) {
       setExistingWebAiReview(state.existingWeb.selected.domRef, {
         ...(getExistingWebAiReview(state.existingWeb.selected.domRef) || {}),
@@ -8752,8 +9074,25 @@
         package: preview.package,
         text: preview.text,
       });
+    } else if (preview.package?.type === "existing-web-ai-review-batch") {
+      (preview.package.targets || []).forEach((targetPackage) => {
+        if (!targetPackage.target?.domRef) {
+          return;
+        }
+        setExistingWebAiReview(targetPackage.target.domRef, {
+          ...(getExistingWebAiReview(targetPackage.target.domRef) || {}),
+          status: "shared",
+          package: targetPackage,
+          batchPackage: preview.package,
+          text: preview.text,
+        });
+      });
     }
     renderWithAiSafeChangeShare();
+    if (existingWebAiShare) {
+      refreshExistingWebVirtualLayers();
+      renderAll();
+    }
   }
 
   function setWithAiShareStatus(status, message) {
@@ -8884,7 +9223,9 @@
       }
       renderAiShareHistory(result.entries || []);
     } catch (error) {
-      els.aiShareHistoryList.textContent = "履歴取得失敗: ブリッジ未起動";
+      els.aiShareHistoryList.textContent = state.editorMode === "custom"
+        ? "履歴取得失敗: ブリッジ未起動"
+        : "AI連携が起動していません。回答を手動で取り込むこともできます。";
     }
   }
 
@@ -11069,10 +11410,13 @@
   function getExistingWebNormalGroupRepresentative(group) {
     const items = group.items || [];
     const protectedNames = new Set(["願い星を書く", "今日のほっこり", "森へ戻る"]);
+    const hasReviewedProtected = items.some((item) => getExistingWebAiReview(item.domRef)?.finalCheck?.status?.key === "protected");
     const preferredStatus = protectedNames.has(group.name) && items.some((item) => item.status.key === "protected")
       ? "protected"
       : items.some((item) => item.status.key === "editable")
         ? "editable"
+        : hasReviewedProtected
+          ? "protected"
         : items.some((item) => item.status.key === "ai-needed")
           ? "ai-needed"
           : items.some((item) => item.status.key === "protected")
@@ -11118,6 +11462,7 @@
     if (layer.status.key === "editable") rank += 40;
     if (layer.status.key === "ai-needed") rank += 30;
     if (layer.status.key === "protected") rank += 20;
+    if (getExistingWebAiReview(layer.domRef)?.finalCheck) rank += 60;
     if (Number(layer.bounds?.width || 0) > 0 && Number(layer.bounds?.height || 0) > 0) rank += 10;
     if (layer.domRef?.startsWith("#")) rank += 5;
     return rank + (Number(layer.score) || 0) / 1000;
@@ -11234,7 +11579,7 @@
         <button type="button" data-existing-web-action="page-check">ページを確認</button>
       </div>` : needsAi ? `
       <div class="tb-existing-web-action-grid tb-existing-web-action-grid--normal">
-        <button type="button" data-existing-web-action="ai-check" data-existing-web-dom-ref="${escapeAttr(selected.domRef)}">AIに確認</button>
+        <button type="button" data-existing-web-action="ai-check" data-existing-web-dom-ref="${escapeAttr(selected.domRef)}">AIに相談</button>
       </div>` : "";
     const aiResultHtml = aiReview?.result ? `
       <section class="tb-existing-web-ai-result" data-ai-result="${escapeAttr(aiReview.result.type || "AI_RESULT_UNKNOWN")}">

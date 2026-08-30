@@ -1264,6 +1264,15 @@
           <pre id="aiSafeChangeDetailsPreview">Safe Change Instructionを生成してください。</pre>
         </details>
         <div id="aiShareMessage" class="tb-ai-bridge-status" data-status="idle">AI共有はClipboardへコピーします。</div>
+        <div id="aiExistingWebImport" class="tb-ai-result-import" hidden>
+          <strong>AI回答を取り込む</strong>
+          <textarea id="aiExistingWebResultText" rows="5" spellcheck="false" placeholder="AIの回答をここに貼り付け"></textarea>
+          <div class="tb-ai-result-import-actions">
+            <button id="pasteExistingWebAiResult" type="button">Clipboardから貼り付け</button>
+            <button id="applyExistingWebAiResult" class="tb-ai-share-button" type="button">回答を取り込む</button>
+          </div>
+          <div id="aiExistingWebImportStatus" class="tb-ai-bridge-status" data-status="idle">構造化されたAI回答だけを取り込みます。</div>
+        </div>
       </section>
       <section class="tb-ai-history" aria-label="WITH AI共有履歴">
         <div class="tb-ai-history-head">

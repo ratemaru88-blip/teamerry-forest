@@ -5366,6 +5366,51 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   white-space: pre-wrap;
 }
 
+.tb-ai-result-import {
+  display: grid;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(83, 116, 139, 0.24);
+}
+
+.tb-ai-result-import[hidden] {
+  display: none !important;
+}
+
+.tb-ai-result-import strong {
+  color: #dff7ff;
+  font-size: 11px;
+}
+
+.tb-ai-result-import textarea {
+  width: 100%;
+  min-height: 92px;
+  resize: vertical;
+  padding: 7px;
+  border: 1px solid rgba(83, 116, 139, 0.5);
+  border-radius: 7px;
+  background: rgba(2, 6, 10, 0.78);
+  color: #edf6ff;
+  font: 10.5px/1.45 Consolas, "Courier New", monospace;
+}
+
+.tb-ai-result-import-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px;
+}
+
+.tb-ai-result-import-actions button {
+  min-height: 30px;
+  padding: 0 8px;
+  border: 1px solid rgba(83, 116, 139, 0.62);
+  border-radius: 7px;
+  background: rgba(9, 21, 31, 0.92);
+  color: #e7f7ff;
+  font-size: 10.5px;
+  font-weight: 900;
+}
+
 .tb-ai-actions {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 0.72fr);
