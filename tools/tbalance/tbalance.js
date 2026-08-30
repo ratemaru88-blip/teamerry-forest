@@ -263,6 +263,8 @@
       adapterId: "none",
       mode: "edit",
       selected: null,
+      virtualLayers: [],
+      audioMuted: true,
       preview: {
         active: false,
         changes: [],
@@ -378,6 +380,7 @@
     existingWebMeta: $("existingWebMeta"),
     existingWebEditMode: $("existingWebEditMode"),
     existingWebTestMode: $("existingWebTestMode"),
+    existingWebAudioToggle: $("existingWebAudioToggle"),
     existingWebAnalyze: $("existingWebAnalyze"),
     existingWebCreateSafeChange: $("existingWebCreateSafeChange"),
     existingWebResetPreview: $("existingWebResetPreview"),
@@ -692,6 +695,7 @@
     els.openFile.addEventListener("change", openProjectFile);
     els.existingWebEditMode?.addEventListener("click", () => setExistingWebMode("edit"));
     els.existingWebTestMode?.addEventListener("click", () => setExistingWebMode("test"));
+    els.existingWebAudioToggle?.addEventListener("click", toggleExistingWebAudio);
     els.existingWebAnalyze?.addEventListener("click", openExistingWebInAnalyzer);
     els.existingWebCreateSafeChange?.addEventListener("click", sendExistingWebPreviewToSafeChange);
     els.existingWebResetPreview?.addEventListener("click", resetExistingWebPreview);
@@ -1528,6 +1532,8 @@
       adapterId: info.adapterId || state.analyzer.adapterId || "none",
       mode: "edit",
       selected: null,
+      virtualLayers: [],
+      audioMuted: true,
       preview: {
         active: false,
         changes: [],
@@ -1717,11 +1723,14 @@
     }
     state.existingWeb.selected = null;
     state.existingWeb.drag = null;
+    state.existingWeb.virtualLayers = [];
+    state.existingWeb.audioMuted = true;
     state.existingWeb.preview = {
       active: false,
       changes: [],
     };
     installExistingWebEditMode();
+    refreshExistingWebVirtualLayers();
     showModeToast(`${state.existingWeb.label || state.existingWeb.sourcePath} を表示しました。`);
     renderAll();
   }
@@ -1733,6 +1742,7 @@
     state.existingWeb.mode = mode === "test" ? "test" : "edit";
     state.existingWeb.drag = null;
     installExistingWebEditMode();
+    applyExistingWebAudioPolicy();
     renderAll();
   }
 
@@ -1758,6 +1768,7 @@
       doc.addEventListener("keydown", handleExistingWebKeydown, true);
       doc.__tbExistingWebSelectionInstalled = true;
     }
+    applyExistingWebAudioPolicy();
     applyExistingWebSelectionClass();
   }
 
@@ -1933,7 +1944,228 @@
     };
     state.existingWeb.selected = selected;
     applyExistingWebSelectionClass();
+    refreshExistingWebVirtualLayers(analysis);
     return selected;
+  }
+
+  function refreshExistingWebVirtualLayers(analysis = null) {
+    if (!state.existingWeb.active) {
+      return [];
+    }
+    const result = analysis || analyzeExistingWebDocument();
+    state.existingWeb.virtualLayers = buildExistingWebVirtualLayers(result);
+    return state.existingWeb.virtualLayers;
+  }
+
+  function buildExistingWebVirtualLayers(analysis) {
+    const doc = getExistingWebDocument();
+    if (!doc || !analysis?.elements?.length) {
+      return [];
+    }
+    const mappings = getVisibleConfirmedMappings({
+      pageId: state.existingWeb.pageId,
+      sourcePath: state.existingWeb.sourcePath,
+      currentViewState: state.existingWeb.viewState || "",
+      sourceAuthority: "standard-web",
+    });
+    const mappingByDomRef = new Map(mappings.map((mapping) => [mapping.domRef, mapping]));
+    return analysis.elements
+      .map((element) => {
+        const node = getExistingWebNodeByDomRef(element.observed?.domRef);
+        if (!node || !shouldShowExistingWebVirtualLayer(element, node, mappingByDomRef)) {
+          return null;
+        }
+        const mapping = mappingByDomRef.get(element.observed.domRef) || null;
+        const protectedBehavior = getExistingWebProtectedBehavior(mapping);
+        const editableProperties = getExistingWebEditableProperties(mapping, element);
+        const blockedReasons = getExistingWebEditBlockReasons(mapping, element, protectedBehavior);
+        const status = getExistingWebVirtualLayerStatus(mapping, element, protectedBehavior, editableProperties, blockedReasons);
+        return {
+          domRef: element.observed.domRef,
+          parentRef: element.observed.parentRef || "",
+          name: getExistingWebVirtualLayerName(element, node, mapping),
+          detail: getExistingWebVirtualLayerDetail(element, mapping),
+          tag: element.observed.tag,
+          role: element.inferred?.roleCandidate || element.observed.role || "",
+          status,
+          editableProperties,
+          blockedReasons,
+          mapping,
+          protectedBehavior,
+          bounds: element.observed.bounds,
+          analyzerStatus: element.inferred?.analysisStatus || "unknown",
+          node,
+          score: getExistingWebVirtualLayerScore(element, node, mapping),
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, state.editorMode === "custom" ? 72 : 36);
+  }
+
+  function shouldShowExistingWebVirtualLayer(element, node, mappingByDomRef) {
+    const observed = element?.observed || {};
+    if (mappingByDomRef.has(observed.domRef)) {
+      return true;
+    }
+    const tag = String(observed.tag || node.tagName || "").toLowerCase();
+    if (["script", "style", "meta", "link", "title", "template", "noscript"].includes(tag)) {
+      return false;
+    }
+    const text = getExistingWebNodeIdentityText(node, observed).toLowerCase();
+    const className = String(observed.className || "").toLowerCase();
+    const id = String(observed.id || "").toLowerCase();
+    const hasMeaningfulName = Boolean(observed.ariaLabel || node.getAttribute("title") || node.getAttribute("alt") || observed.id);
+    const importantName = /lilu|lill|fairy|speech|balloon|message|wish|hokkori|forest-back|back|hotspot|button|board|card|modal|view|scene|character|container|background|guide|nav/.test(`${id} ${className} ${text}`);
+    const importantTag = /^(a|button|img|video|audio|canvas|svg|picture|input|textarea|select|form|h[1-6])$/.test(tag);
+    const visual = Boolean(observed.src || observed.backgroundImage);
+    const largeContainer = observed.bounds && observed.bounds.width >= 160 && observed.bounds.height >= 80 && observed.childCount > 0;
+    return importantTag || visual || hasMeaningfulName || importantName || largeContainer;
+  }
+
+  function getExistingWebVirtualLayerName(element, node, mapping) {
+    if (mapping?.name || mapping?.label) {
+      return mapping.name || mapping.label;
+    }
+    const observed = element?.observed || {};
+    const identity = getExistingWebNodeIdentityText(node, observed);
+    const key = `${observed.id || ""} ${observed.className || ""} ${identity}`.toLowerCase();
+    if (/wish.*hokkori|hokkori.*wish/.test(key)) return "今日のほっこり";
+    if (/wishstar|wish-star|wish.*button|願い/.test(key)) return "願い星を書く";
+    if (/hokkori/.test(key)) return "今日のほっこり";
+    if (/forest-back|back_buttan|back-button|森へ戻る|戻る/.test(key)) return "森へ戻る";
+    if (/lilu|lill/.test(key)) return "リル";
+    if (/speech|balloon|message|bubble|吹き出し/.test(key)) return "吹き出し";
+    if (/background|bg_|背景/.test(key) || observed.backgroundImage) return "背景";
+    return identity || observed.id || getReadableClassName(observed.className) || observed.tag || "DOM要素";
+  }
+
+  function getExistingWebNodeIdentityText(node, observed = {}) {
+    const directText = Array.from(node.childNodes || [])
+      .filter((child) => child.nodeType === 3)
+      .map((child) => child.textContent || "")
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return compactExistingWebLabel(
+      observed.ariaLabel
+      || node.getAttribute("aria-label")
+      || node.getAttribute("title")
+      || node.getAttribute("alt")
+      || directText
+      || observed.id
+      || getReadableClassName(observed.className)
+      || observed.tag
+    );
+  }
+
+  function getReadableClassName(className = "") {
+    return String(className)
+      .split(/\s+/)
+      .find((item) => item && !/^is-|^has-|^js-|^__tb/.test(item))
+      || "";
+  }
+
+  function compactExistingWebLabel(value) {
+    return String(value || "").replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 42);
+  }
+
+  function getExistingWebVirtualLayerDetail(element, mapping) {
+    const observed = element?.observed || {};
+    const role = element?.inferred?.roleCandidate || observed.role || observed.tag || "dom";
+    return mapping?.tbId ? `${role} / ${mapping.tbId}` : `${role} / ${observed.tag || "dom"}`;
+  }
+
+  function getExistingWebVirtualLayerScore(element, node, mapping) {
+    const observed = element?.observed || {};
+    let score = 0;
+    if (mapping) score += 100;
+    if (/^(button|a|img|video|canvas|svg|input|textarea|select)$/i.test(observed.tag)) score += 34;
+    if (observed.ariaLabel || node.getAttribute("title") || node.getAttribute("alt")) score += 24;
+    if (observed.id) score += 16;
+    if (observed.src || observed.backgroundImage) score += 15;
+    if (observed.textExists) score += 10;
+    if (/lilu|lill|wish|hokkori|forest-back|speech|balloon|hotspot/i.test(`${observed.id} ${observed.className}`)) score += 36;
+    if (observed.bounds) score += Math.min(18, Math.round((observed.bounds.width * observed.bounds.height) / 60000));
+    score -= Math.min(20, Number(observed.childCount || 0));
+    return score;
+  }
+
+  function getExistingWebVirtualLayerStatus(mapping, element, protectedBehavior, editableProperties, blockedReasons) {
+    if (protectedBehavior || mapping?.protectedProperties?.length) {
+      return { key: "protected", label: "保護" };
+    }
+    if (editableProperties?.length && !blockedReasons?.length) {
+      return { key: "editable", label: "編集可能" };
+    }
+    if (element?.inferred?.analysisStatus && element.inferred.analysisStatus !== "unknown") {
+      return { key: "warning", label: "要確認" };
+    }
+    return { key: "unknown", label: "Unknown" };
+  }
+
+  function getExistingWebNodeByDomRef(domRef) {
+    const doc = getExistingWebDocument();
+    if (!doc || !domRef) {
+      return null;
+    }
+    try {
+      return doc.querySelector(domRef);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function selectExistingWebVirtualLayer(domRef) {
+    const node = getExistingWebNodeByDomRef(domRef);
+    if (!node) {
+      showModeToast("対応するDOM要素が見つかりません。");
+      refreshExistingWebVirtualLayers();
+      renderAll();
+      return;
+    }
+    selectExistingWebElement(node);
+    node.scrollIntoView?.({ block: "center", inline: "center", behavior: "smooth" });
+    renderAll();
+  }
+
+  function toggleExistingWebAudio() {
+    if (!state.existingWeb.active) {
+      return;
+    }
+    state.existingWeb.audioMuted = !state.existingWeb.audioMuted;
+    applyExistingWebAudioPolicy();
+    renderAll();
+  }
+
+  function applyExistingWebAudioPolicy() {
+    const doc = getExistingWebDocument();
+    if (!doc || !state.existingWeb.active) {
+      return;
+    }
+    const shouldMute = state.existingWeb.mode === "edit" && state.existingWeb.audioMuted;
+    doc.querySelectorAll("audio, video").forEach((media) => {
+      if (!media.__tbExistingWebAudioState) {
+        media.__tbExistingWebAudioState = {
+          muted: media.muted,
+          volume: media.volume,
+          paused: media.paused,
+        };
+      }
+      if (shouldMute) {
+        media.pause?.();
+        media.muted = true;
+      } else {
+        const before = media.__tbExistingWebAudioState;
+        if (before) {
+          media.muted = before.muted;
+          media.volume = before.volume;
+          if (!before.paused && typeof media.play === "function") {
+            media.play().catch(() => {});
+          }
+        }
+      }
+    });
   }
 
   function resolveExistingWebSelectableNode(target, clientX, clientY) {
@@ -2048,13 +2280,12 @@
     if (typeof adapter?.getProtectedBehavior !== "function") {
       return null;
     }
-    const result = adapter.getProtectedBehavior({
+    const context = {
       ...getExistingWebLookupContext(state.existingWeb.sourcePath),
-      pageId: state.existingWeb.pageId,
       viewState: state.existingWeb.viewState || "",
       mapping,
-      tbId: mapping.tbId,
-    });
+    };
+    const result = adapter.getProtectedBehavior(state.existingWeb.pageId, mapping.tbId, context);
     return result?.status === "resolved" ? result.protectedBehavior || result.behavior || result : null;
   }
 
@@ -8902,6 +9133,17 @@
       els.existingWebTestMode.classList.toggle("is-active", activeTest);
       els.existingWebTestMode.setAttribute("aria-pressed", activeTest ? "true" : "false");
     }
+    if (els.existingWebAudioToggle) {
+      const editMode = state.existingWeb.mode !== "test";
+      const muted = Boolean(state.existingWeb.audioMuted);
+      els.existingWebAudioToggle.hidden = !editMode;
+      els.existingWebAudioToggle.classList.toggle("is-active", editMode && muted);
+      els.existingWebAudioToggle.setAttribute("aria-pressed", editMode && muted ? "true" : "false");
+      els.existingWebAudioToggle.textContent = muted ? "音声OFF" : "音声ON";
+      els.existingWebAudioToggle.title = muted
+        ? "編集モード中のaudio/videoを一時停止・ミュートします"
+        : "編集モード中もaudio/videoを許可します";
+    }
     if (els.existingWebCreateSafeChange) {
       els.existingWebCreateSafeChange.disabled = !state.existingWeb.selected?.mapping || !state.existingWeb.preview?.changes?.length;
     }
@@ -9838,9 +10080,28 @@
   }
 
   function renderExistingWebLayerPanel() {
+    const layers = state.existingWeb.virtualLayers?.length
+      ? state.existingWeb.virtualLayers
+      : refreshExistingWebVirtualLayers();
+    const selectedDomRef = state.existingWeb.selected?.domRef || "";
+    const layerRows = layers.length
+      ? `<div class="tb-existing-web-virtual-list">
+          ${layers.map((layer) => `
+            <button class="tb-existing-web-virtual-row${layer.domRef === selectedDomRef ? " is-selected" : ""}" type="button" data-existing-web-virtual-layer="${escapeAttr(layer.domRef)}" data-status="${escapeAttr(layer.status.key)}">
+              <span class="tb-existing-web-virtual-main">
+                <strong>${escapeHtml(layer.name)}</strong>
+                <small>${escapeHtml(layer.detail)}</small>
+              </span>
+              <span class="tb-existing-web-virtual-status">${escapeHtml(layer.status.label)}</span>
+            </button>
+          `).join("")}
+        </div>`
+      : `<p class="tb-existing-web-empty">主要DOM要素をまだ読み取れていません。ページを再読み込みするか、Analyzerで確認してください。</p>`;
     els.layerList.innerHTML = `
       <section class="tb-existing-web-layer-panel">
-        <strong>既存Webページ編集中</strong>
+        <strong>既存Web 仮想レイヤー</strong>
+        <p class="tb-existing-web-layer-note">Sourceは変更せず、iframeのDOMを選択用に表示しています。</p>
+        ${layerRows}
         ${buildExistingWebSelectionSummary(state.editorMode === "custom" ? "custom" : "normal")}
       </section>
     `;
@@ -9928,6 +10189,11 @@
     const existingWebAction = event.target.closest("[data-existing-web-action]");
     if (existingWebAction && state.existingWeb.active) {
       handleExistingWebLayerAction(existingWebAction.dataset.existingWebAction || "");
+      return;
+    }
+    const existingWebLayer = event.target.closest("[data-existing-web-virtual-layer]");
+    if (existingWebLayer && state.existingWeb.active) {
+      selectExistingWebVirtualLayer(existingWebLayer.dataset.existingWebVirtualLayer || "");
       return;
     }
     const row = event.target.closest(".tb-layer-row");
