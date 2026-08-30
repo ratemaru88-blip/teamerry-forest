@@ -51,6 +51,25 @@ body {
   letter-spacing: 0;
 }
 
+.tb-file-protocol-warning {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  z-index: 10000;
+  width: min(680px, calc(100vw - 32px));
+  padding: 12px 16px;
+  border: 1px solid rgba(212, 167, 44, 0.68);
+  border-radius: 7px;
+  background: rgba(22, 18, 8, 0.94);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+  color: #fff4c8;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
 button,
 input,
 select {

@@ -639,6 +639,7 @@
   }
 
   async function start() {
+    showFileProtocolWarning();
     state.project = await loadAutosave() || renderer.normalizeProject();
     state.uiSettings = resolveUiSettings(state.project);
     state.editorMode = getStartupMode(state.project);
@@ -648,6 +649,16 @@
     bindEvents();
     installAiBridge();
     renderAll();
+  }
+
+  function showFileProtocolWarning() {
+    if (window.location.protocol !== "file:") {
+      return;
+    }
+    const warning = document.getElementById("fileProtocolWarning");
+    if (warning) {
+      warning.hidden = false;
+    }
   }
 
   function bindEvents() {
