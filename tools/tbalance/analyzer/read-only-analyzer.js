@@ -137,11 +137,10 @@
       || observed.computed.positionType === "sticky"
       || containerDependency;
     const strongVisualCandidate = !interactive
-      && observed.computed.positionType === "absolute"
+      && ["absolute", "fixed"].includes(observed.computed.positionType)
       && !layoutDependency
       && !observed.inlineEvents.length
       && !observed.textExists
-      && !runtimeScriptUnknown
       && !dynamicStateHint
       && isStrongVisualTag(node, observed);
     let analysisStatus = "unknown";
