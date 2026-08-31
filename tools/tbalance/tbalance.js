@@ -278,6 +278,9 @@
         active: false,
         changes: [],
       },
+      previewHistory: [],
+      previewFuture: [],
+      reloadToken: "",
       drag: null,
     },
     siteMap: {
@@ -1537,6 +1540,9 @@
       alert("既存Webページを開けませんでした。\nindex.html など、localhost配下で確認できるHTMLを指定してください。");
       return null;
     }
+    if (state.existingWeb.active) {
+      resetExistingWebPreview({ skipRender: true });
+    }
     if (info.adapterId && info.adapterId !== state.analyzer.adapterId) {
       setAnalyzerAdapter(info.adapterId);
     }
@@ -1566,6 +1572,9 @@
         active: false,
         changes: [],
       },
+      previewHistory: [],
+      previewFuture: [],
+      reloadToken: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       drag: null,
     };
     prepareAnalyzerForExistingWeb(info);
@@ -1740,7 +1749,7 @@
   }
 
   function closeExistingWebView() {
-    resetExistingWebPreview();
+    resetExistingWebPreview({ skipRender: true });
     uninstallExistingWebSelection();
     state.existingWeb.active = false;
     renderAll();
@@ -1766,6 +1775,8 @@
       active: false,
       changes: [],
     };
+    state.existingWeb.previewHistory = [];
+    state.existingWeb.previewFuture = [];
     installExistingWebEditMode();
     restoreExistingWebPageCheckCache();
     refreshExistingWebVirtualLayers();
@@ -1939,7 +1950,11 @@
     const selected = state.existingWeb.selected;
     if (selected?.node?.isConnected) {
       selected.bounds = getDomNodeBounds(selected.node) || selected.bounds;
-      recordExistingWebPreviewChange("position", state.existingWeb.drag.beforeBounds, selected.bounds, "runtime-confirmed");
+      recordExistingWebPreviewChange("position", state.existingWeb.drag.beforeBounds, selected.bounds, "runtime-confirmed", {
+        domRef: selected.domRef,
+        beforeInline: state.existingWeb.drag.beforeInline,
+        afterInline: captureExistingWebInlineStyle(selected.node),
+      });
     }
     state.existingWeb.drag = null;
     renderAll();
@@ -1977,7 +1992,7 @@
       analyzerStatus: element?.inferred?.analysisStatus || "unknown",
       mapping,
       protectedBehavior,
-      editableProperties: getExistingWebEditableProperties(mapping, element),
+      editableProperties: getExistingWebEditableProperties(mapping, element, node),
       blockedReasons: getExistingWebEditBlockReasons(mapping, element, protectedBehavior),
     };
     state.existingWeb.selected = applyExistingWebCheckToSelection(selected);
@@ -2204,7 +2219,8 @@
         checks: getExistingWebPropertyChecks([], Array.from(protectedProperties), ["DOMまたは表示状態を確認できません"]),
       };
     }
-    const confirmedEditable = getExistingWebEditableProperties(mapping, element);
+    getExistingWebBackgroundProtectedProperties(element, node).forEach((property) => protectedProperties.add(property));
+    const confirmedEditable = getExistingWebEditableProperties(mapping, element, node);
     const runtimeEditable = getExistingWebRuntimeEditableProperties(element, node);
     const editableProperties = Array.from(new Set([...confirmedEditable, ...runtimeEditable]))
       .filter((property) => !protectedProperties.has(property));
@@ -2266,6 +2282,9 @@
     const computed = observed.computed || getExistingWebComputed(node);
     const tag = String(observed.tag || node?.tagName || "").toLowerCase();
     const bounds = observed.bounds || getDomNodeBounds(node);
+    if (isExistingWebPageBackgroundCandidate(element, node)) {
+      return [];
+    }
     const safePosition = ["absolute", "fixed"].includes(computed.positionType)
       && (options.allowTransformAnimation || !computed.transform)
       && !observed.layout?.flexChild
@@ -2282,6 +2301,43 @@
       props.push("size");
     }
     return props;
+  }
+
+  function getExistingWebBackgroundProtectedProperties(element, node) {
+    return isExistingWebPageBackgroundCandidate(element, node)
+      ? ["position", "size", "width", "height"]
+      : [];
+  }
+
+  function isExistingWebPageBackgroundCandidate(element, node) {
+    if (!node) {
+      return false;
+    }
+    const observed = element?.observed || {};
+    const tag = String(observed.tag || node.tagName || "").toLowerCase();
+    const bounds = observed.bounds || getDomNodeBounds(node);
+    if (!bounds || Number(bounds.width || 0) <= 0 || Number(bounds.height || 0) <= 0) {
+      return false;
+    }
+    const doc = node.ownerDocument;
+    const view = doc?.defaultView;
+    const viewportWidth = Number(view?.innerWidth || doc?.documentElement?.clientWidth || 0);
+    const viewportHeight = Number(view?.innerHeight || doc?.documentElement?.clientHeight || 0);
+    if (!viewportWidth || !viewportHeight) {
+      return false;
+    }
+    const widthRatio = Number(bounds.width || 0) / viewportWidth;
+    const heightRatio = Number(bounds.height || 0) / viewportHeight;
+    const areaRatio = (Number(bounds.width || 0) * Number(bounds.height || 0)) / (viewportWidth * viewportHeight);
+    const pageScale = (widthRatio >= 0.7 && heightRatio >= 0.55) || areaRatio >= 0.45;
+    if (!pageScale) {
+      return false;
+    }
+    const hasBackgroundSource = Boolean(observed.backgroundImage || observed.src || node.currentSrc || node.src);
+    const isDocumentSurface = node === doc?.body || node === doc?.documentElement || ["main", "section", "article"].includes(tag);
+    const roleKey = `${element?.inferred?.roleCandidate || ""} ${observed.role || ""}`.toLowerCase();
+    const backgroundRole = /background|backdrop|scene|stage|canvas|surface|hero|visual/.test(roleKey);
+    return hasBackgroundSource || isDocumentSurface || backgroundRole;
   }
 
   function isExistingWebStaticVisualElement(element, node) {
@@ -2320,7 +2376,7 @@
     const unknownReason = blockedReasons?.[0] || "要確認";
     return [
       { label: "位置", state: editable.has("position") ? "ok" : protectedSet.has("position") ? "protected" : "warning", text: editable.has("position") ? "変更できます" : protectedSet.has("position") ? "保護" : unknownReason },
-      { label: "サイズ", state: (editable.has("size") || editable.has("width") || editable.has("height")) ? "ok" : protectedSet.has("size") ? "protected" : "warning", text: (editable.has("size") || editable.has("width") || editable.has("height")) ? "変更できます" : protectedSet.has("size") ? "保護" : unknownReason },
+      { label: "サイズ", state: (editable.has("size") || editable.has("width") || editable.has("height")) ? "ok" : (protectedSet.has("size") || protectedSet.has("width") || protectedSet.has("height")) ? "protected" : "warning", text: (editable.has("size") || editable.has("width") || editable.has("height")) ? "変更できます" : (protectedSet.has("size") || protectedSet.has("width") || protectedSet.has("height")) ? "保護" : unknownReason },
       { label: "クリック", state: protectedSet.has("click") ? "protected" : "warning", text: protectedSet.has("click") ? "保護" : "変更対象外" },
     ];
   }
@@ -2545,11 +2601,14 @@
     return result?.status === "resolved" ? result.protectedBehavior || result.behavior || result : null;
   }
 
-  function getExistingWebEditableProperties(mapping, element) {
+  function getExistingWebEditableProperties(mapping, element, node = null) {
     if (!mapping || element?.inferred?.analysisStatus !== "safe-visual-edit") {
       return [];
     }
-    const protectedProperties = new Set(mapping.protectedProperties || []);
+    const protectedProperties = new Set([
+      ...(mapping.protectedProperties || []),
+      ...getExistingWebBackgroundProtectedProperties(element, node),
+    ]);
     return (mapping.editableProperties || []).filter((property) => ["position", "size", "width", "height"].includes(property) && !protectedProperties.has(property));
   }
 
@@ -2604,7 +2663,11 @@
     const beforeInline = captureExistingWebInlineStyle(selected.node);
     applyExistingWebPreviewPosition(selected, before.x + dx, before.y + dy, beforeInline);
     selected.bounds = getDomNodeBounds(selected.node) || before;
-    recordExistingWebPreviewChange("position", before, selected.bounds, "runtime-confirmed");
+    recordExistingWebPreviewChange("position", before, selected.bounds, "runtime-confirmed", {
+      domRef: selected.domRef,
+      beforeInline,
+      afterInline: captureExistingWebInlineStyle(selected.node),
+    });
     renderAll();
   }
 
@@ -2623,11 +2686,15 @@
     state.existingWeb.preview.active = true;
     state.existingWeb.preview.beforeInline = beforeInline;
     selected.bounds = getDomNodeBounds(selected.node) || before;
-    recordExistingWebPreviewChange("size", before, selected.bounds, "runtime-confirmed");
+    recordExistingWebPreviewChange("size", before, selected.bounds, "runtime-confirmed", {
+      domRef: selected.domRef,
+      beforeInline,
+      afterInline: captureExistingWebInlineStyle(selected.node),
+    });
     renderAll();
   }
 
-  function recordExistingWebPreviewChange(property, beforeBounds, afterBounds, beforeSource) {
+  function recordExistingWebPreviewChange(property, beforeBounds, afterBounds, beforeSource, options = {}) {
     const before = property === "size"
       ? { width: beforeBounds.width, height: beforeBounds.height }
       : { x: beforeBounds.x, y: beforeBounds.y };
@@ -2641,30 +2708,121 @@
       applyExistingWebSelectionClass();
       return;
     }
-    state.existingWeb.preview.changes = [{
+    const selected = state.existingWeb.selected;
+    const change = {
+      domRef: options.domRef || selected?.domRef || "",
       property,
       before,
       after,
       beforeSource,
+      beforeInline: options.beforeInline || state.existingWeb.preview?.beforeInline || null,
+      afterInline: options.afterInline || (selected?.node ? captureExistingWebInlineStyle(selected.node) : null),
       coordinateContext: "iframe-viewport-css-px",
-    }];
+    };
+    state.existingWeb.preview.changes = [change];
+    pushExistingWebPreviewHistory(change);
     applyExistingWebSelectionClass();
   }
 
-  function resetExistingWebPreview() {
-    const selected = state.existingWeb.selected;
-    const inline = state.existingWeb.preview?.beforeInline;
-    if (selected?.node?.isConnected && inline) {
-      restoreExistingWebInlineStyle(selected.node, inline);
-      selected.bounds = getDomNodeBounds(selected.node) || selected.bounds;
+  function pushExistingWebPreviewHistory(change) {
+    if (!change?.domRef || !change.beforeInline || !change.afterInline) {
+      return;
     }
+    state.existingWeb.previewHistory = [
+      ...(state.existingWeb.previewHistory || []),
+      change,
+    ].slice(-HISTORY_LIMIT);
+    state.existingWeb.previewFuture = [];
+  }
+
+  function applyExistingWebPreviewInline(change, inlineKey) {
+    const node = getExistingWebNodeByDomRef(change?.domRef);
+    const inline = change?.[inlineKey];
+    if (!node || !inline) {
+      return false;
+    }
+    restoreExistingWebInlineStyle(node, inline);
+    node.classList.toggle("__tb_existing_web_preview", inlineKey === "afterInline");
+    if (state.existingWeb.selected?.domRef === change.domRef) {
+      state.existingWeb.selected.node = node;
+      state.existingWeb.selected.bounds = getDomNodeBounds(node) || state.existingWeb.selected.bounds;
+    }
+    return true;
+  }
+
+  function syncExistingWebPreviewStateFromHistory() {
+    const latest = state.existingWeb.previewHistory?.[state.existingWeb.previewHistory.length - 1] || null;
+    state.existingWeb.preview = {
+      active: Boolean(latest),
+      changes: latest ? [latest] : [],
+    };
+    applyExistingWebSelectionClass();
+  }
+
+  function undoExistingWebPreview() {
+    const history = state.existingWeb.previewHistory || [];
+    if (!state.existingWeb.active || !history.length) {
+      return false;
+    }
+    const change = history.pop();
+    applyExistingWebPreviewInline(change, "beforeInline");
+    state.existingWeb.previewFuture = [...(state.existingWeb.previewFuture || []), change];
+    syncExistingWebPreviewStateFromHistory();
+    refreshExistingWebVirtualLayers();
+    renderAll();
+    return true;
+  }
+
+  function redoExistingWebPreview() {
+    const future = state.existingWeb.previewFuture || [];
+    if (!state.existingWeb.active || !future.length) {
+      return false;
+    }
+    const change = future.pop();
+    applyExistingWebPreviewInline(change, "afterInline");
+    state.existingWeb.previewHistory = [...(state.existingWeb.previewHistory || []), change];
+    syncExistingWebPreviewStateFromHistory();
+    refreshExistingWebVirtualLayers();
+    renderAll();
+    return true;
+  }
+
+  function resetExistingWebPreview(options = {}) {
+    const applied = new Set();
+    const originalByDomRef = new Map();
+    (state.existingWeb.previewHistory || []).forEach((change) => {
+      if (change?.domRef && !originalByDomRef.has(change.domRef)) {
+        originalByDomRef.set(change.domRef, change);
+      }
+    });
+    originalByDomRef.forEach((change) => {
+      if (applied.has(change.domRef)) {
+        return;
+      }
+      if (applyExistingWebPreviewInline(change, "beforeInline")) {
+        applied.add(change.domRef);
+      }
+    });
+    (state.existingWeb.preview?.changes || []).forEach((change) => {
+      if (!change?.domRef || applied.has(change.domRef)) {
+        return;
+      }
+      if (applyExistingWebPreviewInline(change, "beforeInline")) {
+        applied.add(change.domRef);
+      }
+    });
     state.existingWeb.preview = {
       active: false,
       changes: [],
     };
+    state.existingWeb.previewHistory = [];
+    state.existingWeb.previewFuture = [];
     state.existingWeb.drag = null;
     applyExistingWebSelectionClass();
-    renderLayerList();
+    refreshExistingWebVirtualLayers();
+    if (!options.skipRender) {
+      renderAll();
+    }
   }
 
   function sendExistingWebPreviewToSafeChange() {
@@ -3449,6 +3607,7 @@
 
   function buildExistingWebFinalCheckFromAi(target, localCheck, element, node) {
     const protectedProperties = new Set(localCheck.protectedProperties || []);
+    getExistingWebBackgroundProtectedProperties(element, node).forEach((property) => protectedProperties.add(property));
     if (localCheck.status?.key === "protected") {
       protectedProperties.add("click");
     }
@@ -10309,8 +10468,22 @@
       els.canvasViewport.classList.remove("is-split-view", "is-split-vertical");
       els.canvasViewport.classList.add("is-existing-web-view");
     }
-    if (els.existingWebFrame && els.existingWebFrame.src !== state.existingWeb.currentUrl) {
-      els.existingWebFrame.src = state.existingWeb.currentUrl;
+    if (els.existingWebFrame) {
+      const reloadToken = String(state.existingWeb.reloadToken || "");
+      const needsReload = els.existingWebFrame.src !== state.existingWeb.currentUrl
+        || els.existingWebFrame.dataset.reloadToken !== reloadToken;
+      if (needsReload) {
+        els.existingWebFrame.dataset.reloadToken = reloadToken;
+        try {
+          if (els.existingWebFrame.src === state.existingWeb.currentUrl && els.existingWebFrame.contentWindow?.location) {
+            els.existingWebFrame.contentWindow.location.replace(state.existingWeb.currentUrl);
+          } else {
+            els.existingWebFrame.src = state.existingWeb.currentUrl;
+          }
+        } catch (error) {
+          els.existingWebFrame.src = state.existingWeb.currentUrl;
+        }
+      }
     }
     if (els.existingWebTitle) {
       els.existingWebTitle.textContent = state.existingWeb.label || state.existingWeb.sourcePath || "既存Webページ";
@@ -11884,8 +12057,10 @@
     els.previewButton.classList.toggle("is-active", state.preview);
     els.toggleHitAreas.classList.toggle("is-active", state.showHitAreas);
     els.publishButton.disabled = !state.finalPreviewComplete;
-    els.undoButton.disabled = !state.history.length;
-    els.redoButton.disabled = !state.future.length;
+    const existingWebUndo = state.existingWeb.active && Boolean(state.existingWeb.previewHistory?.length);
+    const existingWebRedo = state.existingWeb.active && Boolean(state.existingWeb.previewFuture?.length);
+    els.undoButton.disabled = !existingWebUndo && !state.history.length;
+    els.redoButton.disabled = !existingWebRedo && !state.future.length;
     const hasSelection = Boolean(getSelectedLayer());
     [
       els.bringFront,
@@ -16778,6 +16953,12 @@ ${layersHtml}
   }
 
   function undo() {
+    if (undoExistingWebPreview()) {
+      return;
+    }
+    if (state.existingWeb.active) {
+      return;
+    }
     if (!state.history.length) {
       return;
     }
@@ -16791,6 +16972,12 @@ ${layersHtml}
   }
 
   function redo() {
+    if (redoExistingWebPreview()) {
+      return;
+    }
+    if (state.existingWeb.active) {
+      return;
+    }
     if (!state.future.length) {
       return;
     }
