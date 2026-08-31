@@ -1861,6 +1861,49 @@
         outline: 3px dashed #fbbf24 !important;
         outline-offset: 5px !important;
       }
+      .__tb_existing_web_transform_box {
+        position: fixed !important;
+        z-index: 2147483646 !important;
+        box-sizing: border-box !important;
+        border: 2px solid #22d3ee !important;
+        pointer-events: auto !important;
+        cursor: move !important;
+        filter: drop-shadow(0 0 5px rgba(3, 7, 18, 0.82)) !important;
+      }
+      .__tb_existing_web_handle {
+        position: absolute !important;
+        width: 13px !important;
+        height: 13px !important;
+        border-radius: 999px !important;
+        border: 2px solid #031018 !important;
+        background: #67e8f9 !important;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.86), 0 0 10px rgba(34, 211, 238, 0.72) !important;
+        pointer-events: auto !important;
+      }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="nw"] {
+        left: 0 !important;
+        top: 0 !important;
+        transform: translate(-50%, -50%) !important;
+        cursor: nwse-resize !important;
+      }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="ne"] {
+        left: 100% !important;
+        top: 0 !important;
+        transform: translate(-50%, -50%) !important;
+        cursor: nesw-resize !important;
+      }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="se"] {
+        left: 100% !important;
+        top: 100% !important;
+        transform: translate(-50%, -50%) !important;
+        cursor: nwse-resize !important;
+      }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="sw"] {
+        left: 0 !important;
+        top: 100% !important;
+        transform: translate(-50%, -50%) !important;
+        cursor: nesw-resize !important;
+      }
     `;
     doc.head?.appendChild(style);
   }
@@ -1878,19 +1921,39 @@
       return;
     }
     stopExistingWebNativeAction(event);
+    const handle = event.target?.closest?.(".__tb_existing_web_handle");
+    if (handle) {
+      beginExistingWebResizeDrag(event, handle.dataset.tbExistingWebHandle || "");
+      return;
+    }
+    if (event.target?.closest?.(".__tb_existing_web_transform_box")) {
+      beginExistingWebMoveDrag(event, state.existingWeb.selected);
+      return;
+    }
     const selection = selectExistingWebElement(resolveExistingWebSelectableNode(event.target, event.clientX, event.clientY));
     if (!selection || !canExistingWebPreviewProperty(selection, "position")) {
       renderAll();
       return;
     }
+    beginExistingWebMoveDrag(event, selection);
+  }
+
+  function beginExistingWebMoveDrag(event, selection) {
+    if (!selection || !selection.node?.isConnected || !canExistingWebPreviewProperty(selection, "position")) {
+      renderAll();
+      return;
+    }
+    const beforeBounds = getDomNodeBounds(selection.node) || selection.bounds;
     state.existingWeb.drag = {
+      type: "move",
       domRef: selection.domRef,
+      view: event.view || event.target?.ownerDocument?.defaultView || null,
       startClientX: event.clientX,
       startClientY: event.clientY,
-      beforeBounds: { ...selection.bounds },
+      beforeBounds: { ...beforeBounds },
       beforeInline: captureExistingWebInlineStyle(selection.node),
     };
-    selection.node.setPointerCapture?.(event.pointerId);
+    event.target?.setPointerCapture?.(event.pointerId);
   }
 
   function handleExistingWebClick(event) {
@@ -1898,6 +1961,10 @@
       return;
     }
     stopExistingWebNativeAction(event);
+    if (event.target?.closest?.(".__tb_existing_web_transform_box")) {
+      renderExistingWebTransformBox();
+      return;
+    }
     selectExistingWebElement(resolveExistingWebSelectableNode(event.target, event.clientX, event.clientY));
     renderAll();
   }
@@ -1935,14 +2002,22 @@
     if (!drag || state.existingWeb.mode !== "edit") {
       return false;
     }
+    const delta = getExistingWebDragDelta(event, drag);
+    if (!delta) {
+      return false;
+    }
     const selected = state.existingWeb.selected;
     if (!selected || selected.domRef !== drag.domRef || !selected.node?.isConnected) {
       state.existingWeb.drag = null;
       return false;
     }
-    const dx = Math.round((event.clientX - drag.startClientX) * 100) / 100;
-    const dy = Math.round((event.clientY - drag.startClientY) * 100) / 100;
-    applyExistingWebPreviewPosition(selected, drag.beforeBounds.x + dx, drag.beforeBounds.y + dy, drag.beforeInline);
+    if (drag.type === "resize") {
+      const next = getExistingWebResizeBounds(drag, delta.x, delta.y, selected);
+      applyExistingWebPreviewBounds(selected, next, drag.beforeInline, drag.beforeBounds);
+    } else {
+      applyExistingWebPreviewPosition(selected, drag.beforeBounds.x + delta.x, drag.beforeBounds.y + delta.y, drag.beforeInline, drag.beforeBounds);
+    }
+    renderExistingWebTransformBox();
     return true;
   }
 
@@ -1953,7 +2028,7 @@
     const selected = state.existingWeb.selected;
     if (selected?.node?.isConnected) {
       selected.bounds = getDomNodeBounds(selected.node) || selected.bounds;
-      recordExistingWebPreviewChange("position", state.existingWeb.drag.beforeBounds, selected.bounds, "runtime-confirmed", {
+      recordExistingWebPreviewChange(state.existingWeb.drag.type === "resize" ? "size" : "position", state.existingWeb.drag.beforeBounds, selected.bounds, "runtime-confirmed", {
         domRef: selected.domRef,
         beforeInline: state.existingWeb.drag.beforeInline,
         afterInline: captureExistingWebInlineStyle(selected.node),
@@ -1962,6 +2037,38 @@
     state.existingWeb.drag = null;
     renderAll();
     return true;
+  }
+
+  function getExistingWebDragDelta(event, drag) {
+    const view = event.view || event.target?.ownerDocument?.defaultView || null;
+    if (drag.view && view && drag.view !== view) {
+      return null;
+    }
+    return {
+      x: Math.round((event.clientX - drag.startClientX) * 100) / 100,
+      y: Math.round((event.clientY - drag.startClientY) * 100) / 100,
+    };
+  }
+
+  function beginExistingWebResizeDrag(event, handle) {
+    const selected = state.existingWeb.selected;
+    if (!selected || !selected.node?.isConnected || !canExistingWebPreviewProperty(selected, "size")) {
+      return;
+    }
+    const beforeBounds = getDomNodeBounds(selected.node) || selected.bounds;
+    state.existingWeb.drag = {
+      type: "resize",
+      handle,
+      domRef: selected.domRef,
+      view: event.view || event.target?.ownerDocument?.defaultView || null,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      beforeBounds: { ...beforeBounds },
+      beforeInline: captureExistingWebInlineStyle(selected.node),
+      aspectRatio: beforeBounds?.width && beforeBounds?.height ? beforeBounds.width / beforeBounds.height : 1,
+      keepAspectRatio: isExistingWebAspectRatioLocked(selected.node),
+    };
+    event.target.setPointerCapture?.(event.pointerId);
   }
 
   function selectExistingWebElement(node) {
@@ -1977,7 +2084,7 @@
     const analysis = analyzeExistingWebDocument();
     const element = analysis?.elements?.find((item) => item.observed?.domRef === domRef) || null;
     const mapping = findExistingWebMapping(domRef);
-    const bounds = element?.observed?.bounds || getDomNodeBounds(node) || {};
+    const bounds = getDomNodeBounds(node) || element?.observed?.bounds || {};
     const computed = element?.observed?.computed || getExistingWebComputed(node);
     const protectedBehavior = getExistingWebProtectedBehavior(mapping);
     const selected = {
@@ -2736,6 +2843,7 @@
       if (state.existingWeb.preview?.active) {
         selectedNode.classList.add("__tb_existing_web_preview");
       }
+      renderExistingWebTransformBox();
     }
   }
 
@@ -2743,6 +2851,39 @@
     doc.querySelectorAll?.(".__tb_existing_web_selected, .__tb_existing_web_preview").forEach((node) => {
       node.classList.remove("__tb_existing_web_selected", "__tb_existing_web_preview");
     });
+    removeExistingWebTransformBox(doc);
+  }
+
+  function removeExistingWebTransformBox(doc = getExistingWebDocument()) {
+    doc?.querySelectorAll?.(".__tb_existing_web_transform_box").forEach((node) => node.remove());
+  }
+
+  function renderExistingWebTransformBox() {
+    const doc = getExistingWebDocument();
+    const selected = state.existingWeb.selected;
+    if (!doc || state.existingWeb.mode !== "edit" || !selected?.node?.isConnected) {
+      removeExistingWebTransformBox(doc);
+      return;
+    }
+    removeExistingWebTransformBox(doc);
+    const bounds = getDomNodeBounds(selected.node) || selected.bounds;
+    if (!bounds || Number(bounds.width || 0) <= 0 || Number(bounds.height || 0) <= 0) {
+      return;
+    }
+    const box = doc.createElement("div");
+    box.className = "__tb_existing_web_transform_box";
+    box.style.left = `${Math.round(Number(bounds.x || 0) * 100) / 100}px`;
+    box.style.top = `${Math.round(Number(bounds.y || 0) * 100) / 100}px`;
+    box.style.width = `${Math.round(Number(bounds.width || 0) * 100) / 100}px`;
+    box.style.height = `${Math.round(Number(bounds.height || 0) * 100) / 100}px`;
+    box.setAttribute("aria-hidden", "true");
+    ["nw", "ne", "se", "sw"].forEach((handle) => {
+      const dot = doc.createElement("span");
+      dot.className = "__tb_existing_web_handle";
+      dot.dataset.tbExistingWebHandle = handle;
+      box.appendChild(dot);
+    });
+    doc.body?.appendChild(box);
   }
 
   function findExistingWebMapping(domRef) {
@@ -2802,7 +2943,7 @@
     return Boolean(selection?.editableProperties?.includes(property) && !selection.blockedReasons?.length);
   }
 
-  function applyExistingWebPreviewPosition(selection, viewportX, viewportY, beforeInline) {
+  function applyExistingWebPreviewPosition(selection, viewportX, viewportY, beforeInline, referenceBounds = null) {
     const node = selection?.node;
     if (!node) {
       return;
@@ -2811,10 +2952,11 @@
     if (!["absolute", "fixed", "relative"].includes(computed.positionType) && !isExistingWebNormalFreePreviewMode()) {
       return;
     }
-    const dx = Math.round((viewportX - selection.bounds.x) * 100) / 100;
-    const dy = Math.round((viewportY - selection.bounds.y) * 100) / 100;
+    const baseBounds = referenceBounds || selection.bounds || getDomNodeBounds(node) || {};
+    const dx = Math.round((viewportX - baseBounds.x) * 100) / 100;
+    const dy = Math.round((viewportY - baseBounds.y) * 100) / 100;
     if (!["absolute", "fixed", "relative"].includes(computed.positionType)) {
-      const baseTransform = beforeInline?.transform || "";
+      const baseTransform = beforeInline?.transform || (computed.transform && computed.transform !== "none" ? computed.transform : "");
       node.style.transform = `${baseTransform} translate(${dx}px, ${dy}px)`.trim();
       node.classList.add("__tb_existing_web_preview");
       state.existingWeb.preview.active = true;
@@ -2831,6 +2973,73 @@
     state.existingWeb.preview.beforeInline = beforeInline;
   }
 
+  function applyExistingWebPreviewBounds(selection, bounds, beforeInline, referenceBounds = null) {
+    const node = selection?.node;
+    if (!node || !bounds) {
+      return;
+    }
+    applyExistingWebPreviewPosition(selection, bounds.x, bounds.y, beforeInline, referenceBounds);
+    node.style.width = `${Math.max(1, Math.round(Number(bounds.width || 1) * 100) / 100)}px`;
+    node.style.height = `${Math.max(1, Math.round(Number(bounds.height || 1) * 100) / 100)}px`;
+    node.classList.add("__tb_existing_web_preview");
+    state.existingWeb.preview.active = true;
+    state.existingWeb.preview.beforeInline = beforeInline;
+  }
+
+  function getExistingWebResizeBounds(drag, dx, dy, selection) {
+    const start = drag.beforeBounds || selection?.bounds || {};
+    const handle = drag.handle || "se";
+    const minSize = 8;
+    let left = Number(start.x || 0);
+    let top = Number(start.y || 0);
+    let width = Number(start.width || minSize);
+    let height = Number(start.height || minSize);
+    if (handle.includes("e")) {
+      width += dx;
+    }
+    if (handle.includes("s")) {
+      height += dy;
+    }
+    if (handle.includes("w")) {
+      left += dx;
+      width -= dx;
+    }
+    if (handle.includes("n")) {
+      top += dy;
+      height -= dy;
+    }
+    width = Math.max(minSize, width);
+    height = Math.max(minSize, height);
+    if (drag.keepAspectRatio) {
+      const ratio = Number(drag.aspectRatio || 1) || 1;
+      const dominant = Math.abs(width - Number(start.width || width)) >= Math.abs(height - Number(start.height || height))
+        ? "width"
+        : "height";
+      if (dominant === "width") {
+        height = width / ratio;
+      } else {
+        width = height * ratio;
+      }
+      if (handle.includes("w")) {
+        left = Number(start.x || 0) + Number(start.width || width) - width;
+      }
+      if (handle.includes("n")) {
+        top = Number(start.y || 0) + Number(start.height || height) - height;
+      }
+    }
+    return {
+      x: Math.round(left * 100) / 100,
+      y: Math.round(top * 100) / 100,
+      width: Math.round(width * 100) / 100,
+      height: Math.round(height * 100) / 100,
+    };
+  }
+
+  function isExistingWebAspectRatioLocked(node) {
+    const tag = String(node?.tagName || "").toLowerCase();
+    return ["img", "video", "svg", "canvas", "picture"].includes(tag);
+  }
+
   function nudgeExistingWebSelection(dx, dy) {
     const selected = state.existingWeb.selected;
     if (!selected || !canExistingWebPreviewProperty(selected, "position")) {
@@ -2840,7 +3049,7 @@
     }
     const before = getDomNodeBounds(selected.node) || selected.bounds;
     const beforeInline = captureExistingWebInlineStyle(selected.node);
-    applyExistingWebPreviewPosition(selected, before.x + dx, before.y + dy, beforeInline);
+    applyExistingWebPreviewPosition(selected, before.x + dx, before.y + dy, beforeInline, before);
     selected.bounds = getDomNodeBounds(selected.node) || before;
     recordExistingWebPreviewChange("position", before, selected.bounds, "runtime-confirmed", {
       domRef: selected.domRef,
@@ -2859,11 +3068,12 @@
     }
     const before = getDomNodeBounds(selected.node) || selected.bounds;
     const beforeInline = captureExistingWebInlineStyle(selected.node);
-    selected.node.style.width = `${Math.max(1, Math.round((before.width + dw) * 100) / 100)}px`;
-    selected.node.style.height = `${Math.max(1, Math.round((before.height + dh) * 100) / 100)}px`;
-    selected.node.classList.add("__tb_existing_web_preview");
-    state.existingWeb.preview.active = true;
-    state.existingWeb.preview.beforeInline = beforeInline;
+    const ratio = before.width && before.height ? before.width / before.height : 1;
+    const nextWidth = Math.max(1, Math.round((before.width + dw) * 100) / 100);
+    const nextHeight = isExistingWebAspectRatioLocked(selected.node)
+      ? Math.max(1, Math.round((nextWidth / Math.max(ratio, 0.01)) * 100) / 100)
+      : Math.max(1, Math.round((before.height + dh) * 100) / 100);
+    applyExistingWebPreviewBounds(selected, { ...before, width: nextWidth, height: nextHeight }, beforeInline, before);
     selected.bounds = getDomNodeBounds(selected.node) || before;
     recordExistingWebPreviewChange("size", before, selected.bounds, "runtime-confirmed", {
       domRef: selected.domRef,
