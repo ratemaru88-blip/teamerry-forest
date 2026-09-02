@@ -253,6 +253,259 @@
     };
   }
 
+  async function runBatchApplyPreflight(input = {}) {
+    const now = new Date().toISOString();
+    const candidates = Array.isArray(input.candidates) ? input.candidates : [];
+    const approvedSignatures = input.approvedSignatures || {};
+    const createSignature = input.createSignature || window.TBalanceSafePatch?.createCandidateSignature;
+    const sourceWriterClient = input.sourceWriterClient;
+    const checks = [];
+
+    function block(reason, message, extra = {}) {
+      checks.push({ id: reason, status: "failed", message });
+      return buildBatchPreflightResult("preflight-blocked", reason, message, {
+        candidates,
+        checks,
+        startedAt: now,
+        ...extra,
+      });
+    }
+
+    if (!candidates.length) {
+      return block("missing-candidates", "Batch Apply対象のCandidateがありません。");
+    }
+    if (typeof createSignature !== "function") {
+      return block("signature-unavailable", "Candidate Signatureを確認できません。");
+    }
+    if (!sourceWriterClient) {
+      return block("source-writer-unavailable", "Source Writer Clientがありません。");
+    }
+
+    const operations = [];
+    for (const [index, candidate] of candidates.entries()) {
+      if (!candidate || candidate.status !== "ready-for-review") {
+        return block("candidate-not-ready", "Batch内にready-for-reviewではないCandidateがあります。", { candidateIndex: index, candidate });
+      }
+      if (candidate.review?.status !== "approved") {
+        return block("not-approved", "Batch内に未承認のCandidateがあります。", { candidateIndex: index, candidate });
+      }
+      const approvedSignature = approvedSignatures[candidate.signature] || candidate.review?.approvedSignature || candidate.signature;
+      const currentSignature = createSignature(candidate);
+      if (!approvedSignature || currentSignature !== approvedSignature || currentSignature !== candidate.signature) {
+        return block("approval-invalid", "Batch内のCandidateが承認後に変更されています。", { candidateIndex: index, candidate, currentSignature });
+      }
+      const candidateOperations = Array.isArray(candidate.operations) ? candidate.operations : [];
+      if (!candidateOperations.length) {
+        return block("invalid-operation-count", "Batch内にSource OperationがないCandidateがあります。", { candidateIndex: index, candidate });
+      }
+      candidateOperations.forEach((operation, operationIndex) => {
+        operations.push({ candidate, candidateIndex: index, operation, operationIndex });
+      });
+    }
+    checks.push({ id: "batch-candidate-signatures", status: "passed", message: `${candidates.length}件のCandidate承認を確認。` });
+
+    const conflictKeys = new Set();
+    for (const entry of operations) {
+      const operation = entry.operation || {};
+      if (operation.type !== SUPPORTED_OPERATION) {
+        return block("unsupported-operation", `${operation.type || "unknown"} はApply対象外です。`, entry);
+      }
+      if (entry.candidate.protectedProperties?.includes(operation.property)) {
+        return block("protected-property", `${operation.property} はprotectedPropertiesに含まれています。`, entry);
+      }
+      const sourceRef = operation.sourceRef || operation.source || {};
+      const sourcePath = sourceRef.sourcePath || sourceRef.path || "";
+      if (!sourcePath || !sourcePath.endsWith(".css")) {
+        return block("unsupported-source-type", "v0.1では実CSS Source FileだけApplyできます。", entry);
+      }
+      if (sourceRef.sourceType && sourceRef.sourceType !== "stylesheet-rule") {
+        return block("unsupported-source-type", "inline styleやHTML SourceへのApplyはv0.1対象外です。", entry);
+      }
+      const conflictKey = [
+        sourcePath,
+        sourceRef.selector || "",
+        sourceRef.media || operation.source?.media || "",
+        operation.property || "",
+      ].join("\u0001");
+      if (conflictKeys.has(conflictKey)) {
+        return block("batch-conflict", "同じSource File / Selector / Propertyへの複数変更があるためBatch Applyできません。", entry);
+      }
+      conflictKeys.add(conflictKey);
+    }
+    checks.push({ id: "batch-conflict", status: "passed", message: "Batch内の同一Source Declaration競合なし。" });
+
+    let capabilities;
+    try {
+      capabilities = await sourceWriterClient.capabilities();
+    } catch (error) {
+      return block("source-writer-unavailable", "Source Writer Bridgeへ接続できません。", { error: error?.message || String(error) });
+    }
+    if (!capabilities?.ok || !capabilities.read || !capabilities.write) {
+      return block(capabilities?.write ? "source-writer-unavailable" : "writer-disabled", "Source Writer Bridgeがread/write可能ではありません。", { capabilities });
+    }
+    if (!capabilities.allowedExtensions?.includes(".css")) {
+      return block("unsupported-source-type", "Source Writer Bridgeが.cssを許可していません。", { capabilities });
+    }
+    checks.push({ id: "source-writer-capability", status: "passed", message: "Source Writer read/write/.cssを確認。" });
+
+    const grouped = new Map();
+    operations.forEach((entry) => {
+      const sourceRef = entry.operation.sourceRef || entry.operation.source || {};
+      const sourcePath = sourceRef.sourcePath || sourceRef.path || "";
+      if (!grouped.has(sourcePath)) {
+        grouped.set(sourcePath, []);
+      }
+      grouped.get(sourcePath).push(entry);
+    });
+
+    const sourceFiles = [];
+    for (const [sourcePath, entries] of grouped.entries()) {
+      let currentSource;
+      try {
+        currentSource = await sourceWriterClient.read(sourcePath);
+      } catch (error) {
+        const normalized = normalizeClientError(error);
+        return block(normalized.errorCode || "source-read-failed", normalized.error || "Source Writerで実Sourceを読めません。", { error: normalized, sourcePath });
+      }
+      if (!currentSource?.ok) {
+        return block(currentSource?.errorCode || "source-read-failed", currentSource?.error || "Source Writer read failed.", { currentSource, sourcePath });
+      }
+      let expectedSource = currentSource.content;
+      const sourceChanges = [];
+      for (const entry of entries) {
+        const operation = entry.operation;
+        const sourceRef = operation.sourceRef || operation.source || {};
+        const resolution = resolveCssDeclaration(expectedSource, {
+          selector: sourceRef.selector,
+          property: operation.property,
+          media: sourceRef.media || operation.source?.media || "",
+        });
+        if (resolution.status !== "resolved") {
+          return block(resolution.reason || resolution.status, resolution.message || "CSS Declarationを一意に解決できません。", { sourcePath, resolution, entry });
+        }
+        if (normalizeCssValue(resolution.declaration.value) !== normalizeCssValue(operation.before)) {
+          if (normalizeCssValue(resolution.declaration.value) === normalizeCssValue(operation.after)) {
+            return block("already-applied", "現在SourceはすでにAfter値です。同じBatchは再Applyしません。", { sourcePath, resolution, entry, status: "already-applied" });
+          }
+          return block("before-mismatch", "Apply直前のSource値がCandidate beforeと一致しません。", { sourcePath, resolution, entry });
+        }
+        const expected = buildExpectedSource(expectedSource, resolution.declaration, operation.after, operation.priority || resolution.declaration.priority || "");
+        if (!expected.ok) {
+          return block(expected.reason || "expected-source-failed", expected.message || "Expected Sourceを生成できません。", { sourcePath, resolution, entry });
+        }
+        const diffValidation = validateSingleDeclarationDiff(expectedSource, expected.content, operation, resolution.declaration);
+        if (!diffValidation.ok) {
+          return block(diffValidation.reason || "unexpected-diff", diffValidation.message || "Expected Diffが1 Declarationだけではありません。", { sourcePath, resolution, expected, entry });
+        }
+        expectedSource = expected.content;
+        sourceChanges.push({
+          candidateIndex: entry.candidateIndex,
+          operationIndex: entry.operationIndex,
+          selector: sourceRef.selector,
+          media: sourceRef.media || null,
+          property: operation.property,
+          before: operation.before,
+          after: operation.after,
+        });
+      }
+      const expectedAfterSha256 = await sha256Text(expectedSource);
+      sourceFiles.push({
+        path: currentSource.path,
+        beforeSha256: currentSource.sha256,
+        expectedAfterSha256,
+        byteLength: currentSource.byteLength,
+        originalSource: currentSource.content,
+        expectedSource,
+        sourceChanges,
+      });
+    }
+    checks.push({ id: "batch-expected-source", status: "passed", message: `${sourceFiles.length}ファイルのExpected Sourceを生成。` });
+
+    return {
+      ok: true,
+      safeApplyVersion: SAFE_APPLY_VERSION,
+      batchApplyVersion: "0.1",
+      status: "ready-to-apply",
+      reason: "",
+      message: `${candidates.length}件のBatch Preflight passed. Human Final Confirmation後に実Sourceへ適用できます。`,
+      generatedAt: now,
+      candidateSignatures: candidates.map((candidate) => candidate.signature),
+      summary: {
+        totalCandidates: candidates.length,
+        totalOperations: operations.length,
+        sourceFiles: sourceFiles.length,
+      },
+      sourceFiles,
+      operations: operations.map((entry) => cloneJsonValue(entry.operation)),
+      diffText: buildBatchDiffText(sourceFiles),
+      validation: {
+        preflight: "passed",
+        expectedDiffOnly: true,
+        checks,
+      },
+      policy: buildApplyPolicy(),
+    };
+  }
+
+  async function applyApprovedBatch(input = {}) {
+    const preflight = input.preflight || null;
+    const sourceWriterClient = input.sourceWriterClient;
+    if (!preflight?.ok || preflight.status !== "ready-to-apply" || !Array.isArray(preflight.sourceFiles)) {
+      return buildApplyResult("preflight-blocked", "not-ready", "Batch Preflightが成功していません。", { preflight });
+    }
+    const written = [];
+    try {
+      for (const sourceFile of preflight.sourceFiles) {
+        const writeResult = await sourceWriterClient.write({
+          path: sourceFile.path,
+          expectedSha256: sourceFile.beforeSha256,
+          newContent: sourceFile.expectedSource,
+          expectedNewSha256: sourceFile.expectedAfterSha256,
+        });
+        if (!writeResult?.ok || writeResult.status !== "written" || writeResult.verified !== true) {
+          throw buildBatchWriteError("source-write-failed", "Source Writer write failed.", { sourceFile, writeResult });
+        }
+        const afterRead = await sourceWriterClient.read(sourceFile.path);
+        if (!afterRead?.ok || afterRead.sha256 !== sourceFile.expectedAfterSha256 || afterRead.content !== sourceFile.expectedSource) {
+          throw buildBatchWriteError("unexpected-actual-diff", "Write後SourceがExpected Sourceと一致しません。", { sourceFile, writeResult, afterRead });
+        }
+        written.push({ sourceFile, writeResult, afterSha256: afterRead.sha256 });
+      }
+    } catch (error) {
+      const rollback = await rollbackBatchSources(written, sourceWriterClient);
+      return buildApplyResult(rollback.ok ? "rolled-back" : "rollback-failed", error.errorCode || "batch-write-failed", error.message || "Batch Apply failed.", {
+        preflight,
+        error: error.payload || normalizeClientError(error),
+        written: written.map((item) => ({ path: item.sourceFile.path, afterSha256: item.afterSha256 })),
+        rollback,
+      });
+    }
+    return {
+      ok: true,
+      safeApplyVersion: SAFE_APPLY_VERSION,
+      batchApplyVersion: "0.1",
+      status: "applied",
+      appliedAt: new Date().toISOString(),
+      candidateSignatures: cloneJsonValue(preflight.candidateSignatures || []),
+      summary: cloneJsonValue(preflight.summary || {}),
+      sourceFiles: written.map((item) => ({
+        path: item.sourceFile.path,
+        beforeSha256: item.sourceFile.beforeSha256,
+        afterSha256: item.afterSha256,
+      })),
+      sourceChanges: preflight.sourceFiles.flatMap((file) => file.sourceChanges || []),
+      validation: {
+        preflight: "passed",
+        sourceWrite: "passed",
+        sourceReadBack: "passed",
+        expectedDiffOnly: true,
+        actualDiffOnly: true,
+      },
+      policy: buildApplyPolicy(),
+      writeResults: written.map((item) => item.writeResult),
+    };
+  }
+
   function resolveCssDeclaration(sourceText, query = {}) {
     if (!query.selector || !query.property) {
       return { status: "unresolved", reason: "source-location-unresolved", message: "selector/propertyが不足しています。" };
@@ -428,6 +681,59 @@
     }
   }
 
+  async function rollbackBatchSources(written, sourceWriterClient) {
+    const results = [];
+    for (const item of [...written].reverse()) {
+      try {
+        const latest = await sourceWriterClient.read(item.sourceFile.path);
+        const rollbackResult = await sourceWriterClient.write({
+          path: item.sourceFile.path,
+          expectedSha256: latest.sha256,
+          newContent: item.sourceFile.originalSource,
+          expectedNewSha256: item.sourceFile.beforeSha256,
+        });
+        results.push({ path: item.sourceFile.path, ok: Boolean(rollbackResult?.ok), rollbackResult });
+      } catch (error) {
+        results.push({ path: item.sourceFile.path, ok: false, error: normalizeClientError(error) });
+      }
+    }
+    return {
+      ok: results.every((result) => result.ok),
+      results,
+    };
+  }
+
+  function buildBatchWriteError(errorCode, message, payload = {}) {
+    const error = new Error(message);
+    error.errorCode = errorCode;
+    error.payload = payload;
+    return error;
+  }
+
+  function buildBatchPreflightResult(status, reason, message, extra = {}) {
+    return {
+      ok: false,
+      safeApplyVersion: SAFE_APPLY_VERSION,
+      batchApplyVersion: "0.1",
+      status,
+      reason,
+      message,
+      generatedAt: extra.startedAt || new Date().toISOString(),
+      candidateSignatures: (extra.candidates || []).map((candidate) => candidate?.signature || ""),
+      summary: {
+        totalCandidates: (extra.candidates || []).length,
+        totalOperations: 0,
+        sourceFiles: 0,
+      },
+      validation: {
+        preflight: "failed",
+        checks: cloneJsonValue(extra.checks || []),
+      },
+      policy: buildApplyPolicy(),
+      ...Object.fromEntries(Object.entries(extra).filter(([key]) => !["candidates", "checks", "startedAt"].includes(key))),
+    };
+  }
+
   function buildPreflightResult(status, reason, message, extra = {}) {
     return {
       ok: false,
@@ -480,6 +786,18 @@
       `- ${operation.property}: ${operation.before};`,
       `+ ${operation.property}: ${operation.after};`,
     ].join("\n");
+  }
+
+  function buildBatchDiffText(sourceFiles) {
+    const lines = ["Safe Batch Apply v0.1", ""];
+    (sourceFiles || []).forEach((sourceFile) => {
+      lines.push(`File: ${sourceFile.path || "-"}`);
+      (sourceFile.sourceChanges || []).forEach((change) => {
+        lines.push(`- ${change.selector || "-"} { ${change.property}: ${change.before} -> ${change.after} }`);
+      });
+      lines.push("");
+    });
+    return lines.join("\n").trim();
   }
 
   async function readJsonResponse(response) {
@@ -547,6 +865,8 @@
     createSourceWriterClient,
     runApplyPreflight,
     applyApprovedCandidate,
+    runBatchApplyPreflight,
+    applyApprovedBatch,
     resolveCssDeclaration,
     buildExpectedSource,
   };

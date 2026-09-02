@@ -217,6 +217,7 @@
       viewState: "",
       message: "",
       confirmedMappings: [],
+      runtimeMappings: [],
       mappingWarning: "",
       manifestProjectId: "sample-project",
       manifestPageId: "page-home",
@@ -281,6 +282,15 @@
       previewHistory: [],
       previewFuture: [],
       impactAnalysis: null,
+      workflow: {
+        status: "clean",
+        tab: "layers",
+        analysisSignature: "",
+        applySignature: "",
+        message: "",
+        lastResult: null,
+      },
+      inspectorExpanded: false,
       reloadToken: "",
       drag: null,
     },
@@ -718,7 +728,9 @@
     els.existingWebAudioToggle?.addEventListener("click", toggleExistingWebAudio);
     els.existingWebPageCheck?.addEventListener("click", runExistingWebPageCheck);
     els.existingWebAnalyze?.addEventListener("click", openExistingWebInAnalyzer);
-    els.existingWebCreateSafeChange?.addEventListener("click", sendExistingWebPreviewToSafeChange);
+    els.existingWebCreateSafeChange?.addEventListener("click", () => {
+      handleExistingWebMainAction();
+    });
     els.existingWebResetPreview?.addEventListener("click", resetExistingWebPreview);
     els.existingWebBackToCanvas?.addEventListener("click", closeExistingWebView);
     els.existingWebFrame?.addEventListener("load", handleExistingWebFrameLoad);
@@ -755,6 +767,14 @@
       }
       event.preventDefault();
       shareSafeChangeInstructionWithAi();
+    });
+    document.addEventListener("click", (event) => {
+      if (!state.existingWeb.active || !event.target?.closest?.(".tb-color-head button")) {
+        return;
+      }
+      state.existingWeb.inspectorExpanded = false;
+      els.rightPanel?.classList.remove("is-existing-web-inspector-expanded");
+      renderAll();
     });
     els.cancelExistingWebAiShare?.addEventListener("click", cancelExistingWebAiShare);
     els.pasteExistingWebAiResult?.addEventListener("click", pasteExistingWebAiResultFromClipboard);
@@ -1544,6 +1564,7 @@
     if (state.existingWeb.active) {
       resetExistingWebPreview({ skipRender: true });
     }
+    state.analyzer.runtimeMappings = [];
     if (info.adapterId && info.adapterId !== state.analyzer.adapterId) {
       setAnalyzerAdapter(info.adapterId);
     }
@@ -1576,6 +1597,8 @@
       previewHistory: [],
       previewFuture: [],
       impactAnalysis: null,
+      workflow: createExistingWebWorkflowState("clean"),
+      inspectorExpanded: false,
       reloadToken: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       drag: null,
     };
@@ -1624,8 +1647,12 @@
     const value = String(raw || "").trim();
     try {
       const url = new URL(value, getExistingWebBaseUrl());
+      const base = new URL(getExistingWebBaseUrl(), window.location.href);
+      const sourcePath = url.origin === base.origin
+        ? decodeURIComponent(url.pathname).replace(/^\/+/, "") || "index.html"
+        : url.pathname.split("/").filter(Boolean).pop() || "index.html";
       return {
-        sourcePath: url.pathname.split("/").filter(Boolean).pop() || "index.html",
+        sourcePath,
         viewState: targetState?.viewState || url.search.replace(/^\?/, ""),
         hash: targetState?.hash || url.hash.replace(/^#/, ""),
       };
@@ -1815,6 +1842,7 @@
       doc.addEventListener("pointerdown", handleExistingWebPointerDown, true);
       doc.addEventListener("pointermove", handleExistingWebPointerMove, true);
       doc.addEventListener("pointerup", handleExistingWebPointerUp, true);
+      doc.addEventListener("pointercancel", handleExistingWebPointerCancel, true);
       doc.addEventListener("click", handleExistingWebClick, true);
       doc.addEventListener("submit", stopExistingWebNativeAction, true);
       doc.addEventListener("keydown", handleExistingWebKeydown, true);
@@ -1839,6 +1867,7 @@
     doc.removeEventListener("pointerdown", handleExistingWebPointerDown, true);
     doc.removeEventListener("pointermove", handleExistingWebPointerMove, true);
     doc.removeEventListener("pointerup", handleExistingWebPointerUp, true);
+    doc.removeEventListener("pointercancel", handleExistingWebPointerCancel, true);
     doc.removeEventListener("click", handleExistingWebClick, true);
     doc.removeEventListener("submit", stopExistingWebNativeAction, true);
     doc.removeEventListener("keydown", handleExistingWebKeydown, true);
@@ -1853,32 +1882,93 @@
     style.id = "__tb_existing_web_runtime_style";
     style.textContent = `
       .__tb_existing_web_selected {
-        outline: 3px solid #22d3ee !important;
-        outline-offset: 3px !important;
-        box-shadow: 0 0 0 2px rgba(3, 7, 18, 0.78), 0 0 18px rgba(34, 211, 238, 0.48) !important;
+        outline: 0 !important;
+        box-shadow: none !important;
       }
       .__tb_existing_web_preview {
-        outline: 3px dashed #fbbf24 !important;
-        outline-offset: 5px !important;
+        outline: 2px dashed rgba(251, 191, 36, 0.92) !important;
+        outline-offset: 4px !important;
+      }
+      .__tb_existing_web_selected.__tb_existing_web_preview {
+        outline: 0 !important;
+        outline-offset: 0 !important;
       }
       .__tb_existing_web_transform_box {
         position: fixed !important;
         z-index: 2147483646 !important;
         box-sizing: border-box !important;
-        border: 2px solid #22d3ee !important;
-        pointer-events: auto !important;
+        border: 0 !important;
+        outline: 2px solid #2f8cff !important;
+        outline-offset: 0 !important;
+        pointer-events: none !important;
         cursor: move !important;
-        filter: drop-shadow(0 0 5px rgba(3, 7, 18, 0.82)) !important;
+        filter: drop-shadow(0 0 4px rgba(3, 7, 18, 0.72)) !important;
       }
       .__tb_existing_web_handle {
         position: absolute !important;
-        width: 13px !important;
-        height: 13px !important;
-        border-radius: 999px !important;
-        border: 2px solid #031018 !important;
-        background: #67e8f9 !important;
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.86), 0 0 10px rgba(34, 211, 238, 0.72) !important;
+        width: 12px !important;
+        height: 12px !important;
+        border-radius: 2px !important;
+        border: 1px solid #ffffff !important;
+        background: #2f8cff !important;
+        box-shadow: 0 1px 3px rgba(3, 7, 18, 0.34) !important;
         pointer-events: auto !important;
+      }
+      .__tb_existing_web_move_edge {
+        position: absolute !important;
+        pointer-events: auto !important;
+        cursor: move !important;
+      }
+      .__tb_existing_web_move_edge[data-tb-existing-web-edge="top"] {
+        left: 0 !important;
+        top: -5px !important;
+        width: 100% !important;
+        height: 10px !important;
+      }
+      .__tb_existing_web_move_edge[data-tb-existing-web-edge="right"] {
+        right: -5px !important;
+        top: 0 !important;
+        width: 10px !important;
+        height: 100% !important;
+      }
+      .__tb_existing_web_move_edge[data-tb-existing-web-edge="bottom"] {
+        left: 0 !important;
+        bottom: -5px !important;
+        width: 100% !important;
+        height: 10px !important;
+      }
+      .__tb_existing_web_move_edge[data-tb-existing-web-edge="left"] {
+        left: -5px !important;
+        top: 0 !important;
+        width: 10px !important;
+        height: 100% !important;
+      }
+      .__tb_existing_web_rotate_arm {
+        position: absolute !important;
+        left: 50% !important;
+        top: -46px !important;
+        width: 1px !important;
+        height: 46px !important;
+        transform: translateX(-50%) !important;
+        background: rgba(47, 140, 255, 0.9) !important;
+        pointer-events: none !important;
+        box-shadow: none !important;
+      }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="rotate"] {
+        left: 50% !important;
+        top: -52px !important;
+        width: 12px !important;
+        height: 12px !important;
+        border-radius: 50% !important;
+        transform: translateX(-50%) !important;
+        cursor: grab !important;
+      }
+      .__tb_existing_web_transform_box.__tb_existing_web_transform_box--top_clamped .__tb_existing_web_rotate_arm {
+        top: 0 !important;
+        height: 30px !important;
+      }
+      .__tb_existing_web_transform_box.__tb_existing_web_transform_box--top_clamped .__tb_existing_web_handle[data-tb-existing-web-handle="rotate"] {
+        top: 16px !important;
       }
       .__tb_existing_web_handle[data-tb-existing-web-handle="nw"] {
         left: 0 !important;
@@ -1892,17 +1982,41 @@
         transform: translate(-50%, -50%) !important;
         cursor: nesw-resize !important;
       }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="e"] {
+        left: 100% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        cursor: ew-resize !important;
+      }
       .__tb_existing_web_handle[data-tb-existing-web-handle="se"] {
         left: 100% !important;
         top: 100% !important;
         transform: translate(-50%, -50%) !important;
         cursor: nwse-resize !important;
       }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="s"] {
+        left: 50% !important;
+        top: 100% !important;
+        transform: translate(-50%, -50%) !important;
+        cursor: ns-resize !important;
+      }
       .__tb_existing_web_handle[data-tb-existing-web-handle="sw"] {
         left: 0 !important;
         top: 100% !important;
         transform: translate(-50%, -50%) !important;
         cursor: nesw-resize !important;
+      }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="w"] {
+        left: 0 !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        cursor: ew-resize !important;
+      }
+      .__tb_existing_web_handle[data-tb-existing-web-handle="n"] {
+        left: 50% !important;
+        top: 0 !important;
+        transform: translate(-50%, -50%) !important;
+        cursor: ns-resize !important;
       }
     `;
     doc.head?.appendChild(style);
@@ -1923,7 +2037,12 @@
     stopExistingWebNativeAction(event);
     const handle = event.target?.closest?.(".__tb_existing_web_handle");
     if (handle) {
-      beginExistingWebResizeDrag(event, handle.dataset.tbExistingWebHandle || "");
+      const handleType = handle.dataset.tbExistingWebHandle || "";
+      if (handleType === "rotate") {
+        beginExistingWebRotateDrag(event);
+      } else {
+        beginExistingWebResizeDrag(event, handleType);
+      }
       return;
     }
     if (event.target?.closest?.(".__tb_existing_web_transform_box")) {
@@ -1944,12 +2063,20 @@
       return;
     }
     const beforeBounds = getDomNodeBounds(selection.node) || selection.bounds;
+    const frameMetrics = getExistingWebFrameMetrics();
+    const startPoint = getExistingWebNormalizedPointerPoint(event, frameMetrics);
+    if (!beforeBounds || !startPoint) {
+      renderAll();
+      return;
+    }
     state.existingWeb.drag = {
       type: "move",
       domRef: selection.domRef,
-      view: event.view || event.target?.ownerDocument?.defaultView || null,
-      startClientX: event.clientX,
-      startClientY: event.clientY,
+      pointerId: event.pointerId,
+      captureTarget: event.target || null,
+      frameMetrics,
+      startFrameX: startPoint.frameX,
+      startFrameY: startPoint.frameY,
       beforeBounds: { ...beforeBounds },
       beforeInline: captureExistingWebInlineStyle(selection.node),
     };
@@ -1976,7 +2103,13 @@
   }
 
   function handleExistingWebPointerUp(event) {
-    if (endExistingWebDrag()) {
+    if (endExistingWebDrag(event)) {
+      stopExistingWebNativeAction(event);
+    }
+  }
+
+  function handleExistingWebPointerCancel(event) {
+    if (cancelExistingWebDrag(event)) {
       stopExistingWebNativeAction(event);
     }
   }
@@ -2014,6 +2147,8 @@
     if (drag.type === "resize") {
       const next = getExistingWebResizeBounds(drag, delta.x, delta.y, selected);
       applyExistingWebPreviewBounds(selected, next, drag.beforeInline, drag.beforeBounds);
+    } else if (drag.type === "rotate") {
+      applyExistingWebPreviewRotation(selected, getExistingWebRotateAngle(event, drag), drag.beforeInline);
     } else {
       applyExistingWebPreviewPosition(selected, drag.beforeBounds.x + delta.x, drag.beforeBounds.y + delta.y, drag.beforeInline, drag.beforeBounds);
     }
@@ -2021,17 +2156,25 @@
     return true;
   }
 
-  function endExistingWebDrag() {
+  function endExistingWebDrag(event = null) {
     if (!state.existingWeb.drag) {
       return false;
     }
+    releaseExistingWebPointerCapture(event, state.existingWeb.drag);
     const selected = state.existingWeb.selected;
     if (selected?.node?.isConnected) {
       selected.bounds = getDomNodeBounds(selected.node) || selected.bounds;
-      recordExistingWebPreviewChange(state.existingWeb.drag.type === "resize" ? "size" : "position", state.existingWeb.drag.beforeBounds, selected.bounds, "runtime-confirmed", {
+      const property = state.existingWeb.drag.type === "resize"
+        ? "size"
+        : state.existingWeb.drag.type === "rotate"
+          ? "rotation"
+          : "position";
+      recordExistingWebPreviewChange(property, state.existingWeb.drag.beforeBounds, selected.bounds, "runtime-confirmed", {
         domRef: selected.domRef,
         beforeInline: state.existingWeb.drag.beforeInline,
         afterInline: captureExistingWebInlineStyle(selected.node),
+        beforeRotation: state.existingWeb.drag.beforeRotation,
+        afterRotation: getExistingWebCurrentRotation(selected.node),
       });
     }
     state.existingWeb.drag = null;
@@ -2039,15 +2182,98 @@
     return true;
   }
 
+  function cancelExistingWebDrag(event = null) {
+    if (!state.existingWeb.drag) {
+      return false;
+    }
+    releaseExistingWebPointerCapture(event, state.existingWeb.drag);
+    state.existingWeb.drag = null;
+    renderExistingWebTransformBox();
+    return true;
+  }
+
+  function releaseExistingWebPointerCapture(event, drag) {
+    const pointerId = event?.pointerId ?? drag?.pointerId;
+    if (pointerId == null || !drag?.captureTarget?.releasePointerCapture) {
+      return;
+    }
+    try {
+      drag.captureTarget.releasePointerCapture(pointerId);
+    } catch (error) {
+      // Pointer capture may already be released by the browser.
+    }
+  }
+
   function getExistingWebDragDelta(event, drag) {
-    const view = event.view || event.target?.ownerDocument?.defaultView || null;
-    if (drag.view && view && drag.view !== view) {
+    if (drag.pointerId != null && event.pointerId != null && drag.pointerId !== event.pointerId) {
+      return null;
+    }
+    const point = getExistingWebNormalizedPointerPoint(event, drag.frameMetrics);
+    if (!point) {
       return null;
     }
     return {
-      x: Math.round((event.clientX - drag.startClientX) * 100) / 100,
-      y: Math.round((event.clientY - drag.startClientY) * 100) / 100,
+      x: Math.round((point.frameX - drag.startFrameX) * 100) / 100,
+      y: Math.round((point.frameY - drag.startFrameY) * 100) / 100,
     };
+  }
+
+  function getExistingWebRotateAngle(event, drag) {
+    const point = getExistingWebNormalizedPointerPoint(event, drag.frameMetrics);
+    if (!point) {
+      return drag.beforeRotation || 0;
+    }
+    const currentAngle = getExistingWebAngle(drag.centerFrameX, drag.centerFrameY, point.frameX, point.frameY);
+    return normalizeExistingWebAngle(Number(drag.beforeRotation || 0) + currentAngle - Number(drag.startAngle || 0));
+  }
+
+  function getExistingWebAngle(centerX, centerY, pointX, pointY) {
+    return Math.atan2(Number(pointY || 0) - Number(centerY || 0), Number(pointX || 0) - Number(centerX || 0)) * 180 / Math.PI;
+  }
+
+  function normalizeExistingWebAngle(angle) {
+    const normalized = ((Number(angle || 0) % 360) + 540) % 360 - 180;
+    return Math.round(normalized * 100) / 100;
+  }
+
+  function getExistingWebFrameMetrics() {
+    const frame = els.existingWebFrame;
+    const doc = getExistingWebDocument();
+    const frameView = doc?.defaultView || null;
+    const rect = frame?.getBoundingClientRect?.();
+    const viewportWidth = Number(frameView?.innerWidth || doc?.documentElement?.clientWidth || rect?.width || 1);
+    const viewportHeight = Number(frameView?.innerHeight || doc?.documentElement?.clientHeight || rect?.height || 1);
+    const scaleX = rect?.width ? rect.width / Math.max(1, viewportWidth) : 1;
+    const scaleY = rect?.height ? rect.height / Math.max(1, viewportHeight) : 1;
+    return {
+      frameView,
+      rectLeft: Number(rect?.left || 0),
+      rectTop: Number(rect?.top || 0),
+      scaleX: Number.isFinite(scaleX) && scaleX > 0 ? scaleX : 1,
+      scaleY: Number.isFinite(scaleY) && scaleY > 0 ? scaleY : 1,
+    };
+  }
+
+  function getExistingWebNormalizedPointerPoint(event, metrics = getExistingWebFrameMetrics()) {
+    if (!event || !metrics) {
+      return null;
+    }
+    const eventView = event.view || event.target?.ownerDocument?.defaultView || null;
+    if (eventView === metrics.frameView) {
+      return {
+        frameX: Number(event.clientX || 0),
+        frameY: Number(event.clientY || 0),
+        source: "iframe",
+      };
+    }
+    if (eventView === window || event.target?.ownerDocument === document) {
+      return {
+        frameX: Math.round(((Number(event.clientX || 0) - metrics.rectLeft) / metrics.scaleX) * 100) / 100,
+        frameY: Math.round(((Number(event.clientY || 0) - metrics.rectTop) / metrics.scaleY) * 100) / 100,
+        source: "parent",
+      };
+    }
+    return null;
   }
 
   function beginExistingWebResizeDrag(event, handle) {
@@ -2056,19 +2282,59 @@
       return;
     }
     const beforeBounds = getDomNodeBounds(selected.node) || selected.bounds;
+    const frameMetrics = getExistingWebFrameMetrics();
+    const startPoint = getExistingWebNormalizedPointerPoint(event, frameMetrics);
+    if (!beforeBounds || !startPoint) {
+      return;
+    }
     state.existingWeb.drag = {
       type: "resize",
       handle,
       domRef: selected.domRef,
-      view: event.view || event.target?.ownerDocument?.defaultView || null,
-      startClientX: event.clientX,
-      startClientY: event.clientY,
+      pointerId: event.pointerId,
+      captureTarget: event.target || null,
+      frameMetrics,
+      startFrameX: startPoint.frameX,
+      startFrameY: startPoint.frameY,
       beforeBounds: { ...beforeBounds },
       beforeInline: captureExistingWebInlineStyle(selected.node),
       aspectRatio: beforeBounds?.width && beforeBounds?.height ? beforeBounds.width / beforeBounds.height : 1,
       keepAspectRatio: isExistingWebAspectRatioLocked(selected.node),
     };
     event.target.setPointerCapture?.(event.pointerId);
+  }
+
+  function beginExistingWebRotateDrag(event) {
+    const selected = state.existingWeb.selected;
+    if (!selected || !selected.node?.isConnected || !canExistingWebPreviewProperty(selected, "rotation")) {
+      return;
+    }
+    const beforeBounds = getDomNodeBounds(selected.node) || selected.bounds;
+    const frameMetrics = getExistingWebFrameMetrics();
+    const startPoint = getExistingWebNormalizedPointerPoint(event, frameMetrics);
+    if (!beforeBounds || !startPoint) {
+      return;
+    }
+    const center = {
+      x: Number(beforeBounds.x || 0) + Number(beforeBounds.width || 0) / 2,
+      y: Number(beforeBounds.y || 0) + Number(beforeBounds.height || 0) / 2,
+    };
+    state.existingWeb.drag = {
+      type: "rotate",
+      domRef: selected.domRef,
+      pointerId: event.pointerId,
+      captureTarget: event.target || null,
+      frameMetrics,
+      startFrameX: startPoint.frameX,
+      startFrameY: startPoint.frameY,
+      centerFrameX: center.x,
+      centerFrameY: center.y,
+      startAngle: getExistingWebAngle(center.x, center.y, startPoint.frameX, startPoint.frameY),
+      beforeRotation: getExistingWebCurrentRotation(selected.node),
+      beforeBounds: { ...beforeBounds },
+      beforeInline: captureExistingWebInlineStyle(selected.node),
+    };
+    event.target?.setPointerCapture?.(event.pointerId);
   }
 
   function selectExistingWebElement(node) {
@@ -2458,7 +2724,7 @@
         editableProperties,
         protectedProperties: Array.from(protectedProperties),
         blockedReasons: [],
-        message: "この要素はRuntime Previewで位置またはサイズを確認できます。",
+        message: "この要素はRuntime Previewで位置・サイズ・回転を確認できます。",
         checks: getExistingWebPropertyChecks(editableProperties, Array.from(protectedProperties), []),
       };
     }
@@ -2518,7 +2784,7 @@
     if (!safePosition || !staticVisual) {
       return [];
     }
-    const props = ["position"];
+    const props = ["position", "rotation"];
     if (!["svg", "canvas"].includes(tag)) {
       props.push("size");
     }
@@ -2551,7 +2817,7 @@
     if (!visual) {
       return [];
     }
-    const props = ["position"];
+    const props = ["position", "rotation"];
     if (!["svg", "canvas", "audio", "video"].includes(tag)) {
       props.push("size");
     }
@@ -2576,7 +2842,7 @@
     if (computed.display === "none" || computed.visibility === "hidden" || Number.parseFloat(computed.opacity || "1") === 0) {
       return [];
     }
-    return ["position", "size"];
+    return ["position", "size", "rotation"];
   }
 
   function getExistingWebBackgroundProtectedProperties(element, node) {
@@ -2653,6 +2919,7 @@
     return [
       { label: "位置", state: editable.has("position") ? "ok" : protectedSet.has("position") ? "protected" : "warning", text: editable.has("position") ? "変更できます" : protectedSet.has("position") ? "保護" : unknownReason },
       { label: "サイズ", state: (editable.has("size") || editable.has("width") || editable.has("height")) ? "ok" : (protectedSet.has("size") || protectedSet.has("width") || protectedSet.has("height")) ? "protected" : "warning", text: (editable.has("size") || editable.has("width") || editable.has("height")) ? "変更できます" : (protectedSet.has("size") || protectedSet.has("width") || protectedSet.has("height")) ? "保護" : unknownReason },
+      { label: "回転", state: editable.has("rotation") ? "ok" : protectedSet.has("rotation") ? "protected" : "warning", text: editable.has("rotation") ? "変更できます" : protectedSet.has("rotation") ? "保護" : unknownReason },
       { label: "クリック", state: protectedSet.has("click") ? "protected" : "warning", text: protectedSet.has("click") ? "保護" : "変更対象外" },
     ];
   }
@@ -2872,12 +3139,28 @@
     }
     const box = doc.createElement("div");
     box.className = "__tb_existing_web_transform_box";
+    if (Number(bounds.y || 0) < 58) {
+      box.classList.add("__tb_existing_web_transform_box--top_clamped");
+    }
     box.style.left = `${Math.round(Number(bounds.x || 0) * 100) / 100}px`;
     box.style.top = `${Math.round(Number(bounds.y || 0) * 100) / 100}px`;
     box.style.width = `${Math.round(Number(bounds.width || 0) * 100) / 100}px`;
     box.style.height = `${Math.round(Number(bounds.height || 0) * 100) / 100}px`;
     box.setAttribute("aria-hidden", "true");
-    ["nw", "ne", "se", "sw"].forEach((handle) => {
+    ["top", "right", "bottom", "left"].forEach((edge) => {
+      const line = doc.createElement("span");
+      line.className = "__tb_existing_web_move_edge";
+      line.dataset.tbExistingWebEdge = edge;
+      box.appendChild(line);
+    });
+    const rotateArm = doc.createElement("span");
+    rotateArm.className = "__tb_existing_web_rotate_arm";
+    box.appendChild(rotateArm);
+    const rotateHandle = doc.createElement("span");
+    rotateHandle.className = "__tb_existing_web_handle";
+    rotateHandle.dataset.tbExistingWebHandle = "rotate";
+    box.appendChild(rotateHandle);
+    ["nw", "n", "ne", "e", "se", "s", "sw", "w"].forEach((handle) => {
       const dot = doc.createElement("span");
       dot.className = "__tb_existing_web_handle";
       dot.dataset.tbExistingWebHandle = handle;
@@ -2921,7 +3204,7 @@
       ...(mapping.protectedProperties || []),
       ...getExistingWebBackgroundProtectedProperties(element, node),
     ]);
-    return (mapping.editableProperties || []).filter((property) => ["position", "size", "width", "height"].includes(property) && !protectedProperties.has(property));
+    return (mapping.editableProperties || []).filter((property) => ["position", "size", "width", "height", "rotation"].includes(property) && !protectedProperties.has(property));
   }
 
   function getExistingWebEditBlockReasons(mapping, element, protectedBehavior) {
@@ -2955,19 +3238,8 @@
     const baseBounds = referenceBounds || selection.bounds || getDomNodeBounds(node) || {};
     const dx = Math.round((viewportX - baseBounds.x) * 100) / 100;
     const dy = Math.round((viewportY - baseBounds.y) * 100) / 100;
-    if (!["absolute", "fixed", "relative"].includes(computed.positionType)) {
-      const baseTransform = beforeInline?.transform || (computed.transform && computed.transform !== "none" ? computed.transform : "");
-      node.style.transform = `${baseTransform} translate(${dx}px, ${dy}px)`.trim();
-      node.classList.add("__tb_existing_web_preview");
-      state.existingWeb.preview.active = true;
-      state.existingWeb.preview.beforeInline = beforeInline;
-      return;
-    }
-    const currentLeft = parseCssPx(beforeInline?.left || selection.computed?.left || computed.left, 0);
-    const currentTop = parseCssPx(beforeInline?.top || selection.computed?.top || computed.top, 0);
-    node.style.position = computed.positionType;
-    node.style.left = `${Math.round((currentLeft + dx) * 100) / 100}px`;
-    node.style.top = `${Math.round((currentTop + dy) * 100) / 100}px`;
+    const baseTranslate = parseExistingWebTranslate(beforeInline?.translate);
+    node.style.translate = `${Math.round((baseTranslate.x + dx) * 100) / 100}px ${Math.round((baseTranslate.y + dy) * 100) / 100}px`;
     node.classList.add("__tb_existing_web_preview");
     state.existingWeb.preview.active = true;
     state.existingWeb.preview.beforeInline = beforeInline;
@@ -2981,6 +3253,17 @@
     applyExistingWebPreviewPosition(selection, bounds.x, bounds.y, beforeInline, referenceBounds);
     node.style.width = `${Math.max(1, Math.round(Number(bounds.width || 1) * 100) / 100)}px`;
     node.style.height = `${Math.max(1, Math.round(Number(bounds.height || 1) * 100) / 100)}px`;
+    node.classList.add("__tb_existing_web_preview");
+    state.existingWeb.preview.active = true;
+    state.existingWeb.preview.beforeInline = beforeInline;
+  }
+
+  function applyExistingWebPreviewRotation(selection, rotation, beforeInline) {
+    const node = selection?.node;
+    if (!node) {
+      return;
+    }
+    node.style.rotate = `${normalizeExistingWebAngle(rotation)}deg`;
     node.classList.add("__tb_existing_web_preview");
     state.existingWeb.preview.active = true;
     state.existingWeb.preview.beforeInline = beforeInline;
@@ -3086,10 +3369,14 @@
   function recordExistingWebPreviewChange(property, beforeBounds, afterBounds, beforeSource, options = {}) {
     const before = property === "size"
       ? { width: beforeBounds.width, height: beforeBounds.height }
-      : { x: beforeBounds.x, y: beforeBounds.y };
+      : property === "rotation"
+        ? { rotation: normalizeExistingWebAngle(options.beforeRotation || 0) }
+        : { x: beforeBounds.x, y: beforeBounds.y };
     const after = property === "size"
       ? { width: afterBounds.width, height: afterBounds.height }
-      : { x: afterBounds.x, y: afterBounds.y };
+      : property === "rotation"
+        ? { rotation: normalizeExistingWebAngle(options.afterRotation || 0) }
+        : { x: afterBounds.x, y: afterBounds.y };
     const changed = Object.keys(before).some((key) => Math.abs((Number(after[key]) || 0) - (Number(before[key]) || 0)) >= 0.5);
     if (!changed) {
       state.existingWeb.preview.changes = [];
@@ -3111,6 +3398,7 @@
     state.existingWeb.preview.changes = [change];
     state.existingWeb.impactAnalysis = null;
     pushExistingWebPreviewHistory(change);
+    markExistingWebWorkflowDirty();
     applyExistingWebSelectionClass();
   }
 
@@ -3149,6 +3437,124 @@
     applyExistingWebSelectionClass();
   }
 
+  function createExistingWebWorkflowState(status = "clean") {
+    return {
+      status,
+      tab: "layers",
+      analysisSignature: "",
+      applySignature: "",
+      message: "",
+      lastResult: null,
+    };
+  }
+
+  function getExistingWebWorkflow() {
+    if (!state.existingWeb.workflow) {
+      state.existingWeb.workflow = createExistingWebWorkflowState("clean");
+    }
+    return state.existingWeb.workflow;
+  }
+
+  function getExistingWebPreviewChangeCount() {
+    return getExistingWebWorkflowChanges().length;
+  }
+
+  function getExistingWebPreviewSignature() {
+    return JSON.stringify(getExistingWebWorkflowChanges().map((change) => ({
+      domRef: change.domRef || "",
+      property: change.property || "",
+      before: change.before || null,
+      after: change.after || null,
+      afterInline: change.afterInline || null,
+    })));
+  }
+
+  function getExistingWebWorkflowChanges() {
+    const byKey = new Map();
+    (state.existingWeb.previewHistory || []).forEach((change) => {
+      if (!change?.domRef || !change.property) {
+        return;
+      }
+      const key = `${change.domRef}\u0001${change.property}`;
+      const existing = byKey.get(key);
+      byKey.set(key, {
+        ...(existing || change),
+        domRef: change.domRef,
+        property: change.property,
+        before: existing?.before || change.before,
+        after: change.after,
+        beforeSource: existing?.beforeSource || change.beforeSource,
+        beforeInline: existing?.beforeInline || change.beforeInline,
+        afterInline: change.afterInline || existing?.afterInline || null,
+        coordinateContext: change.coordinateContext || existing?.coordinateContext || "",
+      });
+    });
+    return Array.from(byKey.values()).filter((change) => {
+      const before = change.before || {};
+      const after = change.after || {};
+      return Object.keys({ ...before, ...after }).some((key) => Math.abs((Number(after[key]) || 0) - (Number(before[key]) || 0)) >= 0.5);
+    });
+  }
+
+  function markExistingWebWorkflowDirty(message = "") {
+    const workflow = getExistingWebWorkflow();
+    const count = getExistingWebPreviewChangeCount();
+    if (!count) {
+      state.existingWeb.workflow = {
+        ...workflow,
+        status: "clean",
+        analysisSignature: "",
+        applySignature: "",
+        message: message || "",
+        lastResult: null,
+      };
+      return;
+    }
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "dirty",
+      analysisSignature: "",
+      applySignature: "",
+      message: message || `${count}件の変更があります。`,
+      lastResult: null,
+    };
+  }
+
+  function setExistingWebWorkflowReviewRequired(message = "") {
+    const workflow = getExistingWebWorkflow();
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "review_required",
+      analysisSignature: getExistingWebPreviewSignature(),
+      applySignature: "",
+      message: message || "変更確認は完了しましたが、Source反映には追加確認が必要です。",
+    };
+  }
+
+  function setExistingWebWorkflowReadyToApply(message = "") {
+    const workflow = getExistingWebWorkflow();
+    const signature = getExistingWebPreviewSignature();
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "ready_to_apply",
+      analysisSignature: signature,
+      applySignature: signature,
+      message: message || "変更確認済みです。Sourceへ反映できます。",
+    };
+  }
+
+  function setExistingWebWorkflowClean(message = "") {
+    const workflow = getExistingWebWorkflow();
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "clean",
+      analysisSignature: "",
+      applySignature: "",
+      message,
+      lastResult: null,
+    };
+  }
+
   function undoExistingWebPreview() {
     const history = state.existingWeb.previewHistory || [];
     if (!state.existingWeb.active || !history.length) {
@@ -3159,6 +3565,7 @@
     state.existingWeb.previewFuture = [...(state.existingWeb.previewFuture || []), change];
     state.existingWeb.impactAnalysis = null;
     syncExistingWebPreviewStateFromHistory();
+    markExistingWebWorkflowDirty("Undo後のPreview状態を再確認してください。");
     refreshExistingWebVirtualLayers();
     renderAll();
     return true;
@@ -3174,6 +3581,7 @@
     state.existingWeb.previewHistory = [...(state.existingWeb.previewHistory || []), change];
     state.existingWeb.impactAnalysis = null;
     syncExistingWebPreviewStateFromHistory();
+    markExistingWebWorkflowDirty("Redo後のPreview状態を再確認してください。");
     refreshExistingWebVirtualLayers();
     renderAll();
     return true;
@@ -3211,11 +3619,434 @@
     state.existingWeb.previewFuture = [];
     state.existingWeb.impactAnalysis = null;
     state.existingWeb.drag = null;
+    setExistingWebWorkflowClean("Preview変更を解除しました。");
     applyExistingWebSelectionClass();
     refreshExistingWebVirtualLayers();
     if (!options.skipRender) {
       renderAll();
     }
+  }
+
+  async function handleExistingWebMainAction() {
+    if (!state.existingWeb.active) {
+      return;
+    }
+    if (state.editorMode === "custom") {
+      sendExistingWebPreviewToSafeChange();
+      return;
+    }
+    const workflow = getExistingWebWorkflow();
+    if (workflow.status === "ready_to_apply") {
+      await applyExistingWebWorkflowToSource();
+      return;
+    }
+    await analyzeExistingWebWorkflowChanges();
+  }
+
+  async function analyzeExistingWebWorkflowChanges() {
+    const changes = getExistingWebWorkflowChanges();
+    const count = changes.length;
+    if (!count) {
+      showModeToast("先に編集内容をPreviewしてください。");
+      setExistingWebWorkflowClean();
+      renderAll();
+      return;
+    }
+    const workflow = getExistingWebWorkflow();
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "analyzing",
+      message: `${count}件の変更を確認中です。`,
+    };
+    renderAll();
+    const resolution = count === 1
+      ? await prepareExistingWebSingleWorkflowResolution(changes[0])
+      : await prepareExistingWebBatchWorkflowResolution(changes);
+    state.existingWeb.impactAnalysis = buildExistingWebWorkflowImpactAnalysis(resolution, changes);
+    if (resolution?.ok) {
+      setExistingWebWorkflowReadyToApply(`変更確認済み: ${count}件を反映できます。`);
+    } else {
+      setExistingWebWorkflowReviewRequired(getExistingWebReviewRequiredMessage(resolution));
+    }
+    showModeToast(`変更後の影響を確認しました: ${count}件`);
+    renderAll();
+  }
+
+  async function prepareExistingWebSingleWorkflowResolution(change) {
+    const selected = selectExistingWebElementForWorkflowChange(change);
+    if (!selected) {
+      return { ok: false, status: "blocked", reason: "missing-selection", message: "変更対象を確認できません。", change };
+    }
+    const resolution = await prepareExistingWebOnDemandApplyCandidate(selected, change);
+    return {
+      ...resolution,
+      batch: false,
+      changes: [{ change, selected, resolution }],
+    };
+  }
+
+  async function prepareExistingWebBatchWorkflowResolution(changes) {
+    clearSafePatchCandidate(false);
+    clearSafeApplyState(false);
+    const items = [];
+    const candidates = [];
+    const approvedSignatures = {};
+    for (const change of changes) {
+      const selected = selectExistingWebElementForWorkflowChange(change);
+      if (!selected) {
+        const resolution = { ok: false, status: "blocked", reason: "missing-selection", message: "変更対象を確認できません。", change };
+        items.push({ change, selected: null, resolution });
+        continue;
+      }
+      const resolution = await prepareExistingWebOnDemandApplyCandidate(selected, change, { skipPreflight: true, skipClear: true });
+      items.push({ change, selected, resolution });
+      const candidate = resolution.patchResult?.candidate || null;
+      if (resolution.ok && candidate?.status === "ready-for-review") {
+        candidate.review = {
+          status: "approved",
+          approvedAt: new Date().toISOString(),
+          rejectedAt: null,
+          approvedSignature: candidate.signature,
+        };
+        candidates.push(candidate);
+        approvedSignatures[candidate.signature] = candidate.signature;
+      }
+    }
+    const blocked = items.filter((item) => !item.resolution?.ok);
+    if (blocked.length) {
+      return {
+        ok: false,
+        batch: true,
+        status: "review_required",
+        reason: blocked[0].resolution?.reason || "batch-review-required",
+        message: `${items.length}件中${blocked.length}件に確認が必要です。`,
+        changes: items,
+        summary: { total: items.length, safe: items.length - blocked.length, blocked: blocked.length },
+      };
+    }
+    if (!window.TBalanceSafeApply?.runBatchApplyPreflight) {
+      return {
+        ok: false,
+        batch: true,
+        status: "preflight-blocked",
+        reason: "batch-apply-unavailable",
+        message: "Batch Apply moduleを読み込めていません。",
+        changes: items,
+        summary: { total: items.length, safe: items.length, blocked: 0 },
+      };
+    }
+    const client = getSafeApplyClient();
+    const preflight = await window.TBalanceSafeApply.runBatchApplyPreflight({
+      candidates,
+      approvedSignatures,
+      sourceWriterClient: client,
+      createSignature: window.TBalanceSafePatch?.createCandidateSignature,
+    });
+    state.analyzer.safeApply.preflight = preflight.ok ? preflight : null;
+    state.analyzer.safeApply.result = preflight;
+    state.analyzer.safeApply.diffText = preflight.diffText || "";
+    setSafeApplyStatus(preflight.status || "failed", preflight.message || "Batch Preflightを完了しました。");
+    return {
+      ok: Boolean(preflight?.ok),
+      batch: true,
+      status: preflight?.status || "preflight-blocked",
+      reason: preflight?.reason || "",
+      message: preflight?.message || "",
+      changes: items,
+      candidates,
+      approvedSignatures,
+      batchPreflight: preflight,
+      summary: {
+        total: items.length,
+        safe: preflight?.ok ? items.length : 0,
+        blocked: preflight?.ok ? 0 : 1,
+      },
+    };
+  }
+
+  function selectExistingWebElementForWorkflowChange(change) {
+    const node = getExistingWebNodeByDomRef(change?.domRef);
+    if (!node) {
+      return null;
+    }
+    return selectExistingWebElement(node);
+  }
+
+  async function applyExistingWebWorkflowToSource() {
+    const workflow = getExistingWebWorkflow();
+    const signature = getExistingWebPreviewSignature();
+    if (!signature || workflow.applySignature !== signature) {
+      markExistingWebWorkflowDirty("Previewが再編集されています。変更を再確認してください。");
+      renderAll();
+      return;
+    }
+    const count = getExistingWebPreviewChangeCount();
+    const ok = window.confirm([
+      "変更を反映しますか？",
+      "",
+      `${count}件の変更をローカルのWebファイルに反映します。`,
+      "HTML/CSSなどのファイルが変更されます。",
+      "",
+      `変更対象: ${count}件`,
+    ].join("\n"));
+    if (!ok) {
+      renderAll();
+      return;
+    }
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "applying",
+      message: "Safe ApplyでSourceへ反映中です。",
+    };
+    renderAll();
+    const existingPreflight = state.analyzer.safeApply?.preflight;
+    if (!existingPreflight?.ok) {
+      const preflight = await runSafeApplyPreflight();
+      if (!preflight?.ok) {
+        setExistingWebWorkflowReviewRequired("Apply Preflightが通りませんでした。Sourceは変更していません。");
+        renderAll();
+        return;
+      }
+    }
+    const activePreflight = state.analyzer.safeApply?.preflight;
+    const result = activePreflight?.batchApplyVersion
+      ? await applySafePatchBatch({ skipUserConfirm: true })
+      : await applySafePatchCandidate({ skipUserConfirm: true });
+    state.existingWeb.workflow.lastResult = result;
+    if (result?.ok) {
+      acceptExistingWebAppliedBaseline(result);
+      showModeToast("変更をローカルSourceへ反映しました。");
+    } else {
+      setExistingWebWorkflowReviewRequired(result?.message || "Safe Applyに失敗しました。Source状態を確認してください。");
+    }
+    renderAll();
+  }
+
+  function acceptExistingWebAppliedBaseline(result = null) {
+    state.existingWeb.preview = {
+      active: false,
+      changes: [],
+    };
+    state.existingWeb.previewHistory = [];
+    state.existingWeb.previewFuture = [];
+    state.existingWeb.impactAnalysis = null;
+    state.existingWeb.drag = null;
+    state.existingWeb.workflow = {
+      ...createExistingWebWorkflowState("clean"),
+      message: "反映済みSourceを新しいBaselineとして扱います。",
+      lastResult: result,
+    };
+    applyExistingWebSelectionClass();
+    refreshExistingWebVirtualLayers();
+  }
+
+  async function prepareExistingWebOnDemandApplyCandidate(selected, change, options = {}) {
+    if (!options.skipClear) {
+      clearSafePatchCandidate(false);
+      clearSafeApplyState(false);
+    }
+    if (!selected?.node || !change) {
+      return { ok: false, status: "blocked", reason: "missing-selection", message: "変更対象を確認できません。" };
+    }
+    if (change.property === "rotation") {
+      return { ok: false, status: "blocked", reason: "unsupported-property", message: "回転のSource反映はv0.1では自動化しません。" };
+    }
+    const mapping = selected.mapping || buildExistingWebRuntimeMappingCandidate(selected, change);
+    if (!mapping) {
+      return { ok: false, status: "blocked", reason: "runtime-mapping-unresolved", message: "変更対象のDOMを一意に確認できません。" };
+    }
+    const safeChangeResult = buildExistingWebRuntimeSafeChange(selected, mapping, change);
+    if (!safeChangeResult.ok) {
+      return {
+        ok: false,
+        status: "blocked",
+        reason: "safe-change-blocked",
+        message: safeChangeResult.errors?.join(" / ") || "Safe Change Instructionを作れません。",
+        safeChangeResult,
+        mapping,
+      };
+    }
+    const instruction = safeChangeResult.instruction;
+    const patchResult = buildExistingWebRuntimeSafePatchCandidate(instruction, mapping, change);
+    if (!patchResult.ok) {
+      return {
+        ok: false,
+        status: patchResult.candidate?.status || "blocked",
+        reason: patchResult.candidate?.blockReason?.code || "safe-patch-blocked",
+        message: patchResult.candidate?.blockReason?.message || "Patch Candidateを安全に作れません。",
+        safeChangeResult,
+        patchResult,
+        mapping,
+      };
+    }
+    if (options.skipPreflight) {
+      return {
+        ok: true,
+        status: "ready-for-review",
+        reason: "",
+        message: "Sourceの変更箇所を一意に確認できました。",
+        safeChangeResult,
+        patchResult,
+        preflight: null,
+        mapping,
+      };
+    }
+    approveSafePatchCandidate();
+    const preflight = await runSafeApplyPreflight();
+    if (!preflight?.ok) {
+      return {
+        ok: false,
+        status: preflight?.status || "preflight-blocked",
+        reason: preflight?.reason || "preflight-blocked",
+        message: preflight?.message || "Apply Preflightが通りません。",
+        safeChangeResult,
+        patchResult,
+        preflight,
+        mapping,
+      };
+    }
+    return {
+      ok: true,
+      status: "ready-to-apply",
+      reason: "",
+      message: "Sourceの変更箇所を一意に確認できました。",
+      safeChangeResult,
+      patchResult,
+      preflight,
+      mapping,
+    };
+  }
+
+  function buildExistingWebRuntimeMappingCandidate(selected, change) {
+    const domRef = selected?.domRef || "";
+    const node = selected?.node || getExistingWebNodeByDomRef(domRef);
+    if (!domRef || !node) {
+      return null;
+    }
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const tbId = sanitizeTbId(
+      node.id
+        ? node.id
+        : domRef.replace(/^[#.]/, "").replace(/[^a-zA-Z0-9_-]+/g, "-"),
+      "runtime-target",
+    );
+    const mapping = {
+      mappingId: `runtime_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      runtimeOnly: true,
+      source: "on-demand-source-resolution",
+      pageId: pageMeta.pageId,
+      page: {
+        path: state.existingWeb.currentUrl || "",
+        sourcePath: state.existingWeb.sourcePath || pageMeta.sourcePath,
+        viewState: state.existingWeb.viewState || pageMeta.currentViewState || "",
+      },
+      sourceAuthority: "standard-web",
+      tbId,
+      domRef,
+      selectorQuality: getSelectorQuality(domRef),
+      role: selected.analyzerElement?.inferred?.roleCandidate || getExistingWebNormalElementType(selected),
+      editableProperties: [change.property],
+      protectedProperties: getExistingWebRuntimeProtectedProperties(selected, change),
+      behaviorRef: getExistingWebBehaviorImpact(selected)?.state === "protected" ? "existing-behavior" : null,
+      viewState: state.existingWeb.viewState || pageMeta.currentViewState || "",
+      confirmed: false,
+      confirmedBy: "runtime",
+      confirmedAt: "",
+    };
+    state.analyzer.runtimeMappings = [
+      ...(state.analyzer.runtimeMappings || []).filter((item) => item.mappingId !== mapping.mappingId),
+      mapping,
+    ].slice(-20);
+    return mapping;
+  }
+
+  function getExistingWebRuntimeProtectedProperties(selected, change) {
+    const protectedProperties = new Set(selected?.protectedProperties || []);
+    ["click", "submit", "href", "src", "structure", "text", "behavior"].forEach((property) => protectedProperties.add(property));
+    protectedProperties.delete(change?.property);
+    return Array.from(protectedProperties);
+  }
+
+  function buildExistingWebRuntimeSafeChange(selected, mapping, change) {
+    if (!window.TBalanceSafeChange?.buildSafeChangeInstruction) {
+      return { ok: false, errors: ["Safe Change moduleを読み込めていません。"] };
+    }
+    const protectedBehavior = getExistingWebProtectedBehavior(mapping) || selected?.protectedBehavior || null;
+    const observed = change?.coordinateContext ? { coordinateContext: change.coordinateContext } : {};
+    const result = window.TBalanceSafeChange.buildSafeChangeInstruction({
+      projectId: getAnalyzerManifestPageMeta().projectId,
+      sourcePath: mapping.page?.sourcePath || state.existingWeb.sourcePath,
+      sourceAuthority: mapping.sourceAuthority || "standard-web",
+      viewState: mapping.viewState || state.existingWeb.viewState || "",
+      mapping,
+      userIntent: formatExistingWebPreviewIntent(selected, change),
+      domResolved: Boolean(resolveAnalyzerDomNode(mapping.domRef)),
+      ambiguousMapping: false,
+      protectedBehavior,
+      changes: [{
+        property: change.property,
+        before: change.before,
+        after: change.after,
+        beforeSource: change.beforeSource || "runtime-confirmed",
+        ...(observed.coordinateContext ? { coordinateContext: observed.coordinateContext } : {}),
+      }],
+    });
+    if (result.ok) {
+      state.analyzer.safeChange.targetMappingId = mapping.mappingId;
+      state.analyzer.safeChange.property = change.property;
+      state.analyzer.safeChange.intent = formatExistingWebPreviewIntent(selected, change);
+      state.analyzer.safeChange.beforeSource = change.beforeSource || "runtime-confirmed";
+      state.analyzer.safeChange.beforeText = JSON.stringify(change.before);
+      state.analyzer.safeChange.afterText = JSON.stringify(change.after);
+      state.analyzer.safeChange.json = result.instruction;
+      state.analyzer.safeChange.summary = result.summary;
+      setSafeChangeStatus(result.warnings?.length ? "warning" : "success", result.warnings?.length ? result.warnings.join(" / ") : "On-demand Source Resolution用のSafe Change Instructionを生成しました。");
+    }
+    return result;
+  }
+
+  function buildExistingWebRuntimeSafePatchCandidate(instruction, mapping, change) {
+    if (!window.TBalanceSafePatch?.buildPatchCandidate) {
+      return { ok: false, candidate: { status: "blocked", blockReason: { code: "safe-patch-unavailable", message: "Safe Patch moduleを読み込めていません。" } } };
+    }
+    const sourceResolution = resolveSafePatchSource(instruction, mapping, instruction?.changes?.[0] || change);
+    const result = window.TBalanceSafePatch.buildPatchCandidate({
+      instruction,
+      mapping,
+      pageMeta: getAnalyzerManifestPageMeta(),
+      domResolved: Boolean(resolveAnalyzerDomNode(mapping.domRef)),
+      ambiguousMapping: false,
+      currentObserved: { ok: true, value: change.before },
+      sourceResolution,
+    });
+    state.analyzer.safePatch.candidate = result.candidate;
+    state.analyzer.safePatch.diffText = result.diffText;
+    state.analyzer.safePatch.summary = buildSafePatchSummary(result.candidate);
+    state.analyzer.safePatch.signature = result.signature;
+    state.analyzer.safePatch.reviewStatus = "pending";
+    state.analyzer.safePatch.approvedSignature = "";
+    setSafePatchStatus(result.ok ? "pending" : result.candidate.status, result.ok ? "Patch Candidateを生成しました。Applyはまだ行いません。" : `Patch Candidate blocked: ${result.candidate.blockReason?.code || "unknown"}`);
+    return result;
+  }
+
+  function getExistingWebReviewRequiredMessage(resolution) {
+    const reason = resolution?.reason || resolution?.status || "";
+    if (reason === "multiple-source-candidates") {
+      return "この変更は自動では安全に反映できません。この要素の見た目を複数の設定が管理しています。";
+    }
+    if (reason === "source-location-unresolved") {
+      return "この変更は自動では安全に反映できません。変更元のCSS設定を一意に特定できません。";
+    }
+    if (reason === "layout-dependency") {
+      return "この変更は自動では安全に反映できません。周囲のレイアウトとの関係確認が必要です。";
+    }
+    if (reason === "unsupported-property") {
+      return "この変更は自動では安全に反映できません。この種類の変更はv0.1では確認対象外です。";
+    }
+    if (reason === "preflight-blocked" || /preflight/i.test(reason)) {
+      return "変更確認は完了しましたが、反映直前の安全確認を通過できませんでした。Sourceは変更していません。";
+    }
+    return resolution?.message || "変更確認は完了しましたが、自動反映には追加確認が必要です。";
   }
 
   function sendExistingWebPreviewToSafeChange() {
@@ -4063,6 +4894,9 @@
     if (sizeOk) {
       editableProperties.push("size");
     }
+    if (aiOk.has("rotation") && runtimeEditable.has("rotation") && !protectedProperties.has("rotation")) {
+      editableProperties.push("rotation");
+    }
     const propertyChecks = getExistingWebAiPropertyChecks(target.properties, editableProperties, Array.from(protectedProperties), cautions);
     if (editableProperties.length) {
       return {
@@ -4105,6 +4939,11 @@
         text: editable.has("size") ? "AI確認済み" : (reasonFor("width") || reasonFor("height") || cautions?.[0] || "編集できません"),
       },
       {
+        label: "回転",
+        state: editable.has("rotation") ? "ok" : protectedSet.has("rotation") ? "protected" : "warning",
+        text: editable.has("rotation") ? "AI確認済み" : protectedSet.has("rotation") ? "保護" : reasonFor("rotation") || cautions?.[0] || "編集できません",
+      },
+      {
         label: "クリック",
         state: "protected",
         text: reasonFor("click") || "保護",
@@ -4123,6 +4962,7 @@
     const key = String(value || "").toLowerCase().trim();
     if (["position", "pos", "move", "x", "y", "left", "top", "位置"].includes(key)) return "position";
     if (["size", "resize", "scale", "サイズ"].includes(key)) return "size";
+    if (["rotation", "rotate", "angle", "deg", "回転", "角度"].includes(key)) return "rotation";
     if (["width", "w", "幅"].includes(key)) return "width";
     if (["height", "h", "高さ"].includes(key)) return "height";
     if (["click", "clickbehavior", "click_behavior", "button", "link", "クリック"].includes(key)) return "click";
@@ -4169,7 +5009,8 @@
     if (action === "size-smaller") resizeExistingWebSelection(-10, -10);
     if (action === "size-larger") resizeExistingWebSelection(10, 10);
     if (action === "reset-preview") resetExistingWebPreview();
-    if (action === "safe-change") sendExistingWebPreviewToSafeChange();
+    if (action === "safe-change") handleExistingWebMainAction();
+    if (action === "workflow-tab") setExistingWebWorkflowTab(actionSource?.dataset?.existingWebWorkflowTab || "layers");
   }
 
   function getFallbackDomRef(node) {
@@ -4193,6 +5034,7 @@
       width: style.width,
       height: style.height,
       transform: style.transform === "none" ? "" : style.transform,
+      rotate: style.rotate === "none" ? "" : style.rotate,
     };
   }
 
@@ -4204,13 +5046,53 @@
       width: node.style.width,
       height: node.style.height,
       transform: node.style.transform,
+      translate: node.style.translate,
+      rotate: node.style.rotate,
     };
   }
 
   function restoreExistingWebInlineStyle(node, inline) {
-    ["position", "left", "top", "width", "height", "transform"].forEach((key) => {
+    ["position", "left", "top", "width", "height", "transform", "translate", "rotate"].forEach((key) => {
       node.style[key] = inline?.[key] || "";
     });
+  }
+
+  function parseExistingWebTranslate(value) {
+    const raw = String(value || "").trim();
+    if (!raw || raw === "none") {
+      return { x: 0, y: 0 };
+    }
+    const parts = raw.split(/\s+/);
+    return {
+      x: parseCssPx(parts[0], 0),
+      y: parseCssPx(parts[1], 0),
+    };
+  }
+
+  function parseExistingWebRotate(value) {
+    const raw = String(value || "").trim();
+    if (!raw || raw === "none") {
+      return 0;
+    }
+    if (raw.endsWith("rad")) {
+      return normalizeExistingWebAngle(parseCssPx(raw, 0) * 180 / Math.PI);
+    }
+    if (raw.endsWith("turn")) {
+      return normalizeExistingWebAngle(parseCssPx(raw, 0) * 360);
+    }
+    return normalizeExistingWebAngle(parseCssPx(raw, 0));
+  }
+
+  function getExistingWebCurrentRotation(node) {
+    if (!node) {
+      return 0;
+    }
+    const inlineRotate = node.style.rotate;
+    if (inlineRotate) {
+      return parseExistingWebRotate(inlineRotate);
+    }
+    const computedRotate = node.ownerDocument?.defaultView?.getComputedStyle(node)?.rotate || "";
+    return parseExistingWebRotate(computedRotate);
   }
 
   function parseCssPx(value, fallback = 0) {
@@ -4918,7 +5800,11 @@
 
   function findMappingForSafePatchInstruction(instruction) {
     const target = instruction?.target || {};
-    return state.analyzer.confirmedMappings.find((mapping) => (
+    const mappings = [
+      ...(state.analyzer.confirmedMappings || []),
+      ...(state.analyzer.runtimeMappings || []),
+    ];
+    return mappings.find((mapping) => (
       mapping.pageId === target.pageId
       && mapping.tbId === target.tbId
       && mapping.domRef === target.domRef
@@ -5083,7 +5969,7 @@
     return result;
   }
 
-  async function applySafePatchCandidate() {
+  async function applySafePatchCandidate(options = {}) {
     const preflight = state.analyzer.safeApply.preflight;
     if (!preflight?.ok) {
       setSafeApplyStatus("preflight-blocked", "先にApply Preflightを成功させてください。");
@@ -5091,7 +5977,7 @@
       return null;
     }
     const change = preflight.sourceChange || {};
-    const ok = window.confirm([
+    const ok = options.skipUserConfirm ? true : window.confirm([
       "SAFE APPLY",
       "",
       "この変更は実Source Fileを書き換えます。",
@@ -5133,6 +6019,57 @@
     state.analyzer.safeApply.result = result;
     state.analyzer.safeApply.preflight = null;
     setSafeApplyStatus(result.status || "failed", result.message || "Safe Applyを完了しました。");
+    renderSafeApplyPanel();
+    return result;
+  }
+
+  async function applySafePatchBatch(options = {}) {
+    const preflight = state.analyzer.safeApply.preflight;
+    if (!preflight?.ok || !preflight.batchApplyVersion) {
+      setSafeApplyStatus("preflight-blocked", "先にBatch Apply Preflightを成功させてください。");
+      renderSafeApplyPanel();
+      return null;
+    }
+    const ok = options.skipUserConfirm ? true : window.confirm([
+      "SAFE BATCH APPLY",
+      "",
+      "この変更は実Source Fileを書き換えます。",
+      "",
+      `変更: ${preflight.summary?.totalCandidates || preflight.operations?.length || 0}件`,
+      `ファイル: ${preflight.summary?.sourceFiles || preflight.sourceFiles?.length || 0}件`,
+      "",
+      "このBatch変更を適用しますか？",
+    ].join("\n"));
+    if (!ok) {
+      const cancelled = {
+        ok: false,
+        safeApplyVersion: "0.1",
+        batchApplyVersion: "0.1",
+        status: "cancelled",
+        message: "UserがBatch Safe Applyをキャンセルしました。Source Writer Writeは呼び出していません。",
+        candidateSignatures: preflight.candidateSignatures || [],
+        policy: {
+          gitCommitPerformed: false,
+          pushPerformed: false,
+          publishPerformed: false,
+          automaticApplyAllowed: false,
+        },
+      };
+      state.analyzer.safeApply.result = cancelled;
+      setSafeApplyStatus("cancelled", cancelled.message);
+      renderSafeApplyPanel();
+      return cancelled;
+    }
+    const client = getSafeApplyClient();
+    setSafeApplyStatus("applying", "Source Writer Bridge経由でBatchを実Sourceへ適用中です。");
+    renderSafeApplyPanel();
+    const result = await window.TBalanceSafeApply.applyApprovedBatch({
+      preflight,
+      sourceWriterClient: client,
+    });
+    state.analyzer.safeApply.result = result;
+    state.analyzer.safeApply.preflight = null;
+    setSafeApplyStatus(result.status || "failed", result.message || "Batch Safe Applyを完了しました。");
     renderSafeApplyPanel();
     return result;
   }
@@ -5437,12 +6374,7 @@
 
   function hasUnsafeLayoutDependency(node, declarations) {
     const win = node.ownerDocument.defaultView;
-    const style = win.getComputedStyle(node);
     const parentStyle = node.parentElement ? win.getComputedStyle(node.parentElement) : null;
-    const declarationNames = new Set(declarations.map((item) => item.cssProperty));
-    if (style.transform && style.transform !== "none" && (declarationNames.has("left") || declarationNames.has("top"))) {
-      return true;
-    }
     if (parentStyle && ["flex", "inline-flex", "grid", "inline-grid"].includes(parentStyle.display)) {
       return true;
     }
@@ -9266,6 +10198,10 @@
   }
 
   function setInspectorTab(tab) {
+    if (state.existingWeb.active) {
+      state.existingWeb.inspectorExpanded = true;
+      els.rightPanel?.classList.add("is-existing-web-inspector-expanded");
+    }
     const style = tab === "style";
     els.propertyTab.classList.toggle("is-active", !style);
     els.styleTab.classList.toggle("is-active", style);
@@ -10719,6 +11655,7 @@
     els.normalMode.classList.toggle("is-active", state.editorMode === "normal");
     els.customMode.classList.toggle("is-active", state.editorMode === "custom");
     document.body.dataset.editorMode = state.editorMode;
+    document.body.dataset.existingWebActive = state.existingWeb.active ? "true" : "false";
     document.body.dataset.showToolDescriptions = state.uiSettings.showToolDescriptions === false ? "false" : "true";
     document.body.dataset.showBeginnerHints = state.uiSettings.showBeginnerHints === false ? "false" : "true";
     document.body.dataset.showShortcuts = state.uiSettings.showShortcuts === false ? "false" : "true";
@@ -10880,7 +11817,13 @@
       if (els.canvasViewport) {
         els.canvasViewport.classList.remove("is-existing-web-view");
       }
+      if (els.rightPanel) {
+        els.rightPanel.classList.remove("is-existing-web-inspector-expanded");
+      }
       return;
+    }
+    if (els.rightPanel) {
+      els.rightPanel.classList.toggle("is-existing-web-inspector-expanded", Boolean(state.existingWeb.inspectorExpanded));
     }
     if (els.canvasViewport) {
       els.canvasViewport.classList.remove("is-split-view", "is-split-vertical");
@@ -10957,9 +11900,17 @@
         : "このページの編集可能範囲をまとめて確認します。";
     }
     if (els.existingWebCreateSafeChange) {
-      els.existingWebCreateSafeChange.textContent = state.editorMode === "custom" ? "Safe Changeへ送る" : "変更を確認";
-      els.existingWebCreateSafeChange.disabled = !state.existingWeb.preview?.changes?.length
-        || (state.editorMode === "custom" && !state.existingWeb.selected?.mapping);
+      const workflow = getExistingWebWorkflow();
+      const changeCount = getExistingWebPreviewChangeCount();
+      const workflowStatus = changeCount ? workflow.status : "clean";
+      els.existingWebCreateSafeChange.textContent = state.editorMode === "custom"
+        ? "Safe Changeへ送る"
+        : workflowStatus === "ready_to_apply"
+          ? "変更を反映"
+          : "変更を確認";
+      els.existingWebCreateSafeChange.disabled = state.editorMode === "custom"
+        ? (!state.existingWeb.preview?.changes?.length || !state.existingWeb.selected?.mapping)
+        : !["dirty", "ready_to_apply", "review_required"].includes(workflowStatus);
     }
     if (els.existingWebResetPreview) {
       els.existingWebResetPreview.disabled = !state.existingWeb.preview?.active;
@@ -11899,6 +12850,8 @@
       : refreshExistingWebVirtualLayers();
     const displayLayers = state.editorMode === "custom" ? layers : getExistingWebNormalDisplayLayers(layers);
     const selectedDomRef = state.existingWeb.selected?.domRef || "";
+    const workflow = getExistingWebWorkflow();
+    const workflowHtml = buildExistingWebWorkflowPanel();
     const pageCheckHtml = state.editorMode === "custom" ? "" : buildExistingWebPageCheckSummary(displayLayers);
     const layerRows = displayLayers.length
       ? `<div class="tb-existing-web-virtual-list">
@@ -11911,9 +12864,11 @@
             <button class="tb-existing-web-virtual-row${layer.domRef === selectedDomRef ? " is-selected" : ""}" type="button" data-existing-web-virtual-layer="${escapeAttr(layer.domRef)}" data-status="${escapeAttr(layer.status.key)}">
               <span class="tb-existing-web-virtual-main">
                 <strong>${escapeHtml(layer.name)}</strong>
-                <small>${escapeHtml(layer.relatedCount > 1 ? `${layer.detail} / 関連要素 ${layer.relatedCount}件` : layer.detail)}</small>
+                ${state.editorMode === "custom" ? `<small>${escapeHtml(layer.relatedCount > 1 ? `${layer.detail} / 関連要素 ${layer.relatedCount}件` : layer.detail)}</small>` : ""}
               </span>
-              <span class="tb-existing-web-virtual-status">${escapeHtml(layer.status.label)}</span>
+              ${state.editorMode === "custom"
+                ? `<span class="tb-existing-web-virtual-status">${escapeHtml(layer.status.label)}</span>`
+                : `<span class="tb-existing-web-virtual-status">${escapeHtml(getExistingWebLayerPreviewMarker(layer))}</span>`}
               ${layer.status.key === "warning" && state.editorMode === "custom" ? `<span class="tb-existing-web-virtual-confirm" data-existing-web-action="confirm-layer" data-existing-web-dom-ref="${escapeAttr(layer.domRef)}">確認</span>` : ""}
               ${layer.status.key === "ai-needed" ? `<span class="tb-existing-web-virtual-confirm" data-existing-web-action="ai-check" data-existing-web-dom-ref="${escapeAttr(layer.domRef)}">AIに相談</span>` : ""}
             </button>
@@ -11924,9 +12879,11 @@
       <section class="tb-existing-web-layer-panel">
         <strong>既存Web 仮想レイヤー</strong>
         <p class="tb-existing-web-layer-note">Sourceは変更せず、iframeのDOMを選択用に表示しています。</p>
-        ${pageCheckHtml}
-        ${layerRows}
-        ${buildExistingWebSelectionSummary(state.editorMode === "custom" ? "custom" : "normal")}
+        ${workflowHtml}
+        ${state.editorMode === "custom" || workflow.tab === "layers" ? pageCheckHtml : ""}
+        ${state.editorMode === "custom" || workflow.tab === "layers" ? layerRows : ""}
+        ${state.editorMode === "custom" || workflow.tab === "adjust" ? buildExistingWebSelectionSummary(state.editorMode === "custom" ? "custom" : "normal") : ""}
+        ${state.editorMode !== "custom" && workflow.tab === "analysis" ? buildExistingWebAnalysisPanel() : ""}
       </section>
     `;
   }
@@ -12047,6 +13004,157 @@
     if (key === "problem") return "問題あり";
     if (key === "ai-needed") return "AI確認";
     return "要確認";
+  }
+
+  function setExistingWebWorkflowTab(tabName) {
+    const workflow = getExistingWebWorkflow();
+    const safeTab = ["layers", "adjust", "analysis"].includes(tabName) ? tabName : "layers";
+    state.existingWeb.workflow = {
+      ...workflow,
+      tab: safeTab,
+    };
+    renderAll();
+  }
+
+  function buildExistingWebWorkflowPanel() {
+    if (state.editorMode === "custom") {
+      return "";
+    }
+    const workflow = getExistingWebWorkflow();
+    const count = getExistingWebPreviewChangeCount();
+    const status = count ? workflow.status : "clean";
+    const statusLabel = status === "dirty"
+      ? `変更あり ${count}件`
+    : status === "analyzing"
+        ? `${count}件の変更を確認中`
+        : status === "ready_to_apply"
+          ? `変更確認済み ${count}件`
+          : status === "review_required"
+            ? getExistingWebReviewStatusLabel(workflow, count)
+            : status === "applying"
+              ? "反映中"
+              : "変更なし";
+    const buttonLabel = status === "ready_to_apply" ? "変更を反映" : "変更を確認";
+    const disabled = !["dirty", "ready_to_apply", "review_required"].includes(status);
+    const tabs = [
+      ["layers", "レイヤー"],
+      ["adjust", "調整"],
+      ["analysis", "分析"],
+    ];
+    return `
+      <section class="tb-existing-web-workflow" data-workflow-state="${escapeAttr(status)}">
+        <div class="tb-existing-web-workflow-tabs" role="tablist" aria-label="Standard Web編集">
+          ${tabs.map(([key, label]) => `
+            <button type="button" class="${workflow.tab === key ? "is-active" : ""}" data-existing-web-action="workflow-tab" data-existing-web-workflow-tab="${escapeAttr(key)}">${escapeHtml(label)}</button>
+          `).join("")}
+        </div>
+        <div class="tb-existing-web-main-action">
+          <span>${escapeHtml(statusLabel)}</span>
+          <button type="button" data-existing-web-action="safe-change" class="${status === "ready_to_apply" ? "is-apply" : ""}"${disabled ? " disabled" : ""}>${escapeHtml(buttonLabel)}</button>
+        </div>
+        ${workflow.message ? `<p>${escapeHtml(workflow.message)}</p>` : ""}
+      </section>
+    `;
+  }
+
+  function getExistingWebReviewStatusLabel(workflow, count) {
+    const match = String(workflow.message || "").match(/(\d+)件中(\d+)件/);
+    if (match) {
+      return `${match[1]}件中${match[2]}件に確認が必要`;
+    }
+    return count ? `${count}件に確認が必要` : "要確認";
+  }
+
+  function buildExistingWebAnalysisPanel() {
+    const impact = state.existingWeb.impactAnalysis;
+    const workflow = getExistingWebWorkflow();
+    if (!impact) {
+      return `<p class="tb-existing-web-empty">${escapeHtml(workflow.message || "分析結果はまだありません。変更後に「変更を確認」を押してください。")}</p>`;
+    }
+    if (impact.batch) {
+      return `
+        <article class="tb-existing-web-selection-card tb-existing-web-analysis-card">
+          <h3>変更後の影響分析</h3>
+          <p>${escapeHtml(impact.intent || "")}</p>
+          ${buildExistingWebBatchImpactHtml(impact)}
+          ${workflow.status === "ready_to_apply"
+            ? `<p class="tb-existing-web-preview-note">Sourceへ反映できます。反映前に確認Dialogを表示します。</p>`
+            : `<p class="tb-existing-web-preview-note">${escapeHtml(workflow.message || "Source反映には追加確認が必要です。")}</p>`}
+        </article>
+      `;
+    }
+    return `
+      <article class="tb-existing-web-selection-card tb-existing-web-analysis-card">
+        <h3>変更後の影響分析</h3>
+        <p>${escapeHtml(impact.intent || "")}</p>
+        ${buildExistingWebImpactHtml(impact)}
+        ${workflow.status === "ready_to_apply"
+          ? `<p class="tb-existing-web-preview-note">Sourceへ反映できます。反映前に確認Dialogを表示します。</p>`
+          : `<p class="tb-existing-web-preview-note">${escapeHtml(workflow.message || "Source反映には追加確認が必要です。")}</p>`}
+      </article>
+    `;
+  }
+
+  function buildExistingWebWorkflowImpactAnalysis(resolution, changes) {
+    if (!resolution?.batch) {
+      const item = resolution?.changes?.[0] || {};
+      return buildExistingWebImpactAnalysis(item.selected || state.existingWeb.selected, item.change || changes?.[0], resolution);
+    }
+    return {
+      batch: true,
+      intent: `変更 ${changes.length}件`,
+      status: resolution.ok ? "ready_to_apply" : "review_required",
+      summary: resolution.summary || {
+        total: changes.length,
+        safe: resolution.ok ? changes.length : 0,
+        blocked: resolution.ok ? 0 : changes.length,
+      },
+      items: (resolution.changes || []).map((item) => {
+        const selected = item.selected;
+        const change = item.change;
+        const itemResolution = item.resolution || {};
+        return {
+          title: selected ? getExistingWebSelectionTitle(selected) : change?.domRef || "変更",
+          domRef: change?.domRef || selected?.domRef || "",
+          preview: change,
+          status: itemResolution.ok ? "safe" : "review_required",
+          message: itemResolution.ok ? "反映可能" : getExistingWebReviewRequiredMessage(itemResolution),
+          source: summarizeExistingWebSourceResolution(itemResolution),
+        };
+      }),
+      preflight: resolution.batchPreflight || null,
+      message: resolution.message || "",
+    };
+  }
+
+  function buildExistingWebBatchImpactHtml(impact) {
+    const summary = impact.summary || {};
+    return `
+      <section class="tb-existing-web-impact">
+        <header>
+          <strong>変更 ${Number(summary.total || impact.items?.length || 0)}件</strong>
+          <span>${Number(summary.safe || 0)}件反映可能 / ${Number(summary.blocked || 0)}件要確認</span>
+        </header>
+        <dl class="tb-existing-web-normal-checks">
+          ${(impact.items || []).map((item) => `
+            <div data-check-state="${item.status === "safe" ? "ok" : "warning"}">
+              <dt>${escapeHtml(item.title || item.domRef || "変更")}</dt>
+              <dd>${escapeHtml(item.status === "safe" ? `${formatExistingWebPreviewForNormal(item.preview)} / ${item.message}` : item.message)}</dd>
+            </div>
+          `).join("")}
+        </dl>
+        ${impact.preflight?.diffText ? `<pre class="tb-existing-web-custom">${escapeHtml(impact.preflight.diffText)}</pre>` : ""}
+      </section>
+    `;
+  }
+
+  function getExistingWebLayerPreviewMarker(layer) {
+    const changed = (state.existingWeb.previewHistory || []).some((change) => change.domRef === layer.domRef)
+      || (state.existingWeb.preview?.changes || []).some((change) => change.domRef === layer.domRef);
+    if (changed) return "●";
+    if (layer.status?.key === "protected") return "LOCK";
+    if (layer.status?.key === "problem") return "!";
+    return "";
   }
 
   function getExistingWebLayerGroupRank(layer) {
@@ -12249,6 +13357,7 @@
       size: "サイズ",
       width: "幅",
       height: "高さ",
+      rotation: "回転",
       visibility: "表示",
     };
     return labels[property] || property;
@@ -12275,6 +13384,10 @@
       const dh = Math.round(((preview.after?.height || 0) - (preview.before?.height || 0)) * 100) / 100;
       return `サイズを 幅 ${dw >= 0 ? "+" : ""}${dw}px / 高さ ${dh >= 0 ? "+" : ""}${dh}px 変更`;
     }
+    if (preview.property === "rotation") {
+      const rotation = Math.round(((preview.after?.rotation || 0) - (preview.before?.rotation || 0)) * 100) / 100;
+      return `回転を ${rotation >= 0 ? "+" : ""}${rotation}° 変更`;
+    }
     return `${preview.property}を変更`;
   }
 
@@ -12290,18 +13403,20 @@
       const dh = Math.round(((preview.after?.height || 0) - (preview.before?.height || 0)) * 100) / 100;
       return `${title}のサイズを 幅 ${dw >= 0 ? "+" : ""}${dw}px / 高さ ${dh >= 0 ? "+" : ""}${dh}px 変更したい`;
     }
+    if (preview?.property === "rotation") {
+      const rotation = Math.round(((preview.after?.rotation || 0) - (preview.before?.rotation || 0)) * 100) / 100;
+      return `${title}を ${rotation >= 0 ? "+" : ""}${rotation}° 回転したい`;
+    }
     return `${title}の見た目を調整したい`;
   }
 
-  function buildExistingWebImpactAnalysis(selected, preview) {
+  function buildExistingWebImpactAnalysis(selected, preview, resolution = null) {
     const afterBounds = selected?.node?.isConnected ? getDomNodeBounds(selected.node) || selected.bounds : selected?.bounds || {};
     const beforeBounds = getExistingWebPreviewBeforeBounds(preview, afterBounds);
     const overlaps = getExistingWebImpactOverlaps(selected, afterBounds);
     const offscreen = getExistingWebOffscreenImpact(selected, afterBounds);
     const behavior = getExistingWebBehaviorImpact(selected);
-    const source = selected?.mapping
-      ? { state: "ready", text: "Confirmed Mappingがあります。Safe Changeへ差分を渡せます。" }
-      : { state: "unknown", text: "Confirmed Mappingなし。Source反映候補化にはMapping確認が必要です。" };
+    const source = getExistingWebImpactSourceState(selected, resolution);
     const checks = [
       { label: "表示", state: offscreen ? "warning" : "ok", text: offscreen || "画面内に表示されています" },
       { label: "重なり", state: overlaps.length ? "warning" : "ok", text: overlaps.length ? `${overlaps.slice(0, 3).map((item) => item.name).join(" / ")} と重なっています` : "主要要素との新しい重なりは見つかりません" },
@@ -12323,8 +13438,55 @@
       overlaps,
       behavior,
       source,
+      sourceResolution: resolution ? summarizeExistingWebSourceResolution(resolution) : null,
       checks,
       checkedAt: new Date().toISOString(),
+    };
+  }
+
+  function getExistingWebImpactSourceState(selected, resolution = null) {
+    if (resolution?.preflight?.ok || resolution?.ok) {
+      const operation = resolution.preflight?.operation || resolution.patchResult?.candidate?.operations?.[0] || null;
+      const sourceRef = operation?.sourceRef || {};
+      return {
+        state: "ok",
+        text: sourceRef.sourcePath
+          ? `${sourceRef.sourcePath} の ${sourceRef.selector || "-"} / ${operation.property || "-"} を一意に確認しました`
+          : "Sourceの変更箇所を一意に確認しました",
+      };
+    }
+    if (resolution) {
+      return {
+        state: "warning",
+        text: getExistingWebReviewRequiredMessage(resolution),
+      };
+    }
+    if (selected?.mapping) {
+      return { state: "ready", text: "Confirmed Mappingがあります。Safe Changeへ差分を渡せます。" };
+    }
+    return { state: "unknown", text: "変更確認時に、この変更対象だけSourceを調査します。" };
+  }
+
+  function summarizeExistingWebSourceResolution(resolution) {
+    const operation = resolution?.preflight?.operation || resolution?.patchResult?.candidate?.operations?.[0] || null;
+    const sourceRef = operation?.sourceRef || {};
+    return {
+      status: resolution?.status || "",
+      reason: resolution?.reason || "",
+      message: resolution?.message || "",
+      runtimeMapping: resolution?.mapping ? {
+        runtimeOnly: Boolean(resolution.mapping.runtimeOnly),
+        pageId: resolution.mapping.pageId,
+        domRef: resolution.mapping.domRef,
+        tbId: resolution.mapping.tbId,
+      } : null,
+      sourceRef: operation ? {
+        sourcePath: sourceRef.sourcePath || "",
+        selector: sourceRef.selector || "",
+        property: operation.property || "",
+        before: operation.before,
+        after: operation.after,
+      } : null,
     };
   }
 
