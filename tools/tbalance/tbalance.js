@@ -877,7 +877,7 @@
       renderAdapterPanel();
     });
     els.balanceCheckButton.addEventListener("click", cycleBalanceMode);
-    els.previewButton.addEventListener("click", toggleTestMode);
+    els.previewButton.addEventListener("click", handleGlobalTestButton);
     els.settingsButton.addEventListener("click", () => {
       els.settingsPanel.hidden = !els.settingsPanel.hidden;
       renderSettings();
@@ -1568,6 +1568,9 @@
     if (info.adapterId && info.adapterId !== state.analyzer.adapterId) {
       setAnalyzerAdapter(info.adapterId);
     }
+    if (options.openContext === "site-map") {
+      closeSiteMapPanel();
+    }
     state.existingWeb = {
       active: true,
       pageId: info.pageId,
@@ -1578,6 +1581,7 @@
       viewState: info.viewState,
       targetState: info.targetState,
       adapterId: info.adapterId || state.analyzer.adapterId || "none",
+      openContext: options.openContext || info.openContext || "direct",
       mode: "edit",
       selected: null,
       virtualLayers: [],
@@ -1778,10 +1782,14 @@
   }
 
   function closeExistingWebView() {
+    const returnToSiteMap = state.existingWeb.openContext === "site-map";
     resetExistingWebPreview({ skipRender: true });
     uninstallExistingWebSelection();
     state.existingWeb.active = false;
     renderAll();
+    if (returnToSiteMap) {
+      openSiteMapPanel();
+    }
   }
 
   function handleExistingWebFrameLoad() {
@@ -7237,7 +7245,7 @@
       if (page) {
         state.siteMap.selectedPageId = page.pageId;
         state.siteMap.selectedLinkId = "";
-        openExistingWebPage(page);
+        openExistingWebPage(page, { openContext: "site-map" });
       }
       return;
     }
@@ -7259,7 +7267,7 @@
     }
     state.siteMap.selectedPageId = page.pageId;
     state.siteMap.selectedLinkId = "";
-    openExistingWebPage(page);
+    openExistingWebPage(page, { openContext: "site-map" });
   }
 
   function handleSiteMapLinkClick(event) {
@@ -11864,11 +11872,13 @@
     }
     if (els.existingWebEditMode) {
       const activeEdit = state.existingWeb.mode !== "test";
+      els.existingWebEditMode.hidden = state.editorMode !== "custom";
       els.existingWebEditMode.classList.toggle("is-active", activeEdit);
       els.existingWebEditMode.setAttribute("aria-pressed", activeEdit ? "true" : "false");
     }
     if (els.existingWebTestMode) {
       const activeTest = state.existingWeb.mode === "test";
+      els.existingWebTestMode.hidden = true;
       els.existingWebTestMode.classList.toggle("is-active", activeTest);
       els.existingWebTestMode.setAttribute("aria-pressed", activeTest ? "true" : "false");
     }
@@ -11888,7 +11898,7 @@
     }
     if (els.existingWebPageCheck) {
       const pageCheck = state.existingWeb.pageCheck || {};
-      els.existingWebPageCheck.hidden = state.editorMode === "custom" || state.existingWeb.mode === "test";
+      els.existingWebPageCheck.hidden = state.editorMode !== "custom" || state.existingWeb.mode === "test";
       els.existingWebPageCheck.disabled = pageCheck.status === "running";
       els.existingWebPageCheck.textContent = pageCheck.status === "running"
         ? "確認中..."
@@ -11903,6 +11913,7 @@
       const workflow = getExistingWebWorkflow();
       const changeCount = getExistingWebPreviewChangeCount();
       const workflowStatus = changeCount ? workflow.status : "clean";
+      els.existingWebCreateSafeChange.hidden = state.editorMode !== "custom";
       els.existingWebCreateSafeChange.textContent = state.editorMode === "custom"
         ? "Safe Changeへ送る"
         : workflowStatus === "ready_to_apply"
@@ -11913,7 +11924,15 @@
         : !["dirty", "ready_to_apply", "review_required"].includes(workflowStatus);
     }
     if (els.existingWebResetPreview) {
+      els.existingWebResetPreview.hidden = true;
       els.existingWebResetPreview.disabled = !state.existingWeb.preview?.active;
+    }
+    if (els.existingWebBackToCanvas) {
+      const fromSiteMap = state.existingWeb.openContext === "site-map" || Boolean(state.siteMap.open);
+      els.existingWebBackToCanvas.textContent = fromSiteMap ? "← SITE MAPへ戻る" : "Webページを閉じる";
+      els.existingWebBackToCanvas.title = fromSiteMap
+        ? "既存Webページを閉じてSITE MAPへ戻ります。未反映PreviewはSourceへ書き込みません。"
+        : "既存Webページを閉じます。未反映PreviewはSourceへ書き込みません。";
     }
     if (els.existingWebSelectionSummary) {
       els.existingWebSelectionSummary.innerHTML = buildExistingWebSelectionSummary("compact");
@@ -13016,6 +13035,18 @@
     renderAll();
   }
 
+  function handleGlobalTestButton() {
+    if (state.existingWeb.active) {
+      const nextMode = state.existingWeb.mode === "test" ? "edit" : "test";
+      setExistingWebMode(nextMode);
+      showModeToast(nextMode === "test"
+        ? "Existing Web TEST中です。ページ本来の動作を確認できます。"
+        : "Existing Web編集に戻りました。");
+      return;
+    }
+    toggleTestMode();
+  }
+
   function buildExistingWebWorkflowPanel() {
     if (state.editorMode === "custom") {
       return "";
@@ -13051,6 +13082,9 @@
         <div class="tb-existing-web-main-action">
           <span>${escapeHtml(statusLabel)}</span>
           <button type="button" data-existing-web-action="safe-change" class="${status === "ready_to_apply" ? "is-apply" : ""}"${disabled ? " disabled" : ""}>${escapeHtml(buttonLabel)}</button>
+        </div>
+        <div class="tb-existing-web-secondary-actions">
+          <button type="button" data-existing-web-action="reset-preview"${count ? "" : " disabled"}>変更をすべて元に戻す</button>
         </div>
         ${workflow.message ? `<p>${escapeHtml(workflow.message)}</p>` : ""}
       </section>
@@ -13203,7 +13237,7 @@
         <button type="button" data-existing-web-action="nudge-down">下へ</button>
         <button type="button" data-existing-web-action="size-smaller">縮小</button>
         <button type="button" data-existing-web-action="size-larger">拡大</button>
-        <button type="button" data-existing-web-action="reset-preview">Preview解除</button>
+        <button type="button" data-existing-web-action="reset-preview">変更をすべて元に戻す</button>
         <button type="button" data-existing-web-action="safe-change"${preview ? "" : " disabled"}>Safe Changeへ</button>
       </div>` : "";
     const customHtml = detailMode === "custom" ? `
@@ -13277,7 +13311,7 @@
         <button type="button" data-existing-web-action="nudge-down">下へ</button>
         <button type="button" data-existing-web-action="size-smaller"${canExistingWebPreviewProperty(selected, "size") ? "" : " disabled"}>縮小</button>
         <button type="button" data-existing-web-action="size-larger"${canExistingWebPreviewProperty(selected, "size") ? "" : " disabled"}>拡大</button>
-        <button type="button" data-existing-web-action="reset-preview">元に戻す</button>
+        <button type="button" data-existing-web-action="reset-preview">変更をすべて元に戻す</button>
         <button type="button" data-existing-web-action="safe-change"${preview ? "" : " disabled"}>変更を確認</button>
       </div>` : needsConfirm && !pageChecked ? `
       <div class="tb-existing-web-action-grid tb-existing-web-action-grid--normal">
@@ -13779,7 +13813,7 @@
     els.balanceCheckButton.querySelectorAll("[data-balance-mode]").forEach((node) => {
       node.classList.toggle("is-active", node.dataset.balanceMode === state.balanceMode);
     });
-    els.previewButton.classList.toggle("is-active", state.preview);
+    els.previewButton.classList.toggle("is-active", state.preview || (state.existingWeb.active && state.existingWeb.mode === "test"));
     els.toggleHitAreas.classList.toggle("is-active", state.showHitAreas);
     els.publishButton.disabled = !state.finalPreviewComplete;
     const existingWebUndo = state.existingWeb.active && Boolean(state.existingWeb.previewHistory?.length);

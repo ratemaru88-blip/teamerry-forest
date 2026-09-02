@@ -4270,6 +4270,12 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   opacity: 0.42;
 }
 
+#existingWebAudioToggle {
+  padding-inline: 7px;
+  background: rgba(12, 22, 34, 0.72);
+  color: #c7d8e6;
+}
+
 .tb-existing-web-selection-summary {
   display: flex;
   flex-wrap: wrap;
@@ -4383,6 +4389,27 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
 .tb-existing-web-main-action button:disabled {
   cursor: not-allowed;
   opacity: 0.48;
+}
+
+.tb-existing-web-secondary-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tb-existing-web-secondary-actions button {
+  min-height: 28px;
+  border: 1px solid rgba(148, 183, 194, 0.24);
+  border-radius: 6px;
+  padding: 5px 8px;
+  background: rgba(11, 20, 30, 0.72);
+  color: #b9cad8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tb-existing-web-secondary-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .tb-existing-web-workflow p {
