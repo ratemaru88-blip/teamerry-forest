@@ -3,6 +3,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createSourceWriter } from "../source-writer/source-writer.mjs";
+import { createCodexLocalSafetyProvider } from "./providers/codex-local-safety-provider.mjs";
 
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.TBALANCE_AI_BRIDGE_PORT || 8787);
@@ -24,6 +25,9 @@ const sourceWriter = await createSourceWriter({
   repoRoot: REPO_ROOT,
   writeEnabled: process.env.TBALANCE_SOURCE_WRITER_WRITE !== "0",
 });
+const safetyAiProviders = new Map();
+const codexLocalProvider = createCodexLocalSafetyProvider({ projectRoot: REPO_ROOT });
+safetyAiProviders.set(codexLocalProvider.id, codexLocalProvider);
 
 function setCorsHeaders(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -44,6 +48,10 @@ function sendJson(res, statusCode, data) {
 
 function isSourceWriterRoute(url) {
   return url.pathname.startsWith("/api/tbalance/source-writer/");
+}
+
+function isSafetyAiRoute(url) {
+  return url.pathname.startsWith("/api/tbalance/safety-ai/");
 }
 
 function isAllowedSourceWriterOrigin(req) {
@@ -390,6 +398,55 @@ async function saveSuggestion(req, res) {
   }
 }
 
+async function runSafetyAiReview(req, res) {
+  try {
+    if (!isAllowedSourceWriterOrigin(req)) {
+      sendSourceWriterJson(req, res, 403, {
+        ok: false,
+        provider: "codex-local",
+        errorCode: "origin-not-allowed",
+        message: "This origin is not allowed to use Safety AI.",
+      });
+      return;
+    }
+    requireJsonRequest(req);
+    const body = await readRequestBody(req);
+    const payload = JSON.parse(body || "{}");
+    const providerId = String(payload.provider || "codex-local").trim() || "codex-local";
+    const provider = safetyAiProviders.get(providerId);
+    if (!provider) {
+      sendJson(res, 400, {
+        ok: false,
+        provider: providerId,
+        errorCode: "provider-not-found",
+        message: "Safety AI Providerが見つかりません。",
+      });
+      return;
+    }
+    const configured = await provider.isConfigured();
+    if (!configured.ok) {
+      sendJson(res, 503, {
+        ok: false,
+        provider: provider.id,
+        providerLabel: provider.label,
+        errorCode: "provider-not-configured",
+        message: "Codex Local Providerを利用できません。",
+        diagnostics: configured,
+      });
+      return;
+    }
+    const result = await provider.reviewSafetyChange(payload);
+    sendJson(res, result.ok ? 200 : 502, result);
+  } catch (error) {
+    sendJson(res, 400, {
+      ok: false,
+      provider: "codex-local",
+      errorCode: "safety-ai-review-failed",
+      message: error?.message || "Safety AI Reviewに失敗しました。",
+    });
+  }
+}
+
 async function handleSourceWriterRequest(req, res, url) {
   if (!isAllowedSourceWriterOrigin(req)) {
     sendSourceWriterJson(req, res, 403, {
@@ -457,6 +514,25 @@ const server = http.createServer(async (req, res) => {
     await handleSourceWriterRequest(req, res, url);
     return;
   }
+  if (isSafetyAiRoute(url)) {
+    if (req.method === "OPTIONS") {
+      setSourceWriterCorsHeaders(req, res);
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+    if (req.method === "POST" && url.pathname === "/api/tbalance/safety-ai/review") {
+      await runSafetyAiReview(req, res);
+      return;
+    }
+    sendSourceWriterJson(req, res, 404, {
+      ok: false,
+      provider: "codex-local",
+      errorCode: "not-found",
+      message: "Safety AI endpoint was not found.",
+    });
+    return;
+  }
   setCorsHeaders(res);
 
   if (req.method === "OPTIONS") {
@@ -507,4 +583,5 @@ server.listen(PORT, HOST, () => {
   console.log(`Repo Root: ${sourceWriter.getCapabilities().read ? REPO_ROOT : "(unavailable)"}`);
   console.log(`Allowed Source Types: ${sourceWriter.getCapabilities().allowedExtensions.join(", ")}`);
   console.log(`Write: ${sourceWriter.getCapabilities().write ? "Enabled" : "Disabled"}`);
+  console.log(`Safety AI Providers: ${Array.from(safetyAiProviders.keys()).join(", ")}`);
 });

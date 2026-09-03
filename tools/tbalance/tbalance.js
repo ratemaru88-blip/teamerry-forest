@@ -13,6 +13,7 @@
   const AI_BRIDGE_HISTORY_URL = "http://127.0.0.1:8787/api/tbalance/history";
   const AI_BRIDGE_RESTORE_URL = "http://127.0.0.1:8787/api/tbalance/history/restore";
   const AI_BRIDGE_SUGGESTION_URL = "http://127.0.0.1:8787/api/tbalance/suggestion";
+  const SAFETY_AI_REVIEW_URL = "http://127.0.0.1:8787/api/tbalance/safety-ai/review";
   const SOURCE_WRITER_URL = "http://127.0.0.1:8787/api/tbalance/source-writer";
   const AI_SHARE_HISTORY_LIMIT = 5;
   const HISTORY_LIMIT = 100;
@@ -287,6 +288,7 @@
         tab: "layers",
         analysisSignature: "",
         applySignature: "",
+        aiReviewSignature: "",
         message: "",
         lastResult: null,
       },
@@ -778,7 +780,7 @@
     });
     els.cancelExistingWebAiShare?.addEventListener("click", cancelExistingWebAiShare);
     els.pasteExistingWebAiResult?.addEventListener("click", pasteExistingWebAiResultFromClipboard);
-    els.applyExistingWebAiResult?.addEventListener("click", importExistingWebAiReviewResult);
+    els.applyExistingWebAiResult?.addEventListener("click", () => importExistingWebAiReviewResult());
     els.loadAiSuggestion?.addEventListener("click", loadAiSuggestionFromBridge);
     els.refreshAiHistory?.addEventListener("click", refreshAiShareHistory);
     els.aiShareHistoryList?.addEventListener("click", handleAiHistoryClick);
@@ -2154,10 +2156,14 @@
     }
     if (drag.type === "resize") {
       const next = getExistingWebResizeBounds(drag, delta.x, delta.y, selected);
+      drag.lastBounds = { ...next };
       applyExistingWebPreviewBounds(selected, next, drag.beforeInline, drag.beforeBounds);
     } else if (drag.type === "rotate") {
-      applyExistingWebPreviewRotation(selected, getExistingWebRotateAngle(event, drag), drag.beforeInline);
+      const nextRotation = getExistingWebRotateAngle(event, drag);
+      drag.lastRotation = nextRotation;
+      applyExistingWebPreviewRotation(selected, nextRotation, drag.beforeInline);
     } else {
+      drag.lastDelta = { ...delta };
       applyExistingWebPreviewPosition(selected, drag.beforeBounds.x + delta.x, drag.beforeBounds.y + delta.y, drag.beforeInline, drag.beforeBounds);
     }
     renderExistingWebTransformBox();
@@ -2183,6 +2189,7 @@
         afterInline: captureExistingWebInlineStyle(selected.node),
         beforeRotation: state.existingWeb.drag.beforeRotation,
         afterRotation: getExistingWebCurrentRotation(selected.node),
+        userEdit: getExistingWebUserEditFromDrag(state.existingWeb.drag),
       });
     }
     state.existingWeb.drag = null;
@@ -3346,6 +3353,11 @@
       domRef: selected.domRef,
       beforeInline,
       afterInline: captureExistingWebInlineStyle(selected.node),
+      userEdit: {
+        type: "move",
+        deltaX: roundExistingWebNumber(dx),
+        deltaY: roundExistingWebNumber(dy),
+      },
     });
     renderAll();
   }
@@ -3370,21 +3382,166 @@
       domRef: selected.domRef,
       beforeInline,
       afterInline: captureExistingWebInlineStyle(selected.node),
+      userEdit: {
+        type: "resize",
+        widthDelta: roundExistingWebNumber(nextWidth - before.width),
+        heightDelta: roundExistingWebNumber(nextHeight - before.height),
+      },
     });
     renderAll();
   }
 
+  function roundExistingWebNumber(value) {
+    return Math.round((Number(value || 0)) * 100) / 100;
+  }
+
+  function getExistingWebUserEditFromDrag(drag = {}) {
+    if (drag.type === "move") {
+      const delta = drag.lastDelta || { x: 0, y: 0 };
+      return {
+        type: "move",
+        deltaX: roundExistingWebNumber(delta.x),
+        deltaY: roundExistingWebNumber(delta.y),
+      };
+    }
+    if (drag.type === "resize") {
+      const before = drag.beforeBounds || {};
+      const after = drag.lastBounds || before;
+      return {
+        type: "resize",
+        widthDelta: roundExistingWebNumber(Number(after.width || 0) - Number(before.width || 0)),
+        heightDelta: roundExistingWebNumber(Number(after.height || 0) - Number(before.height || 0)),
+      };
+    }
+    if (drag.type === "rotate") {
+      return {
+        type: "rotate",
+        rotationDelta: normalizeExistingWebAngle(Number(drag.lastRotation ?? drag.beforeRotation ?? 0) - Number(drag.beforeRotation || 0)),
+      };
+    }
+    return null;
+  }
+
+  function normalizeExistingWebUserEdit(property, userEdit, beforeBounds = {}, afterBounds = {}, options = {}) {
+    if (userEdit?.type) {
+      return { ...userEdit };
+    }
+    if (property === "position") {
+      return {
+        type: "move",
+        deltaX: roundExistingWebNumber(Number(afterBounds.x || 0) - Number(beforeBounds.x || 0)),
+        deltaY: roundExistingWebNumber(Number(afterBounds.y || 0) - Number(beforeBounds.y || 0)),
+      };
+    }
+    if (property === "size") {
+      return {
+        type: "resize",
+        widthDelta: roundExistingWebNumber(Number(afterBounds.width || 0) - Number(beforeBounds.width || 0)),
+        heightDelta: roundExistingWebNumber(Number(afterBounds.height || 0) - Number(beforeBounds.height || 0)),
+      };
+    }
+    if (property === "rotation") {
+      return {
+        type: "rotate",
+        rotationDelta: normalizeExistingWebAngle(Number(options.afterRotation || 0) - Number(options.beforeRotation || 0)),
+      };
+    }
+    return {
+      type: property || "unknown",
+    };
+  }
+
+  function getExistingWebIntentBefore(property, beforeBounds = {}, options = {}) {
+    if (property === "size") {
+      return { width: beforeBounds.width, height: beforeBounds.height };
+    }
+    if (property === "rotation") {
+      return { rotation: normalizeExistingWebAngle(options.beforeRotation || 0) };
+    }
+    return { x: beforeBounds.x, y: beforeBounds.y };
+  }
+
+  function getExistingWebIntentAfter(property, before, userEdit = {}, afterBounds = {}, options = {}) {
+    if (property === "size") {
+      return {
+        width: roundExistingWebNumber(Number(before.width || 0) + Number(userEdit.widthDelta || 0)),
+        height: roundExistingWebNumber(Number(before.height || 0) + Number(userEdit.heightDelta || 0)),
+      };
+    }
+    if (property === "rotation") {
+      return { rotation: normalizeExistingWebAngle(Number(before.rotation || 0) + Number(userEdit.rotationDelta || 0)) };
+    }
+    if (property === "position") {
+      return {
+        x: roundExistingWebNumber(Number(before.x || 0) + Number(userEdit.deltaX || 0)),
+        y: roundExistingWebNumber(Number(before.y || 0) + Number(userEdit.deltaY || 0)),
+      };
+    }
+    return afterBounds || before || {};
+  }
+
+  function buildExistingWebObservedVisualChange(property, beforeBounds = {}, afterBounds = {}, options = {}) {
+    if (property === "size") {
+      return {
+        type: "resize",
+        widthDelta: roundExistingWebNumber(Number(afterBounds.width || 0) - Number(beforeBounds.width || 0)),
+        heightDelta: roundExistingWebNumber(Number(afterBounds.height || 0) - Number(beforeBounds.height || 0)),
+      };
+    }
+    if (property === "rotation") {
+      return {
+        type: "rotate",
+        rotationDelta: normalizeExistingWebAngle(Number(options.afterRotation || 0) - Number(options.beforeRotation || 0)),
+      };
+    }
+    return {
+      type: "move",
+      deltaX: roundExistingWebNumber(Number(afterBounds.x || 0) - Number(beforeBounds.x || 0)),
+      deltaY: roundExistingWebNumber(Number(afterBounds.y || 0) - Number(beforeBounds.y || 0)),
+    };
+  }
+
+  function buildExistingWebRuntimeDynamicDrift(property, userEdit = {}, observed = {}) {
+    if (property === "position") {
+      const deltaX = roundExistingWebNumber(Number(observed.deltaX || 0) - Number(userEdit.deltaX || 0));
+      const deltaY = roundExistingWebNumber(Number(observed.deltaY || 0) - Number(userEdit.deltaY || 0));
+      return {
+        type: "move",
+        deltaX,
+        deltaY,
+        source: (Math.abs(deltaX) >= 0.01 || Math.abs(deltaY) >= 0.01) ? "animation-or-runtime-motion" : "none",
+      };
+    }
+    if (property === "size") {
+      const widthDelta = roundExistingWebNumber(Number(observed.widthDelta || 0) - Number(userEdit.widthDelta || 0));
+      const heightDelta = roundExistingWebNumber(Number(observed.heightDelta || 0) - Number(userEdit.heightDelta || 0));
+      return {
+        type: "resize",
+        widthDelta,
+        heightDelta,
+        source: (Math.abs(widthDelta) >= 0.01 || Math.abs(heightDelta) >= 0.01) ? "animation-or-runtime-motion" : "none",
+      };
+    }
+    if (property === "rotation") {
+      const rotationDelta = normalizeExistingWebAngle(Number(observed.rotationDelta || 0) - Number(userEdit.rotationDelta || 0));
+      return {
+        type: "rotate",
+        rotationDelta,
+        source: Math.abs(rotationDelta) >= 0.01 ? "animation-or-runtime-motion" : "none",
+      };
+    }
+    return {
+      type: property || "unknown",
+      source: "none",
+    };
+  }
+
   function recordExistingWebPreviewChange(property, beforeBounds, afterBounds, beforeSource, options = {}) {
-    const before = property === "size"
-      ? { width: beforeBounds.width, height: beforeBounds.height }
-      : property === "rotation"
-        ? { rotation: normalizeExistingWebAngle(options.beforeRotation || 0) }
-        : { x: beforeBounds.x, y: beforeBounds.y };
-    const after = property === "size"
-      ? { width: afterBounds.width, height: afterBounds.height }
-      : property === "rotation"
-        ? { rotation: normalizeExistingWebAngle(options.afterRotation || 0) }
-        : { x: afterBounds.x, y: afterBounds.y };
+    const userEdit = normalizeExistingWebUserEdit(property, options.userEdit, beforeBounds, afterBounds, options);
+    const before = getExistingWebIntentBefore(property, beforeBounds, options);
+    const after = getExistingWebIntentAfter(property, before, userEdit, afterBounds, options);
+    const observedVisualChange = buildExistingWebObservedVisualChange(property, beforeBounds, afterBounds, options);
+    const runtimeDynamicDrift = buildExistingWebRuntimeDynamicDrift(property, userEdit, observedVisualChange);
     const changed = Object.keys(before).some((key) => Math.abs((Number(after[key]) || 0) - (Number(before[key]) || 0)) >= 0.5);
     if (!changed) {
       state.existingWeb.preview.changes = [];
@@ -3398,6 +3555,9 @@
       property,
       before,
       after,
+      userEdit,
+      observedVisualChange,
+      runtimeDynamicDrift,
       beforeSource,
       beforeInline: options.beforeInline || state.existingWeb.preview?.beforeInline || null,
       afterInline: options.afterInline || (selected?.node ? captureExistingWebInlineStyle(selected.node) : null),
@@ -3451,6 +3611,9 @@
       tab: "layers",
       analysisSignature: "",
       applySignature: "",
+      aiReviewSignature: "",
+      aiReviewRequestId: "",
+      aiReviewStatus: "",
       message: "",
       lastResult: null,
     };
@@ -3513,6 +3676,9 @@
         status: "clean",
         analysisSignature: "",
         applySignature: "",
+        aiReviewSignature: "",
+        aiReviewRequestId: "",
+        aiReviewStatus: "",
         message: message || "",
         lastResult: null,
       };
@@ -3523,6 +3689,9 @@
       status: "dirty",
       analysisSignature: "",
       applySignature: "",
+      aiReviewSignature: "",
+      aiReviewRequestId: "",
+      aiReviewStatus: "",
       message: message || `${count}件の変更があります。`,
       lastResult: null,
     };
@@ -3535,7 +3704,49 @@
       status: "review_required",
       analysisSignature: getExistingWebPreviewSignature(),
       applySignature: "",
+      aiReviewSignature: "",
+      aiReviewRequestId: "",
+      aiReviewStatus: "",
       message: message || "変更確認は完了しましたが、Source反映には追加確認が必要です。",
+    };
+  }
+
+  function setExistingWebWorkflowAiReviewing(message = "", requestId = "") {
+    const workflow = getExistingWebWorkflow();
+    const signature = getExistingWebPreviewSignature();
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "ai_reviewing",
+      analysisSignature: workflow.analysisSignature || signature,
+      applySignature: "",
+      aiReviewSignature: signature,
+      aiReviewRequestId: requestId,
+      aiReviewStatus: "running",
+      message: message || "AIで確認中...",
+    };
+  }
+
+  function setExistingWebWorkflowAiImported(message = "") {
+    const workflow = getExistingWebWorkflow();
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "ai_response_imported",
+      applySignature: "",
+      aiReviewStatus: "revalidating",
+      message: message || "AI回答をTBalanceで再確認中です。",
+    };
+  }
+
+  function setExistingWebWorkflowManualReviewRequired(message = "", details = null) {
+    const workflow = getExistingWebWorkflow();
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "manual_review_required",
+      analysisSignature: getExistingWebPreviewSignature(),
+      applySignature: "",
+      aiReviewStatus: "blocked",
+      message: message || "この変更は自動で安全確認できませんでした。",
+      lastResult: details || workflow.lastResult || null,
     };
   }
 
@@ -3547,6 +3758,9 @@
       status: "ready_to_apply",
       analysisSignature: signature,
       applySignature: signature,
+      aiReviewSignature: workflow.aiReviewSignature || "",
+      aiReviewRequestId: workflow.aiReviewRequestId || "",
+      aiReviewStatus: workflow.aiReviewStatus === "running" ? "revalidated" : workflow.aiReviewStatus || "",
       message: message || "変更確認済みです。Sourceへ反映できます。",
     };
   }
@@ -3558,6 +3772,9 @@
       status: "clean",
       analysisSignature: "",
       applySignature: "",
+      aiReviewSignature: "",
+      aiReviewRequestId: "",
+      aiReviewStatus: "",
       message,
       lastResult: null,
     };
@@ -3648,6 +3865,9 @@
       await applyExistingWebWorkflowToSource();
       return;
     }
+    if (workflow.status === "analyzing" || workflow.status === "ai_reviewing" || workflow.status === "ai_response_imported") {
+      return;
+    }
     await analyzeExistingWebWorkflowChanges();
   }
 
@@ -3674,7 +3894,7 @@
     if (resolution?.ok) {
       setExistingWebWorkflowReadyToApply(`変更確認済み: ${count}件を反映できます。`);
     } else {
-      setExistingWebWorkflowReviewRequired(getExistingWebReviewRequiredMessage(resolution));
+      await runExistingWebAutomaticSafetyReview(changes, resolution);
     }
     showModeToast(`変更後の影響を確認しました: ${count}件`);
     renderAll();
@@ -3875,7 +4095,7 @@
       };
     }
     const instruction = safeChangeResult.instruction;
-    const patchResult = buildExistingWebRuntimeSafePatchCandidate(instruction, mapping, change);
+    const patchResult = buildExistingWebRuntimeSafePatchCandidate(instruction, mapping, change, options.sourceResolutionOverride || null);
     if (!patchResult.ok) {
       return {
         ok: false,
@@ -3975,6 +4195,13 @@
     return Array.from(protectedProperties);
   }
 
+  function resolveExistingWebRuntimeDomNode(domRef) {
+    if (!state.existingWeb.active) {
+      return resolveAnalyzerDomNode(domRef);
+    }
+    return getExistingWebNodeByDomRef(domRef);
+  }
+
   function buildExistingWebRuntimeSafeChange(selected, mapping, change) {
     if (!window.TBalanceSafeChange?.buildSafeChangeInstruction) {
       return { ok: false, errors: ["Safe Change moduleを読み込めていません。"] };
@@ -3988,7 +4215,7 @@
       viewState: mapping.viewState || state.existingWeb.viewState || "",
       mapping,
       userIntent: formatExistingWebPreviewIntent(selected, change),
-      domResolved: Boolean(resolveAnalyzerDomNode(mapping.domRef)),
+      domResolved: Boolean(resolveExistingWebRuntimeDomNode(mapping.domRef)),
       ambiguousMapping: false,
       protectedBehavior,
       changes: [{
@@ -4013,16 +4240,16 @@
     return result;
   }
 
-  function buildExistingWebRuntimeSafePatchCandidate(instruction, mapping, change) {
+  function buildExistingWebRuntimeSafePatchCandidate(instruction, mapping, change, sourceResolutionOverride = null) {
     if (!window.TBalanceSafePatch?.buildPatchCandidate) {
       return { ok: false, candidate: { status: "blocked", blockReason: { code: "safe-patch-unavailable", message: "Safe Patch moduleを読み込めていません。" } } };
     }
-    const sourceResolution = resolveSafePatchSource(instruction, mapping, instruction?.changes?.[0] || change);
+    const sourceResolution = sourceResolutionOverride || resolveSafePatchSource(instruction, mapping, instruction?.changes?.[0] || change);
     const result = window.TBalanceSafePatch.buildPatchCandidate({
       instruction,
       mapping,
       pageMeta: getAnalyzerManifestPageMeta(),
-      domResolved: Boolean(resolveAnalyzerDomNode(mapping.domRef)),
+      domResolved: Boolean(resolveExistingWebRuntimeDomNode(mapping.domRef)),
       ambiguousMapping: false,
       currentObserved: { ok: true, value: change.before },
       sourceResolution,
@@ -4442,6 +4669,575 @@
     renderAll();
   }
 
+  function prepareExistingWebWorkflowAiReview() {
+    const changes = getExistingWebWorkflowChanges();
+    if (!changes.length) {
+      markExistingWebWorkflowDirty("AI確認する変更がありません。");
+      renderAll();
+      return;
+    }
+    const workflow = getExistingWebWorkflow();
+    if (workflow.analysisSignature && workflow.analysisSignature !== getExistingWebPreviewSignature()) {
+      markExistingWebWorkflowDirty("Previewが再編集されています。変更を再確認してください。");
+      renderAll();
+      return;
+    }
+    const packageData = buildExistingWebWorkflowAiReviewPackage(changes);
+    state.withAiShare.mode = "existing-web-ai-review";
+    state.withAiShare.package = packageData;
+    state.withAiShare.text = formatExistingWebAiReviewText(packageData);
+    state.withAiShare.summary = `AI確認: 変更 ${changes.length}件`;
+    state.withAiShare.details = JSON.stringify(packageData, null, 2);
+    state.withAiShare.status = "idle";
+    state.withAiShare.message = "AIに共有する内容を確認してから、AIと共有してください。";
+    setExistingWebWorkflowAiReviewing("AIで確認中...");
+    state.aiCollab = true;
+    if (els.aiCollabPanel) {
+      els.aiCollabPanel.hidden = false;
+    }
+    refreshAiCollabPanel();
+    showModeToast("AI確認用Packageを準備しました。");
+    renderAll();
+  }
+
+  function buildExistingWebWorkflowAiReviewPackage(changes) {
+    const requestRevision = createExistingWebAiRequestId(getExistingWebWorkflowAiRevisionSeed(changes));
+    const targets = changes.map((change) => {
+      const selected = selectExistingWebElementForWorkflowChange(change);
+      const check = selected
+        ? selected.check || getExistingWebCheck(selected.domRef) || runExistingWebLayerCheck(selected.analyzerElement, selected.node, selected.mapping, selected.protectedBehavior, { level: "confirm" })
+        : null;
+      const resolution = getExistingWebImpactResolutionForChange(change);
+      return buildExistingWebAiReviewTargetPackage(selected, check, change, resolution, requestRevision);
+    }).filter(Boolean);
+    const base = {
+      type: targets.length > 1 ? "existing-web-ai-review-batch" : "existing-web-ai-review",
+      workflowReview: true,
+      requestId: requestRevision,
+      targetAi: "codex-local",
+      project: { name: state.project?.name || "TBalance Project" },
+      page: {
+        pageId: state.existingWeb.pageId,
+        sourcePath: state.existingWeb.sourcePath,
+        viewState: state.existingWeb.viewState || "",
+        pageViewState: state.existingWeb.viewState || "",
+        currentUrl: state.existingWeb.currentUrl,
+        sourceAuthority: state.existingWeb.sourceAuthority || "standard-web",
+        adapterId: state.existingWeb.adapterId || state.analyzer.adapterId || "none",
+        sourceFingerprint: getExistingWebFingerprint(),
+        requestRevision,
+      },
+      viewport: getExistingWebAiViewportContext(),
+      targets,
+      userIntent: targets.length > 1
+        ? "今回の複数Visual変更を、Partial Applyせず全件安全にSource反映できる候補へ整理したい。"
+        : targets[0]?.userIntent || "今回のVisual変更を安全にSource反映できる候補へ整理したい。",
+      responseFormat: buildExistingWebWorkflowAiResponseFormat(targets, requestRevision),
+      safetyPolicy: {
+        automaticApplyAllowed: false,
+        sourceMutationAllowed: false,
+        autoPromoteFromAiOnly: false,
+        requiresTBalanceRevalidation: true,
+        partialApplyAllowed: false,
+      },
+    };
+    if (targets.length === 1) {
+      base.target = targets[0].target;
+      base.tbalanceAssessment = targets[0].tbalanceAssessment;
+      base.cssContext = targets[0].cssContext;
+      base.sourceProvenance = targets[0].sourceProvenance;
+      base.protectedBehavior = targets[0].protectedBehavior;
+      base.aiResultContract = ["safe-candidate", "needs-review"];
+    }
+    return base;
+  }
+
+  function buildExistingWebAiReviewTargetPackage(selected, check, change, resolution, requestId = "") {
+    if (!selected || !change) {
+      return null;
+    }
+    const computed = selected.computed || getExistingWebComputed(selected.node);
+    const observed = selected.analyzerElement?.observed || {};
+    const sourceSummary = summarizeExistingWebSourceResolution(resolution);
+    const visualState = buildExistingWebAiVisualState(selected, change, computed);
+    const sourceDeclarations = buildExistingWebAiSourceDeclarations(selected, change, resolution);
+    return {
+      requestId,
+      target: {
+        name: getExistingWebSelectionTitle(selected),
+        domRef: selected.domRef,
+        changeId: getExistingWebPreviewChangeId(change),
+        tag: selected.tag,
+        id: selected.id,
+        className: selected.className,
+        role: selected.analyzerElement?.inferred?.roleCandidate || "",
+        bounds: selected.bounds,
+        mappingCandidate: selected.mapping ? {
+          tbId: selected.mapping.tbId,
+          domRef: selected.mapping.domRef,
+          role: selected.mapping.role,
+          editableProperties: selected.mapping.editableProperties,
+          protectedProperties: selected.mapping.protectedProperties,
+          behaviorRef: selected.mapping.behaviorRef,
+        } : null,
+      },
+      userIntent: formatExistingWebPreviewIntent(selected, change),
+      userEdit: change.userEdit || null,
+      visualChange: {
+        property: change.property,
+        before: change.before,
+        after: change.after,
+        beforeSource: change.beforeSource || "runtime-confirmed",
+        coordinateContext: change.coordinateContext || "iframe-viewport-css-px",
+        semanticDiff: formatExistingWebPreviewForNormal(change),
+      },
+      observedRuntime: {
+        observedVisualChange: change.observedVisualChange || null,
+        runtimeDynamicDrift: change.runtimeDynamicDrift || null,
+      },
+      visualState,
+      pageViewState: state.existingWeb.viewState || "",
+      viewport: getExistingWebAiViewportContext(selected.node),
+      runtimePreview: {
+        runtimePreviewOnly: true,
+        previewMechanism: getExistingWebPreviewMechanism(change),
+        sourceUnchanged: true,
+      },
+      visualEvidence: {
+        computed: {
+          display: computed.display,
+          visibility: computed.visibility,
+          opacity: computed.opacity,
+          positionType: computed.positionType,
+          left: computed.left,
+          top: computed.top,
+          width: computed.width,
+          height: computed.height,
+          transform: computed.transform,
+          rotate: computed.rotate,
+        },
+        bounds: selected.bounds,
+        backgroundImage: observed.backgroundImage || "",
+      },
+      sourceProvenance: {
+        status: resolution?.status || "review_required",
+        reason: resolution?.reason || "",
+        message: resolution?.message || getExistingWebReviewRequiredMessage(resolution),
+        sourceResolution: sourceSummary,
+        sourceCandidates: getExistingWebResolutionCandidates(resolution),
+        sourceDeclarations,
+      },
+      behaviorEvidence: getExistingWebBehaviorEvidence(selected),
+      protectedBehavior: selected.protectedBehavior || getExistingWebProtectedBehavior(selected.mapping) || null,
+      doNotChange: [
+        "click behavior",
+        "navigation",
+        "form behavior",
+        "animation",
+        "other protected behavior",
+      ],
+      tbalanceAssessment: {
+        status: check?.status || { key: "review_required", label: "確認が必要" },
+        propertyChecks: check?.checks || [],
+        editableProperties: check?.editableProperties || [],
+        protectedProperties: check?.protectedProperties || [],
+        blockedReasons: check?.blockedReasons || [],
+        analyzerStatus: selected.analyzerStatus,
+      },
+      cssContext: {
+        display: computed.display,
+        visibility: computed.visibility,
+        opacity: computed.opacity,
+        positionType: computed.positionType,
+        left: computed.left,
+        top: computed.top,
+        width: computed.width,
+        height: computed.height,
+        transform: computed.transform,
+        backgroundImage: observed.backgroundImage || "",
+      },
+      ask: {
+        sourcePath: "変更すべきSource File",
+        selector: "変更すべきSelector",
+        property: "変更すべきCSS property",
+        before: "SOURCE_DECLARATION.sourceValue と一致する現在Source上のBefore値",
+        after: "Visual Intentに合うAfter値。Runtime Preview値をSource値と混同しないこと。",
+        reason: "そこが最も安全な理由",
+        preserve: "変更してはいけない関連設定",
+      },
+    };
+  }
+
+  function getExistingWebAiViewportContext(node = null) {
+    const win = node?.ownerDocument?.defaultView || state.existingWeb.frame?.contentWindow || null;
+    const viewportMode = state.viewport === "mobile" ? "mobile" : "desktop";
+    return {
+      viewportMode,
+      viewportWidth: Math.round(Number(win?.innerWidth || state.existingWeb.frame?.clientWidth || 0)),
+      viewportHeight: Math.round(Number(win?.innerHeight || state.existingWeb.frame?.clientHeight || 0)),
+    };
+  }
+
+  function buildExistingWebAiVisualState(selected, change, computed = {}) {
+    const beforeInline = change.beforeInline || {};
+    const afterInline = change.afterInline || {};
+    return {
+      changeId: getExistingWebPreviewChangeId(change),
+      property: change.property || "",
+      userEdit: change.userEdit || null,
+      beforeVisual: buildExistingWebAiVisualSnapshot(change.before, beforeInline, computed, change),
+      afterPreview: buildExistingWebAiVisualSnapshot(change.after, afterInline, computed, change),
+      delta: buildExistingWebAiVisualDelta(change),
+      observedVisualChange: change.observedVisualChange || null,
+      runtimeDynamicDrift: change.runtimeDynamicDrift || null,
+      coordinateContext: change.coordinateContext || "iframe-viewport-css-px",
+      originalSourceUnchanged: true,
+      selectedBounds: selected?.bounds || null,
+    };
+  }
+
+  function buildExistingWebAiVisualSnapshot(value = {}, inline = {}, computed = {}, change = {}) {
+    const translate = parseExistingWebTranslate(inline.translate || "");
+    return {
+      x: Number.isFinite(Number(value.x)) ? Number(value.x) : null,
+      y: Number.isFinite(Number(value.y)) ? Number(value.y) : null,
+      width: Number.isFinite(Number(value.width)) ? Number(value.width) : null,
+      height: Number.isFinite(Number(value.height)) ? Number(value.height) : null,
+      rotation: Number.isFinite(Number(value.rotation)) ? Number(value.rotation) : null,
+      translateX: translate.x,
+      translateY: translate.y,
+      computedLeft: inline.left || computed.left || "",
+      computedTop: inline.top || computed.top || "",
+      inlineTransform: inline.transform || "",
+      inlineTranslate: inline.translate || "",
+      beforeSource: change.beforeSource || "runtime-confirmed",
+    };
+  }
+
+  function buildExistingWebAiVisualDelta(change = {}) {
+    if (change.userEdit?.type === "move") {
+      return {
+        x: roundExistingWebNumber(change.userEdit.deltaX),
+        y: roundExistingWebNumber(change.userEdit.deltaY),
+      };
+    }
+    if (change.userEdit?.type === "resize") {
+      return {
+        width: roundExistingWebNumber(change.userEdit.widthDelta),
+        height: roundExistingWebNumber(change.userEdit.heightDelta),
+      };
+    }
+    if (change.userEdit?.type === "rotate") {
+      return {
+        rotation: normalizeExistingWebAngle(change.userEdit.rotationDelta),
+      };
+    }
+    const before = change.before || {};
+    const after = change.after || {};
+    const delta = {};
+    ["x", "y", "width", "height", "rotation"].forEach((key) => {
+      if (Number.isFinite(Number(before[key])) && Number.isFinite(Number(after[key]))) {
+        delta[key] = Math.round((Number(after[key]) - Number(before[key])) * 100) / 100;
+      }
+    });
+    return delta;
+  }
+
+  function getExistingWebPreviewChangeId(change = {}) {
+    return createStableHash([
+      change.domRef || "",
+      change.property || "",
+      JSON.stringify(change.before || {}),
+      JSON.stringify(change.after || {}),
+      getExistingWebPreviewSignature(),
+    ].join("\n"));
+  }
+
+  function getExistingWebPreviewMechanism(change = {}) {
+    if (change.afterInline?.translate && change.afterInline.translate !== change.beforeInline?.translate) {
+      return "translate";
+    }
+    if (change.afterInline?.transform && change.afterInline.transform !== change.beforeInline?.transform) {
+      return "transform";
+    }
+    if (change.afterInline?.rotate && change.afterInline.rotate !== change.beforeInline?.rotate) {
+      return "rotate";
+    }
+    if (change.afterInline?.left !== change.beforeInline?.left || change.afterInline?.top !== change.beforeInline?.top) {
+      return "inline-position";
+    }
+    if (change.afterInline?.width !== change.beforeInline?.width || change.afterInline?.height !== change.beforeInline?.height) {
+      return "inline-size";
+    }
+    return "runtime-inline-style";
+  }
+
+  function buildExistingWebAiSourceDeclarations(selected, change, resolution) {
+    const node = selected?.node || getExistingWebNodeByDomRef(selected?.domRef);
+    const declarations = getPatchCssDeclarationsForChange(change.property, change);
+    const candidates = declarations.flatMap((declaration) => (
+      node ? findCssDeclarationSourcesForReview(node, declaration.cssProperty) : []
+    ));
+    const active = candidates.filter((candidate) => candidate.activeAtCurrentViewport);
+    const inactive = candidates.filter((candidate) => !candidate.activeAtCurrentViewport);
+    const winning = active.find((candidate) => candidate.winningDeclaration) || null;
+    return {
+      runtimePreviewOnly: true,
+      sourceUnchanged: true,
+      requestedProperties: declarations.map((declaration) => declaration.cssProperty),
+      sourceResolutionStatus: resolution?.status || "review_required",
+      sourceResolutionReason: resolution?.reason || "",
+      sourceDeclarations: candidates.map(formatExistingWebAiSourceDeclaration),
+      activeMatchedRules: active.map(formatExistingWebAiSourceDeclaration),
+      inactiveResponsiveRules: inactive.filter((candidate) => candidate.mediaQuery).map(formatExistingWebAiSourceDeclaration),
+      inlineStyle: candidates.filter((candidate) => candidate.kind === "inline-style").map(formatExistingWebAiSourceDeclaration),
+      cssVariables: [],
+      animationTransformRules: getExistingWebAiAnimationTransformRules(selected),
+      winningDeclaration: winning ? formatExistingWebAiSourceDeclaration(winning) : null,
+    };
+  }
+
+  function formatExistingWebAiSourceDeclaration(candidate = {}) {
+    return {
+      sourcePath: candidate.sourcePath || candidate.path || "",
+      selector: candidate.selector || "",
+      property: candidate.property || "",
+      sourceValue: candidate.value || "",
+      media: candidate.media || "",
+      mediaQuery: candidate.mediaQuery || candidate.media || "",
+      mediaMatchesCurrentViewport: Boolean(candidate.mediaMatchesCurrentViewport),
+      activeAtCurrentViewport: Boolean(candidate.activeAtCurrentViewport),
+      specificity: candidate.specificity || [0, 0, 0],
+      cascadeOrder: Number(candidate.cascadeOrder || 0),
+      overridden: Boolean(candidate.overridden),
+      sourceType: candidate.kind || "stylesheet-rule",
+      priority: candidate.priority || "",
+    };
+  }
+
+  function getExistingWebAiAnimationTransformRules(selected) {
+    const computed = selected?.computed || (selected?.node ? getExistingWebComputed(selected.node) : {});
+    return {
+      hasComputedTransform: Boolean(computed.transform),
+      transform: computed.transform || "",
+      rotate: computed.rotate || "",
+      note: computed.transform ? "transform is currently active; avoid overwriting animation/transform without exact provenance." : "",
+    };
+  }
+
+  function buildExistingWebWorkflowAiResponseFormat(targets, requestRevision) {
+    return {
+      schemaVersion: "1.0",
+      requestId: requestRevision,
+      pageId: state.existingWeb.pageId,
+      sourcePath: state.existingWeb.sourcePath,
+      viewState: state.existingWeb.viewState || "",
+      pageViewState: state.existingWeb.viewState || "",
+      viewportMode: state.viewport === "mobile" ? "mobile" : "desktop",
+      sourceFingerprint: getExistingWebFingerprint(),
+      requestRevision,
+      status: "safe-candidate|unresolved|unsafe",
+      targets: targets.map((item) => ({
+        domRef: item.target.domRef,
+        changeId: item.visualState?.changeId || "",
+        status: "safe-candidate|unresolved|unsafe",
+        sourceChanges: [{
+          sourcePath: "css/example.css",
+          sourceType: "stylesheet-rule",
+          selector: "#target",
+          property: "left",
+          before: "10px",
+          after: "20px",
+          media: "",
+        }],
+        sourceChange: {
+          sourcePath: "css/example.css",
+          sourceType: "stylesheet-rule",
+          selector: "#target",
+          property: "left",
+          before: "10px",
+          after: "20px",
+          media: "",
+        },
+        preserve: ["animation", "click behavior", "navigation"],
+        reason: "",
+        confidence: "high|medium|low",
+      })),
+    };
+  }
+
+  function getExistingWebWorkflowAiRevisionSeed(changes = getExistingWebWorkflowChanges()) {
+    return `workflow:${getExistingWebPreviewSignature()}:${changes.map((change) => change.domRef || "").join("|")}`;
+  }
+
+  function getExistingWebImpactResolutionForChange(change) {
+    const impact = state.existingWeb.impactAnalysis;
+    if (!impact) {
+      return null;
+    }
+    if (impact.batch) {
+      const item = (impact.items || []).find((entry) => entry.domRef === change.domRef && entry.preview?.property === change.property);
+      return item?.sourceResolution || item || null;
+    }
+    return impact.sourceResolution || impact.resolution || impact;
+  }
+
+  function getExistingWebResolutionCandidates(resolution) {
+    const candidate = resolution?.patchResult?.candidate || resolution?.candidate || null;
+    const direct = resolution?.candidates || candidate?.blockReason?.candidates || candidate?.validationChecks?.sourceResolution?.candidates;
+    if (Array.isArray(direct)) {
+      return direct;
+    }
+    return [];
+  }
+
+  function getExistingWebBehaviorEvidence(selected) {
+    const tag = String(selected?.tag || "").toLowerCase();
+    return {
+      clickableTag: ["a", "button", "input", "select", "textarea", "summary", "details"].includes(tag),
+      href: selected?.node?.getAttribute?.("href") || "",
+      formAction: selected?.node?.getAttribute?.("action") || "",
+      hasInlineHandler: Array.from(selected?.node?.attributes || []).some((attr) => /^on/i.test(attr.name)),
+      protectedBehavior: Boolean(selected?.protectedBehavior),
+    };
+  }
+
+  async function runExistingWebAutomaticSafetyReview(changes, localResolution) {
+    const reviewable = canUseAutomaticSafetyReview(localResolution);
+    if (!reviewable.ok) {
+      setExistingWebWorkflowManualReviewRequired(reviewable.message || getExistingWebReviewRequiredMessage(localResolution), {
+        localResolution,
+        reason: reviewable.reason,
+      });
+      return null;
+    }
+    const packageData = buildExistingWebWorkflowAiReviewPackage(changes);
+    const requestId = packageData.page?.requestRevision || createExistingWebAiRequestId(getExistingWebWorkflowAiRevisionSeed(changes));
+    const signature = getExistingWebPreviewSignature();
+    setExistingWebWorkflowAiReviewing("AIで確認中...", requestId);
+    renderAll();
+    try {
+      const response = await fetch(SAFETY_AI_REVIEW_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: "codex-local",
+          requestId,
+          pageId: packageData.page?.pageId || state.existingWeb.pageId,
+          revision: packageData.page?.requestRevision || requestId,
+          fingerprint: packageData.page?.sourceFingerprint || getExistingWebFingerprint(),
+          reviewPackage: packageData,
+        }),
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload?.ok) {
+        setExistingWebWorkflowManualReviewRequired(payload?.message || "AI補助確認を利用できませんでした。", {
+          localResolution,
+          providerResult: payload,
+        });
+        return payload || null;
+      }
+      const workflow = getExistingWebWorkflow();
+      if (workflow.aiReviewRequestId !== requestId || workflow.aiReviewSignature !== signature || signature !== getExistingWebPreviewSignature()) {
+        markExistingWebWorkflowDirty("AI確認中にPreviewが変更されました。変更を再確認してください。");
+        return payload;
+      }
+      const result = await applyExistingWebAiReviewResult(payload.response || payload, {
+        providerResult: payload,
+        localResolution,
+      });
+      if (!result?.ok) {
+        setExistingWebWorkflowManualReviewRequired(result?.message || "この変更は自動で安全確認できませんでした。", {
+          localResolution,
+          providerResult: payload,
+          revalidation: result?.revalidation || result,
+          safetyAiDiagnostic: result?.safetyAiDiagnostic || buildExistingWebSafetyAiDiagnostic({
+            providerResult: payload,
+            localResolution,
+            revalidation: result?.revalidation || result,
+          }),
+        });
+      } else {
+        const aiResolution = buildExistingWebResolutionFromAiRevalidation(result.revalidation, changes);
+        if (aiResolution) {
+          state.existingWeb.impactAnalysis = buildExistingWebWorkflowImpactAnalysis(aiResolution, changes);
+        }
+      }
+      return result;
+    } catch (error) {
+      setExistingWebWorkflowManualReviewRequired("AI補助確認を利用できませんでした。", {
+        localResolution,
+        error: error?.message || String(error || ""),
+      });
+      return null;
+    } finally {
+      renderAll();
+    }
+  }
+
+  function canUseAutomaticSafetyReview(resolution) {
+    if (!resolution) {
+      return { ok: true };
+    }
+    const reason = resolution.reason || resolution.status || "";
+    if (["protected-property", "safe-change-blocked", "missing-selection", "runtime-mapping-unresolved"].includes(reason)) {
+      return { ok: false, reason, message: getExistingWebReviewRequiredMessage(resolution) };
+    }
+    if (resolution.batch) {
+      const items = resolution.changes || [];
+      const unsafe = items.find((item) => {
+        const itemReason = item.resolution?.reason || item.resolution?.status || "";
+        return ["protected-property", "safe-change-blocked", "missing-selection", "runtime-mapping-unresolved"].includes(itemReason);
+      });
+      if (unsafe) {
+        return { ok: false, reason: unsafe.resolution?.reason || unsafe.resolution?.status || "blocked", message: getExistingWebReviewRequiredMessage(unsafe.resolution) };
+      }
+    }
+    return { ok: true };
+  }
+
+  function buildExistingWebResolutionFromAiRevalidation(revalidation, changes) {
+    if (!revalidation?.ok) {
+      return null;
+    }
+    const items = Array.isArray(revalidation.items) ? revalidation.items : [];
+    if (changes.length > 1) {
+      return {
+        ok: true,
+        batch: true,
+        status: "ready_to_apply",
+        message: revalidation.message || "AI候補をTBalanceで再確認しました。",
+        changes: changes.map((change) => {
+          const item = items.find((entry) => entry.change?.domRef === change.domRef && entry.change?.property === change.property) || {};
+          return {
+            change,
+            selected: item.selected || selectExistingWebElementForWorkflowChange(change),
+            resolution: item.resolution || { ok: true, status: "ready-to-apply", message: "AI候補を再検証済みです。" },
+          };
+        }),
+        batchPreflight: revalidation.preflight || null,
+        summary: {
+          total: changes.length,
+          safe: changes.length,
+          blocked: 0,
+        },
+      };
+    }
+    const item = items[0] || {};
+    return {
+      ok: true,
+      batch: false,
+      status: "ready-to-apply",
+      message: revalidation.message || "AI候補をTBalanceで再確認しました。",
+      changes: [{
+        change: changes[0],
+        selected: item.selected || selectExistingWebElementForWorkflowChange(changes[0]),
+        resolution: item.resolution || { ok: true, status: "ready-to-apply", preflight: revalidation.preflight || null },
+      }],
+      preflight: revalidation.preflight || null,
+    };
+  }
+
   function buildExistingWebAiReviewPackage(selected, check) {
     const computed = selected.computed || getExistingWebComputed(selected.node);
     const observed = selected.analyzerElement?.observed || {};
@@ -4534,7 +5330,9 @@
   function formatExistingWebAiReviewText(packageData) {
     if (packageData.type === "existing-web-ai-review-batch") {
       return [
-        "TBalance Existing Web のAI確認が必要な要素だけをまとめて確認したいです。",
+        packageData.workflowReview
+          ? "TBalance Existing Web のVisual Preview変更を、Source反映候補としてAI確認したいです。"
+          : "TBalance Existing Web のAI確認が必要な要素だけをまとめて確認したいです。",
         "",
         "【ページ】",
         `${packageData.page.pageId} / ${packageData.page.sourcePath}${packageData.page.viewState ? `?${packageData.page.viewState}` : ""}`,
@@ -4546,16 +5344,25 @@
         packageData.targets.map((targetPackage, index) => `${index + 1}. ${targetPackage.target.name} / ${targetPackage.target.domRef}`).join("\n"),
         "",
         "【確認してほしいこと】",
-        "各対象について position / width / height / click behavior をproperty単位で見てください。",
-        "AIの回答だけで自動許可はしません。TBalance側で再照合します。",
+        packageData.workflowReview
+          ? "各対象について、変更してよいSource file / selector / CSS property / before / after を返してください。"
+          : "各対象について position / width / height / click behavior をproperty単位で見てください。",
+        "USER_INTENT / userEdit が、ユーザーが実際に行った編集操作の正本です。",
+        "OBSERVED_RUNTIME / observedVisualChange には既存animation等のruntime motionが混ざる場合があります。",
+        "userEditに含まれないruntime motionをSource変更Intentとして扱わないでください。",
+        "既存animation / transition / click behavior / navigation は保持してください。",
+        "AIの回答だけで自動許可はしません。TBalance側でSource候補・Before値・Safe Patch/Apply Preflightを再検証します。",
         "回答は共有データ内の responseFormat と同じJSON形式だけで返してください。",
         "",
         "【共有データ】",
         JSON.stringify(packageData, null, 2),
       ].join("\n");
     }
+    const isWorkflowReview = Boolean(packageData.workflowReview);
     return [
-      "TBalance Existing Web の選択要素だけをAI確認したいです。",
+      isWorkflowReview
+        ? "TBalance Existing Web のVisual Preview変更を、Source反映候補としてAI確認したいです。"
+        : "TBalance Existing Web の選択要素だけをAI確認したいです。",
       "",
       "【対象】",
       `${packageData.target.name} / ${packageData.target.domRef}`,
@@ -4570,8 +5377,14 @@
       `クリック: ${getExistingWebShareCheckText(packageData.tbalanceAssessment.propertyChecks, "クリック")}`,
       "",
       "【確認してほしいこと】",
-      "position / width / height / click behavior をproperty単位で見てください。",
-      "AIの回答だけで自動許可はしません。TBalance側で再照合します。",
+      isWorkflowReview
+        ? "変更してよいSource file / selector / CSS property / before / after を返してください。"
+        : "position / width / height / click behavior をproperty単位で見てください。",
+      "USER_INTENT / userEdit が、ユーザーが実際に行った編集操作の正本です。",
+      "OBSERVED_RUNTIME / observedVisualChange には既存animation等のruntime motionが混ざる場合があります。",
+      "userEditに含まれないruntime motionをSource変更Intentとして扱わないでください。",
+      "既存animation / transition / click behavior / navigation は保持してください。",
+      "AIの回答だけで自動許可はしません。TBalance側でSource候補・Before値・Safe Patch/Apply Preflightを再検証します。",
       "回答は共有データ内の responseFormat と同じJSON形式だけで返してください。",
       "",
       "【共有データ】",
@@ -4593,7 +5406,7 @@
       return {
         ok: false,
         summary: "AI確認対象を選択してください",
-        message: "Existing Webで対象を選択し、AIに確認を押してください。",
+        message: "Existing Webで対象を選択すると、WITH AI相談用のContextを作成できます。",
         details: "AI確認対象がありません。",
       };
     }
@@ -4658,12 +5471,19 @@
     }
   }
 
-  function importExistingWebAiReviewResult() {
+  async function importExistingWebAiReviewResult() {
     const text = els.aiExistingWebResultText?.value || "";
-    const result = applyExistingWebAiReviewResult(text);
-    setExistingWebAiImportStatus(result.ok ? "ok" : "error", result.message || (result.ok ? "AI回答を取り込みました。" : "AI回答を取り込めませんでした。"));
-    if (result.ok) {
-      showModeToast(result.message || "AI回答をTBalanceで再照合しました。");
+    setExistingWebAiImportStatus("idle", "AI回答をTBalanceで確認中です。");
+    try {
+      const result = await applyExistingWebAiReviewResult(text);
+      setExistingWebAiImportStatus(result.ok ? "ok" : "error", result.message || (result.ok ? "AI回答を取り込みました。" : "AI回答を取り込めませんでした。"));
+      if (result.ok) {
+        showModeToast(result.message || "AI回答をTBalanceで再照合しました。");
+      }
+    } catch (error) {
+      const message = error?.message || String(error || "");
+      console.warn("Existing Web AI result import failed", error);
+      setExistingWebAiImportStatus("error", message || "AI回答を取り込めませんでした。");
     }
   }
 
@@ -4675,7 +5495,7 @@
     els.aiExistingWebImportStatus.textContent = message;
   }
 
-  function applyExistingWebAiReviewResult(input = {}) {
+  async function applyExistingWebAiReviewResult(input = {}, options = {}) {
     if (!state.existingWeb.active) {
       return { ok: false, message: "Existing Webを開いてからAI回答を取り込んでください。" };
     }
@@ -4688,22 +5508,78 @@
     if (!validation.ok) {
       return { ok: false, message: validation.message };
     }
+    const requiresSourceRevalidation = isExistingWebWorkflowAiReviewActive(normalized);
+    if (requiresSourceRevalidation) {
+      setExistingWebWorkflowAiImported("AI回答をTBalanceで再確認中です。");
+    }
     const applied = normalized.targets.map((target) => reconcileExistingWebAiTarget(target, normalized)).filter(Boolean);
     if (!applied.length) {
+      if (requiresSourceRevalidation) {
+        const safetyAiDiagnostic = buildExistingWebSafetyAiDiagnostic({
+          providerResult: options.providerResult,
+          normalized,
+          localResolution: options.localResolution,
+          revalidation: {
+            ok: false,
+            reason: "missing-reconcilable-target",
+            message: "取り込めるAI確認対象がありませんでした。",
+          },
+        });
+        setExistingWebWorkflowManualReviewRequired("AI回答を自動確認できませんでした。", { normalized, safetyAiDiagnostic });
+      }
       return { ok: false, message: "取り込めるAI確認対象がありませんでした。" };
     }
+    const revalidation = requiresSourceRevalidation
+      ? awaitMaybeExistingWebAiRevalidation(normalized, applied)
+      : { ok: true, skipped: true, message: `AI回答を${applied.length}件取り込み、TBalanceで再照合しました。` };
     refreshExistingWebVirtualLayers();
     if (state.existingWeb.selected) {
       applyExistingWebCheckToSelection(state.existingWeb.selected);
     }
     renderAll();
     const editableCount = applied.reduce((sum, item) => sum + (item.finalCheck.editableProperties?.length || 0), 0);
+    if (!revalidation.ok) {
+      const rejectionMessage = revalidation.message
+        || revalidation.reason
+        || revalidation.items?.find?.((item) => !item.ok)?.message
+        || revalidation.items?.find?.((item) => !item.ok)?.reason
+        || "AI候補を安全に確認できませんでした。";
+      const safetyAiDiagnostic = buildExistingWebSafetyAiDiagnostic({
+        providerResult: options.providerResult,
+        normalized,
+        localResolution: options.localResolution,
+        revalidation,
+      });
+      setExistingWebWorkflowManualReviewRequired(rejectionMessage, {
+        normalized,
+        applied,
+        revalidation,
+        safetyAiDiagnostic,
+      });
+      renderAll();
+      return {
+        ok: false,
+        result: "AI_REVIEW_REJECTED",
+        targets: applied.length,
+        editableProperties: editableCount,
+        revalidation,
+        safetyAiDiagnostic,
+        message: rejectionMessage,
+      };
+    }
+    if (requiresSourceRevalidation) {
+      setExistingWebWorkflowReadyToApply(revalidation.message || "AI候補をTBalanceで再確認しました。変更を反映できます。");
+      renderAll();
+    }
     return {
       ok: true,
-      result: "AI_REVIEW_IMPORTED",
+      result: requiresSourceRevalidation ? "AI_REVIEW_REVALIDATED" : "AI_REVIEW_IMPORTED",
       targets: applied.length,
       editableProperties: editableCount,
-      message: `AI回答を${applied.length}件取り込み、TBalanceで再照合しました。`,
+      revalidation,
+      message: requiresSourceRevalidation
+        ? `AI回答を${applied.length}件取り込み、TBalanceで再検証しました。`
+        : `AI回答を${applied.length}件取り込みました。`,
     };
   }
 
@@ -4754,23 +5630,41 @@
         : [];
     return {
       schemaVersion: String(root.schemaVersion || "1.0"),
+      requestId: String(root.requestId || root.page?.requestId || payload.requestId || payload.response?.requestId || ""),
+      status: String(root.status || root.result || ""),
       pageId: root.pageId || root.page?.pageId || "",
       sourcePath: normalizeExistingWebSourcePath(root.sourcePath || root.page?.sourcePath || ""),
       viewState: normalizeExistingWebViewState(root.viewState || root.page?.viewState || ""),
       sourceFingerprint: String(root.sourceFingerprint || root.page?.sourceFingerprint || ""),
       requestRevision: String(root.requestRevision || root.page?.requestRevision || ""),
-      targets: targets.map(normalizeExistingWebAiReviewTarget).filter((target) => target.domRef),
+      targets: targets.map((target) => normalizeExistingWebAiReviewTarget(target, root)).filter((target) => target.domRef),
       raw: payload,
     };
   }
 
-  function normalizeExistingWebAiReviewTarget(target = {}) {
+  function normalizeExistingWebAiReviewTarget(target = {}, root = {}) {
     const properties = target.properties && typeof target.properties === "object"
       ? target.properties
       : buildExistingWebAiPropertiesFromLegacy(target);
+    const sourceChanges = normalizeExistingWebAiSourceChanges(target.sourceChanges || target.sourceChange || target.sourcePatch || root.sourceChanges || root.sourceChange || null);
+    if (!Object.keys(properties || {}).length && sourceChanges.length && /^safe-candidate$/i.test(target.status || target.result || root.status || "")) {
+      sourceChanges.forEach((sourceChange) => {
+        const visualProperty = getExistingWebVisualPropertyForCssProperty(sourceChange.property);
+        if (visualProperty) {
+          properties[visualProperty] = { result: "ok", reason: target.reason || sourceChange.reason || "AI Source候補あり" };
+        }
+      });
+    }
     return {
       domRef: String(target.domRef || target.target?.domRef || ""),
+      changeId: String(target.changeId || target.id || target.target?.changeId || ""),
       name: String(target.name || target.target?.name || ""),
+      status: String(target.status || target.result || root.status || ""),
+      sourceChange: sourceChanges[0] || null,
+      sourceChanges,
+      preserve: Array.isArray(target.preserve) ? target.preserve.map(String) : [],
+      reason: String(target.reason || root.reason || ""),
+      confidence: String(target.confidence || root.confidence || ""),
       properties: Object.fromEntries(Object.entries(properties || {}).map(([property, value]) => {
         const normalizedProperty = normalizeExistingWebAiPropertyName(property);
         const item = typeof value === "object" && value !== null ? value : { result: value };
@@ -4780,6 +5674,33 @@
         }];
       }).filter(([property]) => property)),
     };
+  }
+
+  function normalizeExistingWebAiSourceChange(sourceChange) {
+    if (!sourceChange || typeof sourceChange !== "object") {
+      return null;
+    }
+    const sourcePath = normalizeExistingWebSourcePath(sourceChange.sourcePath || sourceChange.path || "");
+    const selector = String(sourceChange.selector || "").trim();
+    const property = String(sourceChange.property || sourceChange.cssProperty || "").trim();
+    if (!sourcePath || !selector || !property) {
+      return null;
+    }
+    return {
+      sourcePath,
+      sourceType: sourceChange.sourceType || sourceChange.kind || "stylesheet-rule",
+      selector,
+      property,
+      before: String(sourceChange.before ?? sourceChange.currentValue ?? ""),
+      after: String(sourceChange.after ?? sourceChange.nextValue ?? ""),
+      media: sourceChange.media || "",
+      reason: String(sourceChange.reason || ""),
+    };
+  }
+
+  function normalizeExistingWebAiSourceChanges(value) {
+    const list = Array.isArray(value) ? value : value ? [value] : [];
+    return list.map(normalizeExistingWebAiSourceChange).filter(Boolean);
   }
 
   function buildExistingWebAiPropertiesFromLegacy(target = {}) {
@@ -4819,14 +5740,17 @@
       };
       return { ok: false, message: "ページが変更されています。AI確認をやり直してください。" };
     }
-    const expectedRevision = getExpectedExistingWebAiRequestRevision(normalized.targets.map((target) => target.domRef));
+    const expectedRevision = getExpectedExistingWebAiRequestRevision(normalized.targets.map((target) => target.domRef), normalized);
     if (normalized.requestRevision && normalized.requestRevision !== expectedRevision) {
       return { ok: false, message: "AI回答の依頼Revisionが現在の確認内容と一致しません。AI確認をやり直してください。" };
     }
     return { ok: true };
   }
 
-  function getExpectedExistingWebAiRequestRevision(domRefs) {
+  function getExpectedExistingWebAiRequestRevision(domRefs, normalized = {}) {
+    if (isExistingWebWorkflowAiReviewActive(normalized)) {
+      return createExistingWebAiRequestId(getExistingWebWorkflowAiRevisionSeed());
+    }
     const refs = (domRefs || []).filter(Boolean).join("|");
     return createExistingWebAiRequestId(refs);
   }
@@ -4859,6 +5783,491 @@
     });
     setExistingWebCheck(target.domRef, finalCheck);
     return { domRef: target.domRef, finalCheck };
+  }
+
+  function isExistingWebWorkflowAiReviewActive(normalized = {}) {
+    const workflow = getExistingWebWorkflow();
+    const packageData = state.withAiShare.package || {};
+    return Boolean(
+      getExistingWebPreviewChangeCount()
+      && (
+        packageData.workflowReview
+        || normalized.raw?.workflowReview
+        || normalized.raw?.response?.workflowReview
+        || workflow.aiReviewSignature
+        || ["review_required", "ai_reviewing", "ai_response_imported"].includes(workflow.status)
+      )
+    );
+  }
+
+  async function awaitMaybeExistingWebAiRevalidation(normalized, applied) {
+    try {
+      return await revalidateExistingWebAiSourceCandidates(normalized, applied);
+    } catch (error) {
+      const message = error?.message || String(error || "");
+      console.warn("Existing Web AI revalidation failed", error);
+      return {
+        ok: false,
+        status: "review_required",
+        reason: "ai-revalidation-error",
+        message: message || "AI候補をTBalanceで再確認できませんでした。",
+      };
+    }
+  }
+
+  async function revalidateExistingWebAiSourceCandidates(normalized, applied) {
+    const changes = getExistingWebWorkflowChanges();
+    if (!changes.length) {
+      return { ok: false, reason: "missing-preview", message: "Preview変更がありません。変更をやり直してください。" };
+    }
+    const workflow = getExistingWebWorkflow();
+    const currentSignature = getExistingWebPreviewSignature();
+    if (workflow.aiReviewSignature && workflow.aiReviewSignature !== currentSignature) {
+      markExistingWebWorkflowDirty("AI確認後にPreviewが再編集されています。変更を再確認してください。");
+      return {
+        ok: false,
+        reason: "stale-ai-response",
+        message: "AI確認後に変更内容が変わっています。変更を再確認してください。",
+        diagnostic: {
+          checks: [{ code: "stale-signature", label: "stale signature", ok: false, message: "AI確認時と現在のPreview signatureが一致しません。" }],
+          firstFailedCheck: "stale-signature",
+          reasonCode: "ai-stale-response",
+        },
+      };
+    }
+    const byDomRef = new Map(changes.map((change) => [change.domRef, change]));
+    const candidates = [];
+    const approvedSignatures = {};
+    const items = [];
+    for (const target of normalized.targets) {
+      const change = byDomRef.get(target.domRef);
+      const appliedTarget = applied.find((item) => item.domRef === target.domRef);
+      const item = await revalidateExistingWebAiTargetSourceCandidate(target, change, appliedTarget);
+      items.push(item);
+      if (item.ok && item.candidate) {
+        candidates.push(item.candidate);
+        approvedSignatures[item.candidate.signature] = item.candidate.signature;
+      }
+    }
+    const blocked = items.filter((item) => !item.ok);
+    const firstBlocked = blocked[0] || null;
+    if (blocked.length || candidates.length !== changes.length) {
+      return {
+        ok: false,
+        status: "review_required",
+        reason: firstBlocked?.reason || "partial-ai-candidate",
+        message: firstBlocked?.message || firstBlocked?.reason || "AI候補を全件安全に確認できませんでした。Partial Applyは行いません。",
+        items,
+        diagnostic: buildExistingWebAiRevalidationDiagnostic(normalized, changes, items, firstBlocked),
+      };
+    }
+    if (candidates.length > 1) {
+      if (!window.TBalanceSafeApply?.runBatchApplyPreflight) {
+        return { ok: false, reason: "batch-apply-unavailable", message: "Batch Apply Preflightを実行できません。" };
+      }
+      const preflight = await window.TBalanceSafeApply.runBatchApplyPreflight({
+        candidates,
+        approvedSignatures,
+        sourceWriterClient: getSafeApplyClient(),
+        createSignature: window.TBalanceSafePatch?.createCandidateSignature,
+      });
+      state.analyzer.safeApply.preflight = preflight.ok ? preflight : null;
+      state.analyzer.safeApply.result = preflight;
+      state.analyzer.safeApply.diffText = preflight.diffText || "";
+      setSafeApplyStatus(preflight.status || "failed", preflight.message || "AI候補のBatch Preflightを完了しました。");
+      if (!preflight.ok) {
+        return {
+          ok: false,
+          reason: preflight.reason || "preflight-blocked",
+          message: preflight.message || "AI候補のPreflightが通りませんでした。",
+          items,
+          preflight,
+          diagnostic: buildExistingWebAiRevalidationDiagnostic(normalized, changes, items, {
+            reason: preflight.reason || "preflight-blocked",
+            message: preflight.message || "AI候補のPreflightが通りませんでした。",
+          }),
+        };
+      }
+      return { ok: true, status: "ready_to_apply", message: "AI候補をTBalanceで再確認しました。変更を反映できます。", items, preflight };
+    }
+    state.analyzer.safePatch.candidate = candidates[0];
+    state.analyzer.safePatch.signature = candidates[0].signature;
+    state.analyzer.safePatch.reviewStatus = "approved";
+    state.analyzer.safePatch.approvedSignature = candidates[0].signature;
+    const preflight = await runSafeApplyPreflight();
+    if (!preflight?.ok) {
+      return {
+        ok: false,
+        reason: preflight?.reason || "preflight-blocked",
+        message: preflight?.message || "AI候補のPreflightが通りませんでした。",
+        items,
+        preflight,
+        diagnostic: buildExistingWebAiRevalidationDiagnostic(normalized, changes, items, {
+          reason: preflight?.reason || "preflight-blocked",
+          message: preflight?.message || "AI候補のPreflightが通りませんでした。",
+        }),
+      };
+    }
+    return { ok: true, status: "ready_to_apply", message: "AI候補をTBalanceで再確認しました。変更を反映できます。", items, preflight };
+  }
+
+  async function revalidateExistingWebAiTargetSourceCandidate(target, change, appliedTarget) {
+    const checks = [];
+    const fail = (reason, message, extra = {}) => ({
+      ok: false,
+      reason,
+      message,
+      target,
+      change,
+      diagnostic: {
+        checks: [...checks, { code: reason, label: getExistingWebAiCheckLabel(reason), ok: false, message }],
+        firstFailedCheck: reason,
+        reasonCode: getExistingWebAiRejectReasonCode(reason),
+        ...extra,
+      },
+    });
+    if (!change) {
+      return fail("stale-ai-response", "AI回答の対象変更が現在のPreviewにありません。");
+    }
+    const expectedChangeId = getExistingWebPreviewChangeId(change);
+    if (!target.changeId) {
+      return fail("change-id-mismatch", "AI回答にchangeIdがありません。");
+    }
+    if (target.changeId !== expectedChangeId) {
+      return fail("change-id-mismatch", "AI回答のchangeIdが現在のPreview変更と一致しません。");
+    }
+    checks.push({ code: "change-match", label: "changeId", ok: true, message: target.changeId });
+    if (!/^safe-candidate$/i.test(target.status || "") && (target.sourceChange || target.sourceChanges?.length)) {
+      return fail("ai-status-not-safe", "AI回答がsafe-candidateではありません。");
+    }
+    checks.push({ code: "target-status", label: "target status", ok: true, message: target.status || "" });
+    if (!target.sourceChanges?.length) {
+      return fail("missing-source-change", "AI回答にSource候補がありません。");
+    }
+    checks.push({ code: "source-change-present", label: "sourceChange", ok: true, message: `${target.sourceChanges.length}件` });
+    const selected = selectExistingWebElementForWorkflowChange(change);
+    if (!selected) {
+      return fail("missing-selection", "変更対象のDOMを確認できません。");
+    }
+    checks.push({ code: "dom-selection", label: "DOM", ok: true, message: selected.domRef || "" });
+    if (!appliedTarget?.finalCheck?.editableProperties?.includes(change.property)) {
+      return fail("property-not-revalidated", "AI回答後もこの変更Propertyは安全確認できませんでした。");
+    }
+    checks.push({ code: "property-revalidated", label: "property", ok: true, message: change.property || "" });
+    const sourceResolution = buildExistingWebAiSourceResolution(selected, change, target.sourceChanges);
+    if (sourceResolution.status !== "resolved") {
+      return fail(sourceResolution.reason || sourceResolution.status, sourceResolution.message || "AI候補のSourceを確認できません。", { sourceResolution });
+    }
+    (sourceResolution.diagnostic?.checks || []).forEach((check) => checks.push(check));
+    const resolution = await prepareExistingWebOnDemandApplyCandidate(selected, change, {
+      skipPreflight: true,
+      skipClear: true,
+      sourceResolutionOverride: sourceResolution,
+    });
+    const candidate = resolution.patchResult?.candidate || null;
+    if (!resolution.ok || candidate?.status !== "ready-for-review") {
+      return fail(resolution.reason || "safe-patch-blocked", resolution.message || "AI候補をSafe Patch Candidateにできません。", { resolution });
+    }
+    checks.push({ code: "safe-patch-candidate", label: "Safe Patch", ok: true, message: candidate.status || "" });
+    candidate.review = {
+      status: "approved",
+      approvedAt: new Date().toISOString(),
+      rejectedAt: null,
+      approvedSignature: candidate.signature,
+    };
+    return {
+      ok: true,
+      target,
+      change,
+      selected,
+      sourceResolution,
+      resolution,
+      candidate,
+      diagnostic: { checks, firstFailedCheck: "", reasonCode: "" },
+    };
+  }
+
+  function buildExistingWebAiSourceResolution(selected, change, sourceChanges) {
+    const node = selected?.node || getExistingWebNodeByDomRef(selected?.domRef);
+    if (!node) {
+      return { status: "unresolved", reason: "missing-dom", message: "対象DOMが見つかりません。" };
+    }
+    const operations = [];
+    const checks = [];
+    for (const sourceChange of sourceChanges || []) {
+      const validation = validateExistingWebAiSourceChange(node, selected, change, sourceChange);
+      if (!validation.ok) {
+        return validation.result;
+      }
+      (validation.diagnostic?.checks || []).forEach((check) => checks.push(check));
+      operations.push(buildExistingWebAiPatchOperation(selected, change, sourceChange));
+    }
+    if (!operations.length) {
+      return { status: "unresolved", reason: "missing-source-change", message: "AI回答にSource候補がありません。" };
+    }
+    return {
+      status: "resolved",
+      sourceLocation: operations.map((operation) => operation.sourceRef),
+      operations,
+      source: "ai-candidate-revalidated",
+      diagnostic: { checks },
+    };
+  }
+
+  function validateExistingWebAiSourceChange(node, selected, change, sourceChange) {
+    const checks = [];
+    const fail = (reason, message) => ({
+      ok: false,
+      result: {
+        status: ["source-path-mismatch", "invalid-selector", "selector-not-unique", "invalid-before-after"].includes(reason) ? "unresolved" : "unsupported",
+        reason,
+        message,
+        diagnostic: {
+          checks: [...checks, { code: reason, label: getExistingWebAiCheckLabel(reason), ok: false, message }],
+          firstFailedCheck: reason,
+          reasonCode: getExistingWebAiRejectReasonCode(reason),
+        },
+      },
+    });
+    if (sourceChange.sourceType && sourceChange.sourceType !== "stylesheet-rule") {
+      return fail("unsupported-source-type", "v0.1ではstylesheet rule以外のAI候補は自動反映しません。");
+    }
+    checks.push({ code: "source-type", label: "source type", ok: true, message: sourceChange.sourceType || "stylesheet-rule" });
+    if (normalizeExistingWebSourcePath(sourceChange.sourcePath) !== normalizeExistingWebSourcePath(state.existingWeb.sourcePath)
+      && !String(sourceChange.sourcePath || "").toLowerCase().endsWith(".css")) {
+      return fail("source-path-mismatch", "AI候補のSource Pathを確認できません。");
+    }
+    checks.push({ code: "source-path", label: "source file", ok: true, message: sourceChange.sourcePath || "" });
+    let matches = [];
+    try {
+      matches = Array.from(node.ownerDocument.querySelectorAll(sourceChange.selector || ""));
+    } catch (error) {
+      return fail("invalid-selector", "AI候補のSelectorを解釈できません。");
+    }
+    if (matches.length !== 1 || matches[0] !== node) {
+      return fail("selector-not-unique", "AI候補のSelectorが対象DOMを一意に指していません。");
+    }
+    checks.push({ code: "selector-unique", label: "selector unique", ok: true, message: sourceChange.selector || "" });
+    const visualProperty = getExistingWebVisualPropertyForCssProperty(sourceChange.property);
+    if (visualProperty !== change.property) {
+      return fail("property-mismatch", "AI候補のPropertyが今回の変更内容と一致しません。");
+    }
+    checks.push({ code: "property-match", label: "property", ok: true, message: sourceChange.property || "" });
+    if (getExistingWebRuntimeProtectedProperties(selected, change).includes(sourceChange.property)) {
+      return fail("protected-property", "AI候補が保護Propertyを変更しようとしています。");
+    }
+    checks.push({ code: "protected-behavior", label: "protected behavior", ok: true, message: "preserved" });
+    if (!sourceChange.before || !sourceChange.after || sourceChange.before === sourceChange.after) {
+      return fail("invalid-before-after", "AI候補のBefore/Afterが不正です。");
+    }
+    checks.push({ code: "before-after", label: "before/after", ok: true, message: `${sourceChange.before} -> ${sourceChange.after}` });
+    return { ok: true, diagnostic: { checks } };
+  }
+
+  function buildExistingWebSafetyAiDiagnostic({ providerResult = null, normalized = null, localResolution = null, revalidation = null } = {}) {
+    const providerDiagnostics = providerResult?.diagnostics || {};
+    const response = normalized || normalizeExistingWebAiReviewResult(providerResult?.response || providerResult || {});
+    const revalidationDiagnostic = normalizeExistingWebAiRevalidationDiagnostic(revalidation, response);
+    return {
+      provider: {
+        providerId: providerDiagnostics.providerId || providerResult?.provider || "codex-local",
+        requestId: providerDiagnostics.requestId || providerResult?.requestId || response.requestId || "",
+        exitCode: typeof providerDiagnostics.exitCode === "number" ? providerDiagnostics.exitCode : null,
+        timedOut: Boolean(providerDiagnostics.timedOut),
+        durationMs: Number(providerDiagnostics.durationMs || 0),
+        jsonlParseSuccess: Boolean(providerDiagnostics.jsonlParseSuccess),
+        finalAgentMessageFound: Boolean(providerDiagnostics.finalAgentMessageFound),
+        structuredResponseValidationSuccess: Boolean(providerDiagnostics.structuredResponseValidationSuccess),
+        responseParseSuccess: Boolean(providerDiagnostics.responseParseSuccess),
+        responseParseMessage: String(providerDiagnostics.responseParseMessage || ""),
+        responseValidationMessage: String(providerDiagnostics.responseValidationMessage || ""),
+        stderr: String(providerDiagnostics.stderr || "").slice(0, 4000),
+      },
+      response: summarizeExistingWebAiStructuredResponse(response),
+      revalidation: revalidationDiagnostic,
+      localAnalysis: summarizeExistingWebLocalResolution(localResolution),
+      candidateRelation: describeExistingWebAiCandidateRelation(response, localResolution, revalidationDiagnostic),
+    };
+  }
+
+  function summarizeExistingWebAiStructuredResponse(normalized = {}) {
+    return {
+      status: normalized.status || "",
+      requestId: normalized.requestId || "",
+      pageId: normalized.pageId || "",
+      sourcePath: normalized.sourcePath || "",
+      viewState: normalized.viewState || "",
+      reason: normalized.reason || "",
+      confidence: normalized.confidence || "",
+      targets: (normalized.targets || []).map((target) => ({
+        changeId: target.changeId || target.id || "",
+        domRef: target.domRef || "",
+        status: target.status || "",
+        sourceChanges: target.sourceChanges || (target.sourceChange ? [target.sourceChange] : []),
+        preserve: target.preserve || [],
+        risk: target.risk || target.riskLevel || "",
+        reason: target.reason || "",
+        confidence: target.confidence || "",
+      })),
+    };
+  }
+
+  function normalizeExistingWebAiRevalidationDiagnostic(revalidation = null, normalized = {}) {
+    const direct = revalidation?.diagnostic || {};
+    const items = revalidation?.items || [];
+    const itemChecks = items.flatMap((item) => item.diagnostic?.checks || item.sourceResolution?.diagnostic?.checks || []);
+    const checks = [
+      { code: "request-id", label: "requestId", ok: Boolean(normalized.requestId), message: normalized.requestId || "missing" },
+      { code: "page-id", label: "pageId", ok: !normalized.pageId || normalized.pageId === state.existingWeb.pageId, message: normalized.pageId || "not provided" },
+      { code: "source-path", label: "sourcePath", ok: !normalized.sourcePath || normalizeExistingWebSourcePath(normalized.sourcePath) === normalizeExistingWebSourcePath(state.existingWeb.sourcePath), message: normalized.sourcePath || "not provided" },
+      { code: "view-state", label: "viewState", ok: (normalized.viewState || "") === (state.existingWeb.viewState || ""), message: normalized.viewState || "common" },
+      ...itemChecks,
+      ...(direct.checks || []),
+    ];
+    const firstFailed = checks.find((check) => !check.ok);
+    const reason = revalidation?.reason || direct.firstFailedCheck || firstFailed?.code || "";
+    return {
+      ok: Boolean(revalidation?.ok),
+      reason: reason || "",
+      reasonCode: direct.reasonCode || getExistingWebAiRejectReasonCode(reason),
+      firstFailedCheck: direct.firstFailedCheck || firstFailed?.code || reason || "",
+      message: revalidation?.message || "",
+      checks,
+    };
+  }
+
+  function buildExistingWebAiRevalidationDiagnostic(normalized, changes, items, firstBlocked) {
+    const checks = [
+      { code: "request-id", label: "requestId", ok: Boolean(normalized.requestId), message: normalized.requestId || "missing" },
+      { code: "page-id", label: "pageId", ok: !normalized.pageId || normalized.pageId === state.existingWeb.pageId, message: normalized.pageId || "not provided" },
+      { code: "source-path", label: "sourcePath", ok: !normalized.sourcePath || normalizeExistingWebSourcePath(normalized.sourcePath) === normalizeExistingWebSourcePath(state.existingWeb.sourcePath), message: normalized.sourcePath || "not provided" },
+      { code: "view-state", label: "viewState", ok: (normalized.viewState || "") === (state.existingWeb.viewState || ""), message: normalized.viewState || "common" },
+      { code: "change-count", label: "changeId", ok: (items || []).length === (changes || []).length, message: `${(items || []).length}/${(changes || []).length}` },
+      ...(items || []).flatMap((item) => item.diagnostic?.checks || item.sourceResolution?.diagnostic?.checks || []),
+    ];
+    const firstFailed = checks.find((check) => !check.ok);
+    const reason = firstBlocked?.reason || firstFailed?.code || "";
+    return {
+      checks,
+      firstFailedCheck: firstFailed?.code || reason,
+      reasonCode: getExistingWebAiRejectReasonCode(reason),
+    };
+  }
+
+  function summarizeExistingWebLocalResolution(resolution = null) {
+    if (!resolution) {
+      return null;
+    }
+    const candidates = getExistingWebResolutionCandidates(resolution);
+    return {
+      ok: Boolean(resolution.ok),
+      status: resolution.status || "",
+      reason: resolution.reason || "",
+      message: resolution.message || "",
+      multipleCandidateMessage: /複数/.test(resolution.message || "") ? resolution.message : "",
+      sourceCandidates: candidates.map((candidate) => ({
+        sourcePath: candidate.sourcePath || candidate.path || candidate.source?.path || "",
+        selector: candidate.selector || candidate.source?.selector || "",
+        property: candidate.property || candidate.cssProperty || "",
+        value: candidate.value || candidate.before || candidate.currentValue || "",
+      })),
+    };
+  }
+
+  function describeExistingWebAiCandidateRelation(response = {}, localResolution = null, revalidation = {}) {
+    const aiSources = (response.targets || []).flatMap((target) => target.sourceChanges || []);
+    const localSources = getExistingWebResolutionCandidates(localResolution);
+    if (!aiSources.length) {
+      return "CodexはSource候補を返していません。";
+    }
+    if (!localSources.length) {
+      return `Codexは${aiSources.length}件のSource候補を返しましたが、Local Analysis側には一意なSource候補がありません。`;
+    }
+    return `Codex候補 ${aiSources.length}件 / Local候補 ${localSources.length}件 / Revalidation: ${revalidation.reasonCode || revalidation.reason || "-"}`;
+  }
+
+  function getExistingWebAiCheckLabel(code) {
+    const labels = {
+      "stale-ai-response": "stale",
+      "change-id-mismatch": "changeId",
+      "ai-status-not-safe": "status",
+      "missing-source-change": "sourceChange",
+      "missing-selection": "DOM",
+      "property-not-revalidated": "property",
+      "unsupported-source-type": "source type",
+      "source-path-mismatch": "source file",
+      "invalid-selector": "selector",
+      "selector-not-unique": "selector unique",
+      "property-mismatch": "property",
+      "protected-property": "protected behavior",
+      "invalid-before-after": "before/after",
+      "safe-patch-blocked": "Safe Patch",
+      "preflight-blocked": "Preflight",
+    };
+    return labels[code] || code || "check";
+  }
+
+  function getExistingWebAiRejectReasonCode(reason) {
+    const map = {
+      "stale-ai-response": "ai-stale-response",
+      "change-id-mismatch": "ai-change-id-mismatch",
+      "ai-status-not-safe": "ai-status-not-safe",
+      "missing-source-change": "ai-source-location-unresolved",
+      "missing-selection": "ai-source-location-unresolved",
+      "property-not-revalidated": "ai-after-intent-mismatch",
+      "unsupported-source-type": "ai-source-type-unsupported",
+      "source-path-mismatch": "ai-source-path-mismatch",
+      "invalid-selector": "ai-selector-invalid",
+      "selector-not-unique": "ai-selector-not-unique",
+      "property-mismatch": "ai-after-intent-mismatch",
+      "protected-property": "ai-protected-behavior-conflict",
+      "invalid-before-after": "ai-before-mismatch",
+      "safe-patch-blocked": "ai-source-location-unresolved",
+      "preflight-blocked": "ai-before-mismatch",
+      "partial-ai-candidate": "ai-source-location-unresolved",
+    };
+    return map[reason] || (reason ? `ai-${reason}` : "");
+  }
+
+  function getExistingWebVisualPropertyForCssProperty(cssProperty) {
+    const property = String(cssProperty || "").toLowerCase();
+    if (property === "left" || property === "top" || property === "right" || property === "bottom" || property === "translate") return "position";
+    if (property === "width" || property === "height") return "size";
+    if (property === "display" || property === "visibility" || property === "opacity") return "visibility";
+    return property;
+  }
+
+  function buildExistingWebAiPatchOperation(selected, change, sourceChange) {
+    const pageMeta = getAnalyzerManifestPageMeta();
+    const tbId = selected.mapping?.tbId || sanitizeTbId(selected.id || selected.domRef.replace(/^[#.]/, ""), "runtime-target");
+    return {
+      type: "set-css-declaration",
+      target: {
+        pageId: state.existingWeb.pageId || pageMeta.pageId,
+        sourcePath: state.existingWeb.sourcePath || pageMeta.sourcePath,
+        viewState: state.existingWeb.viewState || pageMeta.currentViewState || "",
+        tbId,
+        domRef: selected.domRef,
+      },
+      sourceRef: {
+        sourceType: sourceChange.sourceType || "stylesheet-rule",
+        sourcePath: sourceChange.sourcePath,
+        selector: sourceChange.selector,
+        property: sourceChange.property,
+        currentValue: sourceChange.before,
+        media: sourceChange.media || null,
+      },
+      source: {
+        kind: sourceChange.sourceType || "stylesheet-rule",
+        path: sourceChange.sourcePath,
+        selector: sourceChange.selector,
+        media: sourceChange.media || "",
+      },
+      property: sourceChange.property,
+      before: sourceChange.before,
+      after: sourceChange.after,
+      priority: "",
+    };
   }
 
   function buildExistingWebFinalCheckFromAi(target, localCheck, element, node) {
@@ -6349,12 +7758,15 @@
     if (property === "position") {
       const before = change.before || {};
       const after = change.after || {};
+      const userEdit = change.userEdit?.type === "move" ? change.userEdit : null;
       const declarations = [];
-      if (Number.isFinite(Number(before.x)) && Number.isFinite(Number(after.x)) && Number(before.x) !== Number(after.x)) {
-        declarations.push({ cssProperty: "left", delta: Number(after.x) - Number(before.x), unit: "px" });
+      const deltaX = userEdit ? Number(userEdit.deltaX || 0) : Number(after.x) - Number(before.x);
+      const deltaY = userEdit ? Number(userEdit.deltaY || 0) : Number(after.y) - Number(before.y);
+      if (Number.isFinite(deltaX) && Math.abs(deltaX) >= 0.01) {
+        declarations.push({ cssProperty: "left", delta: deltaX, unit: "px" });
       }
-      if (Number.isFinite(Number(before.y)) && Number.isFinite(Number(after.y)) && Number(before.y) !== Number(after.y)) {
-        declarations.push({ cssProperty: "top", delta: Number(after.y) - Number(before.y), unit: "px" });
+      if (Number.isFinite(deltaY) && Math.abs(deltaY) >= 0.01) {
+        declarations.push({ cssProperty: "top", delta: deltaY, unit: "px" });
       }
       return declarations;
     }
@@ -6390,28 +7802,18 @@
   }
 
   function findUniqueCssDeclarationSource(node, cssProperty) {
-    const candidates = [];
-    const inlineValue = node.style?.getPropertyValue(cssProperty);
-    if (inlineValue) {
-      candidates.push({
-        kind: "inline-style",
-        path: getAnalyzerManifestPageMeta().sourcePath,
-        selector: getInlinePatchSelector(node),
-        property: cssProperty,
-        value: inlineValue.trim(),
-        priority: node.style.getPropertyPriority(cssProperty) || "",
-      });
+    const candidates = findCssDeclarationSourcesForReview(node, cssProperty);
+    const activeCandidates = candidates.filter((candidate) => candidate.activeAtCurrentViewport);
+    if (activeCandidates.length === 1) {
+      return { status: "resolved", source: activeCandidates[0], candidates };
     }
-    candidates.push(...findStylesheetDeclarationSources(node, cssProperty));
-    if (candidates.length === 1) {
-      return { status: "resolved", source: candidates[0] };
-    }
-    if (candidates.length > 1) {
+    if (activeCandidates.length > 1) {
       return {
         status: "multiple",
         reason: "multiple-source-candidates",
         message: `${cssProperty} のCSS宣言候補が複数あります。`,
-        candidates,
+        candidates: activeCandidates,
+        inactiveCandidates: candidates.filter((candidate) => !candidate.activeAtCurrentViewport),
       };
     }
     return {
@@ -6419,6 +7821,31 @@
       reason: "source-location-unresolved",
       message: `${cssProperty} の直接CSS宣言を見つけられません。`,
     };
+  }
+
+  function findCssDeclarationSourcesForReview(node, cssProperty) {
+    const candidates = [];
+    const inlineValue = node.style?.getPropertyValue(cssProperty);
+    if (inlineValue) {
+      candidates.push({
+        kind: "inline-style",
+        path: getAnalyzerManifestPageMeta().sourcePath,
+        sourcePath: getAnalyzerManifestPageMeta().sourcePath,
+        selector: getInlinePatchSelector(node),
+        property: cssProperty,
+        value: inlineValue.trim(),
+        priority: node.style.getPropertyPriority(cssProperty) || "",
+        media: "",
+        mediaQuery: "",
+        mediaMatchesCurrentViewport: true,
+        activeAtCurrentViewport: true,
+        specificity: [1, 0, 0],
+        cascadeOrder: 1000000 + candidates.length,
+        overridden: false,
+      });
+    }
+    candidates.push(...findStylesheetDeclarationSources(node, cssProperty));
+    return annotateCssDeclarationCascade(candidates);
   }
 
   function findStylesheetDeclarationSources(node, cssProperty) {
@@ -6457,13 +7884,50 @@
       sources.push({
         kind: "stylesheet-rule",
         path: getStylesheetSourcePath(sheet),
+        sourcePath: getStylesheetSourcePath(sheet),
         selector: rule.selectorText,
         property: cssProperty,
         value: rule.style.getPropertyValue(cssProperty).trim(),
         priority: rule.style.getPropertyPriority(cssProperty) || "",
         media: mediaText || "",
+        mediaQuery: mediaText || "",
+        mediaMatchesCurrentViewport: doesCssMediaMatchCurrentViewport(node, mediaText),
+        activeAtCurrentViewport: doesCssMediaMatchCurrentViewport(node, mediaText),
+        specificity: estimateCssSpecificity(rule.selectorText),
+        cascadeOrder: sources.length,
+        overridden: false,
       });
     });
+  }
+
+  function annotateCssDeclarationCascade(candidates) {
+    const active = candidates.filter((candidate) => candidate.activeAtCurrentViewport);
+    const winning = active[active.length - 1] || null;
+    return candidates.map((candidate) => ({
+      ...candidate,
+      winningDeclaration: candidate === winning,
+      overridden: Boolean(candidate.activeAtCurrentViewport && winning && candidate !== winning),
+    }));
+  }
+
+  function doesCssMediaMatchCurrentViewport(node, mediaText = "") {
+    const media = String(mediaText || "").trim();
+    if (!media) {
+      return true;
+    }
+    try {
+      return Boolean(node.ownerDocument.defaultView.matchMedia(media).matches);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function estimateCssSpecificity(selectorText = "") {
+    const selector = String(selectorText || "").split(",")[0] || "";
+    const ids = (selector.match(/#[\w-]+/g) || []).length;
+    const classes = (selector.match(/(\.[\w-]+|\[[^\]]+\]|:[\w-]+)/g) || []).length;
+    const elements = (selector.replace(/#[\w-]+|(\.[\w-]+|\[[^\]]+\]|:[\w-]+)|[*>+~(),]/g, " ").trim().split(/\s+/).filter(Boolean) || []).length;
+    return [ids, classes, elements];
   }
 
   function buildCssPatchOperation(instruction, mapping, change, declaration, sourceResult) {
@@ -6471,11 +7935,19 @@
     const before = source.value;
     let after = declaration.exactValue;
     if (!after && Number.isFinite(Number(declaration.delta))) {
-      const parsed = parseCssPxValue(before);
+      const parsed = parseCssLengthValue(before);
       if (!parsed.ok) {
         return null;
       }
-      after = `${roundPatchNumber(parsed.value + declaration.delta)}${parsed.unit}`;
+      if (parsed.unit === "%") {
+        const basis = getCssPercentDeltaBasis(mapping, declaration.cssProperty);
+        if (!basis) {
+          return null;
+        }
+        after = `${roundPatchNumber(parsed.value + (Number(declaration.delta) / basis) * 100)}%`;
+      } else {
+        after = `${roundPatchNumber(parsed.value + declaration.delta)}${parsed.unit}`;
+      }
     }
     if (before === after) {
       return null;
@@ -6553,6 +8025,31 @@
       return { ok: false };
     }
     return { ok: true, value: Number(match[1]), unit: match[2] };
+  }
+
+  function parseCssLengthValue(value) {
+    const match = String(value || "").trim().match(/^(-?\d+(?:\.\d+)?)(px|%)$/i);
+    if (!match) {
+      return { ok: false };
+    }
+    return { ok: true, value: Number(match[1]), unit: match[2] };
+  }
+
+  function getCssPercentDeltaBasis(mapping, cssProperty) {
+    const node = resolveExistingWebRuntimeDomNode(mapping?.domRef);
+    if (!node) {
+      return 0;
+    }
+    const property = String(cssProperty || "").toLowerCase();
+    const basisNode = node.offsetParent || node.parentElement || node.ownerDocument?.documentElement;
+    const rect = basisNode?.getBoundingClientRect?.();
+    if (property === "left" || property === "right" || property === "width") {
+      return Number(rect?.width || node.ownerDocument?.documentElement?.clientWidth || 0);
+    }
+    if (property === "top" || property === "bottom" || property === "height") {
+      return Number(rect?.height || node.ownerDocument?.documentElement?.clientHeight || 0);
+    }
+    return 0;
   }
 
   function roundPatchNumber(value) {
@@ -10330,7 +11827,11 @@
       `<span><b>レイヤー:</b> ${data.layerCount}件 / 当たり判定 ${data.hitAreaCount}件 / メモ ${data.memoCount}件</span>`,
       `<span><b>選択中:</b> ${escapeHtml(data.selectedLabel)}</span>`,
     ].join("");
-    els.aiPromptText.value = buildAiCollabPrompt(data);
+    if (state.withAiShare.mode === "existing-web-ai-review" && state.withAiShare.text) {
+      els.aiPromptText.value = state.withAiShare.text;
+    } else {
+      els.aiPromptText.value = buildAiCollabPrompt(data);
+    }
     renderWithAiSafeChangeShare();
   }
 
@@ -11838,6 +13339,7 @@
       els.canvasViewport.classList.add("is-existing-web-view");
     }
     if (els.existingWebFrame) {
+      applyExistingWebFrameViewport();
       const reloadToken = String(state.existingWeb.reloadToken || "");
       const needsReload = els.existingWebFrame.src !== state.existingWeb.currentUrl
         || els.existingWebFrame.dataset.reloadToken !== reloadToken;
@@ -11937,6 +13439,51 @@
     if (els.existingWebSelectionSummary) {
       els.existingWebSelectionSummary.innerHTML = buildExistingWebSelectionSummary("compact");
     }
+  }
+
+  function applyExistingWebFrameViewport() {
+    const frame = els.existingWebFrame;
+    const viewer = els.existingWebViewer;
+    if (!frame || !viewer) {
+      return;
+    }
+    const viewport = state.viewport === "mobile" ? "mobile" : "desktop";
+    const size = getExistingWebLayoutViewportSize(viewport);
+    const viewerRect = viewer.getBoundingClientRect();
+    const toolbar = viewer.querySelector(".tb-existing-web-toolbar");
+    const summary = viewer.querySelector(".tb-existing-web-selection-summary");
+    const toolbarHeight = toolbar?.getBoundingClientRect?.().height || 0;
+    const summaryHeight = summary?.getBoundingClientRect?.().height || 0;
+    const availableWidth = Math.max(1, viewerRect.width - 2);
+    const availableHeight = Math.max(1, viewerRect.height - toolbarHeight - summaryHeight - 2);
+    const scale = Math.max(0.05, Math.min(availableWidth / size.width, availableHeight / size.height));
+    frame.style.width = `${size.width}px`;
+    frame.style.height = `${size.height}px`;
+    frame.style.transform = `scale(${scale})`;
+    frame.style.transformOrigin = "top left";
+    frame.dataset.viewportMode = viewport;
+    frame.dataset.layoutWidth = String(size.width);
+    frame.dataset.layoutHeight = String(size.height);
+    frame.dataset.visualScale = String(scale);
+    viewer.dataset.viewportMode = viewport;
+    viewer.style.setProperty("--existing-web-layout-width", `${size.width}px`);
+    viewer.style.setProperty("--existing-web-layout-height", `${size.height}px`);
+    viewer.style.setProperty("--existing-web-visual-scale", String(scale));
+  }
+
+  function getExistingWebLayoutViewportSize(viewport) {
+    if (viewport === "mobile") {
+      return {
+        width: 390,
+        height: 844,
+      };
+    }
+    const page = getPrimaryPage() || getCurrentPage();
+    const size = getPageViewportSize(page, "desktop");
+    return {
+      width: Math.max(1, Math.round(Number(size.width) || 1920)),
+      height: Math.max(1, Math.round(Number(size.height) || 1080)),
+    };
   }
 
   function renderSecondaryWindow(page) {
@@ -13062,11 +14609,25 @@
           ? `変更確認済み ${count}件`
           : status === "review_required"
             ? getExistingWebReviewStatusLabel(workflow, count)
+            : status === "manual_review_required"
+              ? "自動確認できませんでした"
             : status === "applying"
               ? "反映中"
+              : status === "ai_reviewing"
+                ? "AIで確認中"
+                : status === "ai_response_imported"
+                  ? "AI回答を確認中"
               : "変更なし";
-    const buttonLabel = status === "ready_to_apply" ? "変更を反映" : "変更を確認";
-    const disabled = !["dirty", "ready_to_apply", "review_required"].includes(status);
+    const buttonLabel = status === "ready_to_apply"
+      ? "変更を反映"
+      : status === "review_required"
+        ? "変更を確認"
+        : status === "manual_review_required"
+          ? "詳細を見る"
+        : status === "ai_reviewing"
+          ? "変更を確認"
+          : "変更を確認";
+    const disabled = !["dirty", "ready_to_apply", "review_required", "manual_review_required"].includes(status);
     const tabs = [
       ["layers", "レイヤー"],
       ["adjust", "調整"],
@@ -13081,7 +14642,7 @@
         </div>
         <div class="tb-existing-web-main-action">
           <span>${escapeHtml(statusLabel)}</span>
-          <button type="button" data-existing-web-action="safe-change" class="${status === "ready_to_apply" ? "is-apply" : ""}"${disabled ? " disabled" : ""}>${escapeHtml(buttonLabel)}</button>
+          <button type="button" data-existing-web-action="${status === "manual_review_required" ? "workflow-tab" : "safe-change"}" class="${status === "ready_to_apply" ? "is-apply" : ""}"${status === "manual_review_required" ? " data-existing-web-workflow-tab=\"analysis\"" : ""}${disabled ? " disabled" : ""}>${escapeHtml(buttonLabel)}</button>
         </div>
         <div class="tb-existing-web-secondary-actions">
           <button type="button" data-existing-web-action="reset-preview"${count ? "" : " disabled"}>変更をすべて元に戻す</button>
@@ -13114,6 +14675,7 @@
           ${workflow.status === "ready_to_apply"
             ? `<p class="tb-existing-web-preview-note">Sourceへ反映できます。反映前に確認Dialogを表示します。</p>`
             : `<p class="tb-existing-web-preview-note">${escapeHtml(workflow.message || "Source反映には追加確認が必要です。")}</p>`}
+          ${buildExistingWebSafetyAiDiagnosticHtml(workflow.lastResult?.safetyAiDiagnostic)}
         </article>
       `;
     }
@@ -13125,7 +14687,61 @@
         ${workflow.status === "ready_to_apply"
           ? `<p class="tb-existing-web-preview-note">Sourceへ反映できます。反映前に確認Dialogを表示します。</p>`
           : `<p class="tb-existing-web-preview-note">${escapeHtml(workflow.message || "Source反映には追加確認が必要です。")}</p>`}
+        ${buildExistingWebSafetyAiDiagnosticHtml(workflow.lastResult?.safetyAiDiagnostic)}
       </article>
+    `;
+  }
+
+  function buildExistingWebSafetyAiDiagnosticHtml(diagnostic) {
+    if (!diagnostic) {
+      return "";
+    }
+    const provider = diagnostic.provider || {};
+    const response = diagnostic.response || {};
+    const revalidation = diagnostic.revalidation || {};
+    const targets = response.targets || [];
+    const checks = revalidation.checks || [];
+    return `
+      <details class="tb-existing-web-safety-ai-diagnostic" open>
+        <summary>Safety AI Diagnostic</summary>
+        <dl class="tb-existing-web-normal-checks">
+          <div data-check-state="${provider.exitCode === 0 ? "ok" : "warning"}">
+            <dt>Codex</dt>
+            <dd>${escapeHtml(`exitCode:${provider.exitCode ?? "-"} / ${provider.finalAgentMessageFound ? "final messageあり" : "final messageなし"} / ${provider.durationMs || 0}ms`)}</dd>
+          </div>
+          <div data-check-state="${provider.structuredResponseValidationSuccess ? "ok" : "warning"}">
+            <dt>Schema</dt>
+            <dd>${escapeHtml(provider.structuredResponseValidationSuccess ? "valid" : provider.responseValidationMessage || provider.responseParseMessage || "invalid")}</dd>
+          </div>
+          <div data-check-state="${revalidation.ok ? "ok" : "warning"}">
+            <dt>Reject</dt>
+            <dd>${escapeHtml(`${revalidation.firstFailedCheck || "-"} / ${revalidation.reasonCode || "-"}`)}</dd>
+          </div>
+        </dl>
+        ${targets.map((target) => `
+          <section class="tb-existing-web-ai-result" data-ai-result="AI_RESULT_UNKNOWN">
+            <strong>${escapeHtml(target.domRef || "target")} / ${escapeHtml(target.status || response.status || "-")}</strong>
+            ${(target.sourceChanges || []).map((sourceChange) => `
+              <p>${escapeHtml([
+                sourceChange.sourcePath || "-",
+                sourceChange.selector || "-",
+                sourceChange.property || "-",
+                `${sourceChange.before || "-"} -> ${sourceChange.after || "-"}`,
+              ].join(" / "))}</p>
+            `).join("") || "<p>Source候補なし</p>"}
+            <p>${escapeHtml(`reason: ${target.reason || response.reason || "-"} / confidence: ${target.confidence || response.confidence || "-"}`)}</p>
+          </section>
+        `).join("")}
+        ${checks.length ? `<dl class="tb-existing-web-normal-checks">
+          ${checks.map((check) => `
+            <div data-check-state="${check.ok ? "ok" : "warning"}">
+              <dt>${escapeHtml(check.label || check.code || "check")}</dt>
+              <dd>${escapeHtml(`${check.ok ? "OK" : "FAIL"}${check.message ? ` / ${check.message}` : ""}`)}</dd>
+            </div>
+          `).join("")}
+        </dl>` : ""}
+        <pre class="tb-existing-web-custom">${escapeHtml(JSON.stringify(diagnostic, null, 2))}</pre>
+      </details>
     `;
   }
 
@@ -13409,17 +15025,17 @@
       return "";
     }
     if (preview.property === "position") {
-      const dx = Math.round(((preview.after?.x || 0) - (preview.before?.x || 0)) * 100) / 100;
-      const dy = Math.round(((preview.after?.y || 0) - (preview.before?.y || 0)) * 100) / 100;
+      const dx = roundExistingWebNumber(preview.userEdit?.type === "move" ? preview.userEdit.deltaX : ((preview.after?.x || 0) - (preview.before?.x || 0)));
+      const dy = roundExistingWebNumber(preview.userEdit?.type === "move" ? preview.userEdit.deltaY : ((preview.after?.y || 0) - (preview.before?.y || 0)));
       return `位置を X ${dx >= 0 ? "+" : ""}${dx}px / Y ${dy >= 0 ? "+" : ""}${dy}px 移動`;
     }
     if (preview.property === "size") {
-      const dw = Math.round(((preview.after?.width || 0) - (preview.before?.width || 0)) * 100) / 100;
-      const dh = Math.round(((preview.after?.height || 0) - (preview.before?.height || 0)) * 100) / 100;
+      const dw = roundExistingWebNumber(preview.userEdit?.type === "resize" ? preview.userEdit.widthDelta : ((preview.after?.width || 0) - (preview.before?.width || 0)));
+      const dh = roundExistingWebNumber(preview.userEdit?.type === "resize" ? preview.userEdit.heightDelta : ((preview.after?.height || 0) - (preview.before?.height || 0)));
       return `サイズを 幅 ${dw >= 0 ? "+" : ""}${dw}px / 高さ ${dh >= 0 ? "+" : ""}${dh}px 変更`;
     }
     if (preview.property === "rotation") {
-      const rotation = Math.round(((preview.after?.rotation || 0) - (preview.before?.rotation || 0)) * 100) / 100;
+      const rotation = normalizeExistingWebAngle(preview.userEdit?.type === "rotate" ? preview.userEdit.rotationDelta : ((preview.after?.rotation || 0) - (preview.before?.rotation || 0)));
       return `回転を ${rotation >= 0 ? "+" : ""}${rotation}° 変更`;
     }
     return `${preview.property}を変更`;
@@ -13428,17 +15044,17 @@
   function formatExistingWebPreviewIntent(selected, preview) {
     const title = getExistingWebSelectionTitle(selected);
     if (preview?.property === "position") {
-      const dx = Math.round(((preview.after?.x || 0) - (preview.before?.x || 0)) * 100) / 100;
-      const dy = Math.round(((preview.after?.y || 0) - (preview.before?.y || 0)) * 100) / 100;
+      const dx = roundExistingWebNumber(preview.userEdit?.type === "move" ? preview.userEdit.deltaX : ((preview.after?.x || 0) - (preview.before?.x || 0)));
+      const dy = roundExistingWebNumber(preview.userEdit?.type === "move" ? preview.userEdit.deltaY : ((preview.after?.y || 0) - (preview.before?.y || 0)));
       return `${title}を X ${dx >= 0 ? "+" : ""}${dx}px / Y ${dy >= 0 ? "+" : ""}${dy}px 移動したい`;
     }
     if (preview?.property === "size") {
-      const dw = Math.round(((preview.after?.width || 0) - (preview.before?.width || 0)) * 100) / 100;
-      const dh = Math.round(((preview.after?.height || 0) - (preview.before?.height || 0)) * 100) / 100;
+      const dw = roundExistingWebNumber(preview.userEdit?.type === "resize" ? preview.userEdit.widthDelta : ((preview.after?.width || 0) - (preview.before?.width || 0)));
+      const dh = roundExistingWebNumber(preview.userEdit?.type === "resize" ? preview.userEdit.heightDelta : ((preview.after?.height || 0) - (preview.before?.height || 0)));
       return `${title}のサイズを 幅 ${dw >= 0 ? "+" : ""}${dw}px / 高さ ${dh >= 0 ? "+" : ""}${dh}px 変更したい`;
     }
     if (preview?.property === "rotation") {
-      const rotation = Math.round(((preview.after?.rotation || 0) - (preview.before?.rotation || 0)) * 100) / 100;
+      const rotation = normalizeExistingWebAngle(preview.userEdit?.type === "rotate" ? preview.userEdit.rotationDelta : ((preview.after?.rotation || 0) - (preview.before?.rotation || 0)));
       return `${title}を ${rotation >= 0 ? "+" : ""}${rotation}° 回転したい`;
     }
     return `${title}の見た目を調整したい`;
