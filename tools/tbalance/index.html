@@ -137,7 +137,7 @@
         <div class="tb-header-menu-wrap">
           <button type="button" data-header-menu-trigger="file">ファイル</button>
           <div class="tb-header-menu" data-header-menu="file" hidden>
-            <button type="button" data-file-action="new">新規</button>
+            <button type="button" data-file-action="new">新しいページ</button>
             <button type="button" data-file-action="template" disabled title="今後追加予定">テンプレートから開く</button>
             <span class="tb-header-menu-separator" aria-hidden="true"></span>
             <button type="button" data-file-action="open">TBalanceファイルを開く</button>
@@ -1382,12 +1382,12 @@
       <span id="siteMapPageCount" hidden>0</span>
     </section>
 
-    <section id="newCanvasModal" class="tb-new-canvas-modal" aria-label="新規キャンバス作成" hidden>
+    <section id="newCanvasModal" class="tb-new-canvas-modal" aria-label="新しいページを作成" hidden>
       <div class="tb-new-canvas-dialog" role="dialog" aria-modal="true" aria-labelledby="newCanvasTitle">
         <div class="tb-new-canvas-head">
           <div>
-            <h2 id="newCanvasTitle">新規キャンバス作成</h2>
-            <p>Canvas / Stage を作成して、その上にレイヤーを追加します。</p>
+            <h2 id="newCanvasTitle">新しいページを作成</h2>
+            <p>ページ名とWeb名を決めて、空の編集ページを作成します。</p>
           </div>
           <button id="newCanvasCancelTop" type="button" title="閉じる">×</button>
         </div>
@@ -1398,7 +1398,7 @@
           <fieldset class="tb-new-canvas-presets">
             <legend>プリセットサイズ</legend>
             <button type="button" data-new-canvas-preset="teamerry-pc" class="is-active">TeaMerry PC<span>1920 × 1080</span></button>
-            <button type="button" data-new-canvas-preset="teamerry-mobile">TeaMerry Mobile<span>1080 × 1920</span></button>
+            <button type="button" data-new-canvas-preset="teamerry-mobile">TeaMerry Mobile<span>390 × 844</span></button>
             <button type="button" data-new-canvas-preset="video-16-9">動画 16:9<span>1920 × 1080</span></button>
             <button type="button" data-new-canvas-preset="video-9-16">動画 9:16<span>1080 × 1920</span></button>
             <button type="button" data-new-canvas-preset="square">正方形<span>1080 × 1080</span></button>
@@ -1699,6 +1699,9 @@
     </section>
   </main>
 
+  <script src="./native/native-id.js?v=20260905-native-v01"></script>
+  <script src="./native/native-schema.js?v=20260905-native-v01"></script>
+  <script src="./native/native-migration.js?v=20260905-native-v01"></script>
   <script src="./tbalance-renderer.js?v=20260824-v1-close"></script>
   <script src="./analyzer/read-only-analyzer.js?v=20260824-analyzer-v01-safe"></script>
   <script src="./adapters/generic-adapter.js?v=20260825-adapter-v01"></script>

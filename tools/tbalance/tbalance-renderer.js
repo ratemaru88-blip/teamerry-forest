@@ -3,7 +3,7 @@
 
   const VIEWPORTS = {
     desktop: { width: 1920, height: 1080, label: "PC 16:9" },
-    mobile: { width: 1080, height: 1920, label: "Mobile 9:16" },
+    mobile: { width: 390, height: 844, label: "Mobile" },
   };
   const DEFAULT_STAGE = {
     backgroundType: "transparent",
@@ -59,20 +59,41 @@
   }
 
   function normalizeProject(project) {
-    const copy = clone(project || {});
+    const nativeProject = window.TBalanceNativeMigration?.normalizeNativeProject(project || {}) || clone(project || {});
+    const copy = clone(nativeProject);
+    copy.schemaVersion = copy.schemaVersion || window.TBalanceNativeSchema?.SCHEMA_VERSION || "tbalance.native.v0.1";
     copy.format = "tbalance";
     copy.version = copy.version || "0.1.0";
-    copy.projectId = copy.projectId || "teamerry";
-    copy.name = copy.name || "TeaMerry";
+    copy.sourceAuthority = copy.sourceAuthority || "tbalance";
+    copy.projectId = copy.projectId || window.TBalanceNativeId?.createStableId("project") || makeId("project");
+    copy.displayName = copy.displayName || copy.name || "TeaMerry";
+    copy.name = copy.name || copy.displayName;
+    copy.projectRef = Object.assign({
+      projectId: copy.projectId,
+      displayName: copy.displayName,
+    }, copy.projectRef || {});
     copy.editorMode = copy.editorMode === "custom" ? "custom" : "normal";
     copy.uiSettings = normalizeUiSettings(copy.uiSettings);
     copy.assets = Array.isArray(copy.assets) ? copy.assets : [];
+    copy.assets.forEach((asset) => {
+      asset.assetId = asset.assetId || asset.id || window.TBalanceNativeId?.createStableId("asset") || makeId("asset");
+      asset.id = asset.id || asset.assetId;
+      asset.displayName = asset.displayName || asset.fileName || asset.name || asset.assetId;
+    });
     copy.pages = Array.isArray(copy.pages) && copy.pages.length ? copy.pages : [createDefaultPage()];
-    copy.pages.forEach((page) => {
-      page.id = page.id || makeId("page");
-      page.name = page.name || "トップページ";
+    copy.pages.forEach((page, index) => {
+      page.pageId = page.pageId || page.id || window.TBalanceNativeId?.createStableId("page") || makeId("page");
+      page.id = page.pageId;
+      page.displayName = page.displayName || page.name || "トップページ";
+      page.name = page.name || page.displayName;
+      page.slug = page.slug || window.TBalanceNativeSchema?.slugify?.("", `page-${String(index + 1).padStart(3, "0")}`) || `page-${index + 1}`;
+      page.sourceAuthority = page.sourceAuthority || "tbalance";
       page.desktop = Object.assign({}, VIEWPORTS.desktop, page.desktop || {});
       page.mobile = Object.assign({}, VIEWPORTS.mobile, page.mobile || {});
+      page.viewports = Object.assign({}, page.viewports || {}, {
+        desktop: Object.assign({}, page.desktop),
+        mobile: Object.assign({}, page.mobile),
+      });
       page.stage = normalizeStage(page.stage);
       page.layers = Array.isArray(page.layers) ? page.layers : [];
       page.layers.forEach(normalizeLayer);
@@ -122,9 +143,11 @@
   }
 
   function normalizeLayer(layer) {
-    layer.id = layer.id || makeId("layer");
+    layer.layerId = layer.layerId || layer.id || window.TBalanceNativeId?.createStableId("layer") || makeId("layer");
+    layer.id = layer.id || layer.layerId;
     layer.type = layer.type || "image";
-    layer.name = layer.name || layer.fileName || layer.id;
+    layer.displayName = layer.displayName || layer.name || layer.fileName || layer.id;
+    layer.name = layer.name || layer.displayName;
     layer.visible = layer.visible !== false;
     layer.visibilityMode = ["both", "desktop", "mobile", "hidden"].includes(layer.visibilityMode) ? layer.visibilityMode : (layer.visible === false ? "hidden" : "both");
     if (layer.role === "hit-area" && layer.visibilityMode !== "hidden") {
@@ -199,7 +222,7 @@
           visible: true,
           locked: true,
           desktop: { x: 0, y: 0, width: 1920, height: 1080, rotation: 0 },
-          mobile: { x: -1166, y: 0, width: 3413, height: 1920, rotation: 0 },
+          mobile: { x: -457, y: 0, width: 1500, height: 844, rotation: 0 },
           appearance: { opacity: 1, brightness: 0.88, shadow: "none" },
         },
         {
@@ -242,16 +265,23 @@
     const desktop = Object.assign({}, VIEWPORTS.desktop, config.desktop || {});
     const mobile = Object.assign({}, VIEWPORTS.mobile, config.mobile || {});
     return normalizeProject({
+      schemaVersion: window.TBalanceNativeSchema?.SCHEMA_VERSION || "tbalance.native.v0.1",
       format: "tbalance",
       version: "0.1.0",
-      projectId: makeId("project"),
+      sourceAuthority: "tbalance",
+      projectId: window.TBalanceNativeId?.createStableId("project") || makeId("project"),
+      displayName: config.name || "新規TBalance",
       name: config.name || "新規TBalance",
       pages: [
         {
-          id: "home",
+          pageId: window.TBalanceNativeId?.createStableId("page") || makeId("page"),
           name: config.pageName || config.name || "トップページ",
+          displayName: config.pageName || config.name || "トップページ",
+          slug: config.slug || window.TBalanceNativeSchema?.slugify?.("", "page-001") || "page-001",
+          sourceAuthority: "tbalance",
           desktop,
           mobile,
+          viewports: { desktop, mobile },
           stage: normalizeStage(config.stage),
           layers: [],
         },

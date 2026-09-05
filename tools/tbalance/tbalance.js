@@ -72,15 +72,15 @@
       width: 1920,
       height: 1080,
       desktop: { width: 1920, height: 1080, label: "TeaMerry PC" },
-      mobile: { width: 1080, height: 1920, label: "TeaMerry Mobile" },
+      mobile: { width: 390, height: 844, label: "TeaMerry Mobile" },
       activeViewport: "desktop",
     },
     "teamerry-mobile": {
       label: "TeaMerry Mobile",
-      width: 1080,
-      height: 1920,
+      width: 390,
+      height: 844,
       desktop: { width: 1920, height: 1080, label: "TeaMerry PC" },
-      mobile: { width: 1080, height: 1920, label: "TeaMerry Mobile" },
+      mobile: { width: 390, height: 844, label: "TeaMerry Mobile" },
       activeViewport: "mobile",
     },
     "video-16-9": {
@@ -1217,6 +1217,7 @@
   }
 
   function bindNewCanvasDialog() {
+    ensureNewCanvasSlugInput();
     document.querySelectorAll("[data-new-canvas-preset]").forEach((button) => {
       button.addEventListener("click", () => selectNewCanvasPreset(button.dataset.newCanvasPreset));
     });
@@ -1233,11 +1234,38 @@
     });
   }
 
+  function ensureNewCanvasSlugInput() {
+    if (document.getElementById("newCanvasSlug")) {
+      return;
+    }
+    const nameLabel = els.newCanvasName?.closest("label");
+    if (!nameLabel) {
+      return;
+    }
+    nameLabel.firstChild.textContent = "ページ名";
+    const slugLabel = document.createElement("label");
+    slugLabel.className = "tb-new-canvas-name";
+    slugLabel.textContent = "Web名";
+    const input = document.createElement("input");
+    input.id = "newCanvasSlug";
+    input.type = "text";
+    input.placeholder = "page-001";
+    input.spellcheck = false;
+    slugLabel.appendChild(input);
+    nameLabel.insertAdjacentElement("afterend", slugLabel);
+  }
+
   function openNewCanvasDialog() {
+    ensureNewCanvasSlugInput();
     const page = getCurrentPage();
     const size = getPageViewportSize(page, state.viewport);
-    const title = isUntitledProject() ? "未命名" : getProjectBaseName();
-    els.newCanvasName.value = title || page?.name || state.project?.name || "未命名";
+    const title = "";
+    els.newCanvasName.value = title;
+    const slugInput = document.getElementById("newCanvasSlug");
+    if (slugInput) {
+      const nextIndex = Math.max(1, (state.project?.pages?.length || 0) + 1);
+      slugInput.value = `page-${String(nextIndex).padStart(3, "0")}`;
+    }
     els.newCanvasWidth.value = Math.round(size.width || 1920);
     els.newCanvasHeight.value = Math.round(size.height || 1080);
     const stage = renderer.normalizeStage(page?.stage);
@@ -1283,7 +1311,7 @@
   function findPresetForSize(width, height, viewport) {
     const normalizedWidth = Math.round(Number(width) || 0);
     const normalizedHeight = Math.round(Number(height) || 0);
-    if (viewport === "mobile" && normalizedWidth === 1080 && normalizedHeight === 1920) {
+    if (viewport === "mobile" && normalizedWidth === 390 && normalizedHeight === 844) {
       return "teamerry-mobile";
     }
     const match = Object.entries(NEW_CANVAS_PRESETS).find(([key, preset]) => {
@@ -1297,7 +1325,7 @@
     if (!options) {
       return;
     }
-    const created = await createNewProject(options);
+    const created = await createNewPage(options);
     if (!created) {
       return;
     }
@@ -1316,7 +1344,18 @@
     }
     const activePreset = document.querySelector("[data-new-canvas-preset].is-active")?.dataset.newCanvasPreset || "custom";
     const preset = NEW_CANVAS_PRESETS[activePreset] || NEW_CANVAS_PRESETS.custom;
-    const name = String(els.newCanvasName?.value || "").trim() || "未命名";
+    const name = String(els.newCanvasName?.value || "").trim();
+    if (!name) {
+      showModeToast("ページ名を入力してください。");
+      els.newCanvasName?.focus();
+      return null;
+    }
+    const slugInput = document.getElementById("newCanvasSlug");
+    const nextIndex = Math.max(1, (state.project?.pages?.length || 0) + 1);
+    const slug = normalizePageSlug(slugInput?.value || "", nextIndex);
+    if (slugInput) {
+      slugInput.value = slug;
+    }
     const backgroundType = document.querySelector('input[name="newCanvasBackground"]:checked')?.value || "transparent";
     const startMode = document.querySelector('input[name="newCanvasStart"]:checked')?.value || "blank";
     const stage = {
@@ -1338,6 +1377,7 @@
     return {
       name,
       pageName: name,
+      slug,
       desktop,
       mobile,
       activeViewport: activePreset === "teamerry-mobile" ? "mobile" : preset.activeViewport || "desktop",
@@ -1647,6 +1687,11 @@
       },
       adapterId,
     };
+  }
+
+  function normalizePageSlug(value, index = 1) {
+    const fallback = `page-${String(index).padStart(3, "0")}`;
+    return window.TBalanceNativeSchema?.slugify?.(value, fallback) || fallback;
   }
 
   function splitExistingWebTarget(raw, targetState = null) {
@@ -16813,7 +16858,7 @@
     const layout = { x: 0, y: 0, width: size.width, height: size.height, rotation: 0 };
     const inactiveLayout = Object.assign({}, layout);
     const layer = {
-      id: renderer.makeId("layer"),
+      id: window.TBalanceNativeId?.createStableId("layer") || renderer.makeId("layer"),
       type: "image",
       name: options.name || "ペン描画",
       role: options.role || "pen",
@@ -17077,7 +17122,7 @@
     };
     const inactiveLayout = { x: layout.x, y: layout.y, width: layout.width, height: layout.height, rotation: 0 };
     const layer = {
-      id: renderer.makeId("layer"),
+      id: window.TBalanceNativeId?.createStableId("layer") || renderer.makeId("layer"),
       type: "shape",
       name: "ペン線",
       role: "pen",
@@ -18690,18 +18735,28 @@
     reader.onload = () => {
       const src = String(reader.result || "");
       getImageNaturalSize(src).then((naturalSize) => {
-        const pageId = renderer.makeId("window");
-        const layerId = renderer.makeId("layer");
+        const pageId = window.TBalanceNativeId?.createStableId("page") || renderer.makeId("window");
+        const layerId = window.TBalanceNativeId?.createStableId("layer") || renderer.makeId("layer");
         const canvasSize = createReferenceCanvasSize(naturalSize);
         const layerLayout = centerLayerInCanvas(naturalSize, canvasSize);
         state.primaryPageId = state.primaryPageId || state.pageId;
         state.project.pages.push({
+          pageId,
           id: pageId,
+          displayName: file.name || "別ウィンドウ画像",
           name: file.name || "別ウィンドウ画像",
+          slug: normalizePageSlug(file.name || "", (state.project.pages?.length || 0) + 1),
+          sourceAuthority: "tbalance",
           desktop: { width: canvasSize.width, height: canvasSize.height },
           mobile: { width: canvasSize.width, height: canvasSize.height },
+          viewports: {
+            desktop: { width: canvasSize.width, height: canvasSize.height },
+            mobile: { width: canvasSize.width, height: canvasSize.height },
+          },
           layers: [{
+            layerId,
             id: layerId,
+            displayName: file.name || "別ウィンドウ画像",
             type: "image",
             name: file.name || "別ウィンドウ画像",
             src,
@@ -18778,13 +18833,15 @@
   }
 
   function addDroppedImageLayer(file, point, originalSrc, activeSrc, transparent) {
-    const assetId = renderer.makeId("asset");
+    const assetId = window.TBalanceNativeId?.createStableId("asset") || renderer.makeId("asset");
     const desktopLayout = createCenteredLayout(point, DEFAULT_DROP_SIZE.width, DEFAULT_DROP_SIZE.height);
     const mobileLayout = createResponsiveLayerLayout(desktopLayout, "desktop", "mobile", 260, 260);
     pushHistory();
     state.project.assets = Array.isArray(state.project.assets) ? state.project.assets : [];
     state.project.assets.push({
       id: assetId,
+      assetId,
+      displayName: file.name,
       fileName: file.name,
       originalSrc,
       transparentSrc: transparent ? activeSrc : "",
@@ -19178,7 +19235,7 @@
       pushHistory();
     }
     const layer = Object.assign({
-      id: renderer.makeId("layer"),
+      id: window.TBalanceNativeId?.createStableId("layer") || renderer.makeId("layer"),
       visible: true,
       locked: false,
       link: "",
@@ -19221,7 +19278,7 @@
       pushHistory();
     }
     const layer = Object.assign({
-      id: renderer.makeId("layer"),
+      id: window.TBalanceNativeId?.createStableId("layer") || renderer.makeId("layer"),
       visible: true,
       locked: false,
       link: "",
@@ -19866,8 +19923,10 @@
     const copiedIds = [];
     layers.forEach((layer) => {
       const copy = renderer.clone(layer);
-      copy.id = renderer.makeId("layer");
+      copy.id = window.TBalanceNativeId?.createStableId("layer") || renderer.makeId("layer");
+      copy.layerId = copy.id;
       copy.name = `${layer.name || "レイヤー"} コピー`;
+      copy.displayName = copy.name;
       copy.role = "";
       ["desktop", "mobile"].forEach((key) => {
         if (copy[key]) {
@@ -20373,6 +20432,8 @@
     }).catch((error) => {
       const message = error.message === "not-tbalance-html"
         ? "これはTBalanceファイルではありません。\n既存HTML/CSS/JSページは「ファイル → 既存Webプロジェクトを開く」を使用してください。"
+        : error.code === "unsupported-native-schema"
+          ? `このTBalanceファイルは現在のバージョンでは開けません。\nSchema: ${error.schemaVersion || "unknown"}`
         : `TBalanceファイルを開けませんでした。\n.tbalance またはTBalance JSONファイルを選択してください。`;
       alert(message);
     });
@@ -20396,6 +20457,52 @@
     pushHistory();
     resetToBlankProject(options);
     showModeToast("直前データをバックアップして、新規キャンバスを作成しました。");
+    return true;
+  }
+
+  async function createNewPage(options) {
+    if (!state.project) {
+      state.project = renderer.createBlankProject({ name: "新規TBalance", pageName: options?.pageName || options?.name || "新しいページ" });
+    }
+    pushHistory();
+    state.project = renderer.normalizeProject(state.project);
+    const page = window.TBalanceNativeSchema?.createPage({
+      displayName: options?.pageName || options?.name,
+      slug: options?.slug,
+      desktop: options?.desktop,
+      mobile: options?.mobile,
+      stage: options?.stage,
+      index: (state.project.pages?.length || 0) + 1,
+    }) || {
+      id: window.TBalanceNativeId?.createStableId("page") || renderer.makeId("page"),
+      name: options?.pageName || options?.name || "新しいページ",
+      desktop: options?.desktop,
+      mobile: options?.mobile,
+      stage: options?.stage,
+      layers: [],
+    };
+    const normalized = renderer.normalizeProject(Object.assign({}, state.project, {
+      pages: (state.project.pages || []).concat([page]),
+    }));
+    touchNativeMetadata(normalized, page.pageId || page.id);
+    state.existingWeb.active = false;
+    state.project = normalized;
+    state.uiSettings = resolveUiSettings(state.project);
+    state.editorMode = getStartupMode(state.project);
+    syncProjectEditorSettings();
+    state.pageId = page.pageId || page.id;
+    state.primaryPageId = state.pageId;
+    state.viewport = options?.activeViewport === "mobile" ? "mobile" : "desktop";
+    state.windowMode = "single";
+    state.windowLayout = "horizontal";
+    state.secondaryWindow = null;
+    state.suspendedWindow = null;
+    state.activeWindow = "primary";
+    state.imageWarnings = {};
+    clearSelection();
+    markDirty();
+    renderAll();
+    showModeToast(`${page.displayName || page.name || "新しいページ"} を作成しました。`);
     return true;
   }
 
@@ -20447,9 +20554,13 @@
     if (!title) {
       return;
     }
-    project.name = title;
-    if (project.pages?.[0]) {
+    if (!project.name && !project.displayName) {
+      project.name = title;
+      project.displayName = title;
+    }
+    if (project.pages?.[0] && !project.pages[0].name && !project.pages[0].displayName) {
       project.pages[0].name = title;
+      project.pages[0].displayName = title;
     }
   }
 
@@ -20462,12 +20573,40 @@
 
   function downloadProject(kind) {
     syncProjectEditorSettings();
-    const project = renderer.normalizeProject(state.project);
-    const payload = JSON.stringify(project, null, 2);
-    const baseName = sanitizeFileName(project.name || project.pages?.[0]?.name || "TeaMerry");
+    const project = normalizeStateProjectForPersistence({ touchUpdatedAt: true });
+    const pageDoc = createNativePageDocument(project);
+    const payload = JSON.stringify(pageDoc, null, 2);
+    const page = pageDoc.page || project.pages?.[0] || {};
+    const baseName = sanitizeFileName(page.displayName || page.name || project.displayName || project.name || "TeaMerry");
     downloadBlob(payload, kind === "json" ? `${baseName}.tbalance.json` : `${baseName}.tbalance`, "application/json");
     state.dirty = false;
     renderAll();
+  }
+
+  function createNativePageDocument(project) {
+    const currentPage = (project.pages || []).find((page) => page.id === state.pageId || page.pageId === state.pageId) || project.pages?.[0] || {};
+    return window.TBalanceNativeSchema?.createPageDocument?.(project, currentPage) || project;
+  }
+
+  function normalizeStateProjectForPersistence(options = {}) {
+    state.project = renderer.normalizeProject(state.project);
+    if (options.touchUpdatedAt) {
+      touchNativeMetadata(state.project, state.pageId);
+    }
+    return state.project;
+  }
+
+  function touchNativeMetadata(project, pageId = "") {
+    const now = window.TBalanceNativeSchema?.nowIso?.() || new Date().toISOString();
+    project.metadata = Object.assign({}, project.metadata || {});
+    project.metadata.createdAt = project.metadata.createdAt || now;
+    project.metadata.updatedAt = now;
+    const page = (project.pages || []).find((item) => item.id === pageId || item.pageId === pageId);
+    if (page) {
+      page.metadata = Object.assign({}, page.metadata || {});
+      page.metadata.createdAt = page.metadata.createdAt || now;
+      page.metadata.updatedAt = now;
+    }
   }
 
   function sanitizeFileName(value) {
@@ -20482,16 +20621,9 @@
     }
     const baseName = normalizeDownloadBaseName(name || "TeaMerry");
     syncProjectEditorSettings();
-    const project = renderer.normalizeProject(state.project);
-    project.name = baseName;
-    if (project.pages?.[0]) {
-      project.pages[0].name = baseName;
-    }
-    downloadBlob(JSON.stringify(project, null, 2), `${baseName}.tbalance`, "application/json");
-    state.project.name = baseName;
-    if (state.project.pages?.[0]) {
-      state.project.pages[0].name = baseName;
-    }
+    const project = normalizeStateProjectForPersistence({ touchUpdatedAt: true });
+    const pageDoc = createNativePageDocument(project);
+    downloadBlob(JSON.stringify(pageDoc, null, 2), `${baseName}.tbalance`, "application/json");
     state.dirty = false;
     renderAll();
     return true;
@@ -21404,7 +21536,7 @@ ${layersHtml}
   }
 
   function getPageById(pageId) {
-    return state.project.pages.find((page) => page.id === pageId) || null;
+    return state.project.pages.find((page) => page.id === pageId || page.pageId === pageId || page.legacyId === pageId) || null;
   }
 
   function normalizeWindowPages() {
