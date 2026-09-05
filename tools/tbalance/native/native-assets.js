@@ -173,7 +173,7 @@
     }
     const normalized = normalizeAsset(asset);
     if (normalized.storage.mode === "project-file" && normalized.storage.relativePath) {
-      return encodeRelativeUrl(normalized.storage.relativePath);
+      return encodeProjectRelativeUrl(normalized.storage.relativePath);
     }
     if (normalized.storage.mode === "embedded") {
       return normalized.legacySrc || normalized.src || normalized.originalSrc || "";
@@ -195,6 +195,14 @@
 
   function encodeRelativeUrl(relativePath) {
     return normalizeRelativePath(relativePath).split("/").map((part) => encodeURIComponent(part)).join("/");
+  }
+
+  function encodeProjectRelativeUrl(relativePath) {
+    const encoded = encodeRelativeUrl(relativePath);
+    if (!encoded) {
+      return "";
+    }
+    return `../../${encoded}`;
   }
 
   function createAssetRefSnapshot(project, page) {
@@ -240,6 +248,7 @@
     findAsset,
     resolveAssetSrc,
     resolveLayerAssetSrc,
+    encodeProjectRelativeUrl,
     createAssetRefSnapshot,
     getCategoryLabel,
   };
