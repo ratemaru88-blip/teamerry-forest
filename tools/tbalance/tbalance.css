@@ -3669,10 +3669,131 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
 
 .tb-layer-panel {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   gap: 6px;
   overflow: hidden;
   border-radius: 7px;
+}
+
+.tb-native-asset-panel {
+  margin: 0 10px;
+  padding: 10px;
+  border: 1px solid rgba(108, 189, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(8, 14, 22, 0.72);
+  color: #dbeafe;
+}
+
+.tb-native-asset-panel[hidden] {
+  display: none;
+}
+
+.tb-native-asset-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tb-native-asset-head strong {
+  display: block;
+  font-size: 13px;
+}
+
+.tb-native-asset-head small,
+.tb-native-asset-card small,
+.tb-native-asset-status,
+.tb-native-asset-empty {
+  color: #9fb3c8;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.tb-native-asset-head button,
+.tb-native-asset-card button {
+  border: 1px solid rgba(108, 189, 255, 0.36);
+  border-radius: 6px;
+  background: rgba(15, 33, 54, 0.9);
+  color: #e5f4ff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tb-native-asset-head button {
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+
+.tb-native-asset-status {
+  margin: 8px 0;
+}
+
+.tb-native-asset-status[data-status="ok"] {
+  color: #9ff0c1;
+}
+
+.tb-native-asset-status[data-status="working"] {
+  color: #f9d889;
+}
+
+.tb-native-asset-status[data-status="error"] {
+  color: #ffaca7;
+}
+
+.tb-native-asset-group {
+  margin-top: 8px;
+}
+
+.tb-native-asset-group h3 {
+  margin: 0 0 5px;
+  color: #eef6ff;
+  font-size: 11px;
+}
+
+.tb-native-asset-list {
+  display: grid;
+  gap: 6px;
+}
+
+.tb-native-asset-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.62);
+}
+
+.tb-native-asset-card strong {
+  display: block;
+  overflow: hidden;
+  color: #f8fbff;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-native-asset-thumb {
+  width: 44px;
+  height: 38px;
+  padding: 2px;
+}
+
+.tb-native-asset-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tb-native-asset-thumb span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
 }
 
 .tb-panel-title {

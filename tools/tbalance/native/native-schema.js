@@ -40,6 +40,7 @@
       name: input.name || displayName,
       editorMode: input.editorMode,
       uiSettings: input.uiSettings,
+      assetRegistry: input.assetRegistry,
       assets: Array.isArray(input.assets) ? input.assets : [],
       pages: Array.isArray(input.pages) ? input.pages : [],
       metadata: Object.assign({}, input.metadata || {}, {
@@ -103,8 +104,10 @@
       projectRef: {
         projectId: normalizedProject.projectId || "",
         displayName: normalizedProject.displayName || normalizedProject.name || "",
+        assetRegistryPath: normalizedProject.assetRegistry?.registryPath || window.TBalanceNativeAssets?.REGISTRY_PATH || "",
       },
       page: normalizedPage,
+      assetManifest: window.TBalanceNativeAssets?.createAssetRefSnapshot?.(normalizedProject, normalizedPage) || [],
       meta: {
         createdAt: normalizedPage.metadata?.createdAt || normalizedProject.metadata?.createdAt || now,
         updatedAt: now,

@@ -17,8 +17,15 @@
     if (input.projectRef && !project.projectRef) {
       project.projectRef = Object.assign({}, input.projectRef);
     }
-    project.assets = normalizeAssets(project.assets, ids);
-    project.pages = normalizePages(project.pages, schema, ids);
+    if (input.assetManifest && !project.assets?.length) {
+      project.assets = input.assetManifest;
+    }
+    project.assetRegistry = Object.assign({}, source.assetRegistry || project.assetRegistry || {}, {
+      registryPath: source.assetRegistry?.registryPath || source.projectRef?.assetRegistryPath || window.TBalanceNativeAssets?.REGISTRY_PATH || "",
+    });
+    const normalizedAssets = normalizeAssetsWithIdMap(project.assets, ids);
+    project.assets = window.TBalanceNativeAssets?.normalizeAssets?.(normalizedAssets.assets) || normalizedAssets.assets;
+    project.pages = normalizePages(project.pages, schema, ids, normalizedAssets.idMap);
     if (!project.pages.length) {
       project.pages = [schema.createPage({ displayName: "トップページ", slug: "home", index: 1 })];
     }
@@ -42,23 +49,32 @@
       projectRef: clone(projectRef),
       displayName: projectRef.displayName || input.displayName || input.name,
       name: projectRef.displayName || input.name,
-      assets: Array.isArray(input.assets) ? input.assets : [],
+      assetRegistry: input.assetRegistry,
+      assets: Array.isArray(input.assets) ? input.assets : Array.isArray(input.assetManifest) ? input.assetManifest : [],
       pages: [page],
       metadata: input.meta || input.metadata,
     };
   }
 
-  function normalizeAssets(assets, ids) {
-    return (Array.isArray(assets) ? assets : []).map((asset) => {
+  function normalizeAssetsWithIdMap(assets, ids) {
+    const idMap = new Map();
+    const normalized = (Array.isArray(assets) ? assets : []).map((asset) => {
       const copy = Object.assign({}, asset || {});
-      copy.assetId = copy.assetId || copy.id || ids?.createStableId("asset") || `ast_${Date.now().toString(36)}`;
-      copy.id = copy.id || copy.assetId;
+      const originalId = copy.assetId || copy.id || "";
+      const stable = ids?.isStableId?.(originalId, "asset");
+      copy.assetId = stable ? originalId : ids?.createStableId("asset") || `ast_${Date.now().toString(36)}`;
+      if (originalId && originalId !== copy.assetId) {
+        copy.legacyId = copy.legacyId || originalId;
+        idMap.set(originalId, copy.assetId);
+      }
+      copy.id = copy.assetId;
       copy.displayName = copy.displayName || copy.fileName || copy.name || copy.assetId;
       return copy;
     });
+    return { assets: normalized, idMap };
   }
 
-  function normalizePages(pages, schema, ids) {
+  function normalizePages(pages, schema, ids, assetIdMap = new Map()) {
     return (Array.isArray(pages) ? pages : []).map((page, index) => {
       const original = Object.assign({}, page || {});
       const legacyId = original.legacyId || original.id || "";
@@ -72,12 +88,12 @@
         index: index + 1,
       }));
       normalized.id = normalized.pageId;
-      normalized.layers = normalizeLayers(original.layers, ids);
+      normalized.layers = normalizeLayers(original.layers, ids, assetIdMap);
       return normalized;
     });
   }
 
-  function normalizeLayers(layers, ids) {
+  function normalizeLayers(layers, ids, assetIdMap = new Map()) {
     return (Array.isArray(layers) ? layers : []).map((layer) => {
       const copy = Object.assign({}, layer || {});
       const layerId = copy.layerId || copy.id || ids?.createStableId("layer") || `lyr_${Date.now().toString(36)}`;
@@ -87,6 +103,15 @@
       copy.name = copy.name || copy.displayName;
       if (copy.assetId && !copy.assetRef) {
         copy.assetRef = copy.assetId;
+      }
+      if (copy.assetRef && !copy.assetId) {
+        copy.assetId = copy.assetRef;
+      }
+      const remappedAssetId = assetIdMap.get(copy.assetRef) || assetIdMap.get(copy.assetId);
+      if (remappedAssetId) {
+        copy.legacyAssetId = copy.legacyAssetId || copy.assetRef || copy.assetId;
+        copy.assetRef = remappedAssetId;
+        copy.assetId = remappedAssetId;
       }
       return copy;
     });

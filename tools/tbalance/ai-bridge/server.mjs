@@ -3,6 +3,7 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createSourceWriter } from "../source-writer/source-writer.mjs";
+import { createNativeAssetStorage } from "../native/native-asset-storage.mjs";
 import { createCodexLocalSafetyProvider } from "./providers/codex-local-safety-provider.mjs";
 
 const HOST = "127.0.0.1";
@@ -25,6 +26,7 @@ const sourceWriter = await createSourceWriter({
   repoRoot: REPO_ROOT,
   writeEnabled: process.env.TBALANCE_SOURCE_WRITER_WRITE !== "0",
 });
+const nativeAssetStorage = await createNativeAssetStorage({ repoRoot: REPO_ROOT });
 const safetyAiProviders = new Map();
 const codexLocalProvider = createCodexLocalSafetyProvider({ projectRoot: REPO_ROOT });
 safetyAiProviders.set(codexLocalProvider.id, codexLocalProvider);
@@ -52,6 +54,10 @@ function isSourceWriterRoute(url) {
 
 function isSafetyAiRoute(url) {
   return url.pathname.startsWith("/api/tbalance/safety-ai/");
+}
+
+function isNativeAssetRoute(url) {
+  return url.pathname.startsWith("/api/tbalance/native-assets/");
 }
 
 function isAllowedSourceWriterOrigin(req) {
@@ -91,6 +97,15 @@ function sendSourceWriterError(req, res, statusCode, error) {
     errorCode,
     error: error?.publicMessage || error?.message || "Source Writer request failed.",
     ...(error?.status ? { status: error.status } : {}),
+  });
+}
+
+function sendNativeAssetError(req, res, statusCode, error) {
+  sendSourceWriterJson(req, res, statusCode, {
+    ok: false,
+    assetStorageVersion: "tbalance.assets.v0.1",
+    errorCode: error?.errorCode || "request-failed",
+    error: error?.message || "Native Asset Storage request failed.",
   });
 }
 
@@ -508,8 +523,83 @@ async function handleSourceWriterRequest(req, res, url) {
   });
 }
 
+async function handleNativeAssetRequest(req, res, url) {
+  if (!isAllowedSourceWriterOrigin(req)) {
+    sendSourceWriterJson(req, res, 403, {
+      ok: false,
+      assetStorageVersion: "tbalance.assets.v0.1",
+      errorCode: "origin-not-allowed",
+      error: "This origin is not allowed to use Native Asset Storage.",
+    });
+    return;
+  }
+
+  if (req.method === "OPTIONS") {
+    setSourceWriterCorsHeaders(req, res);
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/tbalance/native-assets/capabilities") {
+    sendSourceWriterJson(req, res, 200, nativeAssetStorage.getCapabilities());
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/tbalance/native-assets/registry") {
+    try {
+      const result = await nativeAssetStorage.readRegistry(url.searchParams.get("projectId") || "");
+      sendSourceWriterJson(req, res, 200, result);
+    } catch (error) {
+      sendNativeAssetError(req, res, 400, error);
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/tbalance/native-assets/import") {
+    try {
+      requireJsonRequest(req);
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const result = await nativeAssetStorage.importAsset(payload);
+      console.log(`[native-assets] IMPORT ${result.asset?.assetId || "-"} ${result.status}`);
+      sendSourceWriterJson(req, res, 200, result);
+    } catch (error) {
+      console.warn(`[native-assets] IMPORT failed ${error?.errorCode || "request-failed"}`);
+      sendNativeAssetError(req, res, 400, error);
+    }
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/tbalance/native-assets/update") {
+    try {
+      requireJsonRequest(req);
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const result = await nativeAssetStorage.updateAsset(payload);
+      console.log(`[native-assets] UPDATE ${result.asset?.assetId || "-"}`);
+      sendSourceWriterJson(req, res, 200, result);
+    } catch (error) {
+      console.warn(`[native-assets] UPDATE failed ${error?.errorCode || "request-failed"}`);
+      sendNativeAssetError(req, res, 400, error);
+    }
+    return;
+  }
+
+  sendSourceWriterJson(req, res, 404, {
+    ok: false,
+    assetStorageVersion: "tbalance.assets.v0.1",
+    errorCode: "not-found",
+    error: "Native Asset Storage endpoint was not found.",
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || "/", `http://${HOST}:${PORT}`);
+  if (isNativeAssetRoute(url)) {
+    await handleNativeAssetRequest(req, res, url);
+    return;
+  }
   if (isSourceWriterRoute(url)) {
     await handleSourceWriterRequest(req, res, url);
     return;
@@ -580,6 +670,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, HOST, () => {
   console.log(`TBalance AI bridge listening on http://${HOST}:${PORT}`);
   console.log("Source Writer Bridge v0.1");
+  console.log("Native Asset Storage v0.1");
   console.log(`Repo Root: ${sourceWriter.getCapabilities().read ? REPO_ROOT : "(unavailable)"}`);
   console.log(`Allowed Source Types: ${sourceWriter.getCapabilities().allowedExtensions.join(", ")}`);
   console.log(`Write: ${sourceWriter.getCapabilities().write ? "Enabled" : "Disabled"}`);

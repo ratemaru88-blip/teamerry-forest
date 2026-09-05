@@ -15,6 +15,7 @@
   const AI_BRIDGE_SUGGESTION_URL = "http://127.0.0.1:8787/api/tbalance/suggestion";
   const SAFETY_AI_REVIEW_URL = "http://127.0.0.1:8787/api/tbalance/safety-ai/review";
   const SOURCE_WRITER_URL = "http://127.0.0.1:8787/api/tbalance/source-writer";
+  const NATIVE_ASSETS_URL = "http://127.0.0.1:8787/api/tbalance/native-assets";
   const AI_SHARE_HISTORY_LIMIT = 5;
   const HISTORY_LIMIT = 100;
   const DEFAULT_DROP_SIZE = { width: 360, height: 240 };
@@ -315,6 +316,12 @@
       panning: null,
       lastScanAt: "",
     },
+    nativeAssets: {
+      status: "idle",
+      message: "正式素材を読み込んでいます。",
+      registryLoaded: false,
+      storageAvailable: false,
+    },
     dirty: false,
     autosaveError: "",
     autosaveStorage: "",
@@ -561,6 +568,7 @@
     transformFree: $("transformFree"),
     fitStretchCanvas: $("fitStretchCanvas"),
     setBackgroundLayer: $("setBackgroundLayer"),
+    nativeAssetPanel: $("nativeAssetPanel"),
     layerList: $("layerList"),
     bringFront: $("bringFront"),
     moveForward: $("moveForward"),
@@ -676,6 +684,7 @@
   async function start() {
     showFileProtocolWarning();
     state.project = await loadAutosave() || renderer.normalizeProject();
+    await loadNativeAssetRegistryFromBridge();
     state.uiSettings = resolveUiSettings(state.project);
     state.editorMode = getStartupMode(state.project);
     syncProjectEditorSettings();
@@ -1028,6 +1037,7 @@
     els.canvas.addEventListener("dblclick", handleDoubleClick);
     els.layerList.addEventListener("click", handleLayerListClick);
     els.layerList.addEventListener("dblclick", handleLayerListDoubleClick);
+    els.nativeAssetPanel?.addEventListener("click", handleNativeAssetPanelClick);
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", endPointer);
     window.addEventListener("resize", updateCanvasScale);
@@ -14033,6 +14043,7 @@
     const mainViewport = state.windowMode === "pc-mobile" ? "desktop" : state.viewport;
     renderer.renderPage(els.canvas, primaryRenderPage, mainViewport, {
       edit: !state.preview,
+      project: state.project,
       selectedId: !hideLayerControls && state.pageId === primaryRenderPage.id && getActiveWindowKey() === "primary" ? state.selectedId : "",
       selectedIds: !hideLayerControls && state.pageId === primaryRenderPage.id && getActiveWindowKey() === "primary" ? getSelectedIds() : [],
       showHitAreas: state.showHitAreas,
@@ -14285,6 +14296,7 @@
       els.secondaryCanvas.dataset.windowLabel = "Mobile";
       renderer.renderPage(els.secondaryCanvas, secondaryPage, "mobile", {
         edit: !state.preview,
+        project: state.project,
         selectedId: !isPaintPointerActive() && getActiveWindowKey() === "secondary" ? state.selectedId : "",
         selectedIds: !isPaintPointerActive() && getActiveWindowKey() === "secondary" ? getSelectedIds() : [],
         showHitAreas: state.showHitAreas,
@@ -14350,6 +14362,7 @@
       }
       renderer.renderPage(els.secondaryCanvas, imagePage, "desktop", {
         edit: !state.preview,
+        project: state.project,
         selectedId: !isPaintPointerActive() && state.pageId === imagePage?.id ? state.selectedId : "",
         selectedIds: !isPaintPointerActive() && state.pageId === imagePage?.id ? getSelectedIds() : [],
         showHitAreas: false,
@@ -15130,7 +15143,153 @@
     return rgbToHex(adjusted[0], adjusted[1], adjusted[2]);
   }
 
+  function renderNativeAssetPanel() {
+    if (!els.nativeAssetPanel) {
+      return;
+    }
+    const active = !state.existingWeb.active;
+    els.nativeAssetPanel.hidden = !active;
+    if (!active) {
+      els.nativeAssetPanel.innerHTML = "";
+      return;
+    }
+    const assets = window.TBalanceNativeAssets?.normalizeAssets?.(state.project?.assets || []) || [];
+    const categories = window.TBalanceNativeAssets?.CATEGORIES || {};
+    const groups = Object.keys(categories).map((category) => ({
+      category,
+      label: window.TBalanceNativeAssets?.getCategoryLabel?.(category) || category,
+      assets: assets.filter((asset) => asset.category === category),
+    }));
+    els.nativeAssetPanel.innerHTML = `
+      <div class="tb-native-asset-head">
+        <div>
+          <strong>正式素材</strong>
+          <small>採用した画像を別ページでも再利用できます。</small>
+        </div>
+        <button type="button" data-native-asset-action="import">素材を追加</button>
+      </div>
+      <p class="tb-native-asset-status" data-status="${escapeAttr(state.nativeAssets.status || "idle")}">${escapeHtml(getNativeAssetStatusText())}</p>
+      ${assets.length ? groups.map((group) => group.assets.length ? `
+        <section class="tb-native-asset-group">
+          <h3>${escapeHtml(group.label)}</h3>
+          <div class="tb-native-asset-list">
+            ${group.assets.map((asset) => renderNativeAssetCard(asset)).join("")}
+          </div>
+        </section>
+      ` : "").join("") : `<p class="tb-native-asset-empty">まだ正式素材はありません。画像をdropするか「素材を追加」から登録します。</p>`}
+    `;
+  }
+
+  function renderNativeAssetCard(asset) {
+    const src = window.TBalanceNativeAssets?.resolveAssetSrc?.(asset) || "";
+    const size = asset.width && asset.height ? `${asset.width} × ${asset.height}` : "サイズ未取得";
+    return `
+      <article class="tb-native-asset-card" data-native-asset-id="${escapeAttr(asset.assetId)}">
+        <button type="button" class="tb-native-asset-thumb" data-native-asset-action="add" title="ページに追加">
+          ${src ? `<img src="${escapeAttr(src)}" alt="">` : `<span>?</span>`}
+        </button>
+        <div>
+          <strong>${escapeHtml(asset.displayName || asset.name || "正式素材")}</strong>
+          <small>${escapeHtml(window.TBalanceNativeAssets?.getCategoryLabel?.(asset.category) || "その他")} / ${escapeHtml(size)}</small>
+        </div>
+        <button type="button" data-native-asset-action="rename" title="素材名を変更">名前</button>
+      </article>
+    `;
+  }
+
+  function getNativeAssetStatusText() {
+    if (state.nativeAssets.status === "error") {
+      return state.nativeAssets.message || "正式素材への保存を確認できません。";
+    }
+    if (state.nativeAssets.status === "ok") {
+      return state.nativeAssets.message || "正式素材を読み込みました。";
+    }
+    if (state.nativeAssets.status === "working") {
+      return state.nativeAssets.message || "正式素材を処理しています。";
+    }
+    return "画像dropで正式素材として登録します。公開用docs/assetsには生成しません。";
+  }
+
+  function handleNativeAssetPanelClick(event) {
+    const button = event.target.closest("[data-native-asset-action]");
+    if (!button || state.existingWeb.active) {
+      return;
+    }
+    const action = button.dataset.nativeAssetAction || "";
+    const card = button.closest("[data-native-asset-id]");
+    const assetId = card?.dataset.nativeAssetId || "";
+    if (action === "import") {
+      els.imageFile?.click();
+    } else if (action === "add") {
+      addNativeAssetLayer(assetId);
+    } else if (action === "rename") {
+      renameNativeAsset(assetId);
+    }
+  }
+
+  function addNativeAssetLayer(assetId) {
+    const asset = window.TBalanceNativeAssets?.findAsset?.(state.project, assetId);
+    if (!asset) {
+      showModeToast("正式素材が見つかりません。");
+      return;
+    }
+    const size = getPageViewportSize(getCurrentPage(), state.viewport);
+    const width = asset.width ? Math.min(asset.width, 360) : DEFAULT_DROP_SIZE.width;
+    const height = asset.height ? Math.min(asset.height, 260) : DEFAULT_DROP_SIZE.height;
+    const layout = createCenteredLayout({ x: size.width / 2, y: size.height / 2 }, width, height);
+    const inactiveViewport = state.viewport === "mobile" ? "desktop" : "mobile";
+    const inactiveLayout = createResponsiveLayerLayout(layout, state.viewport, inactiveViewport, 260, 260);
+    addLayer({
+      type: "image",
+      name: asset.displayName || asset.name || "正式素材",
+      fileName: asset.originalName || "",
+      assetRef: asset.assetId,
+      assetId: asset.assetId,
+      src: "",
+      desktop: state.viewport === "desktop" ? layout : inactiveLayout,
+      mobile: state.viewport === "mobile" ? layout : inactiveLayout,
+      appearance: { opacity: 1, brightness: 1, shadow: "soft" },
+      constraints: { keepAspect: true, keepSquare: false, keepCircle: false },
+    });
+    showModeToast(`${asset.displayName || "正式素材"} をページに追加しました。`);
+  }
+
+  async function renameNativeAsset(assetId) {
+    const asset = window.TBalanceNativeAssets?.findAsset?.(state.project, assetId);
+    if (!asset) {
+      return;
+    }
+    const nextName = prompt("素材名", asset.displayName || asset.name || "");
+    if (nextName === null || !nextName.trim()) {
+      return;
+    }
+    const beforeId = asset.assetId;
+    const beforePath = asset.storage?.relativePath || asset.relativePath || "";
+    const normalized = window.TBalanceNativeAssets.upsertAsset(state.project, Object.assign({}, asset, {
+      displayName: nextName.trim(),
+      name: nextName.trim(),
+    }));
+    if (state.nativeAssets.storageAvailable) {
+      try {
+        await postNativeAssetRequest("/update", {
+          projectId: getNativeProjectId(),
+          assetId: beforeId,
+          displayName: nextName.trim(),
+        });
+      } catch (error) {
+        state.nativeAssets.status = "error";
+        state.nativeAssets.message = "素材名はRuntimeで変更しました。Registry保存はBridge起動後に再実行してください。";
+      }
+    }
+    if (normalized.assetId !== beforeId || (normalized.storage?.relativePath || normalized.relativePath || "") !== beforePath) {
+      console.warn("Native Asset rename should not change identity or file path.");
+    }
+    markDirty();
+    renderAll();
+  }
+
   function renderLayerList() {
+    renderNativeAssetPanel();
     if (state.existingWeb.active) {
       renderExistingWebLayerPanel();
       return;
@@ -18817,42 +18976,207 @@
 
   function addImageFile(file, point, backgroundMode) {
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const originalSrc = String(reader.result || "");
+      const importResult = await importFileToProjectAsset(file, originalSrc);
       if (backgroundMode === "transparent") {
         createTransparentPng(originalSrc).then((transparentSrc) => {
-          addDroppedImageLayer(file, point, originalSrc, transparentSrc, true);
+          addDroppedImageLayer(file, point, originalSrc, transparentSrc, true, importResult);
         }).catch(() => {
-          addDroppedImageLayer(file, point, originalSrc, originalSrc, false);
+          addDroppedImageLayer(file, point, originalSrc, originalSrc, false, importResult);
         });
       } else {
-        addDroppedImageLayer(file, point, originalSrc, originalSrc, false);
+        addDroppedImageLayer(file, point, originalSrc, originalSrc, false, importResult);
       }
     };
     reader.readAsDataURL(file);
   }
 
-  function addDroppedImageLayer(file, point, originalSrc, activeSrc, transparent) {
+  async function loadNativeAssetRegistryFromBridge() {
+    if (!state.project) {
+      return;
+    }
+    try {
+      const response = await fetch(`${NATIVE_ASSETS_URL}/registry?projectId=${encodeURIComponent(getNativeProjectId())}`, {
+        method: "GET",
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const result = await response.json();
+      if (!result.ok || !result.registry) {
+        throw new Error(result.error || "Registry unavailable");
+      }
+      const currentAssets = Array.isArray(state.project.assets) ? state.project.assets : [];
+      if ((result.registry.assets || []).length || !currentAssets.length) {
+        window.TBalanceNativeAssets?.mergeProjectRegistry?.(state.project, result.registry);
+      } else {
+        state.project.assetRegistry = Object.assign({}, state.project.assetRegistry || {}, {
+          registryPath: result.registry.storage?.registryPath || window.TBalanceNativeAssets?.REGISTRY_PATH || "",
+          storageRoot: result.registry.storage?.root || window.TBalanceNativeAssets?.ASSET_ROOT || "assets",
+        });
+      }
+      state.nativeAssets.status = "ok";
+      state.nativeAssets.message = "正式素材Registryを読み込みました。";
+      state.nativeAssets.registryLoaded = true;
+      state.nativeAssets.storageAvailable = true;
+    } catch (error) {
+      state.project.assets = window.TBalanceNativeAssets?.normalizeAssets?.(state.project.assets || []) || state.project.assets || [];
+      state.nativeAssets.status = "idle";
+      state.nativeAssets.message = "Bridge未起動時は正式素材への保存は完了しません。";
+      state.nativeAssets.storageAvailable = false;
+    }
+  }
+
+  async function importFileToProjectAsset(file, dataUrl) {
     const assetId = window.TBalanceNativeId?.createStableId("asset") || renderer.makeId("asset");
+    const category = chooseNativeAssetCategory(file);
+    const naturalSize = await getImageNaturalSize(dataUrl);
+    if (!isNativeAssetMediaTypeAllowed(file.type, file.name)) {
+      state.nativeAssets.status = "error";
+      state.nativeAssets.message = "v0.1ではPNG/JPEG/WebPだけ正式素材として登録できます。";
+      return createPendingEmbeddedAsset(file, dataUrl, assetId, category, naturalSize);
+    }
+    try {
+      state.nativeAssets.status = "working";
+      state.nativeAssets.message = "正式素材へ保存しています。";
+      renderNativeAssetPanel();
+      const result = await postNativeAssetRequest("/import", {
+        projectId: getNativeProjectId(),
+        assetId,
+        displayName: stripFileExtension(file.name || "正式素材"),
+        category,
+        fileName: file.name || "asset.png",
+        originalName: file.name || "",
+        mediaType: file.type || guessNativeAssetMediaType(file.name),
+        width: naturalSize.width,
+        height: naturalSize.height,
+        dataUrl,
+      });
+      if (!result.ok || !result.asset) {
+        throw new Error(result.error || "Asset import failed");
+      }
+      window.TBalanceNativeAssets?.mergeProjectRegistry?.(state.project, result.registry);
+      const asset = window.TBalanceNativeAssets?.upsertAsset?.(state.project, result.asset) || result.asset;
+      state.nativeAssets.status = "ok";
+      state.nativeAssets.message = result.status === "duplicate-reused"
+        ? "同じ画像が正式素材にあるため、既存素材を再利用します。"
+        : "正式素材へ保存しました。";
+      state.nativeAssets.registryLoaded = true;
+      state.nativeAssets.storageAvailable = true;
+      return { asset, src: "", formal: true };
+    } catch (error) {
+      const asset = createPendingEmbeddedAsset(file, dataUrl, assetId, category, naturalSize);
+      window.TBalanceNativeAssets?.upsertAsset?.(state.project, asset);
+      state.nativeAssets.status = "error";
+      state.nativeAssets.message = "正式素材への保存が完了していません。AI Bridgeを起動して再登録してください。";
+      return { asset, src: dataUrl, formal: false };
+    }
+  }
+
+  function createPendingEmbeddedAsset(file, dataUrl, assetId, category, naturalSize) {
+    return window.TBalanceNativeAssets?.normalizeAsset?.({
+      assetId,
+      id: assetId,
+      displayName: stripFileExtension(file.name || "正式素材"),
+      mediaType: file.type || guessNativeAssetMediaType(file.name),
+      category,
+      storage: { mode: "embedded" },
+      storageStatus: "pending",
+      originalName: file.name || "",
+      legacySrc: dataUrl,
+      contentHash: "",
+      width: naturalSize.width,
+      height: naturalSize.height,
+      status: "pending-formal-storage",
+    }) || { assetId, id: assetId, displayName: file.name || "正式素材", legacySrc: dataUrl };
+  }
+
+  async function postNativeAssetRequest(path, payload) {
+    const response = await fetch(`${NATIVE_ASSETS_URL}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || `HTTP ${response.status}`);
+    }
+    return result;
+  }
+
+  function getNativeProjectId() {
+    state.project = renderer.normalizeProject(state.project);
+    return state.project.projectId || state.project.projectRef?.projectId || "sample-project";
+  }
+
+  function chooseNativeAssetCategory(file) {
+    const value = prompt([
+      "正式素材カテゴリ",
+      "1: キャラクター",
+      "2: 背景",
+      "3: UI・ボタン",
+      "4: エフェクト",
+      "5: その他",
+    ].join("\n"), inferNativeAssetCategory(file));
+    const normalized = String(value || "").trim().toLowerCase();
+    const map = { "1": "character", "2": "background", "3": "ui", "4": "effect", "5": "other" };
+    return window.TBalanceNativeAssets?.normalizeCategory?.(map[normalized] || normalized) || "other";
+  }
+
+  function inferNativeAssetCategory(file) {
+    const name = String(file?.name || "").toLowerCase();
+    if (/fairy|lilu|character|char|リル|キャラ/.test(name)) return "character";
+    if (/background|forest|scene|bg|背景/.test(name)) return "background";
+    if (/button|icon|ui|logo|ボタン/.test(name)) return "ui";
+    if (/effect|light|spark|particle|エフェクト/.test(name)) return "effect";
+    return "other";
+  }
+
+  function isNativeAssetMediaTypeAllowed(mediaType, fileName) {
+    return ["image/png", "image/jpeg", "image/webp"].includes(mediaType || guessNativeAssetMediaType(fileName));
+  }
+
+  function guessNativeAssetMediaType(fileName = "") {
+    const lower = String(fileName || "").toLowerCase();
+    if (lower.endsWith(".png")) return "image/png";
+    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+    if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".svg")) return "image/svg+xml";
+    return "";
+  }
+
+  function stripFileExtension(fileName) {
+    return String(fileName || "正式素材").replace(/\.[^.]+$/, "");
+  }
+
+  function addDroppedImageLayer(file, point, originalSrc, activeSrc, transparent, importResult = null) {
+    const assetId = importResult?.asset?.assetId || window.TBalanceNativeId?.createStableId("asset") || renderer.makeId("asset");
     const desktopLayout = createCenteredLayout(point, DEFAULT_DROP_SIZE.width, DEFAULT_DROP_SIZE.height);
     const mobileLayout = createResponsiveLayerLayout(desktopLayout, "desktop", "mobile", 260, 260);
     pushHistory();
     state.project.assets = Array.isArray(state.project.assets) ? state.project.assets : [];
-    state.project.assets.push({
-      id: assetId,
-      assetId,
-      displayName: file.name,
-      fileName: file.name,
-      originalSrc,
-      transparentSrc: transparent ? activeSrc : "",
-      generatedFileName: transparent ? `${file.name.replace(/\.[^.]+$/, "")}_transparent.png` : "",
-    });
+    if (!importResult?.asset) {
+      window.TBalanceNativeAssets?.upsertAsset?.(state.project, {
+        id: assetId,
+        assetId,
+        displayName: file.name,
+        fileName: file.name,
+        storage: { mode: "embedded" },
+        legacySrc: originalSrc,
+        originalSrc,
+        transparentSrc: transparent ? activeSrc : "",
+        generatedFileName: transparent ? `${file.name.replace(/\.[^.]+$/, "")}_transparent.png` : "",
+      });
+    }
     addLayer({
       type: "image",
       name: transparent ? `${file.name.replace(/\.[^.]+$/, "")} 透過PNG` : file.name,
       fileName: file.name,
       assetId,
-      src: activeSrc,
+      assetRef: assetId,
+      src: importResult?.formal ? "" : activeSrc,
       originalSrc,
       transparentSrc: transparent ? activeSrc : "",
       desktop: desktopLayout,
@@ -20190,6 +20514,10 @@
       return "";
     }
     const viewportKey = renderer.getViewportKey(viewport);
+    const resolved = window.TBalanceNativeAssets?.resolveLayerAssetSrc?.(state.project, layer, viewportKey);
+    if (resolved) {
+      return resolved;
+    }
     if (viewportKey === "mobile") {
       return layer.mobileSrc || layer.src || layer.desktopSrc || "";
     }
@@ -20406,7 +20734,7 @@
     if (!file) {
       return;
     }
-    file.text().then((text) => {
+    file.text().then(async (text) => {
       if (looksLikeHtmlDocument(text, file.name)) {
         throw new Error("not-tbalance-html");
       }
@@ -20415,6 +20743,7 @@
       pushHistory();
       state.existingWeb.active = false;
       state.project = parsed;
+      await loadNativeAssetRegistryFromBridge();
       state.uiSettings = resolveUiSettings(parsed);
       state.editorMode = getStartupMode(parsed);
       syncProjectEditorSettings();

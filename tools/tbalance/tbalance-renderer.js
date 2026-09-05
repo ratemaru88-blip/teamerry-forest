@@ -74,7 +74,7 @@
     }, copy.projectRef || {});
     copy.editorMode = copy.editorMode === "custom" ? "custom" : "normal";
     copy.uiSettings = normalizeUiSettings(copy.uiSettings);
-    copy.assets = Array.isArray(copy.assets) ? copy.assets : [];
+    copy.assets = window.TBalanceNativeAssets?.normalizeAssets?.(copy.assets || []) || (Array.isArray(copy.assets) ? copy.assets : []);
     copy.assets.forEach((asset) => {
       asset.assetId = asset.assetId || asset.id || window.TBalanceNativeId?.createStableId("asset") || makeId("asset");
       asset.id = asset.id || asset.assetId;
@@ -295,6 +295,7 @@
       edit: false,
       selectedId: "",
       selectedIds: [],
+      project: null,
       showHitAreas: false,
       onSelect: null,
       onAction: null,
@@ -508,7 +509,7 @@
   }
 
   function createImageContent(layer, viewportKey, settings) {
-    const src = getLayerImageSrc(layer, viewportKey);
+    const src = getLayerImageSrc(layer, viewportKey, settings);
     const isPaintLayer = layer.role === "pen" || layer.role === "clone" || layer.paint?.mode === "pixel" || layer.paint?.mode === "clone";
     const wrapper = document.createElement("div");
     wrapper.className = "tb-layer-image-frame";
@@ -686,7 +687,11 @@
     }
   }
 
-  function getLayerImageSrc(layer, viewportKey) {
+  function getLayerImageSrc(layer, viewportKey, settings = {}) {
+    const resolved = window.TBalanceNativeAssets?.resolveLayerAssetSrc?.(settings.project, layer, viewportKey);
+    if (resolved) {
+      return resolved;
+    }
     if (viewportKey === "mobile") {
       return layer.mobileSrc || layer.src || layer.desktopSrc || "";
     }
