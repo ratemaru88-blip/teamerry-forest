@@ -89,6 +89,7 @@
       }));
       normalized.id = normalized.pageId;
       normalized.layers = normalizeLayers(original.layers, ids, assetIdMap);
+      window.TBalanceNativeScenes?.normalizePage?.(normalized);
       return normalized;
     });
   }
@@ -113,6 +114,7 @@
         copy.assetRef = remappedAssetId;
         copy.assetId = remappedAssetId;
       }
+      window.TBalanceNativeScenes?.normalizeLayer?.(copy);
       return copy;
     });
   }

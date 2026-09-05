@@ -198,7 +198,7 @@
   }
 
   function createAssetRefSnapshot(project, page) {
-    const refs = Array.from(new Set((page?.layers || []).map((layer) => layer.assetRef || layer.assetId).filter(Boolean)));
+    const refs = Array.from(new Set((page?.layers || []).flatMap((layer) => collectLayerAssetRefs(layer)).filter(Boolean)));
     return refs.map((assetId) => {
       const asset = findAsset(project, assetId);
       return asset ? {
@@ -209,6 +209,16 @@
         mediaType: asset.mediaType || "",
       } : { assetId, status: "missing" };
     });
+  }
+
+  function collectLayerAssetRefs(layer = {}) {
+    const refs = [layer.assetRef || layer.assetId, layer.base?.assetRef || layer.base?.assetId];
+    Object.values(layer.viewportOverrides || {}).forEach((override) => refs.push(override.assetRef || override.assetId));
+    Object.values(layer.sceneOverrides || {}).forEach((override) => refs.push(override.assetRef || override.assetId));
+    Object.values(layer.sceneViewportOverrides || {}).forEach((viewports) => {
+      Object.values(viewports || {}).forEach((override) => refs.push(override.assetRef || override.assetId));
+    });
+    return refs;
   }
 
   function getCategoryLabel(category) {

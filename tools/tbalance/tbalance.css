@@ -293,7 +293,8 @@ select {
 
 .tb-compact-actions,
 .tb-history-actions,
-.tb-device-switch {
+.tb-device-switch,
+.tb-scene-switch {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -314,6 +315,52 @@ select {
   gap: 4px;
   margin-inline: 22px;
   min-width: max-content;
+}
+
+.tb-scene-switch {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 3px 7px;
+  border: 1px solid rgba(95, 135, 145, 0.56);
+  border-radius: 7px;
+  background: rgba(4, 12, 15, 0.68);
+  color: rgba(244, 246, 248, 0.9);
+}
+
+.tb-scene-switch[hidden] {
+  display: none;
+}
+
+.tb-scene-switch span,
+.tb-scene-switch small {
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.tb-scene-switch small {
+  color: rgba(156, 177, 191, 0.88);
+}
+
+.tb-scene-switch select,
+.tb-scene-switch button {
+  min-height: 24px;
+  border: 1px solid rgba(80, 129, 146, 0.7);
+  border-radius: 6px;
+  background: rgba(6, 18, 26, 0.92);
+  color: #f4f8fb;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.tb-scene-switch select {
+  max-width: 132px;
+  padding: 0 22px 0 7px;
+}
+
+.tb-scene-switch button {
+  padding: 0 7px;
 }
 
 .tb-icon-button,

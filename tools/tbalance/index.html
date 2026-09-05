@@ -54,6 +54,14 @@
           </button>
         </section>
 
+        <section id="nativeSceneSwitch" class="tb-scene-switch" aria-label="シーン切り替え" hidden>
+          <span>シーン</span>
+          <select id="nativeSceneSelect" title="編集中のシーン"></select>
+          <button id="addNativeScene" type="button" title="シーンを追加">＋</button>
+          <button id="renameNativeScene" type="button" title="シーン名を変更">名前</button>
+          <small id="nativeSceneScope">PC / 共通</small>
+        </section>
+
         <button id="aiCollabButton" class="tb-command-button tb-command-button--ai" type="button" aria-pressed="false" title="AIと同じ画面を見ながら共同編集">
           <svg class="tb-command-icon tb-ai-icon" viewBox="0 0 48 48" aria-hidden="true">
             <defs>
@@ -1703,6 +1711,7 @@
   <script src="./native/native-id.js?v=20260905-native-v01"></script>
   <script src="./native/native-schema.js?v=20260905-native-v01"></script>
   <script src="./native/native-assets.js?v=20260905-native-assets-v01"></script>
+  <script src="./native/native-scenes.js?v=20260906-native-scenes-v01"></script>
   <script src="./native/native-migration.js?v=20260905-native-v01"></script>
   <script src="./tbalance-renderer.js?v=20260824-v1-close"></script>
   <script src="./analyzer/read-only-analyzer.js?v=20260824-analyzer-v01-safe"></script>

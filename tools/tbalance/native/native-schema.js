@@ -70,6 +70,8 @@
       desktop,
       mobile,
       stage: input.stage,
+      scenes: Array.isArray(input.scenes) ? input.scenes : [],
+      defaultSceneId: input.defaultSceneId || "",
       layers: Array.isArray(input.layers) ? input.layers : [],
       metadata: Object.assign({}, input.metadata || {}, {
         createdAt,
@@ -94,7 +96,7 @@
 
   function createPageDocument(project, page) {
     const normalizedProject = project || {};
-    const normalizedPage = page || {};
+    const normalizedPage = window.TBalanceNativeScenes?.normalizePage?.(page || {}) || page || {};
     const now = nowIso();
     return {
       schemaVersion: SCHEMA_VERSION,

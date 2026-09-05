@@ -6,6 +6,7 @@
     page: "pg",
     layer: "lyr",
     asset: "ast",
+    scene: "scn",
     behavior: "bhv",
     datasource: "data",
     build: "bld",

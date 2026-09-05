@@ -24,7 +24,7 @@
 
   function getPageViewportSize(page, key) {
     const viewportKey = getViewportKey(key);
-    return Object.assign({}, getViewportSize(viewportKey), page?.[viewportKey] || {});
+    return Object.assign({}, getViewportSize(viewportKey), page?.[viewportKey] || page?.viewports?.[viewportKey] || {});
   }
 
   function normalizeStage(stage) {
@@ -36,6 +36,16 @@
 
   function getLayerLayout(layer, viewportKey) {
     const key = getViewportKey(viewportKey);
+    const resolved = window.TBalanceNativeScenes?.resolveLayerState?.(layer, key, "");
+    if (resolved) {
+      return Object.assign({
+        x: 0,
+        y: 0,
+        width: 320,
+        height: 180,
+        rotation: 0,
+      }, resolved);
+    }
     const fallback = key === "mobile" ? layer.desktop : layer.mobile;
     return Object.assign({
       x: 0,
@@ -97,6 +107,7 @@
       page.stage = normalizeStage(page.stage);
       page.layers = Array.isArray(page.layers) ? page.layers : [];
       page.layers.forEach(normalizeLayer);
+      window.TBalanceNativeScenes?.normalizePage?.(page);
     });
     return copy;
   }
@@ -174,6 +185,7 @@
     }, layer.corners || {});
     layer.desktop = Object.assign({}, getLayerLayout(layer, "desktop"), layer.desktop || {});
     layer.mobile = Object.assign({}, getLayerLayout(layer, "mobile"), layer.mobile || {});
+    window.TBalanceNativeScenes?.normalizeLayer?.(layer);
     layer.appearance = getAppearance(layer);
     layer.animation = normalizeAnimation(layer.animation);
     layer.hitArea = Object.assign({
@@ -296,6 +308,7 @@
       selectedId: "",
       selectedIds: [],
       project: null,
+      sceneId: "",
       showHitAreas: false,
       onSelect: null,
       onAction: null,
@@ -312,13 +325,13 @@
     applyStageStyle(root, page);
 
     getRenderableLayers(page).forEach((layer, index) => {
-      if (!isLayerVisibleInViewport(layer, key)) {
+      if (!isLayerVisibleInViewport(layer, key, settings.sceneId)) {
         return;
       }
       const node = createLayerNode(layer, key, index, settings);
       root.appendChild(node);
       if (settings.showHitAreas && layer.hitArea?.enabled && layer.role !== "hit-area") {
-        root.appendChild(createHitAreaNode(layer, key, index));
+        root.appendChild(createHitAreaNode(layer, key, index, settings.sceneId));
       }
     });
   }
@@ -364,8 +377,9 @@
     return 1;
   }
 
-  function isLayerVisibleInViewport(layer, viewportKey) {
-    if (layer.visible === false || layer.visibilityMode === "hidden") {
+  function isLayerVisibleInViewport(layer, viewportKey, sceneId = "") {
+    const effective = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, sceneId) || layer;
+    if (effective.visible === false || (!layer.base && layer.visible === false) || layer.visibilityMode === "hidden") {
       return false;
     }
     if (layer.visibilityMode === "desktop") {
@@ -378,8 +392,11 @@
   }
 
   function createLayerNode(layer, viewportKey, index, settings) {
-    const layout = getLayerLayout(layer, viewportKey);
-    const appearance = getAppearance(layer);
+    const layout = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, settings.sceneId) || getLayerLayout(layer, viewportKey);
+    const appearance = Object.assign({}, getAppearance(layer));
+    if (Object.prototype.hasOwnProperty.call(layout, "opacity")) {
+      appearance.opacity = layout.opacity;
+    }
     const node = document.createElement(layer.link && !settings.edit ? "a" : "div");
     node.className = `tb-layer tb-layer--${layer.type || "image"}`;
     node.classList.toggle("is-background-layer", layer.role === "background");
@@ -541,7 +558,7 @@
     });
     img.addEventListener("load", () => {
       applyImageCrop(wrapper, img, layer);
-      const visuallyEmpty = isImageVisuallyEmpty(img, layer, viewportKey);
+      const visuallyEmpty = isImageVisuallyEmpty(img, layer, viewportKey, settings.sceneId);
       wrapper.classList.toggle("has-image-error", visuallyEmpty && !isPaintLayer);
       notifyImageStatus(settings, layer.id, viewportKey, visuallyEmpty && !isPaintLayer ? "error" : "ok");
     });
@@ -556,7 +573,7 @@
           return;
         }
         applyImageCrop(wrapper, img, layer);
-        const visuallyEmpty = isImageVisuallyEmpty(img, layer, viewportKey);
+        const visuallyEmpty = isImageVisuallyEmpty(img, layer, viewportKey, settings.sceneId);
         wrapper.classList.toggle("has-image-error", visuallyEmpty && !isPaintLayer);
         notifyImageStatus(settings, layer.id, viewportKey, visuallyEmpty && !isPaintLayer ? "error" : "ok");
       }, 0);
@@ -645,13 +662,13 @@
     }
   }
 
-  function isImageVisuallyEmpty(img, layer, viewportKey) {
+  function isImageVisuallyEmpty(img, layer, viewportKey, sceneId = "") {
     if (!img.naturalWidth || !img.naturalHeight) {
       return true;
     }
     try {
       const sampleSize = 64;
-      const layout = getLayerLayout(layer, viewportKey);
+      const layout = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, sceneId) || getLayerLayout(layer, viewportKey);
       const boxWidth = Math.max(1, Number(layout.width) || img.naturalWidth);
       const boxHeight = Math.max(1, Number(layout.height) || img.naturalHeight);
       const imageRatio = img.naturalWidth / img.naturalHeight;
@@ -688,7 +705,12 @@
   }
 
   function getLayerImageSrc(layer, viewportKey, settings = {}) {
-    const resolved = window.TBalanceNativeAssets?.resolveLayerAssetSrc?.(settings.project, layer, viewportKey);
+    const effective = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, settings.sceneId) || {};
+    const assetLayer = Object.assign({}, layer, {
+      assetRef: effective.assetRef || layer?.assetRef,
+      assetId: effective.assetId || effective.assetRef || layer?.assetId,
+    });
+    const resolved = window.TBalanceNativeAssets?.resolveLayerAssetSrc?.(settings.project, assetLayer, viewportKey);
     if (resolved) {
       return resolved;
     }
@@ -884,8 +906,8 @@
     node.style.clipPath = `polygon(${points})`;
   }
 
-  function createHitAreaNode(layer, viewportKey, index) {
-    const layout = getLayerLayout(layer, viewportKey);
+  function createHitAreaNode(layer, viewportKey, index, sceneId = "") {
+    const layout = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, sceneId) || getLayerLayout(layer, viewportKey);
     const hit = Object.assign({
       x: 0,
       y: 0,

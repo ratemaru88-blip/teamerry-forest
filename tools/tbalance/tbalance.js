@@ -125,6 +125,7 @@
     pageId: "home",
     primaryPageId: "home",
     viewport: "desktop",
+    activeSceneIds: {},
     selectedId: "",
     selectedIds: [],
     editingTextId: "",
@@ -344,6 +345,11 @@
     customMode: $("customMode"),
     desktopMode: $("desktopMode"),
     mobileMode: $("mobileMode"),
+    nativeSceneSwitch: $("nativeSceneSwitch"),
+    nativeSceneSelect: $("nativeSceneSelect"),
+    addNativeScene: $("addNativeScene"),
+    renameNativeScene: $("renameNativeScene"),
+    nativeSceneScope: $("nativeSceneScope"),
     openFile: $("openFile"),
     saveProject: $("saveProject"),
     saveJson: $("saveJson"),
@@ -690,6 +696,7 @@
     syncProjectEditorSettings();
     state.pageId = state.project.pages[0].id;
     state.primaryPageId = state.pageId;
+    ensureActiveSceneForPage(getCurrentPage());
     bindEvents();
     installAiBridge();
     renderAll();
@@ -710,6 +717,9 @@
     els.customMode.addEventListener("click", () => setEditorMode("custom"));
     els.desktopMode.addEventListener("click", () => setViewport("desktop"));
     els.mobileMode.addEventListener("click", () => setViewport("mobile"));
+    els.nativeSceneSelect?.addEventListener("change", () => setActiveScene(els.nativeSceneSelect.value));
+    els.addNativeScene?.addEventListener("click", addNativeScene);
+    els.renameNativeScene?.addEventListener("click", renameActiveNativeScene);
     els.pageSelect.addEventListener("change", () => {
       state.pageId = els.pageSelect.value;
       state.primaryPageId = state.pageId;
@@ -718,6 +728,7 @@
       state.secondaryWindow = null;
       state.suspendedWindow = null;
       state.activeWindow = "primary";
+      ensureActiveSceneForPage(getCurrentPage());
       clearSelection();
       renderAll();
     });
@@ -13829,6 +13840,7 @@
     applyEditorMode();
     renderPropertyMode();
     renderPageSelect();
+    renderNativeSceneSwitch();
     renderCanvas(page);
     renderProperties();
     renderStylePanel();
@@ -14025,6 +14037,117 @@
     renderPageSelect();
   }
 
+  function getActiveSceneId(page = getCurrentPage()) {
+    if (!page || state.existingWeb.active) {
+      return "";
+    }
+    window.TBalanceNativeScenes?.normalizePage?.(page);
+    if (!page.scenes?.length) {
+      return "";
+    }
+    const current = state.activeSceneIds?.[page.id];
+    const scene = page.scenes.find((item) => item.sceneId === current && item.enabled !== false)
+      || page.scenes.find((item) => item.sceneId === page.defaultSceneId && item.enabled !== false)
+      || page.scenes.find((item) => item.enabled !== false)
+      || page.scenes[0];
+    state.activeSceneIds[page.id] = scene?.sceneId || "";
+    return state.activeSceneIds[page.id] || "";
+  }
+
+  function ensureActiveSceneForPage(page = getCurrentPage()) {
+    return getActiveSceneId(page);
+  }
+
+  function setActiveScene(sceneId) {
+    const page = getCurrentPage();
+    if (!page || !page.scenes?.some((scene) => scene.sceneId === sceneId)) {
+      return;
+    }
+    state.activeSceneIds[page.id] = sceneId;
+    clearSelection();
+    renderAll();
+  }
+
+  function addNativeScene() {
+    if (state.existingWeb.active) {
+      return;
+    }
+    const page = getCurrentPage();
+    if (!page) {
+      return;
+    }
+    const defaultName = page.scenes?.length ? "夜" : "昼";
+    const name = prompt("シーン名", defaultName);
+    if (name === null) {
+      return;
+    }
+    pushHistory();
+    const scene = window.TBalanceNativeScenes?.addScene?.(page, name) || null;
+    if (!scene) {
+      return;
+    }
+    state.activeSceneIds[page.id] = scene.sceneId;
+    markDirty();
+    renderAll();
+    showModeToast(`${scene.displayName} シーンを追加しました。`);
+  }
+
+  function renameActiveNativeScene() {
+    const page = getCurrentPage();
+    const sceneId = getActiveSceneId(page);
+    const scene = page?.scenes?.find((item) => item.sceneId === sceneId);
+    if (!scene) {
+      showModeToast("名前を変更するシーンがありません。");
+      return;
+    }
+    const name = prompt("シーン名", scene.displayName || "シーン");
+    if (name === null) {
+      return;
+    }
+    pushHistory();
+    window.TBalanceNativeScenes?.renameScene?.(page, sceneId, name);
+    markDirty();
+    renderAll();
+  }
+
+  function renderNativeSceneSwitch() {
+    if (!els.nativeSceneSwitch || state.existingWeb.active) {
+      if (els.nativeSceneSwitch) {
+        els.nativeSceneSwitch.hidden = true;
+      }
+      return;
+    }
+    const page = getCurrentPage();
+    window.TBalanceNativeScenes?.normalizePage?.(page);
+    const scenes = page?.scenes || [];
+    els.nativeSceneSwitch.hidden = false;
+    els.nativeSceneSelect.hidden = !scenes.length;
+    els.renameNativeScene.disabled = !scenes.length;
+    els.nativeSceneSelect.innerHTML = "";
+    if (scenes.length) {
+      const activeSceneId = getActiveSceneId(page);
+      scenes.forEach((scene) => {
+        const option = document.createElement("option");
+        option.value = scene.sceneId;
+        option.textContent = scene.displayName || "シーン";
+        option.selected = scene.sceneId === activeSceneId;
+        els.nativeSceneSelect.appendChild(option);
+      });
+    }
+    const activeScene = scenes.find((scene) => scene.sceneId === getActiveSceneId(page));
+    const scope = window.TBalanceNativeScenes?.getWriteScope?.(page, getActiveViewportKey(), activeScene?.sceneId || "");
+    const labels = {
+      base: "共通",
+      viewport: "Viewport差分",
+      scene: "Scene差分",
+      sceneViewport: "Scene×Viewport差分",
+    };
+    const viewportLabel = getActiveViewportKey() === "mobile" ? "Mobile" : "PC";
+    els.nativeSceneScope.textContent = scenes.length
+      ? `${viewportLabel} / ${activeScene?.displayName || "Scene"} / ${labels[scope?.type] || "共通"}`
+      : `${viewportLabel} / Sceneなし`;
+  }
+
   function renderCanvas(page) {
     if (state.existingWeb.active) {
       renderExistingWebView();
@@ -14044,6 +14167,7 @@
     renderer.renderPage(els.canvas, primaryRenderPage, mainViewport, {
       edit: !state.preview,
       project: state.project,
+      sceneId: getActiveSceneId(primaryRenderPage),
       selectedId: !hideLayerControls && state.pageId === primaryRenderPage.id && getActiveWindowKey() === "primary" ? state.selectedId : "",
       selectedIds: !hideLayerControls && state.pageId === primaryRenderPage.id && getActiveWindowKey() === "primary" ? getSelectedIds() : [],
       showHitAreas: state.showHitAreas,
@@ -14297,6 +14421,7 @@
       renderer.renderPage(els.secondaryCanvas, secondaryPage, "mobile", {
         edit: !state.preview,
         project: state.project,
+        sceneId: getActiveSceneId(secondaryPage),
         selectedId: !isPaintPointerActive() && getActiveWindowKey() === "secondary" ? state.selectedId : "",
         selectedIds: !isPaintPointerActive() && getActiveWindowKey() === "secondary" ? getSelectedIds() : [],
         showHitAreas: state.showHitAreas,
@@ -14363,6 +14488,7 @@
       renderer.renderPage(els.secondaryCanvas, imagePage, "desktop", {
         edit: !state.preview,
         project: state.project,
+        sceneId: getActiveSceneId(imagePage),
         selectedId: !isPaintPointerActive() && state.pageId === imagePage?.id ? state.selectedId : "",
         selectedIds: !isPaintPointerActive() && state.pageId === imagePage?.id ? getSelectedIds() : [],
         showHitAreas: false,
@@ -20509,12 +20635,17 @@
     image.src = src;
   }
 
-  function getLayerImageSource(layer, viewport) {
+  function getLayerImageSource(layer, viewport, sceneId = "") {
     if (!layer || layer.type !== "image") {
       return "";
     }
     const viewportKey = renderer.getViewportKey(viewport);
-    const resolved = window.TBalanceNativeAssets?.resolveLayerAssetSrc?.(state.project, layer, viewportKey);
+    const effective = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, sceneId || getActiveSceneId(getCurrentPage())) || {};
+    const assetLayer = Object.assign({}, layer, {
+      assetRef: effective.assetRef || layer.assetRef,
+      assetId: effective.assetId || effective.assetRef || layer.assetId,
+    });
+    const resolved = window.TBalanceNativeAssets?.resolveLayerAssetSrc?.(state.project, assetLayer, viewportKey);
     if (resolved) {
       return resolved;
     }
@@ -20749,6 +20880,8 @@
       syncProjectEditorSettings();
       state.pageId = parsed.pages[0].id;
       state.primaryPageId = state.pageId;
+      state.activeSceneIds = {};
+      ensureActiveSceneForPage(getCurrentPage());
       state.windowMode = "single";
       state.windowLayout = "horizontal";
       state.secondaryWindow = null;
@@ -20821,6 +20954,7 @@
     syncProjectEditorSettings();
     state.pageId = page.pageId || page.id;
     state.primaryPageId = state.pageId;
+    ensureActiveSceneForPage(getCurrentPage());
     state.viewport = options?.activeViewport === "mobile" ? "mobile" : "desktop";
     state.windowMode = "single";
     state.windowLayout = "horizontal";
@@ -20866,6 +21000,8 @@
     syncProjectEditorSettings();
     state.pageId = state.project.pages[0].id;
     state.primaryPageId = state.pageId;
+    state.activeSceneIds = {};
+    ensureActiveSceneForPage(getCurrentPage());
     state.viewport = options?.activeViewport === "mobile" ? "mobile" : "desktop";
     state.windowMode = "single";
     state.windowLayout = "horizontal";
@@ -20994,11 +21130,11 @@
   function getScreenshotTargets(page) {
     if (state.windowMode === "pc-mobile") {
       return [
-        { page, viewport: "desktop" },
-        { page, viewport: "mobile" },
+        { page, viewport: "desktop", sceneId: getActiveSceneId(page) },
+        { page, viewport: "mobile", sceneId: getActiveSceneId(page) },
       ];
     }
-    return [{ page, viewport: state.viewport }];
+    return [{ page, viewport: state.viewport, sceneId: getActiveSceneId(page) }];
   }
 
   async function renderScreenshotCanvas(targets, options = {}) {
@@ -21022,7 +21158,7 @@
     for (let index = 0; index < targets.length; index += 1) {
       const target = targets[index];
       const size = sizes[index];
-      await drawPageToContext(ctx, target.page, target.viewport, offsetX, offsetY, options);
+      await drawPageToContext(ctx, target.page, target.viewport, offsetX, offsetY, Object.assign({}, options, { sceneId: target.sceneId || options.sceneId || "" }));
       if (horizontal) {
         offsetX += size.width + gap;
       } else {
@@ -21034,7 +21170,8 @@
 
   function getPageViewportSize(page, viewport) {
     const fallback = renderer.getViewportSize(viewport);
-    return Object.assign({}, fallback, page?.[renderer.getViewportKey(viewport)] || {});
+    const key = renderer.getViewportKey(viewport);
+    return Object.assign({}, fallback, page?.[key] || page?.viewports?.[key] || {});
   }
 
   async function drawPageToContext(ctx, page, viewport, offsetX, offsetY, options = {}) {
@@ -21052,11 +21189,11 @@
       if (options.excludeLayerIds?.includes(layer.id) || options.excludeRoles?.includes(layer.role)) {
         continue;
       }
-      if (!isScreenshotLayerVisible(layer, key)) {
+      if (!isScreenshotLayerVisible(layer, key, options.sceneId || "")) {
         continue;
       }
       try {
-        await drawLayerToContext(ctx, layer, key);
+        await drawLayerToContext(ctx, layer, key, options.sceneId || "");
       } catch (error) {
         if (!options.skipBrokenLayers) {
           throw error;
@@ -21087,8 +21224,9 @@
     return 1;
   }
 
-  function isScreenshotLayerVisible(layer, viewport) {
-    if (layer.visible === false || layer.visibilityMode === "hidden") {
+  function isScreenshotLayerVisible(layer, viewport, sceneId = "") {
+    const effective = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewport, sceneId) || layer;
+    if (effective.visible === false || (!layer.base && layer.visible === false) || layer.visibilityMode === "hidden") {
       return false;
     }
     if (layer.visibilityMode === "desktop") {
@@ -21100,9 +21238,12 @@
     return true;
   }
 
-  async function drawLayerToContext(ctx, layer, viewport) {
-    const layout = renderer.getLayerLayout(layer, viewport);
-    const appearance = renderer.getAppearance(layer);
+  async function drawLayerToContext(ctx, layer, viewport, sceneId = "") {
+    const layout = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewport, sceneId) || renderer.getLayerLayout(layer, viewport);
+    const appearance = Object.assign({}, renderer.getAppearance(layer));
+    if (Object.prototype.hasOwnProperty.call(layout, "opacity")) {
+      appearance.opacity = layout.opacity;
+    }
     ctx.save();
     ctx.translate(layout.x + layout.width / 2, layout.y + layout.height / 2);
     ctx.rotate((Number(layout.rotation) || 0) * Math.PI / 180);
@@ -21124,7 +21265,7 @@
     } else if (layer.type === "shape") {
       drawShapeLayer(ctx, layer, x, y, layout.width, layout.height);
     } else {
-      await drawImageLayer(ctx, layer, viewport, x, y, layout.width, layout.height);
+      await drawImageLayer(ctx, layer, viewport, x, y, layout.width, layout.height, sceneId);
     }
     ctx.restore();
   }
@@ -21136,8 +21277,8 @@
     return `rgba(${parseInt(value.slice(0, 2), 16)}, ${parseInt(value.slice(2, 4), 16)}, ${parseInt(value.slice(4, 6), 16)}, ${alpha})`;
   }
 
-  async function drawImageLayer(ctx, layer, viewport, x, y, width, height) {
-    const src = getLayerImageSource(layer, viewport);
+  async function drawImageLayer(ctx, layer, viewport, x, y, width, height, sceneId = "") {
+    const src = getLayerImageSource(layer, viewport, sceneId);
     if (!src) {
       return;
     }
@@ -21976,7 +22117,11 @@ ${layersHtml}
   }
 
   function getCurrentLayout(layer) {
-    return layer[getActiveViewportKey()];
+    const page = getCurrentPage();
+    const viewport = getActiveViewportKey();
+    const sceneId = getActiveSceneId(page);
+    return window.TBalanceNativeScenes?.getWritableLayerState?.(layer, page, viewport, sceneId)
+      || layer[viewport];
   }
 
   function getActiveViewportKey() {
