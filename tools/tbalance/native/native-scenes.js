@@ -14,7 +14,7 @@
   ];
   const VIEWPORTS = {
     desktop: { viewportId: "desktop", displayName: "PC", width: 1920, height: 1080 },
-    mobile: { viewportId: "mobile", displayName: "Mobile", width: 390, height: 844 },
+    mobile: { viewportId: "mobile", displayName: "Mobile", width: 1080, height: 1920 },
   };
 
   function clone(value) {

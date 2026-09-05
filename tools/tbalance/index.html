@@ -54,14 +54,6 @@
           </button>
         </section>
 
-        <section id="nativeSceneSwitch" class="tb-scene-switch" aria-label="シーン切り替え" hidden>
-          <span>シーン</span>
-          <select id="nativeSceneSelect" title="編集中のシーン"></select>
-          <button id="addNativeScene" type="button" title="シーンを追加">＋</button>
-          <button id="renameNativeScene" type="button" title="シーン名を変更">名前</button>
-          <small id="nativeSceneScope">PC / 共通</small>
-        </section>
-
         <button id="aiCollabButton" class="tb-command-button tb-command-button--ai" type="button" aria-pressed="false" title="AIと同じ画面を見ながら共同編集">
           <svg class="tb-command-icon tb-ai-icon" viewBox="0 0 48 48" aria-hidden="true">
             <defs>
@@ -353,15 +345,15 @@
             <button type="button" data-help-action="version">バージョン情報</button>
           </div>
         </div>
-      </nav>
-
-      <section id="propertyHeader" class="tb-property-header" aria-label="プロパティ">
         <label class="tb-header-page">ページ
           <span class="tb-page-name-editor">
             <select id="pageSelect" aria-label="ページ選択" title="ダブルクリックでページ名変更"></select>
             <input id="pageNameInput" type="text" aria-label="ページ名編集" spellcheck="false" hidden>
           </span>
         </label>
+      </nav>
+
+      <section id="propertyHeader" class="tb-property-header" aria-label="プロパティ">
         <span id="canvasSizeLabel" class="tb-canvas-size-label">Canvas: PC 1920 × 1080</span>
         <div class="tb-brush-ribbon" aria-label="ブラシ設定" data-property-section="brush">
           <strong><span class="tb-brush-title">ブラシ</span><span class="tb-eraser-title">消しゴム</span></strong>
@@ -695,7 +687,13 @@
           </label>
           <label class="tb-check tb-ribbon-check" data-property-section="style"><input id="propShadow" type="checkbox">影</label>
         </div>
-        <span id="saveState" class="tb-header-save-state">保存済み</span>
+        <section id="nativeSceneSwitch" class="tb-scene-switch" aria-label="シーン切り替え" hidden>
+          <span>シーン</span>
+          <select id="nativeSceneSelect" title="編集中のシーン"></select>
+          <button id="addNativeScene" type="button" title="シーンを追加">＋</button>
+          <button id="renameNativeScene" type="button" title="シーン名を変更">名前</button>
+          <small id="nativeSceneScope">PC / 共通</small>
+        </section>
       </section>
       <input id="soundFile" type="file" accept="audio/*" hidden>
     </header>
@@ -765,8 +763,7 @@
           <button type="button" data-select-range-action="clear">選択範囲を解除</button>
         </div>
       </div>
-      <label class="tb-tool-button tb-tool-file" data-tool="image" title="画像: 画像素材を追加">
-        <input id="imageFile" type="file" accept="image/*">
+      <button id="imageLibraryTool" class="tb-tool-button" type="button" data-tool="image" title="画像ライブラリー: 画像を追加・配置">
         <span class="tb-tool-icon" aria-hidden="true">
           <svg class="tb-image-tool-icon" viewBox="0 0 48 48">
             <rect class="tb-image-frame" x="7" y="8" width="34" height="30" rx="5"/>
@@ -776,8 +773,9 @@
             <path class="tb-image-gloss" d="M13 12.6h17.5"/>
           </svg>
         </span>
-        <span class="tb-tool-label">画像</span>
-      </label>
+        <span class="tb-tool-label">画像<br>ライブラリー</span>
+      </button>
+      <input id="imageFile" class="tb-hidden-file-input" type="file" accept="image/*" hidden>
       <button id="addText" class="tb-tool-button" type="button" data-tool="text" title="文字: テキストを追加">
         <span class="tb-tool-icon" aria-hidden="true">
           <svg class="tb-text-tool-icon" viewBox="0 0 48 48">
@@ -1037,14 +1035,15 @@
       </div>
     </section>
 
-    <aside id="rightPanel" class="tb-sidepanel" aria-label="プロパティとレイヤー">
+    <aside id="rightPanel" class="tb-sidepanel is-layer-tab-active" aria-label="プロパティとレイヤー">
       <section id="inspectorPanel" class="tb-inspector">
         <div class="tb-panel-tabs" role="tablist" aria-label="インスペクター">
-          <button id="propertyTab" class="is-active" type="button" role="tab" aria-selected="true">カラー</button>
+          <button id="layerTab" class="is-active" type="button" role="tab" aria-selected="true">レイヤー</button>
+          <button id="propertyTab" type="button" role="tab" aria-selected="false">カラー</button>
           <button id="styleTab" type="button" role="tab" aria-selected="false">ブラシ</button>
         </div>
 
-        <section id="propertyPane" class="tb-panel tb-tab-pane is-active" aria-label="カラー">
+        <section id="propertyPane" class="tb-panel tb-tab-pane" aria-label="カラー" hidden>
           <div class="tb-color-panel">
             <div class="tb-color-head">
               <strong>マテリアル</strong>
@@ -1209,6 +1208,7 @@
           <div class="tb-layer-placement" aria-label="配置">
             <button id="fitStretchCanvas" type="button" title="選択中のレイヤーをキャンバスサイズに合わせる。比率は変更されます。">キャンバスに合わせる</button>
             <button id="setBackgroundLayer" type="button" title="最背面へ移動してロックする。">背景固定</button>
+            <button id="deleteLayer" type="button" title="削除">削除</button>
           </div>
           <div class="tb-layer-actions" aria-label="レイヤー操作">
             <button id="bringFront" type="button" title="最前面へ">前面</button>
@@ -1217,10 +1217,8 @@
             <button id="sendBack" type="button" title="最背面へ">背面</button>
             <button id="renameLayer" type="button" title="選択中のレイヤー名を変更">名前変更</button>
             <button type="button" title="複製" disabled>複製</button>
-            <button id="deleteLayer" type="button" title="削除">削除</button>
           </div>
         </div>
-        <section id="nativeAssetPanel" class="tb-native-asset-panel" aria-label="正式素材"></section>
         <div id="layerList" class="tb-layer-list"></div>
       </section>
     </aside>
@@ -1473,6 +1471,19 @@
           <button id="existingWebOpenCancel" type="button">キャンセル</button>
           <button id="existingWebOpenSubmit" type="button">開く</button>
         </div>
+      </div>
+    </section>
+
+    <section id="nativeAssetLibraryModal" class="tb-native-asset-library-modal" aria-label="画像ライブラリー" hidden>
+      <div class="tb-native-asset-library-dialog" role="dialog" aria-modal="true" aria-labelledby="nativeAssetLibraryTitle">
+        <header>
+          <div>
+            <h2 id="nativeAssetLibraryTitle">画像ライブラリー</h2>
+            <p>Projectで使う画像を追加して、ページへ配置できます。</p>
+          </div>
+          <button id="closeNativeAssetLibrary" type="button" title="閉じる">×</button>
+        </header>
+        <section id="nativeAssetPanel" class="tb-native-asset-panel" aria-label="画像ライブラリー"></section>
       </div>
     </section>
 

@@ -3,8 +3,9 @@
 
   const VIEWPORTS = {
     desktop: { width: 1920, height: 1080, label: "PC 16:9" },
-    mobile: { width: 390, height: 844, label: "Mobile" },
+    mobile: { width: 1080, height: 1920, label: "Mobile 9:16" },
   };
+  const LEGACY_DEVICE_PREVIEW_MOBILE = { width: 390, height: 844 };
   const DEFAULT_STAGE = {
     backgroundType: "transparent",
     backgroundColor: "#ffffff",
@@ -100,6 +101,7 @@
       page.sourceAuthority = page.sourceAuthority || "tbalance";
       page.desktop = Object.assign({}, VIEWPORTS.desktop, page.desktop || {});
       page.mobile = Object.assign({}, VIEWPORTS.mobile, page.mobile || {});
+      upgradeLegacyNativeMobileViewport(page);
       page.viewports = Object.assign({}, page.viewports || {}, {
         desktop: Object.assign({}, page.desktop),
         mobile: Object.assign({}, page.mobile),
@@ -318,6 +320,7 @@
     }, options || {});
     const key = getViewportKey(viewportKey);
     const size = getPageViewportSize(page, key);
+    settings.pageSize = size;
     root.innerHTML = "";
     root.style.width = `${size.width}px`;
     root.style.height = `${size.height}px`;
@@ -334,6 +337,50 @@
         root.appendChild(createHitAreaNode(layer, key, index, settings.sceneId));
       }
     });
+  }
+
+  function upgradeLegacyNativeMobileViewport(page) {
+    const width = Math.round(Number(page?.mobile?.width) || 0);
+    const height = Math.round(Number(page?.mobile?.height) || 0);
+    if (width !== LEGACY_DEVICE_PREVIEW_MOBILE.width || height !== LEGACY_DEVICE_PREVIEW_MOBILE.height) {
+      return;
+    }
+    const scaleX = VIEWPORTS.mobile.width / LEGACY_DEVICE_PREVIEW_MOBILE.width;
+    const scaleY = VIEWPORTS.mobile.height / LEGACY_DEVICE_PREVIEW_MOBILE.height;
+    const hasMobileLayerState = (page.layers || []).some((layer) => {
+      return Boolean(layer.mobile || layer.viewportOverrides?.mobile || Object.values(layer.sceneViewportOverrides || {}).some((viewports) => viewports?.mobile));
+    });
+    page.mobile = Object.assign({}, page.mobile, VIEWPORTS.mobile);
+    if (page.viewports?.mobile) {
+      page.viewports.mobile = Object.assign({}, page.viewports.mobile, VIEWPORTS.mobile);
+    }
+    (page.layers || []).forEach((layer) => {
+      scaleLayerLayout(layer.mobile, scaleX, scaleY);
+      scaleLayerLayout(layer.viewportOverrides?.mobile, scaleX, scaleY);
+      Object.values(layer.sceneViewportOverrides || {}).forEach((viewports) => {
+        scaleLayerLayout(viewports?.mobile, scaleX, scaleY);
+      });
+    });
+    if (hasMobileLayerState) {
+      page.metadata = Object.assign({}, page.metadata || {});
+      page.metadata.mobileLayoutReview = Object.assign({}, page.metadata.mobileLayoutReview || {}, {
+        status: "review-required",
+        reason: "legacy-mobile-canvas-rescaled",
+        from: Object.assign({}, LEGACY_DEVICE_PREVIEW_MOBILE),
+        to: { width: VIEWPORTS.mobile.width, height: VIEWPORTS.mobile.height },
+        message: "旧Mobileレイアウトを1080×1920基準へ変換しました。配置を確認してください。",
+      });
+    }
+  }
+
+  function scaleLayerLayout(layout, scaleX, scaleY) {
+    if (!layout) {
+      return;
+    }
+    if (Number.isFinite(Number(layout.x))) layout.x = Math.round(Number(layout.x) * scaleX);
+    if (Number.isFinite(Number(layout.y))) layout.y = Math.round(Number(layout.y) * scaleY);
+    if (Number.isFinite(Number(layout.width))) layout.width = Math.max(1, Math.round(Number(layout.width) * scaleX));
+    if (Number.isFinite(Number(layout.height))) layout.height = Math.max(1, Math.round(Number(layout.height) * scaleY));
   }
 
   function applyStageStyle(root, page) {
@@ -392,7 +439,10 @@
   }
 
   function createLayerNode(layer, viewportKey, index, settings) {
-    const layout = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, settings.sceneId) || getLayerLayout(layer, viewportKey);
+    const resolvedLayout = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, settings.sceneId) || getLayerLayout(layer, viewportKey);
+    const layout = layer.role === "background"
+      ? Object.assign({}, resolvedLayout, createFullCanvasLayout(settings.pageSize))
+      : resolvedLayout;
     const appearance = Object.assign({}, getAppearance(layer));
     if (Object.prototype.hasOwnProperty.call(layout, "opacity")) {
       appearance.opacity = layout.opacity;
@@ -461,6 +511,16 @@
     }
 
     return node;
+  }
+
+  function createFullCanvasLayout(size) {
+    return {
+      x: 0,
+      y: 0,
+      width: Math.max(1, Math.round(Number(size?.width) || 1)),
+      height: Math.max(1, Math.round(Number(size?.height) || 1)),
+      rotation: 0,
+    };
   }
 
   function bindLayerSound(node, layer, settings) {

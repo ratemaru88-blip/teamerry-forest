@@ -7,7 +7,7 @@
   const LEGACY_VERSION = "0.1.0";
   const DEFAULT_PROJECT_NAME = "新規TBalance";
   const DEFAULT_DESKTOP = { width: 1920, height: 1080, label: "PC 16:9" };
-  const DEFAULT_MOBILE = { width: 390, height: 844, label: "Mobile" };
+  const DEFAULT_MOBILE = { width: 1080, height: 1920, label: "Mobile 9:16" };
 
   function nowIso() {
     return new Date().toISOString();
