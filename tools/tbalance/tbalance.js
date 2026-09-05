@@ -3626,6 +3626,59 @@
     return state.existingWeb.workflow;
   }
 
+  function recoverExistingWebWorkflowStateFromRuntime() {
+    if (!state.existingWeb.active) {
+      return createExistingWebWorkflowState("clean");
+    }
+    const workflow = getExistingWebWorkflow();
+    const count = getExistingWebPreviewChangeCount();
+    if (!count) {
+      return workflow.status === "clean" ? workflow : createExistingWebWorkflowState("clean");
+    }
+    const signature = getExistingWebPreviewSignature();
+    const preflight = state.analyzer.safeApply?.preflight || null;
+    const eligibility = getExistingWebWorkflowEligibility(workflow.status, count);
+    const busy = ["analyzing", "ai_reviewing", "ai_response_imported", "applying"].includes(workflow.status);
+    if (busy) {
+      return workflow;
+    }
+    if (preflight?.ok && eligibility.readyCount > 0) {
+      const nextStatus = eligibility.readyCount >= count ? "ready_to_apply" : "mixed_ready";
+      const nextMessage = nextStatus === "ready_to_apply"
+        ? `変更確認済み: ${eligibility.readyCount}件を反映できます。`
+        : `${count}件中${eligibility.readyCount}件を反映できます。${eligibility.pendingCount}件は要確認です。`;
+      if (workflow.status !== nextStatus || workflow.applySignature !== signature) {
+        state.existingWeb.workflow = {
+          ...workflow,
+          status: nextStatus,
+          analysisSignature: signature,
+          applySignature: signature,
+          message: workflow.message && workflow.status === nextStatus ? workflow.message : nextMessage,
+        };
+      }
+      return state.existingWeb.workflow;
+    }
+    if (["ready_to_apply", "mixed_ready"].includes(workflow.status)) {
+      state.existingWeb.workflow = {
+        ...workflow,
+        status: "dirty",
+        analysisSignature: "",
+        applySignature: "",
+        message: "確認結果を再利用できません。変更を再確認してください。",
+      };
+      return state.existingWeb.workflow;
+    }
+    if (!workflow.status || workflow.status === "clean") {
+      state.existingWeb.workflow = {
+        ...workflow,
+        status: "dirty",
+        message: "未確認の変更があります。変更を確認してください。",
+      };
+      return state.existingWeb.workflow;
+    }
+    return workflow;
+  }
+
   function getExistingWebPreviewChangeCount() {
     return getExistingWebWorkflowChanges().length;
   }
@@ -3668,7 +3721,7 @@
   }
 
   function markExistingWebWorkflowDirty(message = "") {
-    const workflow = getExistingWebWorkflow();
+    const workflow = recoverExistingWebWorkflowStateFromRuntime();
     const count = getExistingWebPreviewChangeCount();
     if (!count) {
       state.existingWeb.workflow = {
@@ -3762,6 +3815,21 @@
       aiReviewRequestId: workflow.aiReviewRequestId || "",
       aiReviewStatus: workflow.aiReviewStatus === "running" ? "revalidated" : workflow.aiReviewStatus || "",
       message: message || "変更確認済みです。Sourceへ反映できます。",
+    };
+  }
+
+  function setExistingWebWorkflowMixedReady(message = "") {
+    const workflow = getExistingWebWorkflow();
+    const signature = getExistingWebPreviewSignature();
+    state.existingWeb.workflow = {
+      ...workflow,
+      status: "mixed_ready",
+      analysisSignature: signature,
+      applySignature: signature,
+      aiReviewSignature: workflow.aiReviewSignature || "",
+      aiReviewRequestId: workflow.aiReviewRequestId || "",
+      aiReviewStatus: workflow.aiReviewStatus || "",
+      message: message || "反映可能な変更があります。要確認の変更は反映しません。",
     };
   }
 
@@ -3861,7 +3929,7 @@
       return;
     }
     const workflow = getExistingWebWorkflow();
-    if (workflow.status === "ready_to_apply") {
+    if (["ready_to_apply", "mixed_ready"].includes(workflow.status)) {
       await applyExistingWebWorkflowToSource();
       return;
     }
@@ -3893,6 +3961,8 @@
     state.existingWeb.impactAnalysis = buildExistingWebWorkflowImpactAnalysis(resolution, changes);
     if (resolution?.ok) {
       setExistingWebWorkflowReadyToApply(`変更確認済み: ${count}件を反映できます。`);
+    } else if (resolution?.status === "mixed_ready") {
+      setExistingWebWorkflowMixedReady(resolution.message || "反映可能な変更があります。要確認の変更は反映しません。");
     } else {
       await runExistingWebAutomaticSafetyReview(changes, resolution);
     }
@@ -3942,14 +4012,37 @@
     }
     const blocked = items.filter((item) => !item.resolution?.ok);
     if (blocked.length) {
+      if (candidates.length && window.TBalanceSafeApply?.runBatchApplyPreflight) {
+        const client = getSafeApplyClient();
+        const preflight = await window.TBalanceSafeApply.runBatchApplyPreflight({
+          candidates,
+          approvedSignatures,
+          sourceWriterClient: client,
+          createSignature: window.TBalanceSafePatch?.createCandidateSignature,
+        });
+        state.analyzer.safeApply.preflight = preflight?.ok ? preflight : null;
+        state.analyzer.safeApply.result = preflight || null;
+        state.analyzer.safeApply.diffText = preflight?.diffText || "";
+        setSafeApplyStatus(
+          preflight?.ok ? (preflight.status || "ready-to-apply") : (preflight?.status || "failed"),
+          preflight?.ok
+            ? `${candidates.length}件だけ反映可能です。要確認の変更は反映しません。`
+            : preflight?.message || "反映可能な変更のPreflightが通りませんでした。",
+        );
+      }
       return {
         ok: false,
         batch: true,
-        status: "review_required",
+        status: state.analyzer.safeApply.preflight?.ok ? "mixed_ready" : "review_required",
         reason: blocked[0].resolution?.reason || "batch-review-required",
-        message: `${items.length}件中${blocked.length}件に確認が必要です。`,
+        message: state.analyzer.safeApply.preflight?.ok
+          ? `${items.length}件中${candidates.length}件を反映できます。${blocked.length}件は要確認です。`
+          : `${items.length}件中${blocked.length}件に確認が必要です。`,
         changes: items,
-        summary: { total: items.length, safe: items.length - blocked.length, blocked: blocked.length },
+        candidates,
+        approvedSignatures,
+        batchPreflight: state.analyzer.safeApply.preflight || null,
+        summary: { total: items.length, safe: state.analyzer.safeApply.preflight?.ok ? candidates.length : 0, blocked: blocked.length },
       };
     }
     if (!window.TBalanceSafeApply?.runBatchApplyPreflight) {
@@ -4008,7 +4101,15 @@
       renderAll();
       return;
     }
-    const count = getExistingWebPreviewChangeCount();
+    const activePreflightBeforeConfirm = state.analyzer.safeApply?.preflight;
+    const count = activePreflightBeforeConfirm?.batchApplyVersion
+      ? Number(activePreflightBeforeConfirm.summary?.totalCandidates || activePreflightBeforeConfirm.operations?.length || 0)
+      : getExistingWebPreviewChangeCount();
+    if (!count) {
+      setExistingWebWorkflowReviewRequired("反映できる変更はありません。");
+      renderAll();
+      return;
+    }
     const ok = window.confirm([
       "変更を反映しますか？",
       "",
@@ -4042,7 +4143,7 @@
       : await applySafePatchCandidate({ skipUserConfirm: true });
     state.existingWeb.workflow.lastResult = result;
     if (result?.ok) {
-      acceptExistingWebAppliedBaseline(result);
+      acceptExistingWebAppliedBaseline(result, activePreflight);
       showModeToast("変更をローカルSourceへ反映しました。");
     } else {
       setExistingWebWorkflowReviewRequired(result?.message || "Safe Applyに失敗しました。Source状態を確認してください。");
@@ -4050,7 +4151,31 @@
     renderAll();
   }
 
-  function acceptExistingWebAppliedBaseline(result = null) {
+  function acceptExistingWebAppliedBaseline(result = null, preflight = null) {
+    const appliedKeys = getExistingWebAppliedChangeKeys(result, preflight);
+    if (appliedKeys.size) {
+      state.existingWeb.previewHistory = (state.existingWeb.previewHistory || []).filter((change) => !appliedKeys.has(getExistingWebChangeKey(change)));
+      state.existingWeb.previewFuture = (state.existingWeb.previewFuture || []).filter((change) => !appliedKeys.has(getExistingWebChangeKey(change)));
+      syncExistingWebPreviewStateFromHistory();
+      state.existingWeb.impactAnalysis = null;
+      state.existingWeb.drag = null;
+      if (state.existingWeb.previewHistory.length) {
+        state.existingWeb.workflow = {
+          ...createExistingWebWorkflowState("review_required"),
+          message: `${appliedKeys.size}件反映済み。${state.existingWeb.previewHistory.length}件は要確認です。`,
+          lastResult: result,
+        };
+      } else {
+        state.existingWeb.workflow = {
+          ...createExistingWebWorkflowState("clean"),
+          message: "反映済みSourceを新しいBaselineとして扱います。",
+          lastResult: result,
+        };
+      }
+      applyExistingWebSelectionClass();
+      refreshExistingWebVirtualLayers();
+      return;
+    }
     state.existingWeb.preview = {
       active: false,
       changes: [],
@@ -4066,6 +4191,27 @@
     };
     applyExistingWebSelectionClass();
     refreshExistingWebVirtualLayers();
+  }
+
+  function getExistingWebChangeKey(change = {}) {
+    return `${change.domRef || ""}\u0001${change.property || ""}`;
+  }
+
+  function getExistingWebAppliedChangeKeys(result = null, preflight = null) {
+    const keys = new Set();
+    (Array.isArray(preflight?.operations) ? preflight.operations : []).forEach((operation) => {
+      const domRef = operation?.target?.domRef || "";
+      const property = getExistingWebVisualPropertyForCssProperty(operation?.property || "");
+      if (domRef && property) {
+        keys.add(`${domRef}\u0001${property}`);
+      }
+    });
+    (Array.isArray(result?.appliedChanges) ? result.appliedChanges : []).forEach((change) => {
+      if (change?.domRef && change?.property) {
+        keys.add(getExistingWebChangeKey(change));
+      }
+    });
+    return keys;
   }
 
   async function prepareExistingWebOnDemandApplyCandidate(selected, change, options = {}) {
@@ -5446,6 +5592,10 @@
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok || !payload?.ok) {
+        const promoted = await promoteExistingWebReadySubsetFromResolution(localResolution, changes, payload?.message || "AI補助確認を利用できませんでした。");
+        if (promoted) {
+          return payload || null;
+        }
         setExistingWebWorkflowManualReviewRequired(payload?.message || "AI補助確認を利用できませんでした。", {
           localResolution,
           providerResult: payload,
@@ -5481,6 +5631,10 @@
       }
       return result;
     } catch (error) {
+      const promoted = await promoteExistingWebReadySubsetFromResolution(localResolution, changes, "AI補助確認を利用できませんでした。");
+      if (promoted) {
+        return null;
+      }
       setExistingWebWorkflowManualReviewRequired("AI補助確認を利用できませんでした。", {
         localResolution,
         error: error?.message || String(error || ""),
@@ -5489,6 +5643,130 @@
     } finally {
       renderAll();
     }
+  }
+
+  async function promoteExistingWebReadySubsetFromResolution(localResolution, changes, fallbackMessage = "") {
+    const items = getExistingWebFinalResolutionItems(localResolution, changes);
+    const summary = summarizeExistingWebFinalResolutionItems(items, changes?.length || items.length);
+    const ready = getExistingWebReadyItemsForPreflight(items);
+    if (!ready.candidates.length || !window.TBalanceSafeApply?.runBatchApplyPreflight) {
+      return false;
+    }
+    const preflight = localResolution?.batchPreflight?.ok && Number(localResolution.batchPreflight.summary?.totalCandidates || localResolution.batchPreflight.operations?.length || 0) === ready.candidates.length
+      ? localResolution.batchPreflight
+      : await window.TBalanceSafeApply.runBatchApplyPreflight({
+          candidates: ready.candidates,
+          approvedSignatures: ready.approvedSignatures,
+          sourceWriterClient: getSafeApplyClient(),
+          createSignature: window.TBalanceSafePatch?.createCandidateSignature,
+        });
+    if (!preflight?.ok) {
+      return false;
+    }
+    state.analyzer.safeApply.preflight = preflight;
+    state.analyzer.safeApply.result = preflight;
+    state.analyzer.safeApply.diffText = preflight.diffText || "";
+    const normalizedResolution = {
+      ...localResolution,
+      status: summary.ready >= summary.total ? "ready_to_apply" : "mixed_ready",
+      ok: summary.ready >= summary.total,
+      summary: {
+        total: summary.total,
+        safe: summary.ready,
+        review: summary.review,
+        blocked: summary.review + summary.blocked,
+      },
+      batchPreflight: preflight,
+    };
+    state.existingWeb.impactAnalysis = buildExistingWebWorkflowImpactAnalysis(normalizedResolution, changes);
+    if (summary.ready >= summary.total) {
+      setExistingWebWorkflowReadyToApply(`${summary.ready}件を反映できます。`);
+    } else {
+      setExistingWebWorkflowMixedReady(localResolution.message || fallbackMessage || "反映可能な変更があります。要確認の変更は反映しません。");
+    }
+    renderAll();
+    return true;
+  }
+
+  function getExistingWebFinalResolutionItems(resolution, changes = []) {
+    const rawItems = Array.isArray(resolution?.changes) ? resolution.changes : [];
+    if (rawItems.length) {
+      return rawItems.map((item) => ({
+        change: item.change || changes.find((change) => change?.domRef === item.domRef || change?.domRef === item.target?.domRef) || null,
+        selected: item.selected || null,
+        resolution: item.resolution || item,
+      }));
+    }
+    return (changes || []).map((change) => ({
+      change,
+      selected: selectExistingWebElementForWorkflowChange(change),
+      resolution: resolution || {},
+    }));
+  }
+
+  function getExistingWebFinalItemCandidate(item) {
+    return item?.candidate
+      || item?.resolution?.patchResult?.candidate
+      || item?.resolution?.candidate
+      || null;
+  }
+
+  function isExistingWebFinalItemReady(item) {
+    const resolution = item?.resolution || item || {};
+    const status = String(resolution.status || item?.status || "").replace(/_/g, "-");
+    return Boolean(
+      resolution.ok
+      || item?.ok
+      || ["ready-for-review", "ready-to-apply", "safe", "safe-candidate"].includes(status)
+    );
+  }
+
+  function summarizeExistingWebFinalResolutionItems(items = [], fallbackTotal = 0) {
+    const total = Number(fallbackTotal || items.length || 0);
+    let ready = 0;
+    let blocked = 0;
+    let review = 0;
+    items.forEach((item) => {
+      if (isExistingWebFinalItemReady(item)) {
+        ready += 1;
+        return;
+      }
+      const resolution = item?.resolution || item || {};
+      const status = String(resolution.status || item?.status || "");
+      if (status === "blocked" || resolution.reason === "protected-property" || resolution.reason === "safe-change-blocked") {
+        blocked += 1;
+      } else {
+        review += 1;
+      }
+    });
+    const missing = Math.max(0, total - items.length);
+    return { total, ready, review: review + missing, blocked };
+  }
+
+  function getExistingWebReadyItemsForPreflight(items = []) {
+    const candidates = [];
+    const approvedSignatures = {};
+    items.forEach((item) => {
+      if (!isExistingWebFinalItemReady(item)) {
+        return;
+      }
+      const candidate = getExistingWebFinalItemCandidate(item);
+      if (!candidate || candidate.status !== "ready-for-review") {
+        return;
+      }
+      candidate.review = {
+        ...(candidate.review || {}),
+        status: "approved",
+        approvedAt: candidate.review?.approvedAt || new Date().toISOString(),
+        rejectedAt: null,
+        approvedSignature: candidate.signature,
+      };
+      candidates.push(candidate);
+      if (candidate.signature) {
+        approvedSignatures[candidate.signature] = candidate.signature;
+      }
+    });
+    return { candidates, approvedSignatures };
   }
 
   function canUseAutomaticSafetyReview(resolution) {
@@ -5518,24 +5796,35 @@
     }
     const items = Array.isArray(revalidation.items) ? revalidation.items : [];
     if (changes.length > 1) {
+      const mappedChanges = changes.map((change) => {
+        const item = items.find((entry) => entry.change?.domRef === change.domRef && entry.change?.property === change.property) || {};
+        const resolution = item.ok === false
+          ? {
+              ok: false,
+              status: item.status || "review_required",
+              reason: item.reason || "ai-revalidation-required",
+              message: item.message || item.reason || "この変更は追加確認が必要です。",
+            }
+          : item.resolution || { ok: true, status: "ready-to-apply", message: "AI候補を再検証済みです。" };
+        return {
+          change,
+          selected: item.selected || selectExistingWebElementForWorkflowChange(change),
+          resolution,
+        };
+      });
+      const finalSummary = summarizeExistingWebFinalResolutionItems(mappedChanges, changes.length);
       return {
         ok: true,
         batch: true,
-        status: "ready_to_apply",
+        status: finalSummary.ready >= finalSummary.total ? "ready_to_apply" : "mixed_ready",
         message: revalidation.message || "AI候補をTBalanceで再確認しました。",
-        changes: changes.map((change) => {
-          const item = items.find((entry) => entry.change?.domRef === change.domRef && entry.change?.property === change.property) || {};
-          return {
-            change,
-            selected: item.selected || selectExistingWebElementForWorkflowChange(change),
-            resolution: item.resolution || { ok: true, status: "ready-to-apply", message: "AI候補を再検証済みです。" },
-          };
-        }),
+        changes: mappedChanges,
         batchPreflight: revalidation.preflight || null,
         summary: {
-          total: changes.length,
-          safe: changes.length,
-          blocked: 0,
+          total: finalSummary.total,
+          safe: finalSummary.ready,
+          review: finalSummary.review,
+          blocked: finalSummary.review + finalSummary.blocked,
         },
       };
     }
@@ -5886,7 +6175,11 @@
       };
     }
     if (requiresSourceRevalidation) {
-      setExistingWebWorkflowReadyToApply(revalidation.message || "AI候補をTBalanceで再確認しました。変更を反映できます。");
+      if (revalidation.status === "mixed_ready") {
+        setExistingWebWorkflowMixedReady(revalidation.message || "反映可能なAI候補があります。要確認の変更は反映しません。");
+      } else {
+        setExistingWebWorkflowReadyToApply(revalidation.message || "AI候補をTBalanceで再確認しました。変更を反映できます。");
+      }
       renderAll();
     }
     return {
@@ -6172,6 +6465,33 @@
     const blocked = items.filter((item) => !item.ok);
     const firstBlocked = blocked[0] || null;
     if (blocked.length || candidates.length !== changes.length) {
+      if (candidates.length && window.TBalanceSafeApply?.runBatchApplyPreflight) {
+        const preflight = await window.TBalanceSafeApply.runBatchApplyPreflight({
+          candidates,
+          approvedSignatures,
+          sourceWriterClient: getSafeApplyClient(),
+          createSignature: window.TBalanceSafePatch?.createCandidateSignature,
+        });
+        state.analyzer.safeApply.preflight = preflight?.ok ? preflight : null;
+        state.analyzer.safeApply.result = preflight || null;
+        state.analyzer.safeApply.diffText = preflight?.diffText || "";
+        setSafeApplyStatus(
+          preflight?.ok ? (preflight.status || "ready-to-apply") : (preflight?.status || "failed"),
+          preflight?.ok
+            ? `${candidates.length}件だけ反映可能です。要確認の変更は反映しません。`
+            : preflight?.message || "反映可能なAI候補のPreflightが通りませんでした。",
+        );
+        if (preflight?.ok) {
+          return {
+            ok: true,
+            status: "mixed_ready",
+            message: `${changes.length}件中${candidates.length}件を反映できます。${blocked.length || changes.length - candidates.length}件は要確認です。`,
+            items,
+            preflight,
+            summary: { total: changes.length, safe: candidates.length, blocked: blocked.length || changes.length - candidates.length },
+          };
+        }
+      }
       return {
         ok: false,
         status: "review_required",
@@ -6842,6 +7162,7 @@
     if (action === "size-larger") resizeExistingWebSelection(10, 10);
     if (action === "reset-preview") resetExistingWebPreview();
     if (action === "safe-change") handleExistingWebMainAction();
+    if (action === "safe-change-retry") analyzeExistingWebWorkflowChanges();
     if (action === "workflow-tab") setExistingWebWorkflowTab(actionSource?.dataset?.existingWebWorkflowTab || "layers");
   }
 
@@ -15013,19 +15334,24 @@
     if (state.editorMode === "custom") {
       return "";
     }
-    const workflow = getExistingWebWorkflow();
+    const workflow = recoverExistingWebWorkflowStateFromRuntime();
     const count = getExistingWebPreviewChangeCount();
     const status = count ? workflow.status : "clean";
+    const eligibility = getExistingWebWorkflowEligibility(status, count);
+    const readyCount = eligibility.readyCount;
+    const pendingCount = eligibility.pendingCount;
     const statusLabel = status === "dirty"
       ? `変更あり ${count}件`
     : status === "analyzing"
         ? `${count}件の変更を確認中`
         : status === "ready_to_apply"
-          ? `変更確認済み ${count}件`
+          ? `変更確認済み ${readyCount || count}件`
+          : status === "mixed_ready"
+            ? `反映可能 ${readyCount}件 / 要確認 ${pendingCount}件`
           : status === "review_required"
             ? getExistingWebReviewStatusLabel(workflow, count)
             : status === "manual_review_required"
-              ? "自動確認できませんでした"
+              ? "要確認"
             : status === "applying"
               ? "反映中"
               : status === "ai_reviewing"
@@ -15035,14 +15361,21 @@
               : "変更なし";
     const buttonLabel = status === "ready_to_apply"
       ? "変更を反映"
+      : status === "mixed_ready"
+        ? `確認済み${readyCount}件を反映`
       : status === "review_required"
         ? "変更を確認"
-        : status === "manual_review_required"
-          ? "詳細を見る"
+      : status === "manual_review_required"
+          ? "要確認だけ再試行"
         : status === "ai_reviewing"
           ? "変更を確認"
           : "変更を確認";
-    const disabled = !["dirty", "ready_to_apply", "review_required", "manual_review_required"].includes(status);
+    const canApply = eligibility.canApply;
+    const canRetry = ["dirty", "review_required", "manual_review_required"].includes(status);
+    const disabled = canApply ? false : !canRetry;
+    const primaryAction = "safe-change";
+    const nextText = getExistingWebWorkflowNextActionText(status, eligibility, workflow);
+    const retryLabel = pendingCount === 1 ? "要確認1件だけ再試行" : `要確認${pendingCount}件だけ再試行`;
     const tabs = [
       ["layers", "レイヤー"],
       ["adjust", "調整"],
@@ -15056,15 +15389,62 @@
           `).join("")}
         </div>
         <div class="tb-existing-web-main-action">
-          <span>${escapeHtml(statusLabel)}</span>
-          <button type="button" data-existing-web-action="${status === "manual_review_required" ? "workflow-tab" : "safe-change"}" class="${status === "ready_to_apply" ? "is-apply" : ""}"${status === "manual_review_required" ? " data-existing-web-workflow-tab=\"analysis\"" : ""}${disabled ? " disabled" : ""}>${escapeHtml(buttonLabel)}</button>
+          <span class="tb-existing-web-main-status">${escapeHtml(statusLabel)}</span>
+          <button type="button" data-existing-web-action="${primaryAction}" class="${["ready_to_apply", "mixed_ready"].includes(status) ? "is-apply" : ""}"${disabled ? " disabled" : ""}>${escapeHtml(buttonLabel)}</button>
         </div>
+        ${nextText ? `<p class="tb-existing-web-next-action">${escapeHtml(nextText)}</p>` : ""}
         <div class="tb-existing-web-secondary-actions">
+          ${status === "manual_review_required" ? `<button type="button" data-existing-web-action="workflow-tab" data-existing-web-workflow-tab="analysis">詳細を見る</button>` : ""}
+          ${status === "mixed_ready" && pendingCount > 0 ? `<button type="button" data-existing-web-action="safe-change-retry">${escapeHtml(retryLabel)}</button>` : ""}
           <button type="button" data-existing-web-action="reset-preview"${count ? "" : " disabled"}>変更をすべて元に戻す</button>
         </div>
         ${workflow.message ? `<p>${escapeHtml(workflow.message)}</p>` : ""}
       </section>
     `;
+  }
+
+  function getExistingWebWorkflowEligibility(status = "", count = getExistingWebPreviewChangeCount()) {
+    const preflight = state.analyzer.safeApply?.preflight || null;
+    const preflightReadyCount = preflight?.ok
+      ? Number(preflight.summary?.totalCandidates || preflight.operations?.length || 0)
+      : 0;
+    const impact = state.existingWeb.impactAnalysis || null;
+    const impactReadyCount = Number(impact?.summary?.safe || 0);
+    const impactReviewCount = Number(impact?.summary?.review || 0);
+    const itemReadyCount = Array.isArray(impact?.items)
+      ? impact.items.filter((item) => item?.status === "safe" || item?.resolution?.ok).length
+      : 0;
+    const readyCount = preflightReadyCount || impactReadyCount || itemReadyCount || (status === "ready_to_apply" ? count : 0);
+    const pendingCount = Math.max(0, count - readyCount);
+    return {
+      status,
+      totalCount: count,
+      readyCount,
+      reviewCount: impactReviewCount || (["review_required", "manual_review_required", "mixed_ready"].includes(status) ? pendingCount : 0),
+      blockedCount: Number(impact?.summary?.blocked || 0),
+      pendingCount,
+      preflightPassed: Boolean(preflight?.ok),
+      canApply: ["ready_to_apply", "mixed_ready"].includes(status) && readyCount > 0,
+      applyBatchId: preflight?.batchApplyVersion ? (preflight.candidateSignatures || []).join("|") : (preflight?.candidateSignature || ""),
+    };
+  }
+
+  function getExistingWebWorkflowNextActionText(status, eligibility, workflow) {
+    if (status === "ready_to_apply") {
+      return `${eligibility.readyCount || eligibility.totalCount}件を反映できます。次の操作: 変更を反映`;
+    }
+    if (status === "mixed_ready") {
+      return `${eligibility.readyCount}件は反映できます。${eligibility.pendingCount}件は確認が必要です。`;
+    }
+    if (status === "manual_review_required" || status === "review_required") {
+      return eligibility.readyCount > 0
+        ? `${eligibility.readyCount}件は反映できます。要確認の変更は反映しません。`
+        : (workflow.message || "確認できませんでした。要確認の変更を再試行できます。");
+    }
+    if (status === "ai_reviewing" || status === "ai_response_imported" || status === "analyzing") {
+      return "確認が終わるまでお待ちください。";
+    }
+    return "";
   }
 
   function getExistingWebReviewStatusLabel(workflow, count) {
@@ -15073,6 +15453,18 @@
       return `${match[1]}件中${match[2]}件に確認が必要`;
     }
     return count ? `${count}件に確認が必要` : "要確認";
+  }
+
+  function getExistingWebWorkflowReadyCount() {
+    const preflight = state.analyzer.safeApply?.preflight;
+    if (preflight?.ok) {
+      return Number(preflight.summary?.totalCandidates || preflight.operations?.length || 0);
+    }
+    const impact = state.existingWeb.impactAnalysis;
+    if (impact?.summary) {
+      return Number(impact.summary.safe || 0);
+    }
+    return getExistingWebWorkflow().status === "ready_to_apply" ? getExistingWebPreviewChangeCount() : 0;
   }
 
   function buildExistingWebAnalysisPanel() {
@@ -15087,10 +15479,10 @@
           <h3>変更後の影響分析</h3>
           <p>${escapeHtml(impact.intent || "")}</p>
           ${buildExistingWebBatchImpactHtml(impact)}
-          ${workflow.status === "ready_to_apply"
+          ${["ready_to_apply", "mixed_ready"].includes(workflow.status)
             ? `<p class="tb-existing-web-preview-note">Sourceへ反映できます。反映前に確認Dialogを表示します。</p>`
             : `<p class="tb-existing-web-preview-note">${escapeHtml(workflow.message || "Source反映には追加確認が必要です。")}</p>`}
-          ${buildExistingWebSafetyAiDiagnosticHtml(workflow.lastResult?.safetyAiDiagnostic)}
+          ${["ready_to_apply", "mixed_ready"].includes(workflow.status) ? "" : buildExistingWebSafetyAiDiagnosticHtml(workflow.lastResult?.safetyAiDiagnostic)}
         </article>
       `;
     }
@@ -15099,10 +15491,10 @@
         <h3>変更後の影響分析</h3>
         <p>${escapeHtml(impact.intent || "")}</p>
         ${buildExistingWebImpactHtml(impact)}
-        ${workflow.status === "ready_to_apply"
+        ${["ready_to_apply", "mixed_ready"].includes(workflow.status)
           ? `<p class="tb-existing-web-preview-note">Sourceへ反映できます。反映前に確認Dialogを表示します。</p>`
           : `<p class="tb-existing-web-preview-note">${escapeHtml(workflow.message || "Source反映には追加確認が必要です。")}</p>`}
-        ${buildExistingWebSafetyAiDiagnosticHtml(workflow.lastResult?.safetyAiDiagnostic)}
+        ${["ready_to_apply", "mixed_ready"].includes(workflow.status) ? "" : buildExistingWebSafetyAiDiagnosticHtml(workflow.lastResult?.safetyAiDiagnostic)}
       </article>
     `;
   }
@@ -15165,28 +15557,31 @@
       const item = resolution?.changes?.[0] || {};
       return buildExistingWebImpactAnalysis(item.selected || state.existingWeb.selected, item.change || changes?.[0], resolution);
     }
+    const items = (resolution.changes || []).map((item) => {
+      const selected = item.selected;
+      const change = item.change;
+      const itemResolution = item.resolution || {};
+      return {
+        title: selected ? getExistingWebSelectionTitle(selected) : change?.domRef || "変更",
+        domRef: change?.domRef || selected?.domRef || "",
+        preview: change,
+        status: isExistingWebFinalItemReady(item) ? "safe" : "review_required",
+        message: isExistingWebFinalItemReady(item) ? "反映可能" : getExistingWebReviewRequiredMessage(itemResolution),
+        source: summarizeExistingWebSourceResolution(itemResolution),
+      };
+    });
+    const finalSummary = summarizeExistingWebFinalResolutionItems(getExistingWebFinalResolutionItems(resolution, changes), changes.length);
     return {
       batch: true,
       intent: `変更 ${changes.length}件`,
-      status: resolution.ok ? "ready_to_apply" : "review_required",
-      summary: resolution.summary || {
-        total: changes.length,
-        safe: resolution.ok ? changes.length : 0,
-        blocked: resolution.ok ? 0 : changes.length,
+      status: resolution.status || (resolution.ok ? "ready_to_apply" : "review_required"),
+      summary: {
+        total: finalSummary.total,
+        safe: finalSummary.ready,
+        review: finalSummary.review,
+        blocked: finalSummary.review + finalSummary.blocked,
       },
-      items: (resolution.changes || []).map((item) => {
-        const selected = item.selected;
-        const change = item.change;
-        const itemResolution = item.resolution || {};
-        return {
-          title: selected ? getExistingWebSelectionTitle(selected) : change?.domRef || "変更",
-          domRef: change?.domRef || selected?.domRef || "",
-          preview: change,
-          status: itemResolution.ok ? "safe" : "review_required",
-          message: itemResolution.ok ? "反映可能" : getExistingWebReviewRequiredMessage(itemResolution),
-          source: summarizeExistingWebSourceResolution(itemResolution),
-        };
-      }),
+      items,
       preflight: resolution.batchPreflight || null,
       message: resolution.message || "",
     };
@@ -15194,11 +15589,13 @@
 
   function buildExistingWebBatchImpactHtml(impact) {
     const summary = impact.summary || {};
+    const blockedCount = Number(summary.blocked || 0);
+    const safeCount = Number(summary.safe || 0);
     return `
       <section class="tb-existing-web-impact">
         <header>
           <strong>変更 ${Number(summary.total || impact.items?.length || 0)}件</strong>
-          <span>${Number(summary.safe || 0)}件反映可能 / ${Number(summary.blocked || 0)}件要確認</span>
+          <span>${safeCount}件反映可能${blockedCount ? ` / ${blockedCount}件要確認` : ""}</span>
         </header>
         <dl class="tb-existing-web-normal-checks">
           ${(impact.items || []).map((item) => `

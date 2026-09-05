@@ -4368,28 +4368,32 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
 
 .tb-existing-web-main-action {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 124px;
+  grid-template-columns: minmax(0, 1fr) minmax(124px, 148px);
   gap: 8px;
-  align-items: center;
+  align-items: start;
 }
 
-.tb-existing-web-main-action span {
-  overflow: hidden;
+.tb-existing-web-main-status {
+  overflow: visible;
   color: #d9edf2;
   font-size: 12px;
   font-weight: 900;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .tb-existing-web-main-action button {
   min-height: 34px;
   border: 1px solid rgba(34, 211, 238, 0.42);
   border-radius: 7px;
+  padding: 6px 8px;
   background: rgba(15, 91, 98, 0.82);
   color: #e8fbfb;
   font-size: 12px;
   font-weight: 900;
+  line-height: 1.25;
+  white-space: normal;
 }
 
 .tb-existing-web-main-action button.is-apply {
@@ -4405,6 +4409,8 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
 
 .tb-existing-web-secondary-actions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   justify-content: flex-end;
 }
 
@@ -4429,6 +4435,11 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   color: #9fb4c9;
   font-size: 11px;
   line-height: 1.45;
+}
+
+.tb-existing-web-workflow .tb-existing-web-next-action {
+  color: #d4f7e3;
+  font-weight: 800;
 }
 
 .tb-existing-web-virtual-list {
@@ -4547,6 +4558,11 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
 }
 
 .tb-existing-web-virtual-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: max-content;
+  max-width: 100%;
   border: 1px solid rgba(148, 163, 184, 0.24);
   border-radius: 999px;
   padding: 3px 6px;
