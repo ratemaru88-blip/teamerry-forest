@@ -375,6 +375,8 @@ function normalizeSafetyReviewResponse(response, request = {}) {
     sourcePath: response.sourcePath || page.sourcePath || "",
     viewState: response.viewState || page.viewState || "",
     sourceFingerprint: response.sourceFingerprint || request.fingerprint || page.sourceFingerprint || "",
+    sourceSnapshotRevision: response.sourceSnapshotRevision || request.sourceSnapshotRevision || page.sourceSnapshotRevision || "",
+    sourceSnapshotFingerprint: response.sourceSnapshotFingerprint || request.sourceSnapshotFingerprint || page.sourceSnapshotFingerprint || "",
     requestRevision: response.requestRevision || request.revision || page.requestRevision || "",
     status: normalizeStatus(response.status),
     targets: targets.map((target) => ({
@@ -430,7 +432,8 @@ function buildSafetyReviewPrompt(request = {}) {
     "The source files have NOT been changed.",
     "BEFORE_VISUAL is the state before the user edit.",
     "AFTER_PREVIEW is the runtime-only preview state.",
-    "SOURCE_DECLARATIONS are the unchanged original source values.",
+    "SOURCE_DECLARATIONS are fresh literal values re-read from the local source files immediately before this review.",
+    "SOURCE_DECLARATIONS are not computedStyle, cached analyzer values, or runtime preview values.",
     "Do not interpret an original source value as the requested after value merely because its computed position is numerically similar.",
     "Use the current viewport mode and active media-query state when selecting candidates.",
     "Inactive responsive rules are context only; do not treat them as equal current-view candidates.",
@@ -444,6 +447,8 @@ function buildSafetyReviewPrompt(request = {}) {
       sourcePath: reviewPackage.page?.sourcePath || "",
       viewState: reviewPackage.page?.viewState || "",
       sourceFingerprint: request.fingerprint || reviewPackage.page?.sourceFingerprint || "",
+      sourceSnapshotRevision: request.sourceSnapshotRevision || reviewPackage.page?.sourceSnapshotRevision || "",
+      sourceSnapshotFingerprint: request.sourceSnapshotFingerprint || reviewPackage.page?.sourceSnapshotFingerprint || "",
       requestRevision: request.revision || reviewPackage.page?.requestRevision || "",
       status: "safe-candidate|unresolved|unsafe",
       targets: [{

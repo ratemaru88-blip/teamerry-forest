@@ -370,12 +370,22 @@
       if (!currentSource?.ok) {
         return block(currentSource?.errorCode || "source-read-failed", currentSource?.error || "Source Writer read failed.", { currentSource, sourcePath });
       }
-      let expectedSource = currentSource.content;
+      const originalSource = currentSource.content;
+      let expectedSource = originalSource;
+      const resolvedEntries = [];
       const sourceChanges = [];
       for (const entry of entries) {
         const operation = entry.operation;
         const sourceRef = operation.sourceRef || operation.source || {};
-        const resolution = resolveCssDeclaration(expectedSource, {
+        const expectedFingerprint = operation.resolvedCandidate?.sourceSnapshotFingerprint
+          || operation.resolvedCandidate?.sourceFingerprint
+          || sourceRef.sourceSnapshotFingerprint
+          || sourceRef.sourceFingerprint
+          || "";
+        if (expectedFingerprint && currentSource.sha256 && expectedFingerprint !== currentSource.sha256) {
+          return block("stale-source", "AI候補のSource fingerprintが現在Sourceと一致しません。", { sourcePath, currentSource, entry, expectedFingerprint });
+        }
+        const resolution = resolveCssDeclaration(originalSource, {
           selector: sourceRef.selector,
           property: operation.property,
           media: sourceRef.media || operation.source?.media || "",
@@ -389,11 +399,24 @@
           }
           return block("before-mismatch", "Apply直前のSource値がCandidate beforeと一致しません。", { sourcePath, resolution, entry });
         }
-        const expected = buildExpectedSource(expectedSource, resolution.declaration, operation.after, operation.priority || resolution.declaration.priority || "");
+        resolvedEntries.push({ entry, resolution });
+      }
+      for (const { entry, resolution } of resolvedEntries) {
+        const operation = entry.operation;
+        const sourceRef = operation.sourceRef || operation.source || {};
+        const currentResolution = resolveCssDeclaration(expectedSource, {
+          selector: sourceRef.selector,
+          property: operation.property,
+          media: sourceRef.media || operation.source?.media || "",
+        });
+        if (currentResolution.status !== "resolved") {
+          return block(currentResolution.reason || currentResolution.status, currentResolution.message || "CSS DeclarationをExpected Source上で一意に解決できません。", { sourcePath, resolution: currentResolution, entry });
+        }
+        const expected = buildExpectedSource(expectedSource, currentResolution.declaration, operation.after, operation.priority || currentResolution.declaration.priority || "");
         if (!expected.ok) {
           return block(expected.reason || "expected-source-failed", expected.message || "Expected Sourceを生成できません。", { sourcePath, resolution, entry });
         }
-        const diffValidation = validateSingleDeclarationDiff(expectedSource, expected.content, operation, resolution.declaration);
+        const diffValidation = validateSingleDeclarationDiff(expectedSource, expected.content, operation, currentResolution.declaration);
         if (!diffValidation.ok) {
           return block(diffValidation.reason || "unexpected-diff", diffValidation.message || "Expected Diffが1 Declarationだけではありません。", { sourcePath, resolution, expected, entry });
         }

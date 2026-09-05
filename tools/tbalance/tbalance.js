@@ -4669,7 +4669,7 @@
     renderAll();
   }
 
-  function prepareExistingWebWorkflowAiReview() {
+  async function prepareExistingWebWorkflowAiReview() {
     const changes = getExistingWebWorkflowChanges();
     if (!changes.length) {
       markExistingWebWorkflowDirty("AI確認する変更がありません。");
@@ -4682,7 +4682,7 @@
       renderAll();
       return;
     }
-    const packageData = buildExistingWebWorkflowAiReviewPackage(changes);
+    const packageData = await buildFreshExistingWebWorkflowAiReviewPackage(changes);
     state.withAiShare.mode = "existing-web-ai-review";
     state.withAiShare.package = packageData;
     state.withAiShare.text = formatExistingWebAiReviewText(packageData);
@@ -4698,6 +4698,12 @@
     refreshAiCollabPanel();
     showModeToast("AI確認用Packageを準備しました。");
     renderAll();
+  }
+
+  async function buildFreshExistingWebWorkflowAiReviewPackage(changes) {
+    const packageData = buildExistingWebWorkflowAiReviewPackage(changes);
+    await refreshExistingWebAiReviewPackageSourceDeclarations(packageData);
+    return packageData;
   }
 
   function buildExistingWebWorkflowAiReviewPackage(changes) {
@@ -4997,6 +5003,158 @@
     };
   }
 
+  async function refreshExistingWebAiReviewPackageSourceDeclarations(packageData) {
+    const targets = Array.isArray(packageData?.targets)
+      ? packageData.targets
+      : packageData?.target
+        ? [packageData]
+        : [];
+    const sourcePaths = new Set();
+    targets.forEach((targetPackage) => {
+      collectExistingWebAiSourceDeclarationItems(targetPackage).forEach((item) => {
+        const sourcePath = normalizeExistingWebSourcePath(item.sourcePath || item.path || "");
+        if (sourcePath && sourcePath.toLowerCase().endsWith(".css") && item.sourceType !== "inline-style") {
+          sourcePaths.add(sourcePath);
+        }
+      });
+    });
+    const sourceSnapshots = {};
+    for (const sourcePath of sourcePaths) {
+      sourceSnapshots[sourcePath] = await readExistingWebFreshSource(sourcePath);
+    }
+    targets.forEach((targetPackage) => {
+      refreshExistingWebAiTargetSourceDeclarations(targetPackage, sourceSnapshots);
+    });
+    const revisionParts = Object.entries(sourceSnapshots)
+      .map(([sourcePath, snapshot]) => `${sourcePath}:${snapshot?.sha256 || snapshot?.errorCode || "unread"}`)
+      .sort();
+    const sourceSnapshotRevision = revisionParts.length ? createStableHash(revisionParts.join("|")) : "";
+    const page = packageData.page || {};
+    packageData.page = {
+      ...page,
+      sourceSnapshotRevision,
+      sourceSnapshotFingerprint: sourceSnapshotRevision,
+      sourceFiles: Object.fromEntries(Object.entries(sourceSnapshots).map(([sourcePath, snapshot]) => [sourcePath, {
+        path: sourcePath,
+        sha256: snapshot?.sha256 || "",
+        ok: Boolean(snapshot?.ok),
+        errorCode: snapshot?.errorCode || "",
+      }])),
+    };
+    packageData.sourceSnapshotRevision = sourceSnapshotRevision;
+    packageData.sourceSnapshotFingerprint = sourceSnapshotRevision;
+    if (packageData.responseFormat) {
+      packageData.responseFormat = {
+        ...packageData.responseFormat,
+        sourceSnapshotRevision,
+        sourceSnapshotFingerprint: sourceSnapshotRevision,
+      };
+    }
+    return packageData;
+  }
+
+  function collectExistingWebAiSourceDeclarationItems(targetPackage = {}) {
+    const provenance = targetPackage.sourceProvenance || {};
+    const declarations = provenance.sourceDeclarations || {};
+    const items = [];
+    [
+      declarations.sourceDeclarations,
+      declarations.activeMatchedRules,
+      declarations.inactiveResponsiveRules,
+      declarations.inlineStyle,
+      declarations.winningDeclaration ? [declarations.winningDeclaration] : [],
+    ].forEach((list) => {
+      (Array.isArray(list) ? list : []).forEach((item) => {
+        if (item && typeof item === "object") {
+          items.push(item);
+        }
+      });
+    });
+    return items;
+  }
+
+  function refreshExistingWebAiTargetSourceDeclarations(targetPackage, sourceSnapshots) {
+    const items = collectExistingWebAiSourceDeclarationItems(targetPackage);
+    items.forEach((item) => {
+      refreshExistingWebAiSourceDeclarationItem(item, sourceSnapshots);
+    });
+    const provenance = targetPackage.sourceProvenance || {};
+    const declarations = provenance.sourceDeclarations || {};
+    const sourceFreshness = summarizeExistingWebSourceDeclarationFreshness(items);
+    const hasFreshSource = sourceFreshness.fresh > 0 || sourceFreshness.refreshed > 0;
+    targetPackage.sourceProvenance = {
+      ...provenance,
+      status: hasFreshSource ? "fresh-source-declarations" : provenance.status,
+      reason: hasFreshSource ? "" : provenance.reason,
+      message: hasFreshSource ? "Source declarations were re-read from current local source immediately before AI review." : provenance.message,
+      sourceResolution: hasFreshSource ? {
+        status: "fresh-source-declarations",
+        reason: "",
+        message: "Current local source declarations are the canonical before values for this AI review package.",
+      } : provenance.sourceResolution,
+      sourceDeclarations: {
+        ...declarations,
+        sourceFreshness,
+      },
+    };
+  }
+
+  function refreshExistingWebAiSourceDeclarationItem(item, sourceSnapshots) {
+    const sourcePath = normalizeExistingWebSourcePath(item.sourcePath || item.path || "");
+    const snapshot = sourceSnapshots[sourcePath];
+    const previousSourceValue = item.sourceValue || item.value || "";
+    item.sourceSnapshotPath = sourcePath;
+    item.sourceSnapshotRevision = snapshot?.sha256 || "";
+    item.sourceFingerprint = snapshot?.sha256 || "";
+    if (!snapshot?.ok) {
+      item.sourceFreshness = {
+        status: "unreadable",
+        errorCode: snapshot?.errorCode || "source-read-failed",
+        message: snapshot?.message || "Sourceを再読込できませんでした。",
+      };
+      return item;
+    }
+    const declaration = findCssDeclarationInFreshSource(snapshot.content || "", {
+      selector: item.selector || "",
+      property: item.property || "",
+      media: item.mediaQuery || item.media || "",
+    });
+    if (!declaration) {
+      item.sourceFreshness = {
+        status: "missing-declaration",
+        message: "現在Sourceからselector/propertyを確認できませんでした。",
+      };
+      return item;
+    }
+    item.sourceValue = declaration.value;
+    item.media = declaration.media || "";
+    item.mediaQuery = declaration.media || "";
+    item.sourceFreshness = {
+      status: "fresh-source",
+      currentSourceValue: declaration.value,
+      changedFromCachedSnapshot: Boolean(previousSourceValue && previousSourceValue !== declaration.value),
+    };
+    return item;
+  }
+
+  function summarizeExistingWebSourceDeclarationFreshness(items = []) {
+    const summary = {
+      total: items.length,
+      fresh: 0,
+      refreshed: 0,
+      unreadable: 0,
+      missing: 0,
+    };
+    items.forEach((item) => {
+      const status = item?.sourceFreshness?.status || "";
+      if (status === "fresh-source") summary.fresh += 1;
+      else if (status === "refreshed-from-source") summary.refreshed += 1;
+      else if (status === "unreadable") summary.unreadable += 1;
+      else if (status === "missing-declaration") summary.missing += 1;
+    });
+    return summary;
+  }
+
   function formatExistingWebAiSourceDeclaration(candidate = {}) {
     return {
       sourcePath: candidate.sourcePath || candidate.path || "",
@@ -5013,6 +5171,161 @@
       sourceType: candidate.kind || "stylesheet-rule",
       priority: candidate.priority || "",
     };
+  }
+
+  async function readExistingWebFreshSource(sourcePath) {
+    const normalizedPath = normalizeExistingWebSourcePath(sourcePath);
+    if (!normalizedPath || !normalizedPath.toLowerCase().endsWith(".css")) {
+      return { ok: false, path: normalizedPath, errorCode: "unsupported-source-type", message: "CSS Sourceだけ再読込できます。" };
+    }
+    try {
+      const response = await fetch(`${SOURCE_WRITER_URL}/read`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: normalizedPath }),
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload?.ok) {
+        return {
+          ok: false,
+          path: normalizedPath,
+          errorCode: payload?.errorCode || `http-${response.status}`,
+          message: payload?.error || payload?.message || "Sourceを再読込できませんでした。",
+        };
+      }
+      return {
+        ok: true,
+        path: normalizeExistingWebSourcePath(payload.path || normalizedPath),
+        sha256: payload.sha256 || "",
+        revision: payload.sha256 || "",
+        content: String(payload.content || ""),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        path: normalizedPath,
+        errorCode: "source-read-failed",
+        message: error?.message || String(error || ""),
+      };
+    }
+  }
+
+  async function readExistingWebFreshCssDeclaration(sourceChange) {
+    const sourcePath = normalizeExistingWebSourcePath(sourceChange?.sourcePath || sourceChange?.path || "");
+    const snapshot = await readExistingWebFreshSource(sourcePath);
+    if (!snapshot.ok) {
+      return { ok: false, snapshot, reason: snapshot.errorCode || "source-read-failed", message: snapshot.message || "Sourceを再読込できませんでした。" };
+    }
+    const declaration = findCssDeclarationInFreshSource(snapshot.content || "", {
+      selector: sourceChange.selector || "",
+      property: sourceChange.property || "",
+      media: sourceChange.media || sourceChange.mediaQuery || "",
+    });
+    if (!declaration) {
+      return {
+        ok: false,
+        snapshot,
+        reason: "source-declaration-not-found",
+        message: "現在SourceからAI候補のselector/propertyを確認できません。",
+      };
+    }
+    return { ok: true, snapshot, declaration };
+  }
+
+  function findCssDeclarationInFreshSource(cssText, query = {}) {
+    const selector = normalizeCssSelectorText(query.selector);
+    const property = String(query.property || "").trim().toLowerCase();
+    const media = normalizeCssMediaText(query.media || "");
+    if (!selector || !property) {
+      return null;
+    }
+    const rules = parseCssSourceRules(cssText);
+    const exactMatches = rules.filter((rule) => (
+      normalizeCssSelectorText(rule.selector) === selector
+      && rule.declarations.some((declaration) => declaration.property === property)
+      && normalizeCssMediaText(rule.media) === media
+    ));
+    const matches = exactMatches.length ? exactMatches : rules.filter((rule) => (
+      cssSelectorListContains(rule.selector, selector)
+      && rule.declarations.some((declaration) => declaration.property === property)
+      && normalizeCssMediaText(rule.media) === media
+    ));
+    const rule = matches[matches.length - 1] || null;
+    const declaration = rule?.declarations.find((item) => item.property === property);
+    return declaration ? { selector: rule.selector, property, value: declaration.value, priority: declaration.priority || "", media: rule.media || "" } : null;
+  }
+
+  function parseCssSourceRules(cssText, mediaText = "") {
+    const text = String(cssText || "").replace(/\/\*[\s\S]*?\*\//g, "");
+    const rules = [];
+    let cursor = 0;
+    while (cursor < text.length) {
+      const open = text.indexOf("{", cursor);
+      if (open === -1) {
+        break;
+      }
+      const head = text.slice(cursor, open).trim();
+      const close = findMatchingCssBrace(text, open);
+      if (close === -1) {
+        break;
+      }
+      const body = text.slice(open + 1, close);
+      if (/^@(media|supports)\b/i.test(head)) {
+        const condition = head.replace(/^@(media|supports)\s*/i, "").trim();
+        rules.push(...parseCssSourceRules(body, condition || mediaText));
+      } else if (!head.startsWith("@")) {
+        rules.push({
+          selector: head,
+          media: mediaText || "",
+          declarations: parseCssDeclarationsFromSourceBlock(body),
+        });
+      }
+      cursor = close + 1;
+    }
+    return rules;
+  }
+
+  function findMatchingCssBrace(text, openIndex) {
+    let depth = 0;
+    for (let index = openIndex; index < text.length; index += 1) {
+      const char = text[index];
+      if (char === "{") {
+        depth += 1;
+      } else if (char === "}") {
+        depth -= 1;
+        if (depth === 0) {
+          return index;
+        }
+      }
+    }
+    return -1;
+  }
+
+  function parseCssDeclarationsFromSourceBlock(block) {
+    return String(block || "").split(";").map((entry) => {
+      const colon = entry.indexOf(":");
+      if (colon === -1) {
+        return null;
+      }
+      const property = entry.slice(0, colon).trim().toLowerCase();
+      let value = entry.slice(colon + 1).trim();
+      const important = /\s*!important\s*$/i.test(value);
+      value = value.replace(/\s*!important\s*$/i, "").trim();
+      return property ? { property, value, priority: important ? "important" : "" } : null;
+    }).filter(Boolean);
+  }
+
+  function normalizeCssSelectorText(value) {
+    return String(value || "").trim().replace(/\s+/g, " ");
+  }
+
+  function normalizeCssMediaText(value) {
+    return String(value || "").trim().replace(/\s+/g, " ");
+  }
+
+  function cssSelectorListContains(selectorList, selector) {
+    const normalized = normalizeCssSelectorText(selector);
+    return String(selectorList || "").split(",").some((part) => normalizeCssSelectorText(part) === normalized);
   }
 
   function getExistingWebAiAnimationTransformRules(selected) {
@@ -5111,7 +5424,7 @@
       });
       return null;
     }
-    const packageData = buildExistingWebWorkflowAiReviewPackage(changes);
+    const packageData = await buildFreshExistingWebWorkflowAiReviewPackage(changes);
     const requestId = packageData.page?.requestRevision || createExistingWebAiRequestId(getExistingWebWorkflowAiRevisionSeed(changes));
     const signature = getExistingWebPreviewSignature();
     setExistingWebWorkflowAiReviewing("AIで確認中...", requestId);
@@ -5126,6 +5439,8 @@
           pageId: packageData.page?.pageId || state.existingWeb.pageId,
           revision: packageData.page?.requestRevision || requestId,
           fingerprint: packageData.page?.sourceFingerprint || getExistingWebFingerprint(),
+          sourceSnapshotRevision: packageData.page?.sourceSnapshotRevision || "",
+          sourceSnapshotFingerprint: packageData.page?.sourceSnapshotFingerprint || "",
           reviewPackage: packageData,
         }),
       });
@@ -5145,6 +5460,7 @@
       const result = await applyExistingWebAiReviewResult(payload.response || payload, {
         providerResult: payload,
         localResolution,
+        forceWorkflowRevalidation: true,
       });
       if (!result?.ok) {
         setExistingWebWorkflowManualReviewRequired(result?.message || "この変更は自動で安全確認できませんでした。", {
@@ -5349,6 +5665,7 @@
           : "各対象について position / width / height / click behavior をproperty単位で見てください。",
         "USER_INTENT / userEdit が、ユーザーが実際に行った編集操作の正本です。",
         "OBSERVED_RUNTIME / observedVisualChange には既存animation等のruntime motionが混ざる場合があります。",
+        "SOURCE_DECLARATIONS / sourceValue は送信直前にローカルSource Fileを再読込したliteral値です。computedStyleやRuntime Preview値ではありません。",
         "userEditに含まれないruntime motionをSource変更Intentとして扱わないでください。",
         "既存animation / transition / click behavior / navigation は保持してください。",
         "AIの回答だけで自動許可はしません。TBalance側でSource候補・Before値・Safe Patch/Apply Preflightを再検証します。",
@@ -5382,6 +5699,7 @@
         : "position / width / height / click behavior をproperty単位で見てください。",
       "USER_INTENT / userEdit が、ユーザーが実際に行った編集操作の正本です。",
       "OBSERVED_RUNTIME / observedVisualChange には既存animation等のruntime motionが混ざる場合があります。",
+      "SOURCE_DECLARATIONS / sourceValue は送信直前にローカルSource Fileを再読込したliteral値です。computedStyleやRuntime Preview値ではありません。",
       "userEditに含まれないruntime motionをSource変更Intentとして扱わないでください。",
       "既存animation / transition / click behavior / navigation は保持してください。",
       "AIの回答だけで自動許可はしません。TBalance側でSource候補・Before値・Safe Patch/Apply Preflightを再検証します。",
@@ -5508,7 +5826,7 @@
     if (!validation.ok) {
       return { ok: false, message: validation.message };
     }
-    const requiresSourceRevalidation = isExistingWebWorkflowAiReviewActive(normalized);
+    const requiresSourceRevalidation = Boolean(options.forceWorkflowRevalidation) || isExistingWebWorkflowAiReviewActive(normalized);
     if (requiresSourceRevalidation) {
       setExistingWebWorkflowAiImported("AI回答をTBalanceで再確認中です。");
     }
@@ -5636,6 +5954,8 @@
       sourcePath: normalizeExistingWebSourcePath(root.sourcePath || root.page?.sourcePath || ""),
       viewState: normalizeExistingWebViewState(root.viewState || root.page?.viewState || ""),
       sourceFingerprint: String(root.sourceFingerprint || root.page?.sourceFingerprint || ""),
+      sourceSnapshotRevision: String(root.sourceSnapshotRevision || root.page?.sourceSnapshotRevision || ""),
+      sourceSnapshotFingerprint: String(root.sourceSnapshotFingerprint || root.page?.sourceSnapshotFingerprint || ""),
       requestRevision: String(root.requestRevision || root.page?.requestRevision || ""),
       targets: targets.map((target) => normalizeExistingWebAiReviewTarget(target, root)).filter((target) => target.domRef),
       raw: payload,
@@ -5885,6 +6205,7 @@
           diagnostic: buildExistingWebAiRevalidationDiagnostic(normalized, changes, items, {
             reason: preflight.reason || "preflight-blocked",
             message: preflight.message || "AI候補のPreflightが通りませんでした。",
+            preflight,
           }),
         };
       }
@@ -5901,13 +6222,14 @@
         reason: preflight?.reason || "preflight-blocked",
         message: preflight?.message || "AI候補のPreflightが通りませんでした。",
         items,
-        preflight,
-        diagnostic: buildExistingWebAiRevalidationDiagnostic(normalized, changes, items, {
-          reason: preflight?.reason || "preflight-blocked",
-          message: preflight?.message || "AI候補のPreflightが通りませんでした。",
-        }),
-      };
-    }
+          preflight,
+          diagnostic: buildExistingWebAiRevalidationDiagnostic(normalized, changes, items, {
+            reason: preflight?.reason || "preflight-blocked",
+            message: preflight?.message || "AI候補のPreflightが通りませんでした。",
+            preflight,
+          }),
+        };
+      }
     return { ok: true, status: "ready_to_apply", message: "AI候補をTBalanceで再確認しました。変更を反映できます。", items, preflight };
   }
 
@@ -5954,7 +6276,7 @@
       return fail("property-not-revalidated", "AI回答後もこの変更Propertyは安全確認できませんでした。");
     }
     checks.push({ code: "property-revalidated", label: "property", ok: true, message: change.property || "" });
-    const sourceResolution = buildExistingWebAiSourceResolution(selected, change, target.sourceChanges);
+    const sourceResolution = await buildExistingWebAiSourceResolution(selected, change, target.sourceChanges);
     if (sourceResolution.status !== "resolved") {
       return fail(sourceResolution.reason || sourceResolution.status, sourceResolution.message || "AI候補のSourceを確認できません。", { sourceResolution });
     }
@@ -5987,7 +6309,7 @@
     };
   }
 
-  function buildExistingWebAiSourceResolution(selected, change, sourceChanges) {
+  async function buildExistingWebAiSourceResolution(selected, change, sourceChanges) {
     const node = selected?.node || getExistingWebNodeByDomRef(selected?.domRef);
     if (!node) {
       return { status: "unresolved", reason: "missing-dom", message: "対象DOMが見つかりません。" };
@@ -5995,12 +6317,12 @@
     const operations = [];
     const checks = [];
     for (const sourceChange of sourceChanges || []) {
-      const validation = validateExistingWebAiSourceChange(node, selected, change, sourceChange);
+      const validation = await validateExistingWebAiSourceChange(node, selected, change, sourceChange);
       if (!validation.ok) {
         return validation.result;
       }
       (validation.diagnostic?.checks || []).forEach((check) => checks.push(check));
-      operations.push(buildExistingWebAiPatchOperation(selected, change, sourceChange));
+      operations.push(buildExistingWebAiPatchOperation(selected, change, sourceChange, validation.fresh || null));
     }
     if (!operations.length) {
       return { status: "unresolved", reason: "missing-source-change", message: "AI回答にSource候補がありません。" };
@@ -6009,17 +6331,18 @@
       status: "resolved",
       sourceLocation: operations.map((operation) => operation.sourceRef),
       operations,
+      resolvedCandidates: operations.map((operation) => operation.resolvedCandidate).filter(Boolean),
       source: "ai-candidate-revalidated",
       diagnostic: { checks },
     };
   }
 
-  function validateExistingWebAiSourceChange(node, selected, change, sourceChange) {
+  async function validateExistingWebAiSourceChange(node, selected, change, sourceChange) {
     const checks = [];
     const fail = (reason, message) => ({
       ok: false,
       result: {
-        status: ["source-path-mismatch", "invalid-selector", "selector-not-unique", "invalid-before-after"].includes(reason) ? "unresolved" : "unsupported",
+        status: ["source-path-mismatch", "invalid-selector", "selector-not-unique", "invalid-before-after", "before-mismatch", "source-read-failed", "source-declaration-not-found"].includes(reason) ? "unresolved" : "unsupported",
         reason,
         message,
         diagnostic: {
@@ -6061,7 +6384,24 @@
       return fail("invalid-before-after", "AI候補のBefore/Afterが不正です。");
     }
     checks.push({ code: "before-after", label: "before/after", ok: true, message: `${sourceChange.before} -> ${sourceChange.after}` });
-    return { ok: true, diagnostic: { checks } };
+    const fresh = await readExistingWebFreshCssDeclaration(sourceChange);
+    if (!fresh.ok) {
+      return fail(fresh.reason || "source-read-failed", fresh.message || "現在Sourceを再確認できません。");
+    }
+    checks.push({
+      code: "fresh-source-read",
+      label: "fresh source",
+      ok: true,
+      message: `${fresh.snapshot.path || sourceChange.sourcePath} @ ${String(fresh.snapshot.sha256 || "").slice(0, 12)}`,
+    });
+    if (String(fresh.declaration.value) !== String(sourceChange.before)) {
+      return fail(
+        "before-mismatch",
+        `AI候補のBefore値が現在Sourceと一致しません。Source=${fresh.declaration.value} / AI=${sourceChange.before}`,
+      );
+    }
+    checks.push({ code: "fresh-before-match", label: "before match", ok: true, message: fresh.declaration.value });
+    return { ok: true, diagnostic: { checks }, fresh };
   }
 
   function buildExistingWebSafetyAiDiagnostic({ providerResult = null, normalized = null, localResolution = null, revalidation = null } = {}) {
@@ -6133,10 +6473,12 @@
       firstFailedCheck: direct.firstFailedCheck || firstFailed?.code || reason || "",
       message: revalidation?.message || "",
       checks,
+      preflightComparison: direct.preflightComparison || summarizeExistingWebPreflightComparison(revalidation?.preflight),
     };
   }
 
   function buildExistingWebAiRevalidationDiagnostic(normalized, changes, items, firstBlocked) {
+    const preflight = firstBlocked?.preflight || null;
     const checks = [
       { code: "request-id", label: "requestId", ok: Boolean(normalized.requestId), message: normalized.requestId || "missing" },
       { code: "page-id", label: "pageId", ok: !normalized.pageId || normalized.pageId === state.existingWeb.pageId, message: normalized.pageId || "not provided" },
@@ -6144,6 +6486,12 @@
       { code: "view-state", label: "viewState", ok: (normalized.viewState || "") === (state.existingWeb.viewState || ""), message: normalized.viewState || "common" },
       { code: "change-count", label: "changeId", ok: (items || []).length === (changes || []).length, message: `${(items || []).length}/${(changes || []).length}` },
       ...(items || []).flatMap((item) => item.diagnostic?.checks || item.sourceResolution?.diagnostic?.checks || []),
+      ...(preflight?.validation?.checks || []).map((check) => ({
+        code: `preflight-${check.id || check.code || "check"}`,
+        label: check.id || check.code || "preflight",
+        ok: check.status === "passed" || check.ok === true,
+        message: check.message || "",
+      })),
     ];
     const firstFailed = checks.find((check) => !check.ok);
     const reason = firstBlocked?.reason || firstFailed?.code || "";
@@ -6151,6 +6499,45 @@
       checks,
       firstFailedCheck: firstFailed?.code || reason,
       reasonCode: getExistingWebAiRejectReasonCode(reason),
+      preflightComparison: summarizeExistingWebPreflightComparison(preflight),
+    };
+  }
+
+  function summarizeExistingWebPreflightComparison(preflight = null) {
+    if (!preflight) {
+      return null;
+    }
+    const entries = [];
+    const addEntry = (entry = {}) => {
+      const operation = entry.operation || {};
+      const sourceRef = operation.sourceRef || operation.source || {};
+      const resolution = entry.resolution || {};
+      entries.push({
+        domRef: operation.target?.domRef || entry.candidate?.target?.domRef || "",
+        changeId: operation.resolvedCandidate?.changeId || "",
+        candidateId: operation.resolvedCandidate?.candidateId || "",
+        sourcePath: sourceRef.sourcePath || sourceRef.path || preflight.sourcePath || "",
+        selector: sourceRef.selector || "",
+        media: sourceRef.media || operation.source?.media || "",
+        property: operation.property || "",
+        expectedBefore: operation.before || "",
+        actualBefore: resolution.declaration?.value || "",
+        after: operation.after || "",
+        authority: operation.resolvedCandidate?.authority || sourceRef.authority || "",
+        sourceFingerprint: operation.resolvedCandidate?.sourceSnapshotFingerprint || sourceRef.sourceSnapshotFingerprint || "",
+      });
+    };
+    if (preflight.entry) {
+      addEntry(preflight.entry);
+    }
+    if (preflight.operation) {
+      addEntry({ operation: preflight.operation, resolution: preflight.resolution || {} });
+    }
+    return {
+      reason: preflight.reason || "",
+      status: preflight.status || "",
+      sourcePath: preflight.sourcePath || "",
+      entries,
     };
   }
 
@@ -6201,6 +6588,9 @@
       "property-mismatch": "property",
       "protected-property": "protected behavior",
       "invalid-before-after": "before/after",
+      "source-read-failed": "fresh source",
+      "source-declaration-not-found": "source declaration",
+      "before-mismatch": "before match",
       "safe-patch-blocked": "Safe Patch",
       "preflight-blocked": "Preflight",
     };
@@ -6222,6 +6612,9 @@
       "property-mismatch": "ai-after-intent-mismatch",
       "protected-property": "ai-protected-behavior-conflict",
       "invalid-before-after": "ai-before-mismatch",
+      "source-read-failed": "ai-source-read-failed",
+      "source-declaration-not-found": "ai-source-location-unresolved",
+      "before-mismatch": "ai-before-mismatch",
       "safe-patch-blocked": "ai-source-location-unresolved",
       "preflight-blocked": "ai-before-mismatch",
       "partial-ai-candidate": "ai-source-location-unresolved",
@@ -6237,9 +6630,27 @@
     return property;
   }
 
-  function buildExistingWebAiPatchOperation(selected, change, sourceChange) {
+  function buildExistingWebAiPatchOperation(selected, change, sourceChange, fresh = null) {
     const pageMeta = getAnalyzerManifestPageMeta();
     const tbId = selected.mapping?.tbId || sanitizeTbId(selected.id || selected.domRef.replace(/^[#.]/, ""), "runtime-target");
+    const sourceFingerprint = fresh?.snapshot?.sha256 || sourceChange.sourceFingerprint || sourceChange.sourceSnapshotFingerprint || "";
+    const sourcePath = sourceChange.sourcePath;
+    const sourceType = sourceChange.sourceType || "stylesheet-rule";
+    const media = sourceChange.media || "";
+    const resolvedCandidate = {
+      authority: "ai-revalidated",
+      changeId: getExistingWebPreviewChangeId(change),
+      candidateId: `${getExistingWebPreviewChangeId(change)}:${sourcePath}:${sourceChange.selector}:${media}:${sourceChange.property}`,
+      sourcePath,
+      sourceType,
+      selector: sourceChange.selector,
+      media,
+      property: sourceChange.property,
+      before: sourceChange.before,
+      after: sourceChange.after,
+      sourceFingerprint,
+      sourceSnapshotFingerprint: sourceFingerprint,
+    };
     return {
       type: "set-css-declaration",
       target: {
@@ -6250,23 +6661,27 @@
         domRef: selected.domRef,
       },
       sourceRef: {
-        sourceType: sourceChange.sourceType || "stylesheet-rule",
-        sourcePath: sourceChange.sourcePath,
+        sourceType,
+        sourcePath,
         selector: sourceChange.selector,
         property: sourceChange.property,
         currentValue: sourceChange.before,
-        media: sourceChange.media || null,
+        media: media || null,
+        sourceFingerprint,
+        sourceSnapshotFingerprint: sourceFingerprint,
+        authority: "ai-revalidated",
       },
       source: {
-        kind: sourceChange.sourceType || "stylesheet-rule",
-        path: sourceChange.sourcePath,
+        kind: sourceType,
+        path: sourcePath,
         selector: sourceChange.selector,
-        media: sourceChange.media || "",
+        media,
       },
       property: sourceChange.property,
       before: sourceChange.before,
       after: sourceChange.after,
       priority: "",
+      resolvedCandidate,
     };
   }
 
