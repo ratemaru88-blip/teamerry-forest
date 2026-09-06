@@ -447,8 +447,13 @@
               </span>
             </label>
           </div>
-          <div id="emptyProperties" class="tb-empty">レイヤー未選択</div>
-          <div id="properties" class="tb-properties" hidden>
+        <div id="emptyProperties" class="tb-empty">レイヤー未選択</div>
+        <div id="nativeTestClockControls" class="tb-native-test-clock" hidden>
+          <span>時刻テスト</span>
+          <input id="nativeTestClockTime" type="time" value="16:01">
+          <button id="nativeTestClockApply" type="button">適用</button>
+        </div>
+        <div id="properties" class="tb-properties" hidden>
           <div class="tb-property-group tb-fill-ribbon" data-property-section="fill">
             <strong>塗りつぶし</strong>
             <label>種類
@@ -534,6 +539,7 @@
               </select>
             </label>
           </div>
+          <div id="nativeBehaviorPanel" class="tb-native-behavior-panel" aria-label="標準動作"></div>
           <div class="tb-property-group tb-sound-ribbon" data-property-section="sound">
             <strong>サウンド</strong>
             <label>対象
@@ -1723,6 +1729,8 @@
   <script src="./native/native-schema.js?v=20260905-native-v01"></script>
   <script src="./native/native-assets.js?v=20260905-native-assets-v01"></script>
   <script src="./native/native-scenes.js?v=20260906-native-scenes-v01"></script>
+  <script src="./native/native-data-sources.js?v=20260906-native-datasources-v01"></script>
+  <script src="./native/native-behaviors.js?v=20260906-native-behaviors-v01"></script>
   <script src="./native/native-migration.js?v=20260905-native-v01"></script>
   <script src="./tbalance-renderer.js?v=20260824-v1-close"></script>
   <script src="./analyzer/read-only-analyzer.js?v=20260824-analyzer-v01-safe"></script>

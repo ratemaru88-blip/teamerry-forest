@@ -86,6 +86,7 @@
     copy.editorMode = copy.editorMode === "custom" ? "custom" : "normal";
     copy.uiSettings = normalizeUiSettings(copy.uiSettings);
     copy.assets = window.TBalanceNativeAssets?.normalizeAssets?.(copy.assets || []) || (Array.isArray(copy.assets) ? copy.assets : []);
+    window.TBalanceNativeDataSources?.normalizeProject?.(copy);
     copy.assets.forEach((asset) => {
       asset.assetId = asset.assetId || asset.id || window.TBalanceNativeId?.createStableId("asset") || makeId("asset");
       asset.id = asset.id || asset.assetId;
@@ -110,6 +111,7 @@
       page.layers = Array.isArray(page.layers) ? page.layers : [];
       page.layers.forEach(normalizeLayer);
       window.TBalanceNativeScenes?.normalizePage?.(page);
+      window.TBalanceNativeBehaviors?.normalizePage?.(page);
     });
     return copy;
   }
@@ -477,7 +479,7 @@
     bindLayerSound(node, layer, settings);
 
     if (layer.type === "text") {
-      node.appendChild(createTextContent(layer, viewportKey));
+      node.appendChild(createTextContent(layer, viewportKey, settings));
     } else if (layer.type === "button") {
       node.appendChild(createButtonContent(layer));
     } else if (layer.type === "shape") {
@@ -796,14 +798,15 @@
     }, layer.style || {}, layer[`${key}Style`] || {});
   }
 
-  function createTextContent(layer, viewportKey) {
+  function createTextContent(layer, viewportKey, settings = {}) {
     const content = document.createElement("div");
     const style = getTextStyle(layer, viewportKey);
     content.className = "tb-layer-text";
     if (layer.role === "memo") {
       content.classList.add("tb-layer-text--memo");
     }
-    content.textContent = layer.text || "テキスト";
+    const runtimeText = typeof settings.getRuntimeText === "function" ? settings.getRuntimeText(layer.id, layer) : null;
+    content.textContent = runtimeText || layer.text || "テキスト";
     content.style.fontSize = `${Number(style.fontSize) || 48}px`;
     content.style.color = style.color || "#fff6db";
     content.style.textAlign = style.align || "left";

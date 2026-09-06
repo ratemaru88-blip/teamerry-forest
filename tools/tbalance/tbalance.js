@@ -189,6 +189,8 @@
       primary: [],
       secondary: [],
     },
+    nativeBehaviorRuntime: null,
+    nativeBehaviorDiagnostics: [],
     showHitAreas: false,
     zoom: "fit",
     fitScale: 1,
@@ -458,6 +460,9 @@
     propertyTab: $("propertyTab"),
     styleTab: $("styleTab"),
     propertyPane: $("propertyPane"),
+    nativeTestClockControls: $("nativeTestClockControls"),
+    nativeTestClockTime: $("nativeTestClockTime"),
+    nativeTestClockApply: $("nativeTestClockApply"),
     stylePane: $("stylePane"),
     foregroundSwatch: $("foregroundSwatch"),
     backgroundSwatch: $("backgroundSwatch"),
@@ -536,6 +541,7 @@
     propClickAction: $("propClickAction"),
     propClickPreset: $("propClickPreset"),
     propClickDisplayMode: $("propClickDisplayMode"),
+    nativeBehaviorPanel: $("nativeBehaviorPanel"),
     propSoundTarget: $("propSoundTarget"),
     propSoundTrigger: $("propSoundTrigger"),
     propSoundChoose: $("propSoundChoose"),
@@ -1137,6 +1143,11 @@
     els.nativeAssetPanel?.addEventListener("dragover", handleNativeAssetLibraryDragOver);
     els.nativeAssetPanel?.addEventListener("drop", handleNativeAssetLibraryDrop);
     els.closeNativeAssetLibrary?.addEventListener("click", closeNativeAssetLibrary);
+    els.propertyPane?.addEventListener("click", handleNativeBehaviorPanelClick);
+    els.propertyPane?.addEventListener("change", handleNativeBehaviorPanelChange);
+    els.propertyHeader?.addEventListener("click", handleNativeBehaviorPanelClick);
+    els.propertyHeader?.addEventListener("change", handleNativeBehaviorPanelChange);
+    els.nativeTestClockApply?.addEventListener("click", applyNativeTestClock);
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", endPointer);
     window.addEventListener("resize", updateCanvasScale);
@@ -11158,6 +11169,7 @@
   }
 
   function toggleTestMode() {
+    stopNativeBehaviorRuntime();
     state.preview = !state.preview;
     state.testWindow = state.preview ? getActiveWindowKey() : "";
     state.testAction = null;
@@ -11170,6 +11182,9 @@
     state.testPages = {};
     state.testExternalViews = { primary: null, secondary: null };
     state.testNavigation = { primary: [], secondary: [] };
+    if (state.preview) {
+      startNativeBehaviorRuntime();
+    }
     window.clearTimeout(toggleTestMode.timer);
     showModeToast(state.preview
       ? `${getWindowTestLabel(state.testWindow)}だけTEST中です。反対側は比較表示です。`
@@ -11179,6 +11194,74 @@
 
   function isWindowInTest(windowKey) {
     return Boolean(state.preview) && (state.testWindow || "primary") === (windowKey === "secondary" ? "secondary" : "primary");
+  }
+
+  function getNativeTestRuntimeSceneId(page, windowKey = "primary") {
+    if (!state.preview || !isWindowInTest(windowKey) || state.nativeBehaviorRuntime?.page?.id !== page?.id) {
+      return getActiveSceneId(page);
+    }
+    return state.nativeBehaviorRuntime.sceneId || getActiveSceneId(page);
+  }
+
+  function startNativeBehaviorRuntime() {
+    stopNativeBehaviorRuntime();
+    if (!state.preview || state.existingWeb.active) {
+      return;
+    }
+    const page = getTestPageById(getTestCurrentPageId(state.testWindow || "primary")) || getCurrentPage();
+    if (!page || !window.TBalanceNativeBehaviors) {
+      return;
+    }
+    window.TBalanceNativeBehaviors.normalizePage(page);
+    state.nativeBehaviorDiagnostics = [];
+    state.nativeBehaviorRuntime = window.TBalanceNativeBehaviors.createRuntime({
+      page,
+      project: state.project,
+      initialSceneId: getActiveSceneId(page),
+      fetchDataSource: (dataSourceId) => getNativeBehaviorDataSource(dataSourceId),
+      onSceneChange: (sceneId) => {
+        state.testRuntimeSceneId = sceneId;
+        renderAll();
+      },
+      onRuntimeTextChange: () => renderAll(),
+      onDiagnostic: (diagnostic) => {
+        state.nativeBehaviorDiagnostics.push(diagnostic);
+        showModeToast(diagnostic.message || "動作を実行できませんでした。");
+      },
+    });
+  }
+
+  function stopNativeBehaviorRuntime() {
+    state.nativeBehaviorRuntime?.cleanup?.();
+    state.nativeBehaviorRuntime = null;
+    state.nativeBehaviorDiagnostics = [];
+    state.testRuntimeSceneId = "";
+  }
+
+  function getNativeBehaviorDataSource(dataSourceId) {
+    const source = window.TBalanceNativeDataSources?.findDataSource?.(state.project, dataSourceId);
+    if (!source) {
+      return { status: "missing", code: "missing-data-source", items: [] };
+    }
+    if (source.provider !== "inline") {
+      return { status: "unresolved", code: "project-json-reader-unavailable", dataSource: source, items: [] };
+    }
+    return source.items?.length
+      ? { status: "ok", dataSource: source, items: source.items }
+      : { status: "empty", code: "empty-data-source", dataSource: source, items: [] };
+  }
+
+  function runNativeClickBehavior(layer, windowKey, event) {
+    if (!state.preview || !state.nativeBehaviorRuntime || state.nativeBehaviorRuntime.page?.id !== getTestCurrentPageId(windowKey)) {
+      return false;
+    }
+    const handled = state.nativeBehaviorRuntime.handleClick?.(layer.id);
+    if (handled) {
+      setTestActionMessage(layer, windowKey, "標準動作を実行しました", event);
+      renderAll();
+      return true;
+    }
+    return false;
   }
 
   function getWindowTestLabel(windowKey) {
@@ -11565,6 +11648,7 @@
       state.testPageIds[key] = pageId;
       state.testExternalViews = state.testExternalViews || { primary: null, secondary: null };
       state.testExternalViews[key] = null;
+      startNativeBehaviorRuntime();
       return;
     }
     if (state.windowMode === "image" && windowKey === "secondary" && state.secondaryWindow) {
@@ -11695,6 +11779,9 @@
     }
     if (!isWindowInTest(windowKey)) {
       showModeToast(`${getWindowTestLabel(state.testWindow)}だけTEST中です。${getWindowTestLabel(windowKey)}側は比較表示です。`, { event });
+      return;
+    }
+    if (runNativeClickBehavior(layer, windowKey, event)) {
       return;
     }
     const action = getLayerAction(layer);
@@ -14264,15 +14351,17 @@
     els.secondaryCanvasScaler.classList.toggle("is-active-window", activeWindow === "secondary");
     applyCanvasDisplaySettings();
     const mainViewport = state.windowMode === "pc-mobile" ? "desktop" : state.viewport;
-    ensureBackgroundLayersFitViewport(primaryRenderPage, mainViewport, getActiveSceneId(primaryRenderPage));
+    const primarySceneId = getNativeTestRuntimeSceneId(primaryRenderPage, "primary");
+    ensureBackgroundLayersFitViewport(primaryRenderPage, mainViewport, primarySceneId);
     renderer.renderPage(els.canvas, primaryRenderPage, mainViewport, {
       edit: !state.preview,
       project: state.project,
-      sceneId: getActiveSceneId(primaryRenderPage),
+      sceneId: primarySceneId,
       selectedId: !hideLayerControls && state.pageId === primaryRenderPage.id && getActiveWindowKey() === "primary" ? state.selectedId : "",
       selectedIds: !hideLayerControls && state.pageId === primaryRenderPage.id && getActiveWindowKey() === "primary" ? getSelectedIds() : [],
       showHitAreas: state.showHitAreas,
       test: isWindowInTest("primary"),
+      getRuntimeText: (layerId) => state.nativeBehaviorRuntime?.page?.id === primaryRenderPage.id ? state.nativeBehaviorRuntime.getRuntimeText?.(layerId) : null,
       onImageStatus: handleImageStatus,
       isImageWarning: hasImageWarning,
       onAction: (layer, event) => handleTestLayerAction(layer, event, "primary"),
@@ -14518,16 +14607,18 @@
     els.secondaryCanvas.classList.toggle("is-test-window", isWindowInTest("secondary"));
     if (state.windowMode === "pc-mobile") {
       const secondaryPage = state.preview ? getTestPageById(state.testPageIds?.secondary) || page : page;
-      ensureBackgroundLayersFitViewport(secondaryPage, "mobile", getActiveSceneId(secondaryPage));
+      const secondarySceneId = getNativeTestRuntimeSceneId(secondaryPage, "secondary");
+      ensureBackgroundLayersFitViewport(secondaryPage, "mobile", secondarySceneId);
       els.secondaryCanvas.dataset.windowLabel = "Mobile";
       renderer.renderPage(els.secondaryCanvas, secondaryPage, "mobile", {
         edit: !state.preview,
         project: state.project,
-        sceneId: getActiveSceneId(secondaryPage),
+        sceneId: secondarySceneId,
         selectedId: !isPaintPointerActive() && getActiveWindowKey() === "secondary" ? state.selectedId : "",
         selectedIds: !isPaintPointerActive() && getActiveWindowKey() === "secondary" ? getSelectedIds() : [],
         showHitAreas: state.showHitAreas,
         test: isWindowInTest("secondary"),
+        getRuntimeText: (layerId) => state.nativeBehaviorRuntime?.page?.id === secondaryPage.id ? state.nativeBehaviorRuntime.getRuntimeText?.(layerId) : null,
         onImageStatus: handleImageStatus,
         isImageWarning: hasImageWarning,
         onAction: (layer, event) => handleTestLayerAction(layer, event, "secondary"),
@@ -14849,6 +14940,7 @@
     const showFillToolProperties = state.tool === "fill";
     els.emptyProperties.hidden = Boolean(layer) || showShapeToolProperties || showTextToolProperties || showAnimationToolProperties || showSoundToolProperties || showFillToolProperties;
     els.properties.hidden = !layer && !showShapeToolProperties && !showTextToolProperties && !showAnimationToolProperties && !showSoundToolProperties && !showFillToolProperties;
+    renderNativePageBehaviorSummary(layer);
     if (showShapeToolProperties) {
       if (!state.shapeColorTarget) {
         state.shapeColorTarget = "fill";
@@ -14969,6 +15061,7 @@
       els.propClickDisplayMode.value = clickAction.displayMode || "auto";
       els.propClickDisplayMode.disabled = clickType === "none";
     }
+    renderNativeBehaviorPanel(layer);
     els.transformNormal.classList.toggle("is-active", layer.transformMode === "normal");
     els.transformPerspective.classList.toggle("is-active", layer.transformMode === "perspective");
     els.transformFree.classList.toggle("is-active", layer.transformMode === "free");
@@ -14997,6 +15090,211 @@
     renderAnimationFields(layer);
     renderSoundFields();
     renderFillFields();
+  }
+
+  function renderNativePageBehaviorSummary(layer) {
+    if (els.nativeTestClockControls) {
+      els.nativeTestClockControls.hidden = !state.preview || state.existingWeb.active;
+    }
+    if (!els.emptyProperties || layer || state.existingWeb.active) {
+      return;
+    }
+    const page = getCurrentPage();
+    window.TBalanceNativeBehaviors?.normalizePage?.(page);
+    const clockBehaviors = (page?.behaviors || []).filter((behavior) => behavior.trigger?.type === "clock");
+    if (!clockBehaviors.length) {
+      els.emptyProperties.textContent = "レイヤー未選択";
+      return;
+    }
+    els.emptyProperties.innerHTML = `
+      <strong>ページの標準動作</strong>
+      ${clockBehaviors.map((behavior) => `<span>🕒 ${escapeHtml(window.TBalanceNativeBehaviors?.summarizeBehavior?.(behavior, { page }) || behavior.displayName || "時刻動作")}</span>`).join("")}
+    `;
+  }
+
+  function applyNativeTestClock() {
+    if (!state.preview || !state.nativeBehaviorRuntime) {
+      showModeToast("TEST中だけ時刻をシミュレーションできます。");
+      return;
+    }
+    const time = els.nativeTestClockTime?.value || "16:01";
+    state.nativeBehaviorRuntime.setClockTime?.(time);
+    showModeToast(`TEST時刻を ${time} にしました。`);
+    renderAll();
+  }
+
+  function renderNativeBehaviorPanel(layer = getSelectedLayer()) {
+    if (!els.nativeBehaviorPanel) {
+      return;
+    }
+    if (state.existingWeb.active || !layer) {
+      els.nativeBehaviorPanel.innerHTML = "";
+      return;
+    }
+    const page = getCurrentPage();
+    window.TBalanceNativeBehaviors?.normalizePage?.(page);
+    const related = getNativeBehaviorsForLayer(page, layer.id);
+    const conflict = hasLegacyClickAction(layer) && related.some((behavior) => behavior.trigger?.type === "click");
+    const summaries = related.length
+      ? related.map((behavior) => `
+          <div class="tb-native-behavior-row">
+            <span>⚡ ${escapeHtml(window.TBalanceNativeBehaviors?.summarizeBehavior?.(behavior, { page }) || behavior.displayName || "動作あり")}</span>
+            <label class="tb-check tb-ribbon-check">ON<input type="checkbox" data-native-behavior-toggle="${escapeAttr(behavior.behaviorId)}" ${behavior.enabled !== false ? "checked" : ""}></label>
+          </div>
+        `).join("")
+      : `<p>このLayerの標準動作はまだありません。</p>`;
+    els.nativeBehaviorPanel.innerHTML = `
+      <div class="tb-native-behavior-head">
+        <strong>標準動作</strong>
+        ${conflict ? `<span class="tb-native-behavior-warning">既存クリック動作あり</span>` : ""}
+      </div>
+      ${summaries}
+      <div class="tb-native-behavior-actions">
+        <button type="button" data-native-behavior-action="random-dialogue">クリックで台詞</button>
+        <button type="button" data-native-behavior-action="clock-scene">16:00 → 現在Scene</button>
+      </div>
+    `;
+  }
+
+  function getNativeBehaviorsForLayer(page, layerId) {
+    return (page?.behaviors || []).filter((behavior) => {
+      return behavior.trigger?.targetRef === layerId
+        || (behavior.actions || []).some((action) => action.targetRef === layerId);
+    });
+  }
+
+  function hasLegacyClickAction(layer) {
+    return Boolean(layer?.link || (layer?.clickAction?.type && layer.clickAction.type !== "none"));
+  }
+
+  function handleNativeBehaviorPanelClick(event) {
+    const button = event.target.closest("[data-native-behavior-action]");
+    if (!button || state.existingWeb.active) {
+      return;
+    }
+    const action = button.dataset.nativeBehaviorAction;
+    if (action === "random-dialogue") {
+      addNativeRandomDialogueBehavior();
+    }
+    if (action === "clock-scene") {
+      addNativeClockSceneBehavior();
+    }
+  }
+
+  function handleNativeBehaviorPanelChange(event) {
+    const input = event.target.closest("[data-native-behavior-toggle]");
+    if (!input || state.existingWeb.active) {
+      return;
+    }
+    const page = getCurrentPage();
+    const behavior = (page?.behaviors || []).find((item) => item.behaviorId === input.dataset.nativeBehaviorToggle);
+    if (!behavior) {
+      return;
+    }
+    pushHistory();
+    behavior.enabled = Boolean(input.checked);
+    markDirty();
+    renderAll();
+  }
+
+  function addNativeRandomDialogueBehavior() {
+    const page = getCurrentPage();
+    const layer = getSelectedLayer();
+    if (!page || !layer || state.existingWeb.active) {
+      return;
+    }
+    pushHistory();
+    window.TBalanceNativeBehaviors?.normalizePage?.(page);
+    window.TBalanceNativeDataSources?.normalizeProject?.(state.project);
+    const dataSource = createInlineDialogueDataSource(`${layer.name || "Layer"} 台詞`);
+    state.project.dataSourceRegistry.dataSources.push(dataSource);
+    const target = ensureDialogueTextLayer(page, layer);
+    const sceneId = getActiveSceneId(page);
+    page.dataSourceRefs = Array.from(new Set([...(page.dataSourceRefs || []), dataSource.dataSourceId]));
+    page.behaviors.push(window.TBalanceNativeBehaviors.normalizeBehavior({
+      displayName: `${layer.name || "Layer"} クリック台詞`,
+      trigger: { type: "click", targetRef: layer.id },
+      conditions: sceneId ? [{ type: "sceneIs", sceneId }] : [],
+      actions: [{
+        type: "showRandomDialogue",
+        dataSourceRef: dataSource.dataSourceId,
+        targetRef: target.id,
+        textField: "text",
+        excludePrevious: true,
+      }],
+      enabled: true,
+    }));
+    markDirty();
+    renderAll();
+    showModeToast("クリックすると台詞をランダム表示する標準動作を追加しました。");
+  }
+
+  function createInlineDialogueDataSource(displayName) {
+    return window.TBalanceNativeDataSources.normalizeDataSource({
+      displayName,
+      kind: "dialogue-list",
+      provider: "inline",
+      mapping: { idField: "id", textField: "text" },
+      items: [
+        { id: "line-1", text: "今夜は、願いを書いて星のランタンにそっと預けられるよ。" },
+        { id: "line-2", text: "星風が静かな日は、願いごとが遠くまで届きやすいんだ。" },
+        { id: "line-3", text: "同じ言葉にならないように、次の台詞を選ぶね。" },
+      ],
+    });
+  }
+
+  function ensureDialogueTextLayer(page, sourceLayer) {
+    const existing = (page.layers || []).find((layer) => layer.type === "text" && layer.role === "dialogue-text");
+    if (existing) {
+      return existing;
+    }
+    const activeViewport = getActiveViewportKey();
+    const layout = getCurrentLayout(sourceLayer);
+    const desktop = activeViewport === "desktop"
+      ? { x: Math.round(layout.x), y: Math.max(0, Math.round(layout.y - 120)), width: Math.max(420, Math.round(layout.width * 1.6)), height: 90, rotation: 0 }
+      : { x: 160, y: 220, width: 760, height: 140, rotation: 0 };
+    const mobile = activeViewport === "mobile"
+      ? { x: Math.round(layout.x), y: Math.max(0, Math.round(layout.y - 170)), width: Math.max(640, Math.round(layout.width * 1.4)), height: 150, rotation: 0 }
+      : { x: 160, y: 220, width: 760, height: 140, rotation: 0 };
+    const id = window.TBalanceNativeId?.createStableId("layer") || renderer.makeId("layer");
+    const layer = {
+      id,
+      layerId: id,
+      type: "text",
+      role: "dialogue-text",
+      name: "台詞テキスト",
+      text: "TESTで台詞が表示されます",
+      desktop,
+      mobile,
+      style: { fontSize: activeViewport === "mobile" ? 42 : 34, color: "#3b2a16", align: "center", weight: 700 },
+      appearance: { opacity: 1, brightness: 1, shadow: "soft" },
+      constraints: { keepAspect: false, keepSquare: false, keepCircle: false },
+    };
+    page.layers.push(layer);
+    renderer.normalizeLayer(layer);
+    return layer;
+  }
+
+  function addNativeClockSceneBehavior() {
+    const page = getCurrentPage();
+    const sceneId = getActiveSceneId(page);
+    if (!page || !sceneId || state.existingWeb.active) {
+      showModeToast("切り替え先Sceneを選んでください。");
+      return;
+    }
+    pushHistory();
+    window.TBalanceNativeBehaviors?.normalizePage?.(page);
+    const scene = page.scenes.find((item) => item.sceneId === sceneId);
+    page.behaviors.push(window.TBalanceNativeBehaviors.normalizeBehavior({
+      displayName: `16:00 → ${scene?.displayName || "Scene"}`,
+      trigger: { type: "clock", evaluateOnLoad: true, intervalSeconds: 60 },
+      conditions: [{ type: "timeAtOrAfter", time: "16:00", timeZone: "browser-local" }],
+      actions: [{ type: "setScene", sceneId }],
+      enabled: true,
+    }));
+    markDirty();
+    renderAll();
+    showModeToast(`16:00以降に ${scene?.displayName || "Scene"} へ切り替える標準動作を追加しました。`);
   }
 
   function renderPropertyMode() {

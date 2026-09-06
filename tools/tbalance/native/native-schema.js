@@ -41,6 +41,8 @@
       editorMode: input.editorMode,
       uiSettings: input.uiSettings,
       assetRegistry: input.assetRegistry,
+      dataSourceRegistry: input.dataSourceRegistry,
+      dataSources: Array.isArray(input.dataSources) ? input.dataSources : [],
       assets: Array.isArray(input.assets) ? input.assets : [],
       pages: Array.isArray(input.pages) ? input.pages : [],
       metadata: Object.assign({}, input.metadata || {}, {
@@ -72,6 +74,8 @@
       stage: input.stage,
       scenes: Array.isArray(input.scenes) ? input.scenes : [],
       defaultSceneId: input.defaultSceneId || "",
+      behaviors: Array.isArray(input.behaviors) ? input.behaviors : [],
+      dataSourceRefs: Array.isArray(input.dataSourceRefs) ? input.dataSourceRefs : [],
       layers: Array.isArray(input.layers) ? input.layers : [],
       metadata: Object.assign({}, input.metadata || {}, {
         createdAt,

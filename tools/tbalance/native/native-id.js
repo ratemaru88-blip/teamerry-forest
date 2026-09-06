@@ -8,7 +8,7 @@
     asset: "ast",
     scene: "scn",
     behavior: "bhv",
-    datasource: "data",
+    datasource: "dsrc",
     build: "bld",
   };
 

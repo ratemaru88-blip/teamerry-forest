@@ -2810,6 +2810,63 @@ body.is-retouch-active .tb-handle {
   object-fit: cover;
 }
 
+.tb-native-behavior-panel {
+  display: grid;
+  gap: 8px;
+  min-width: 220px;
+  padding: 8px;
+  border: 1px solid rgba(134, 171, 198, 0.24);
+  border-radius: 8px;
+  background: rgba(7, 16, 24, 0.42);
+}
+
+.tb-native-behavior-head,
+.tb-native-behavior-row,
+.tb-native-behavior-actions,
+.tb-native-test-clock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tb-native-behavior-panel p {
+  margin: 0;
+  color: #9db1bf;
+  font-size: 12px;
+}
+
+.tb-native-behavior-row {
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(19, 31, 43, 0.72);
+}
+
+.tb-native-behavior-warning {
+  color: #ffd166;
+  font-size: 12px;
+}
+
+.tb-native-behavior-actions button,
+.tb-native-test-clock button {
+  min-height: 30px;
+}
+
+.tb-native-test-clock {
+  margin-left: auto;
+  padding: 4px 8px;
+  border: 1px solid rgba(25, 198, 232, 0.34);
+  border-radius: 8px;
+  background: rgba(9, 28, 40, 0.74);
+  color: #d8edf7;
+  font-weight: 700;
+}
+
+.tb-native-test-clock input {
+  width: 92px;
+}
+
 .tb-layer-image-frame.has-image-error {
   display: grid;
   place-items: center;
