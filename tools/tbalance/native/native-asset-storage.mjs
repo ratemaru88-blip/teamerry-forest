@@ -14,8 +14,8 @@ const CATEGORY_FOLDERS = {
   uncategorized: "other",
   other: "other",
 };
-const ALLOWED_MEDIA_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
-const ALLOWED_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
+const ALLOWED_MEDIA_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "video/webm"]);
+const ALLOWED_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".webm"]);
 const MAX_ASSET_BYTES = 40 * 1024 * 1024;
 
 export async function createNativeAssetStorage(options = {}) {
@@ -287,7 +287,7 @@ function normalizeCategory(value) {
 function normalizeMediaType(mediaType, fileName = "") {
   const type = String(mediaType || guessMediaType(fileName)).toLowerCase();
   if (!ALLOWED_MEDIA_TYPES.has(type)) {
-    throw assetError("unsupported-media-type", "Only PNG, JPEG, and WebP assets are supported in v0.1.");
+    throw assetError("unsupported-media-type", "Only PNG, JPEG, WebP, and WebM assets are supported in v0.1.");
   }
   return type;
 }
@@ -297,12 +297,14 @@ function guessMediaType(fileName = "") {
   if (ext === ".png") return "image/png";
   if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
   if (ext === ".webp") return "image/webp";
+  if (ext === ".webm") return "video/webm";
   return "";
 }
 
 function extensionForMediaType(mediaType) {
   if (mediaType === "image/jpeg") return ".jpg";
   if (mediaType === "image/webp") return ".webp";
+  if (mediaType === "video/webm") return ".webm";
   return ".png";
 }
 
@@ -311,7 +313,7 @@ function sanitizeFileName(value, fallbackExtension) {
   const parsed = path.parse(input.replace(/[<>:"/\\|?*\x00-\x1f]/g, "_").replace(/\s+/g, "_"));
   const ext = path.extname(parsed.base).toLowerCase() || fallbackExtension;
   if (!ALLOWED_EXTENSIONS.has(ext)) {
-    throw assetError("unsupported-extension", "Only PNG, JPEG, and WebP files are supported in v0.1.");
+    throw assetError("unsupported-extension", "Only PNG, JPEG, WebP, and WebM files are supported in v0.1.");
   }
   const name = (parsed.name || "asset").replace(/^\.+/, "").slice(0, 80) || "asset";
   return `${name}${ext}`;

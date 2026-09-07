@@ -1,0 +1,271 @@
+{
+  "schemaVersion": "tbalance.assets.v0.1",
+  "projectId": "prj_9559885e87b941f6",
+  "storage": {
+    "root": "assets",
+    "registryPath": "data/tbalance/project-assets.json"
+  },
+  "assets": [
+    {
+      "assetId": "ast_ba412eb6d85f4783",
+      "id": "ast_ba412eb6d85f4783",
+      "displayName": "observatory_day_pc_v02",
+      "mediaType": "image/webp",
+      "category": "background",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/backgrounds/observatory_day_pc_v02.webp"
+      },
+      "originalName": "observatory_day_pc_v02.webp",
+      "relativePath": "assets/backgrounds/observatory_day_pc_v02.webp",
+      "contentHash": "e91d44567f292cdb8ab6ae65bdc7634c14f9ecd8fcab23dec2b266fa25544c0f",
+      "byteLength": 344504,
+      "width": 1920,
+      "height": 1080,
+      "variants": {
+        "source": {
+          "relativePath": "assets/backgrounds/observatory_day_pc_v02.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-05T17:02:38.056Z",
+      "updatedAt": "2026-09-05T18:30:32.161Z",
+      "name": "observatory_day_pc_v02"
+    },
+    {
+      "assetId": "ast_observatorydaypcwebm",
+      "id": "ast_observatorydaypcwebm",
+      "displayName": "observatory_day_pc_v02",
+      "mediaType": "video/webm",
+      "category": "background",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/images/observatory/backgrounds/observatory_day_pc_v02.webm"
+      },
+      "originalName": "observatory_day_pc_v02.webm",
+      "relativePath": "assets/images/observatory/backgrounds/observatory_day_pc_v02.webm",
+      "contentHash": "6690c2aa37566fbaf3062ffffe997c0a2633dc2061d2b35d4562d7cf6c8a169b",
+      "byteLength": 1112116,
+      "width": 1920,
+      "height": 1080,
+      "variants": {
+        "source": {
+          "relativePath": "assets/images/observatory/backgrounds/observatory_day_pc_v02.webm"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-07T00:00:00.000Z",
+      "updatedAt": "2026-09-07T14:57:15.800Z",
+      "name": "observatory_day_pc_v02"
+    },
+    {
+      "assetId": "ast_6000322d1fe14d22",
+      "id": "ast_6000322d1fe14d22",
+      "displayName": "observatory_night_pc_v02",
+      "mediaType": "image/webp",
+      "category": "background",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/backgrounds/observatory_night_pc_v02.webp"
+      },
+      "originalName": "observatory_night_pc_v02.webp",
+      "relativePath": "assets/backgrounds/observatory_night_pc_v02.webp",
+      "contentHash": "fb40ccb223e37dc5fc48f524c0288b4d55b0b6378a2dc9f4dac023461bc0d768",
+      "byteLength": 226990,
+      "width": 1920,
+      "height": 1080,
+      "variants": {
+        "source": {
+          "relativePath": "assets/backgrounds/observatory_night_pc_v02.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-05T17:17:08.759Z",
+      "updatedAt": "2026-09-05T17:17:08.759Z",
+      "name": "observatory_night_pc_v02"
+    },
+    {
+      "assetId": "ast_0575d765da604fa6",
+      "id": "ast_0575d765da604fa6",
+      "displayName": "observatory_day_mobile_v03",
+      "mediaType": "image/webp",
+      "category": "background",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/other/observatory_day_mobile_v03.webp"
+      },
+      "originalName": "observatory_day_mobile_v03.webp",
+      "relativePath": "assets/other/observatory_day_mobile_v03.webp",
+      "contentHash": "3377abf16a08976d3b5f085bdf37ddaaca73db09fbe4a61c79b18abcd0bdb442",
+      "byteLength": 307722,
+      "width": 1080,
+      "height": 1920,
+      "variants": {
+        "source": {
+          "relativePath": "assets/other/observatory_day_mobile_v03.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-05T18:43:07.372Z",
+      "updatedAt": "2026-09-05T18:43:34.909Z",
+      "name": "observatory_day_mobile_v03"
+    },
+    {
+      "assetId": "ast_c522cc78a47443ac",
+      "id": "ast_c522cc78a47443ac",
+      "displayName": "observatory_night_mobile_v02",
+      "mediaType": "image/webp",
+      "category": "background",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/other/observatory_night_mobile_v02.webp"
+      },
+      "originalName": "observatory_night_mobile_v02.webp",
+      "relativePath": "assets/other/observatory_night_mobile_v02.webp",
+      "contentHash": "5113df7c102c9de92700b85b34095588d685803fa1237bb21311361ae986013a",
+      "byteLength": 212664,
+      "width": 1080,
+      "height": 1920,
+      "variants": {
+        "source": {
+          "relativePath": "assets/other/observatory_night_mobile_v02.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-05T19:21:01.954Z",
+      "updatedAt": "2026-09-05T19:21:17.151Z",
+      "name": "observatory_night_mobile_v02"
+    },
+    {
+      "assetId": "ast_2bb4ddd4a3aa480b",
+      "id": "ast_2bb4ddd4a3aa480b",
+      "displayName": "lilu_v01",
+      "mediaType": "image/webp",
+      "category": "character",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/characters/lilu_v01.webp"
+      },
+      "originalName": "lilu_v01.webp",
+      "relativePath": "assets/characters/lilu_v01.webp",
+      "contentHash": "bb9284157134a8e0a5926f654d1b4199177ea5ad1dddd58200922a30a76069aa",
+      "byteLength": 20934,
+      "width": 512,
+      "height": 512,
+      "variants": {
+        "source": {
+          "relativePath": "assets/characters/lilu_v01.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-06T03:51:57.842Z",
+      "updatedAt": "2026-09-06T03:51:57.842Z",
+      "name": "lilu_v01"
+    },
+    {
+      "assetId": "ast_243838c8f27f4824",
+      "id": "ast_243838c8f27f4824",
+      "displayName": "吹き出し",
+      "mediaType": "image/png",
+      "category": "other",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/other/吹き出し.png"
+      },
+      "originalName": "吹き出し.png",
+      "relativePath": "assets/other/吹き出し.png",
+      "contentHash": "86afd55edc526bf609ae2ef2c3315dfd6ff74bd9479a2f580849ab57a1829833",
+      "byteLength": 679409,
+      "width": 1254,
+      "height": 1254,
+      "variants": {
+        "source": {
+          "relativePath": "assets/other/吹き出し.png"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-06T04:08:47.000Z",
+      "updatedAt": "2026-09-06T04:08:47.000Z",
+      "name": "吹き出し"
+    },
+    {
+      "assetId": "ast_af7cf4dd964f4fab",
+      "id": "ast_af7cf4dd964f4fab",
+      "displayName": "吹き出し",
+      "mediaType": "image/png",
+      "category": "other",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/other/吹き出し-02.png"
+      },
+      "originalName": "吹き出し.png",
+      "relativePath": "assets/other/吹き出し-02.png",
+      "contentHash": "66042395bdc3374af7ce380bf25e2f0201a5e6f6dda17c51a00698833b67b26a",
+      "byteLength": 676555,
+      "width": 1232,
+      "height": 661,
+      "variants": {
+        "source": {
+          "relativePath": "assets/other/吹き出し-02.png"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-06T04:12:09.633Z",
+      "updatedAt": "2026-09-06T04:12:09.633Z",
+      "name": "吹き出し"
+    },
+    {
+      "assetId": "ast_befc6ba57a2644b1",
+      "id": "ast_befc6ba57a2644b1",
+      "displayName": "hukidasi",
+      "mediaType": "image/webp",
+      "category": "other",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/other/hukidasi.webp"
+      },
+      "originalName": "hukidasi.webp",
+      "relativePath": "assets/other/hukidasi.webp",
+      "contentHash": "3378b0daf0548a937bedeb1bb3bfa264923e2e3db15478c90e9a8a60a7593de5",
+      "byteLength": 25610,
+      "width": 1232,
+      "height": 661,
+      "variants": {
+        "source": {
+          "relativePath": "assets/other/hukidasi.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-06T04:48:15.824Z",
+      "updatedAt": "2026-09-06T04:48:15.824Z",
+      "name": "hukidasi"
+    },
+    {
+      "assetId": "ast_b71404e08ebb489f",
+      "id": "ast_b71404e08ebb489f",
+      "displayName": "forest_go_buttan_1",
+      "mediaType": "image/webp",
+      "category": "background",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/backgrounds/forest_go_buttan_1.webp"
+      },
+      "originalName": "forest_go_buttan_1.webp",
+      "relativePath": "assets/backgrounds/forest_go_buttan_1.webp",
+      "contentHash": "f93632bf5a0dd3831cd120061416c709fb9150070a0597fb8691db3550ec4552",
+      "byteLength": 10972,
+      "width": 512,
+      "height": 512,
+      "variants": {
+        "source": {
+          "relativePath": "assets/backgrounds/forest_go_buttan_1.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-06T12:26:46.917Z",
+      "updatedAt": "2026-09-06T12:26:46.917Z",
+      "name": "forest_go_buttan_1"
+    }
+  ],
+  "updatedAt": "2026-09-06T12:26:46.917Z"
+}

@@ -861,6 +861,9 @@
         }
       });
     });
+    if (els.imageFile) {
+      els.imageFile.accept = "image/*,video/webm,.webm";
+    }
     els.saveProject.addEventListener("click", () => downloadProject("tbalance"));
     els.saveJson.addEventListener("click", () => downloadProject("json"));
     els.undoButton.addEventListener("click", undo);
@@ -16605,7 +16608,7 @@
     els.nativeAssetPanel.innerHTML = `
       <div class="tb-native-asset-library-drop">
         <button type="button" data-native-asset-action="import">＋ 画像を追加</button>
-        <span>画像をここへDropして追加</span>
+        <span>画像・WebMをここへDropして追加</span>
       </div>
       ${renderNativeAssetStatus()}
       <div class="tb-native-asset-library-body">
@@ -16639,7 +16642,7 @@
     return `
       <article class="tb-native-asset-card${selected ? " is-selected" : ""}" data-native-asset-id="${escapeAttr(asset.assetId)}">
         <button type="button" class="tb-native-asset-thumb" data-native-asset-action="select" title="画像を選択">
-          ${src ? `<img src="${escapeAttr(src)}" alt="">` : `<span>?</span>`}
+          ${renderNativeAssetPreviewMedia(asset, src)}
         </button>
         <div>
           <strong>${escapeHtml(asset.displayName || asset.name || "画像")}</strong>
@@ -16670,7 +16673,7 @@
     const duplicateCount = getNativeAssetDuplicateGroup(asset).length;
     return `
       <div class="tb-native-asset-preview">
-        ${src ? `<img src="${escapeAttr(src)}" alt="">` : `<span>?</span>`}
+        ${renderNativeAssetPreviewMedia(asset, src)}
       </div>
       <strong>${escapeHtml(asset.displayName || asset.name || "画像")}</strong>
       <small>${escapeHtml(window.TBalanceNativeAssets?.getCategoryLabel?.(asset.category) || "未分類")} / ${escapeHtml(size)}</small>
@@ -16731,6 +16734,20 @@
       return state.nativeAssets.message || "画像ライブラリーへ追加しています。";
     }
     return "画像を追加すると、このProjectの画像ライブラリーで再利用できます。";
+  }
+
+  function renderNativeAssetPreviewMedia(asset, src) {
+    if (!src) {
+      return `<span>?</span>`;
+    }
+    if (isNativeVideoAsset(asset)) {
+      return `<video src="${escapeAttr(src)}" muted playsinline preload="metadata" aria-label="${escapeAttr(asset.displayName || asset.name || "動画")}"></video>`;
+    }
+    return `<img src="${escapeAttr(src)}" alt="">`;
+  }
+
+  function isNativeVideoAsset(asset) {
+    return String(asset?.mediaType || "").toLowerCase() === "video/webm";
   }
 
   function handleNativeAssetPanelClick(event) {
@@ -16822,7 +16839,7 @@
     }
     event.preventDefault();
     const file = event.dataTransfer.files && event.dataTransfer.files[0];
-    if (!file || !file.type.startsWith("image/")) {
+    if (!file || !isNativeAssetFileAllowed(file)) {
       return;
     }
     addImageToNativeAssetLibrary(file);
@@ -18450,9 +18467,6 @@
     const key = getImageWarningKey(layerId, viewportKey);
     const hasWarning = status === "error";
     const current = Boolean(state.imageWarnings[key]);
-    if (!hasWarning && current) {
-      return;
-    }
     if (current === hasWarning) {
       return;
     }
@@ -18471,13 +18485,18 @@
     if (!layer || layer.type !== "image") {
       return;
     }
-    const thumb = row.querySelector(".tb-layer-thumb img");
+    const thumb = row.querySelector(".tb-layer-thumb img, .tb-layer-thumb video");
     if (!thumb) {
       return;
     }
     thumb.addEventListener("error", () => {
       handleImageStatus(layer.id, "error", state.viewport);
     }, { once: true });
+    if (thumb.tagName === "VIDEO") {
+      thumb.addEventListener("loadeddata", () => {
+        handleImageStatus(layer.id, "ok", state.viewport);
+      }, { once: true });
+    }
   }
 
   function getImageWarningKey(layerId, viewportKey) {
@@ -18499,20 +18518,26 @@
   }
 
   function getRenderedImageInfo(layerId) {
-    const selector = `.tb-layer[data-layer-id="${cssEscape(layerId)}"] img`;
-    const img = document.querySelector(selector);
-    if (!img) {
+    const selector = `.tb-layer[data-layer-id="${cssEscape(layerId)}"] img, .tb-layer[data-layer-id="${cssEscape(layerId)}"] video`;
+    const media = document.querySelector(selector);
+    if (!media) {
       return "";
     }
-    const layerNode = img.closest(".tb-layer");
+    const layerNode = media.closest(".tb-layer");
     const style = layerNode ? window.getComputedStyle(layerNode) : null;
     const visibilityInfo = style
       ? ` / op:${style.opacity} disp:${style.display} clip:${style.clipPath === "none" ? "none" : "on"}`
       : "";
-    if (!img.complete) {
+    if (media.tagName === "VIDEO") {
+      if (media.readyState < 2) {
+        return "読み込み中";
+      }
+      return `${media.videoWidth || 0}x${media.videoHeight || 0}${visibilityInfo}`;
+    }
+    if (!media.complete) {
       return "読み込み中";
     }
-    return `${img.naturalWidth || 0}x${img.naturalHeight || 0}${visibilityInfo}`;
+    return `${media.naturalWidth || 0}x${media.naturalHeight || 0}${visibilityInfo}`;
   }
 
   function getLayerImageScopeInfo(layer) {
@@ -20671,6 +20696,10 @@
       state.nativeAssets.pendingFileIntent = "canvas";
       if (intent === "library") {
         addImageToNativeAssetLibrary(file);
+      } else if (!file.type.startsWith("image/") && guessNativeAssetMediaType(file.name) === "video/webm") {
+        state.nativeAssets.pendingFileIntent = "library";
+        showModeToast("WebMは画像ライブラリーへ追加してから背景に設定してください。");
+        addImageToNativeAssetLibrary(file);
       } else {
         const size = getPageViewportSize(getCurrentPage(), state.viewport);
         importImageFile(file, { x: size.width * 0.5, y: size.height * 0.5 });
@@ -20810,6 +20839,34 @@
     });
   }
 
+  function getNativeAssetNaturalSize(src, file = null) {
+    const mediaType = file?.type || guessNativeAssetMediaType(file?.name || "");
+    if (mediaType === "video/webm") {
+      return getVideoNaturalSize(src);
+    }
+    return getImageNaturalSize(src);
+  }
+
+  function getVideoNaturalSize(src) {
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      const done = (size = DEFAULT_DROP_SIZE) => {
+        video.removeAttribute("src");
+        video.load?.();
+        resolve(size);
+      };
+      video.preload = "metadata";
+      video.muted = true;
+      video.playsInline = true;
+      video.onloadedmetadata = () => done({
+        width: Math.max(1, video.videoWidth || DEFAULT_DROP_SIZE.width),
+        height: Math.max(1, video.videoHeight || DEFAULT_DROP_SIZE.height),
+      });
+      video.onerror = () => done(DEFAULT_DROP_SIZE);
+      video.src = src;
+    });
+  }
+
   function createReferenceCanvasSize(size) {
     const width = Math.max(320, Math.ceil(size.width + 96));
     const height = Math.max(240, Math.ceil(size.height + 96));
@@ -20884,10 +20941,10 @@
   async function importFileToProjectAsset(file, dataUrl, options = {}) {
     const assetId = window.TBalanceNativeId?.createStableId("asset") || renderer.makeId("asset");
     const category = inferNativeAssetCategory(file, options);
-    const naturalSize = await getImageNaturalSize(dataUrl);
+    const naturalSize = await getNativeAssetNaturalSize(dataUrl, file);
     if (!isNativeAssetMediaTypeAllowed(file.type, file.name)) {
       state.nativeAssets.status = "error";
-      state.nativeAssets.message = "この形式は画像ライブラリーへ保存できません。PNG / JPEG / WebP の画像を選んでください。";
+      state.nativeAssets.message = "この形式は画像ライブラリーへ保存できません。PNG / JPEG / WebP / WebM を選んでください。";
       return createPendingEmbeddedAsset(file, dataUrl, assetId, category, naturalSize);
     }
     try {
@@ -20986,7 +21043,11 @@
   }
 
   function isNativeAssetMediaTypeAllowed(mediaType, fileName) {
-    return ["image/png", "image/jpeg", "image/webp"].includes(mediaType || guessNativeAssetMediaType(fileName));
+    return ["image/png", "image/jpeg", "image/webp", "video/webm"].includes(mediaType || guessNativeAssetMediaType(fileName));
+  }
+
+  function isNativeAssetFileAllowed(file) {
+    return isNativeAssetMediaTypeAllowed(file?.type, file?.name);
   }
 
   function guessNativeAssetMediaType(fileName = "") {
@@ -20994,6 +21055,7 @@
     if (lower.endsWith(".png")) return "image/png";
     if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
     if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".webm")) return "video/webm";
     if (lower.endsWith(".svg")) return "image/svg+xml";
     return "";
   }
@@ -22546,6 +22608,17 @@
       return layer.mobileSrc || layer.src || layer.desktopSrc || "";
     }
     return layer.desktopSrc || layer.src || layer.mobileSrc || "";
+  }
+
+  function getLayerMediaType(layer, viewport, sceneId = "") {
+    if (!layer || layer.type !== "image") {
+      return "";
+    }
+    const viewportKey = renderer.getViewportKey(viewport);
+    const effective = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, sceneId || getActiveSceneId(getCurrentPage())) || {};
+    const assetRef = effective.assetRef || effective.assetId || layer.assetRef || layer.assetId;
+    const asset = window.TBalanceNativeAssets?.findAsset?.(state.project, assetRef);
+    return String(asset?.mediaType || "").toLowerCase();
   }
 
   function toggleLayerState(id, action) {
@@ -24117,6 +24190,9 @@ ${layersHtml}
   function createThumbHtml(layer) {
     const imageSrc = getLayerImageSource(layer, state.viewport);
     if (layer.type === "image" && imageSrc) {
+      if (getLayerMediaType(layer, state.viewport) === "video/webm") {
+        return `<video src="${escapeAttr(imageSrc)}" muted playsinline preload="metadata" aria-label="${escapeAttr(layer.name || "動画")}"></video>`;
+      }
       return `<img src="${escapeAttr(imageSrc)}" alt="">`;
     }
     if (layer.type === "text") {

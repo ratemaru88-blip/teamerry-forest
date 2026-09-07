@@ -593,7 +593,8 @@
   }
 
   function createImageContent(layer, viewportKey, settings) {
-    const src = getLayerImageSrc(layer, viewportKey, settings);
+    const media = getLayerMediaInfo(layer, viewportKey, settings);
+    const src = media.src;
     const isPaintLayer = layer.role === "pen" || layer.role === "clone" || layer.paint?.mode === "pixel" || layer.paint?.mode === "clone";
     const wrapper = document.createElement("div");
     wrapper.className = "tb-layer-image-frame";
@@ -601,6 +602,44 @@
     const warning = document.createElement("div");
     warning.className = "tb-image-error";
     warning.innerHTML = `<strong>画像を表示できません</strong><span>${layer.name || "画像レイヤー"} を読み込めません。</span>`;
+    if (media.mediaType === "video/webm") {
+      const video = document.createElement("video");
+      video.className = "tb-layer-video";
+      video.muted = true;
+      video.loop = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      video.controls = false;
+      video.disablePictureInPicture = true;
+      video.setAttribute("muted", "");
+      video.setAttribute("loop", "");
+      video.setAttribute("autoplay", "");
+      video.setAttribute("playsinline", "");
+      video.setAttribute("aria-label", layer.name || "動画背景");
+      const forcedWarning = typeof settings.isImageWarning === "function" && settings.isImageWarning(layer, viewportKey);
+      if (!src || forcedWarning) {
+        wrapper.classList.add("has-image-error");
+        if (!src) {
+          notifyImageStatus(settings, layer.id, viewportKey, "error");
+        }
+      }
+      video.addEventListener("error", () => {
+        wrapper.classList.add("has-image-error");
+        notifyImageStatus(settings, layer.id, viewportKey, "error");
+      });
+      video.addEventListener("loadeddata", () => {
+        wrapper.classList.remove("has-image-error");
+        notifyImageStatus(settings, layer.id, viewportKey, "ok");
+        if (!settings.edit || layer.role === "background") {
+          video.play?.().catch?.(() => {});
+        }
+      });
+      video.src = src;
+      wrapper.appendChild(video);
+      wrapper.appendChild(warning);
+      return wrapper;
+    }
     if (Array.isArray(layer.stamps) && layer.stamps.length) {
       renderCloneStamps(wrapper, layer, viewportKey);
       wrapper.appendChild(warning);
@@ -772,19 +811,24 @@
   }
 
   function getLayerImageSrc(layer, viewportKey, settings = {}) {
+    return getLayerMediaInfo(layer, viewportKey, settings).src;
+  }
+
+  function getLayerMediaInfo(layer, viewportKey, settings = {}) {
     const effective = window.TBalanceNativeScenes?.resolveLayerState?.(layer, viewportKey, settings.sceneId) || {};
     const assetLayer = Object.assign({}, layer, {
       assetRef: effective.assetRef || layer?.assetRef,
       assetId: effective.assetId || effective.assetRef || layer?.assetId,
     });
+    const asset = window.TBalanceNativeAssets?.findAsset?.(settings.project, assetLayer.assetRef || assetLayer.assetId);
     const resolved = window.TBalanceNativeAssets?.resolveLayerAssetSrc?.(settings.project, assetLayer, viewportKey);
     if (resolved) {
-      return resolved;
+      return { src: resolved, mediaType: asset?.mediaType || "" };
     }
     if (viewportKey === "mobile") {
-      return layer.mobileSrc || layer.src || layer.desktopSrc || "";
+      return { src: layer.mobileSrc || layer.src || layer.desktopSrc || "", mediaType: "" };
     }
-    return layer.desktopSrc || layer.src || layer.mobileSrc || "";
+    return { src: layer.desktopSrc || layer.src || layer.mobileSrc || "", mediaType: "" };
   }
 
   function getTextStyle(layer, viewportKey) {
