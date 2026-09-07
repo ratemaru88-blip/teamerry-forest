@@ -9,6 +9,7 @@
     background: { label: "背景", folder: "backgrounds" },
     ui: { label: "UI・ボタン", folder: "ui" },
     effect: { label: "エフェクト", folder: "effects" },
+    uncategorized: { label: "未分類", folder: "other" },
     other: { label: "その他", folder: "other" },
   };
 
@@ -22,7 +23,7 @@
 
   function normalizeCategory(value) {
     const key = String(value || "").trim().toLowerCase();
-    return CATEGORIES[key] ? key : "other";
+    return CATEGORIES[key] ? key : "uncategorized";
   }
 
   function createRegistry(input = {}, project = {}) {

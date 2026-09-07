@@ -1,9 +1,9 @@
 (function () {
   "use strict";
 
-  const SUPPORTED_TRIGGERS = ["click", "clock"];
+  const SUPPORTED_TRIGGERS = ["click", "clock", "pageOpen", "event"];
   const SUPPORTED_CONDITIONS = ["sceneIs", "timeAtOrAfter"];
-  const SUPPORTED_ACTIONS = ["setScene", "showRandomDialogue"];
+  const SUPPORTED_ACTIONS = ["setScene", "showRandomDialogue", "showDialogueSequence", "openFlow"];
 
   function clone(value) {
     return value == null ? value : JSON.parse(JSON.stringify(value));
@@ -41,6 +41,12 @@
     if (type === "click") {
       return { type, targetRef: String(trigger.targetRef || trigger.layerId || "") };
     }
+    if (type === "pageOpen") {
+      return { type, fireOnce: trigger.fireOnce !== false };
+    }
+    if (type === "event") {
+      return { type, eventName: String(trigger.eventName || trigger.name || "") };
+    }
     return {
       type,
       evaluateOnLoad: trigger.evaluateOnLoad !== false,
@@ -69,12 +75,33 @@
     if (action.type === "setScene") {
       return { type: "setScene", sceneId: String(action.sceneId || "") };
     }
+    if (action.type === "openFlow") {
+      return {
+        type: "openFlow",
+        flowId: String(action.flowId || action.target || ""),
+        targetRef: String(action.targetRef || action.layerId || ""),
+      };
+    }
+    if (action.type === "showDialogueSequence") {
+      return {
+        type: "showDialogueSequence",
+        dataSourceRef: String(action.dataSourceRef || action.dataSourceId || ""),
+        targetRef: String(action.targetRef || action.layerId || ""),
+        advanceRefs: Array.isArray(action.advanceRefs) ? action.advanceRefs.filter(Boolean).map(String) : [],
+        textField: action.textField || "text",
+        linesField: action.linesField || "lines",
+        setIdField: action.setIdField || "setId",
+        excludePrevious: action.excludePrevious !== false,
+        filter: clone(action.filter || {}),
+      };
+    }
     return {
       type: "showRandomDialogue",
       dataSourceRef: String(action.dataSourceRef || action.dataSourceId || ""),
       targetRef: String(action.targetRef || action.layerId || ""),
       textField: action.textField || "text",
       excludePrevious: action.excludePrevious !== false,
+      filter: clone(action.filter || {}),
     };
   }
 
@@ -98,7 +125,9 @@
       project: options.project || null,
       sceneId: options.initialSceneId || "",
       timers: [],
+      firedPageOpen: new Set(),
       previousItems: new Map(),
+      activeSequences: new Map(),
       runtimeText: new Map(),
       diagnostics: [],
       rng: typeof options.rng === "function" ? options.rng : Math.random,
@@ -106,11 +135,14 @@
       fetchDataSource: options.fetchDataSource,
       onSceneChange: options.onSceneChange,
       onRuntimeTextChange: options.onRuntimeTextChange,
+      onOpenFlow: options.onOpenFlow,
       onDiagnostic: options.onDiagnostic,
     };
     runtime.initialSceneId = runtime.sceneId;
     runtime.evaluateClock = () => evaluateClock(runtime);
     runtime.handleClick = (layerId) => handleClick(runtime, layerId);
+    runtime.firePageOpen = () => firePageOpen(runtime);
+    runtime.dispatchEvent = (eventName, payload = {}) => dispatchEvent(runtime, eventName, payload);
     runtime.getRuntimeText = (layerId) => runtime.runtimeText.get(layerId) || null;
     runtime.setClockTime = (time) => {
       runtime.nowProvider = () => createDateForTime(time);
@@ -142,6 +174,8 @@
     runtime.previousItems.clear();
     runtime.runtimeText.clear();
     runtime.diagnostics = [];
+    runtime.activeSequences.clear();
+    runtime.firedPageOpen.clear();
   }
 
   function getEnabledBehaviors(page) {
@@ -161,8 +195,34 @@
 
   function handleClick(runtime, layerId) {
     let handled = false;
+    handled = advanceActiveSequence(runtime, layerId) || handled;
     getEnabledBehaviors(runtime.page)
       .filter((behavior) => behavior.trigger.type === "click" && behavior.trigger.targetRef === layerId)
+      .forEach((behavior) => {
+        handled = executeBehavior(runtime, behavior) || handled;
+      });
+    return handled;
+  }
+
+  function firePageOpen(runtime) {
+    let handled = false;
+    getEnabledBehaviors(runtime.page)
+      .filter((behavior) => behavior.trigger.type === "pageOpen")
+      .forEach((behavior) => {
+        if (behavior.trigger.fireOnce !== false && runtime.firedPageOpen.has(behavior.behaviorId)) {
+          return;
+        }
+        runtime.firedPageOpen.add(behavior.behaviorId);
+        handled = executeBehavior(runtime, behavior) || handled;
+      });
+    return handled;
+  }
+
+  function dispatchEvent(runtime, eventName, payload = {}) {
+    const name = String(eventName || payload.eventName || "");
+    let handled = false;
+    getEnabledBehaviors(runtime.page)
+      .filter((behavior) => behavior.trigger.type === "event" && behavior.trigger.eventName === name)
       .forEach((behavior) => {
         handled = executeBehavior(runtime, behavior) || handled;
       });
@@ -213,6 +273,17 @@
     if (action.type === "showRandomDialogue") {
       return showRandomDialogue(runtime, behavior, action);
     }
+    if (action.type === "showDialogueSequence") {
+      return showDialogueSequence(runtime, behavior, action);
+    }
+    if (action.type === "openFlow") {
+      const handled = runtime.onOpenFlow?.(action.flowId, behavior, action);
+      if (handled) {
+        return true;
+      }
+      addDiagnostic(runtime, behavior, "open-flow-not-connected", "投稿FlowはまだNative TESTへ接続されていません。");
+      return false;
+    }
     return false;
   }
 
@@ -227,7 +298,7 @@
       addDiagnostic(runtime, behavior, result.code || result.status || "data-source-error", "台詞データを読み込めません。");
       return false;
     }
-    const item = pickRandomItem(runtime, behavior, action, result.items || []);
+    const item = pickRandomItem(runtime, behavior, action, filterItems(result.items || [], action.filter));
     if (!item) {
       addDiagnostic(runtime, behavior, "empty-data-source", "表示できる台詞がありません。");
       return false;
@@ -235,6 +306,54 @@
     runtime.runtimeText.set(target.id, String(item[action.textField || "text"] || item.text || ""));
     runtime.previousItems.set(`${behavior.behaviorId}:${action.dataSourceRef}`, item.id);
     runtime.onRuntimeTextChange?.(target.id, runtime.runtimeText.get(target.id), behavior);
+    return true;
+  }
+
+  function showDialogueSequence(runtime, behavior, action) {
+    const target = (runtime.page?.layers || []).find((layer) => layer.id === action.targetRef || layer.layerId === action.targetRef);
+    if (!target) {
+      addDiagnostic(runtime, behavior, "missing-target", "台詞の表示先が見つかりません。");
+      return false;
+    }
+    const result = runtime.fetchDataSource?.(action.dataSourceRef) || { status: "missing", items: [] };
+    if (result.status !== "ok") {
+      addDiagnostic(runtime, behavior, result.code || result.status || "data-source-error", "台詞データを読み込めません。");
+      return false;
+    }
+    const set = pickRandomSet(runtime, behavior, action, filterItems(result.items || [], action.filter));
+    if (!set?.lines?.length) {
+      addDiagnostic(runtime, behavior, "empty-data-source", "表示できる台詞がありません。");
+      return false;
+    }
+    const sequence = {
+      behaviorId: behavior.behaviorId,
+      dataSourceRef: action.dataSourceRef,
+      setId: set.setId,
+      targetRef: target.id,
+      advanceRefs: Array.from(new Set([target.id].concat(action.advanceRefs || []).filter(Boolean))),
+      lines: set.lines,
+      index: 0,
+    };
+    runtime.activeSequences.set(target.id, sequence);
+    runtime.previousItems.set(`${behavior.behaviorId}:${action.dataSourceRef}`, set.setId);
+    runtime.runtimeText.set(target.id, String(sequence.lines[0] || ""));
+    runtime.onRuntimeTextChange?.(target.id, runtime.runtimeText.get(target.id), behavior);
+    return true;
+  }
+
+  function advanceActiveSequence(runtime, layerId) {
+    const id = String(layerId || "");
+    const sequence = Array.from(runtime.activeSequences.values()).find((item) => item.advanceRefs.includes(id));
+    if (!sequence) {
+      return false;
+    }
+    sequence.index += 1;
+    if (sequence.index >= sequence.lines.length) {
+      runtime.activeSequences.delete(sequence.targetRef);
+      return true;
+    }
+    runtime.runtimeText.set(sequence.targetRef, String(sequence.lines[sequence.index] || ""));
+    runtime.onRuntimeTextChange?.(sequence.targetRef, runtime.runtimeText.get(sequence.targetRef), { behaviorId: sequence.behaviorId });
     return true;
   }
 
@@ -249,6 +368,48 @@
       : items;
     const index = Math.floor(runtime.rng() * candidates.length) % candidates.length;
     return candidates[index];
+  }
+
+  function pickRandomSet(runtime, behavior, action, items) {
+    const sets = items
+      .map((item, index) => {
+        const lines = Array.isArray(item[action.linesField || "lines"])
+          ? item[action.linesField || "lines"].map((line) => String(line || "")).filter(Boolean)
+          : [String(item[action.textField || "text"] || item.text || "")].filter(Boolean);
+        return {
+          setId: String(item[action.setIdField || "setId"] || item.id || `set-${index + 1}`),
+          lines,
+        };
+      })
+      .filter((item) => item.lines.length);
+    if (!sets.length) {
+      return null;
+    }
+    const key = `${behavior.behaviorId}:${action.dataSourceRef}`;
+    const previous = runtime.previousItems.get(key);
+    const candidates = action.excludePrevious && sets.length > 1
+      ? sets.filter((item) => item.setId !== previous)
+      : sets;
+    const index = Math.floor(runtime.rng() * candidates.length) % candidates.length;
+    return candidates[index];
+  }
+
+  function filterItems(items, filter = {}) {
+    const entries = Object.entries(filter || {}).filter(([, value]) => value != null && String(value).trim());
+    if (!entries.length) {
+      return items;
+    }
+    return items.filter((item) => entries.every(([key, expected]) => {
+      const actual = item?.[key];
+      if (Array.isArray(actual)) {
+        return Array.isArray(expected)
+          ? expected.every((value) => actual.map(String).includes(String(value)))
+          : actual.map(String).includes(String(expected));
+      }
+      return Array.isArray(expected)
+        ? expected.map(String).includes(String(actual))
+        : String(actual) === String(expected);
+    }));
   }
 
   function addDiagnostic(runtime, behavior, code, message) {
@@ -270,6 +431,15 @@
       const sceneId = behavior.actions?.find((action) => action.type === "setScene")?.sceneId || "";
       const scene = context.page?.scenes?.find((item) => item.sceneId === sceneId);
       return `${time || "時刻"} → ${scene?.displayName || "シーン"}`;
+    }
+    if (behavior.trigger?.type === "pageOpen") {
+      return "ページを開いた時";
+    }
+    if (behavior.trigger?.type === "event") {
+      return `${behavior.trigger.eventName || "イベント"} 後`;
+    }
+    if (behavior.actions?.some((action) => action.type === "showDialogueSequence")) {
+      return "3行台詞";
     }
     if (behavior.actions?.some((action) => action.type === "showRandomDialogue")) {
       const condition = behavior.conditions?.find((item) => item.type === "sceneIs");

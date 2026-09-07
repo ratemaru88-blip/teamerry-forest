@@ -191,6 +191,7 @@
     },
     nativeBehaviorRuntime: null,
     nativeBehaviorDiagnostics: [],
+    nativeBehaviorDataCache: new Map(),
     showHitAreas: false,
     zoom: "fit",
     fitScale: 1,
@@ -707,6 +708,7 @@
     showFileProtocolWarning();
     state.project = await loadAutosave() || renderer.normalizeProject();
     await loadNativeAssetRegistryFromBridge();
+    ensureNativeProjectBehaviorConnections();
     state.uiSettings = resolveUiSettings(state.project);
     state.editorMode = getStartupMode(state.project);
     syncProjectEditorSettings();
@@ -11203,7 +11205,7 @@
     return state.nativeBehaviorRuntime.sceneId || getActiveSceneId(page);
   }
 
-  function startNativeBehaviorRuntime() {
+  async function startNativeBehaviorRuntime() {
     stopNativeBehaviorRuntime();
     if (!state.preview || state.existingWeb.active) {
       return;
@@ -11212,13 +11214,51 @@
     if (!page || !window.TBalanceNativeBehaviors) {
       return;
     }
+    ensureNativeProjectBehaviorConnections();
     window.TBalanceNativeBehaviors.normalizePage(page);
+    await preloadNativeBehaviorDataSources(page);
+    if (!state.preview || state.existingWeb.active || page.id !== (getTestPageById(getTestCurrentPageId(state.testWindow || "primary")) || getCurrentPage())?.id) {
+      return;
+    }
     state.nativeBehaviorDiagnostics = [];
     state.nativeBehaviorRuntime = window.TBalanceNativeBehaviors.createRuntime({
       page,
       project: state.project,
       initialSceneId: getActiveSceneId(page),
       fetchDataSource: (dataSourceId) => getNativeBehaviorDataSource(dataSourceId),
+      onOpenFlow: (flowId, behavior) => {
+        const label = flowId === "wish-star" ? "願い星を書く" : flowId === "bottle-mail" ? "ボトルメールを書く" : "投稿Flow";
+        const context = state.nativeBehaviorActionContext || {};
+        const windowKey = context.windowKey || state.testWindow || "primary";
+        const target = getClickTargetForNativeFlow(flowId);
+        if (target) {
+          state.testExternalViews = state.testExternalViews || { primary: null, secondary: null };
+          const key = windowKey === "secondary" ? "secondary" : "primary";
+          const frameUrl = getTeaMerryLocalTestUrl(target, {
+            page,
+            sceneId: state.nativeBehaviorRuntime?.sceneId || getActiveSceneId(page),
+            windowKey,
+          });
+          state.testExternalViews[key] = {
+            url: frameUrl,
+            officialUrl: target,
+            title: label,
+            displayMode: getTestExternalDisplayMode(target, windowKey, null),
+            displayModeSetting: "auto",
+            viewport: getTestExternalViewport(windowKey),
+            updatedAt: Date.now(),
+          };
+        }
+        showModeToast(`TEST: ${label} を表示します。`);
+        state.testAction = {
+          window: windowKey,
+          layerId: behavior?.trigger?.targetRef || "",
+          layerName: label,
+          message: target ? `${label}へ移動` : "投稿Flow入口（送信は未実行）",
+          updatedAt: Date.now(),
+        };
+        return true;
+      },
       onSceneChange: (sceneId) => {
         state.testRuntimeSceneId = sceneId;
         renderAll();
@@ -11229,16 +11269,22 @@
         showModeToast(diagnostic.message || "動作を実行できませんでした。");
       },
     });
+    state.nativeBehaviorRuntime.firePageOpen?.();
   }
 
   function stopNativeBehaviorRuntime() {
     state.nativeBehaviorRuntime?.cleanup?.();
     state.nativeBehaviorRuntime = null;
     state.nativeBehaviorDiagnostics = [];
+    state.nativeBehaviorDataCache = new Map();
     state.testRuntimeSceneId = "";
   }
 
   function getNativeBehaviorDataSource(dataSourceId) {
+    const cached = state.nativeBehaviorDataCache?.get?.(dataSourceId);
+    if (cached) {
+      return cached;
+    }
     const source = window.TBalanceNativeDataSources?.findDataSource?.(state.project, dataSourceId);
     if (!source) {
       return { status: "missing", code: "missing-data-source", items: [] };
@@ -11251,17 +11297,85 @@
       : { status: "empty", code: "empty-data-source", dataSource: source, items: [] };
   }
 
+  async function preloadNativeBehaviorDataSources(page) {
+    state.nativeBehaviorDataCache = new Map();
+    const ids = new Set((page?.dataSourceRefs || []).filter(Boolean));
+    (page?.behaviors || []).forEach((behavior) => {
+      (behavior.actions || []).forEach((action) => {
+        if (action.dataSourceRef) {
+          ids.add(action.dataSourceRef);
+        }
+      });
+    });
+    const resolver = window.TBalanceNativeDataSources;
+    if (!resolver || !ids.size) {
+      return;
+    }
+    await Promise.all(Array.from(ids).map(async (dataSourceId) => {
+      const source = resolver.findDataSource?.(state.project, dataSourceId);
+      if (!source) {
+        state.nativeBehaviorDataCache.set(dataSourceId, { status: "missing", code: "missing-data-source", items: [] });
+        return;
+      }
+      if (source.provider === "inline") {
+        state.nativeBehaviorDataCache.set(dataSourceId, source.items?.length
+          ? { status: "ok", dataSource: source, items: source.items }
+          : { status: "empty", code: "empty-data-source", dataSource: source, items: [] });
+        return;
+      }
+      const result = await resolver.resolveDataSource(state.project, dataSourceId, {
+        fetchJson: fetchProjectJsonForNativeBehavior,
+      });
+      state.nativeBehaviorDataCache.set(dataSourceId, result);
+    }));
+  }
+
+  async function fetchProjectJsonForNativeBehavior(relativePath) {
+    const normalized = window.TBalanceNativeDataSources?.normalizeProjectRelativePath?.(relativePath) || "";
+    if (!normalized) {
+      const error = new Error("Project JSON path is invalid.");
+      error.code = "invalid-relative-path";
+      throw error;
+    }
+    const url = window.location.protocol.startsWith("http")
+      ? `${window.location.origin}/${normalized}`
+      : new URL(`../../${normalized}`, window.location.href).href;
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) {
+      const error = new Error(`Project JSONを読み込めません: ${response.status}`);
+      error.code = "read-failed";
+      throw error;
+    }
+    return response.json();
+  }
+
   function runNativeClickBehavior(layer, windowKey, event) {
     if (!state.preview || !state.nativeBehaviorRuntime || state.nativeBehaviorRuntime.page?.id !== getTestCurrentPageId(windowKey)) {
       return false;
     }
-    const handled = state.nativeBehaviorRuntime.handleClick?.(layer.id);
+    let handled = false;
+    state.nativeBehaviorActionContext = { windowKey, event };
+    try {
+      handled = state.nativeBehaviorRuntime.handleClick?.(layer.id);
+    } finally {
+      state.nativeBehaviorActionContext = null;
+    }
     if (handled) {
       setTestActionMessage(layer, windowKey, "標準動作を実行しました", event);
       renderAll();
       return true;
     }
     return false;
+  }
+
+  function dispatchNativeTestEvent(eventName) {
+    if (!state.preview || !state.nativeBehaviorRuntime) {
+      showModeToast("TEST中だけ送信完了イベントを確認できます。");
+      return;
+    }
+    const handled = state.nativeBehaviorRuntime.dispatchEvent?.(eventName);
+    showModeToast(handled ? "送信後の台詞を表示しました。" : "対応する送信後イベントがありません。");
+    renderAll();
   }
 
   function getWindowTestLabel(windowKey) {
@@ -11282,11 +11396,617 @@
     const labels = {
       "#hokkori": "今日のほっこり",
       "#wish-star": "願い星を書く",
-      "#bottle-mail": "ボトルメール",
+      "#bottle-mail": "ボトルメールを書く",
       "#forest-map": "森の地図",
       "#back": "戻る",
     };
     return labels[target] || target || "未設定";
+  }
+
+  function ensureNativeProjectBehaviorConnections() {
+    if (!state.project || state.existingWeb.active) {
+      return false;
+    }
+    window.TBalanceNativeDataSources?.normalizeProject?.(state.project);
+    let changed = false;
+    (state.project.pages || []).forEach((page) => {
+      if (ensureTeaMerryObservatorySpeechBubble(page)) {
+        changed = true;
+      }
+      if (ensureTeaMerryObservatoryNativeFlow(page)) {
+        changed = true;
+      }
+    });
+    return changed;
+  }
+
+  function ensureTeaMerryObservatoryNativeFlow(page) {
+    if (!page || !Array.isArray(page.layers) || state.existingWeb.active) {
+      return false;
+    }
+    const pageName = normalizeTextKey(`${page.name || page.displayName || ""} ${page.slug || ""}`);
+    if (!pageName.includes("星風テラス") && !pageName.includes("observatory")) {
+      return false;
+    }
+    window.TBalanceNativeScenes?.normalizePage?.(page);
+    window.TBalanceNativeBehaviors?.normalizePage?.(page);
+    const dayScene = findSceneByName(page, "昼") || page.scenes?.[0] || null;
+    const nightScene = findSceneByName(page, "夜") || page.scenes?.find((scene) => scene.sceneId !== dayScene?.sceneId) || null;
+    const liluLayer = findLayerByNameInPage(page, ["lilu", "リル"], (layer) => layer.type === "image" && layer.role !== "background");
+    const dialogueText = findLayerByNameInPage(page, ["リルセリフ", "リルの台詞"], (layer) => layer.type === "text");
+    const bubbleLayer = findLayerByNameInPage(page, ["リル吹き出し本体", "hukidasi", "吹き出し"], (layer) => layer.type === "shape" || layer.type === "image");
+    const postHitArea = findLayerByNameInPage(page, ["投稿を書く"], (layer) => layer.role === "hit-area" || layer.hitArea?.enabled);
+    if (!dayScene || !nightScene || !liluLayer || !dialogueText || !postHitArea || !window.TBalanceNativeBehaviors || !window.TBalanceNativeDataSources) {
+      return false;
+    }
+    let changed = false;
+    const dialogueSource = ensureProjectJsonDataSource({
+      dataSourceId: "ds_teamerry_observatory_dialogue",
+      displayName: "星風テラス 入室台詞",
+      relativePath: "data/export/dialogue.json",
+      selector: "dialogues",
+      kind: "dialogue-list",
+    });
+    const bottleSource = ensureProjectJsonDataSource({
+      dataSourceId: "ds_teamerry_observatory_bottle_after",
+      displayName: "ボトルメール送信後",
+      relativePath: "data/export/lill_action_reactions.json",
+      selector: "reactions.ボトルメールを出したあと",
+      kind: "dialogue-sequence-list",
+    });
+    const wishSource = ensureProjectJsonDataSource({
+      dataSourceId: "ds_teamerry_observatory_wish_after",
+      displayName: "願い星送信後",
+      relativePath: "data/export/lill_action_reactions.json",
+      selector: "reactions.願い星を飛ばしたあと",
+      kind: "dialogue-sequence-list",
+    });
+    [dialogueSource, bottleSource, wishSource].forEach((source) => {
+      if (!page.dataSourceRefs?.includes(source.dataSourceId)) {
+        page.dataSourceRefs = Array.from(new Set([...(page.dataSourceRefs || []), source.dataSourceId]));
+        changed = true;
+      }
+    });
+    const advanceRefs = [liluLayer.id, dialogueText.id, bubbleLayer?.id].filter(Boolean);
+    const behaviorSeeds = [
+      {
+        behaviorId: "bhv_teamerry_observatory_page_open_day",
+        displayName: "昼の入室台詞",
+        trigger: { type: "pageOpen", fireOnce: true },
+        conditions: [{ type: "sceneIs", sceneId: dayScene.sceneId }],
+        actions: [{
+          type: "showRandomDialogue",
+          dataSourceRef: dialogueSource.dataSourceId,
+          targetRef: dialogueText.id,
+          filter: { character: "リル", place: "星風テラス", section: "導入", conditions: ["入室", "昼"] },
+          excludePrevious: true,
+        }],
+      },
+      {
+        behaviorId: "bhv_teamerry_observatory_page_open_night",
+        displayName: "夜の入室台詞",
+        trigger: { type: "pageOpen", fireOnce: true },
+        conditions: [{ type: "sceneIs", sceneId: nightScene.sceneId }],
+        actions: [{
+          type: "showRandomDialogue",
+          dataSourceRef: dialogueSource.dataSourceId,
+          targetRef: dialogueText.id,
+          filter: { character: "リル", place: "星風テラス", section: "導入", conditions: ["入室", "夜"] },
+          excludePrevious: true,
+        }],
+      },
+      {
+        behaviorId: "bhv_teamerry_observatory_bottle_flow",
+        displayName: "ボトルメールを書く",
+        trigger: { type: "click", targetRef: postHitArea.id },
+        conditions: [{ type: "sceneIs", sceneId: dayScene.sceneId }],
+        actions: [{ type: "openFlow", flowId: "bottle-mail", targetRef: postHitArea.id }],
+      },
+      {
+        behaviorId: "bhv_teamerry_observatory_wish_flow",
+        displayName: "願い星を書く",
+        trigger: { type: "click", targetRef: postHitArea.id },
+        conditions: [{ type: "sceneIs", sceneId: nightScene.sceneId }],
+        actions: [{ type: "openFlow", flowId: "wish-star", targetRef: postHitArea.id }],
+      },
+      {
+        behaviorId: "bhv_teamerry_observatory_bottle_after",
+        displayName: "ボトルメール送信後TEST",
+        trigger: { type: "event", eventName: "bottle-mail-sent" },
+        conditions: [{ type: "sceneIs", sceneId: dayScene.sceneId }],
+        actions: [{
+          type: "showDialogueSequence",
+          dataSourceRef: bottleSource.dataSourceId,
+          targetRef: dialogueText.id,
+          advanceRefs,
+          excludePrevious: true,
+        }],
+      },
+      {
+        behaviorId: "bhv_teamerry_observatory_wish_after",
+        displayName: "願い星送信後TEST",
+        trigger: { type: "event", eventName: "wish-star-sent" },
+        conditions: [{ type: "sceneIs", sceneId: nightScene.sceneId }],
+        actions: [{
+          type: "showDialogueSequence",
+          dataSourceRef: wishSource.dataSourceId,
+          targetRef: dialogueText.id,
+          advanceRefs,
+          excludePrevious: true,
+        }],
+      },
+    ];
+    behaviorSeeds.forEach((seed) => {
+      if ((page.behaviors || []).some((behavior) => behavior.behaviorId === seed.behaviorId || behavior.id === seed.behaviorId)) {
+        return;
+      }
+      const normalized = window.TBalanceNativeBehaviors.normalizeBehavior(Object.assign({ enabled: true }, seed));
+      if (normalized) {
+        page.behaviors.push(normalized);
+        changed = true;
+      }
+    });
+    page.metadata = Object.assign({}, page.metadata || {}, {
+      teamerryNativeFlow: {
+        connected: true,
+        pageId: page.id || page.pageId || "",
+        daySceneId: dayScene.sceneId,
+        nightSceneId: nightScene.sceneId,
+        liluLayerId: liluLayer.id,
+        dialogueTextLayerId: dialogueText.id,
+        bubbleGroupId: dialogueText.groupId || bubbleLayer?.groupId || "",
+        postHitAreaId: postHitArea.id,
+      },
+    });
+    return changed;
+  }
+
+  function ensureProjectJsonDataSource({ dataSourceId, displayName, relativePath, selector, kind }) {
+    window.TBalanceNativeDataSources?.normalizeProject?.(state.project);
+    const registry = state.project.dataSourceRegistry;
+    const existing = registry.dataSources.find((source) => source.dataSourceId === dataSourceId || source.id === dataSourceId);
+    if (existing) {
+      existing.provider = "project-json";
+      existing.source = Object.assign({}, existing.source || {}, { relativePath, selector });
+      existing.kind = kind || existing.kind || "dialogue-list";
+      existing.displayName = existing.displayName || displayName;
+      return existing;
+    }
+    const source = window.TBalanceNativeDataSources.normalizeDataSource({
+      dataSourceId,
+      displayName,
+      provider: "project-json",
+      kind,
+      source: { relativePath, selector },
+      mapping: { idField: "id", textField: "text" },
+    });
+    registry.dataSources.push(source);
+    state.project.dataSources = registry.dataSources;
+    return source;
+  }
+
+  function ensureTeaMerryObservatorySpeechBubble(page) {
+    if (!page || !Array.isArray(page.layers) || state.existingWeb.active) {
+      return false;
+    }
+    const pageName = normalizeTextKey(`${page.name || page.displayName || ""} ${page.slug || ""}`);
+    if (!pageName.includes("星風テラス") && !pageName.includes("observatory")) {
+      return false;
+    }
+    window.TBalanceNativeScenes?.normalizePage?.(page);
+    const imageBubble = findLayerByNameInPage(page, ["hukidasi", "吹き出し"], (layer) => layer.type === "image" && layer.visibilityMode !== "hidden");
+    const backupBubble = findLayerByNameInPage(page, ["リル吹き出し画像バックアップ"], (layer) => layer.type === "image");
+    const textLayer = findLayerByNameInPage(page, ["リルセリフ", "リルの台詞"], (layer) => layer.type === "text");
+    if (!textLayer) {
+      return false;
+    }
+    const existingBody = page.layers.find((layer) => layer.metadata?.teamerrySpeechBubblePart === "body");
+    const existingTail = page.layers.find((layer) => layer.metadata?.teamerrySpeechBubblePart === "tail");
+    if (!imageBubble && (!existingBody || !existingTail)) {
+      return false;
+    }
+    const sourceBubble = imageBubble || backupBubble || existingBody || textLayer;
+    const groupId = textLayer.groupId || existingBody?.groupId || existingTail?.groupId || imageBubble?.groupId || `group_lil_speech_${page.id || page.pageId || "page"}`;
+    const groupName = "リル吹き出しセット";
+    const bodyId = `${groupId}_body`;
+    const tailId = `${groupId}_tail`;
+    let changed = false;
+    const body = existingBody || page.layers.find((layer) => layer.id === bodyId)
+      || createSpeechBubbleShapeLayer(bodyId, "リル吹き出し本体", "roundRect", groupId, groupName, sourceBubble);
+    const tail = existingTail || page.layers.find((layer) => layer.id === tailId)
+      || createSpeechBubbleShapeLayer(tailId, "リル吹き出ししっぽ", "triangle", groupId, groupName, sourceBubble);
+    if (!page.layers.includes(body)) {
+      page.layers.push(body);
+      changed = true;
+    }
+    if (!page.layers.includes(tail)) {
+      page.layers.push(tail);
+      changed = true;
+    }
+    changed = normalizeSpeechBubbleShapeStyle(body, false) || changed;
+    changed = normalizeSpeechBubbleShapeStyle(tail, true) || changed;
+    const beforeTextName = textLayer.name;
+    textLayer.name = "リルセリフ";
+    textLayer.displayName = "リルセリフ";
+    textLayer.role = "dialogue-text";
+    textLayer.groupId = groupId;
+    textLayer.groupName = groupName;
+    textLayer.metadata = Object.assign({}, textLayer.metadata || {}, { dialogueTarget: "lil-speech", speechBubbleAutoLayout: true });
+    textLayer.style = Object.assign({}, textLayer.style || {}, { color: "#4e2213", align: "center", weight: 700, lineHeight: 1.35 });
+    applySpeechBubbleTextTypography(textLayer, "desktop", getSpeechBubbleManualScale(textLayer));
+    applySpeechBubbleTextTypography(textLayer, "mobile", getSpeechBubbleManualScale(textLayer));
+    changed = changed || beforeTextName !== textLayer.name;
+    if (applySpeechBubbleLayoutsFromAnchor(body, tail, textLayer, imageBubble || body)) {
+      changed = true;
+    }
+    if (imageBubble) {
+      imageBubble.name = imageBubble.name === "hukidasi" ? "リル吹き出し画像バックアップ" : imageBubble.name;
+      imageBubble.displayName = imageBubble.name;
+      imageBubble.visibilityMode = "hidden";
+      imageBubble.visible = false;
+      imageBubble.metadata = Object.assign({}, imageBubble.metadata || {}, {
+        backupFor: "リル吹き出しセット",
+        originalGroupId: imageBubble.groupId || "",
+        originalGroupName: imageBubble.groupName || "",
+        replacedBy: [body.id, tail.id, textLayer.id],
+      });
+      delete imageBubble.groupId;
+      delete imageBubble.groupName;
+      changed = true;
+    }
+    sortSpeechBubbleLayers(page, groupId, imageBubble?.id || backupBubble?.id || "", body.id, tail.id, textLayer.id);
+    return changed;
+  }
+
+  function createSpeechBubbleShapeLayer(id, name, shapeType, groupId, groupName, sourceLayer) {
+    const isTail = shapeType === "triangle";
+    return {
+      id,
+      layerId: id,
+      type: "shape",
+      role: isTail ? "dialogue-tail" : "dialogue-bubble",
+      name,
+      displayName: name,
+      visible: true,
+      locked: false,
+      link: "",
+      groupId,
+      groupName,
+      hitArea: { enabled: false, visible: false, x: 0, y: 0, width: 1, height: 1 },
+      corners: createDefaultCorners(),
+      transformMode: "normal",
+      shape: {
+        type: shapeType,
+        fill: "rgba(255, 249, 224, 0.96)",
+        fillEnabled: true,
+        stroke: "rgba(116, 72, 35, 0.42)",
+        strokeEnabled: true,
+        strokeWidth: isTail ? 2 : 2,
+        radius: isTail ? 8 : 46,
+      },
+      desktop: Object.assign({}, sourceLayer.desktop || sourceLayer.base || {}),
+      mobile: Object.assign({}, sourceLayer.mobile || sourceLayer.viewportOverrides?.mobile || sourceLayer.desktop || sourceLayer.base || {}),
+      base: Object.assign({}, sourceLayer.base || sourceLayer.desktop || {}),
+      viewportOverrides: {},
+      sceneOverrides: {},
+      sceneViewportOverrides: {},
+      appearance: { opacity: 1, brightness: 1, shadow: "soft", shadowType: "soft", shadowSize: 12, shadowColor: "rgba(64, 38, 15, 0.25)", shadowOpacity: 25 },
+      constraints: { keepAspect: false, keepSquare: false, keepCircle: false },
+      metadata: {
+        teamerrySpeechBubblePart: isTail ? "tail" : "body",
+        speechBubbleAutoLayout: true,
+      },
+    };
+  }
+
+  function normalizeSpeechBubbleShapeStyle(layer, isTail) {
+    if (!layer || layer.type !== "shape") {
+      return false;
+    }
+    const nextShape = Object.assign({}, layer.shape || {}, {
+      type: isTail ? "triangle" : "roundRect",
+      fill: "rgba(255, 249, 224, 0.96)",
+      fillEnabled: true,
+      stroke: "rgba(116, 72, 35, 0.42)",
+      strokeEnabled: true,
+      strokeWidth: 2,
+      radius: isTail ? 8 : 46,
+    });
+    const before = JSON.stringify(layer.shape || {});
+    layer.shape = nextShape;
+    return before !== JSON.stringify(nextShape);
+  }
+
+  function applySpeechBubbleLayoutsFromAnchor(body, tail, textLayer, anchorLayer) {
+    let changed = false;
+    const applyForScope = (target, anchorLayout, textLayout = null, viewportId = "desktop") => {
+      if (!anchorLayout) {
+        return;
+      }
+      const textValue = getSpeechBubbleTextValue(textLayer);
+      const layouts = calculateSpeechBubbleLayouts(anchorLayout, textValue, viewportId, getSpeechBubbleManualScale(textLayer));
+      const nextBody = layouts.body;
+      const nextTail = layouts.tail;
+      const nextText = layouts.text;
+      applySpeechBubbleTextTypography(textLayer, viewportId, getSpeechBubbleManualScale(textLayer));
+      changed = assignSpeechBubbleLayout(target.body, nextBody) || changed;
+      changed = assignSpeechBubbleLayout(target.tail, nextTail) || changed;
+      changed = assignSpeechBubbleLayout(target.text, Object.assign({}, nextText, {
+        rotation: Number(textLayout?.rotation ?? nextText.rotation) || 0,
+      })) || changed;
+    };
+    const baseBody = getNativeLayerScopeTarget(body, { type: "base", viewportId: "desktop" });
+    const baseTail = getNativeLayerScopeTarget(tail, { type: "base", viewportId: "desktop" });
+    const baseText = getNativeLayerScopeTarget(textLayer, { type: "base", viewportId: "desktop" });
+    applyForScope({ body: baseBody, tail: baseTail, text: baseText }, anchorLayer.base || anchorLayer.desktop, textLayer.base || textLayer.desktop, "desktop");
+    if (anchorLayer.viewportOverrides?.mobile || textLayer.viewportOverrides?.mobile || body.viewportOverrides?.mobile) {
+      const bodyMobile = getNativeLayerScopeTarget(body, { type: "viewport", viewportId: "mobile" });
+      const tailMobile = getNativeLayerScopeTarget(tail, { type: "viewport", viewportId: "mobile" });
+      const textMobile = getNativeLayerScopeTarget(textLayer, { type: "viewport", viewportId: "mobile" });
+      const mobileImage = window.TBalanceNativeScenes?.resolveLayerState?.(anchorLayer, "mobile", "") || anchorLayer.mobile;
+      const mobileText = window.TBalanceNativeScenes?.resolveLayerState?.(textLayer, "mobile", "") || textLayer.mobile;
+      applyForScope({ body: bodyMobile, tail: tailMobile, text: textMobile }, mobileImage, mobileText, "mobile");
+    }
+    Object.keys(Object.assign({}, anchorLayer.sceneOverrides || {}, textLayer.sceneOverrides || {}, body.sceneOverrides || {})).forEach((sceneId) => {
+      const bodyScene = getNativeLayerScopeTarget(body, { type: "scene", sceneId, viewportId: "desktop" });
+      const tailScene = getNativeLayerScopeTarget(tail, { type: "scene", sceneId, viewportId: "desktop" });
+      const textScene = getNativeLayerScopeTarget(textLayer, { type: "scene", sceneId, viewportId: "desktop" });
+      const sceneImage = window.TBalanceNativeScenes?.resolveLayerState?.(anchorLayer, "desktop", sceneId) || anchorLayer.sceneOverrides?.[sceneId];
+      const sceneText = window.TBalanceNativeScenes?.resolveLayerState?.(textLayer, "desktop", sceneId) || textLayer.sceneOverrides?.[sceneId];
+      applyForScope({ body: bodyScene, tail: tailScene, text: textScene }, sceneImage, sceneText, "desktop");
+    });
+    Object.keys(Object.assign({}, anchorLayer.sceneViewportOverrides || {}, textLayer.sceneViewportOverrides || {}, body.sceneViewportOverrides || {})).forEach((sceneId) => {
+      const viewportKeys = Object.assign({}, anchorLayer.sceneViewportOverrides?.[sceneId] || {}, textLayer.sceneViewportOverrides?.[sceneId] || {}, body.sceneViewportOverrides?.[sceneId] || {});
+      Object.keys(viewportKeys).forEach((viewportId) => {
+        const viewport = renderer.getViewportKey(viewportId);
+        const bodySceneViewport = getNativeLayerScopeTarget(body, { type: "sceneViewport", sceneId, viewportId: viewport });
+        const tailSceneViewport = getNativeLayerScopeTarget(tail, { type: "sceneViewport", sceneId, viewportId: viewport });
+        const textSceneViewport = getNativeLayerScopeTarget(textLayer, { type: "sceneViewport", sceneId, viewportId: viewport });
+        const sceneViewportImage = window.TBalanceNativeScenes?.resolveLayerState?.(anchorLayer, viewport, sceneId) || anchorLayer.sceneViewportOverrides?.[sceneId]?.[viewportId];
+        const sceneViewportText = window.TBalanceNativeScenes?.resolveLayerState?.(textLayer, viewport, sceneId) || textLayer.sceneViewportOverrides?.[sceneId]?.[viewportId];
+        applyForScope({ body: bodySceneViewport, tail: tailSceneViewport, text: textSceneViewport }, sceneViewportImage, sceneViewportText, viewport);
+      });
+    });
+    renderer.normalizeLayer(body);
+    renderer.normalizeLayer(tail);
+    renderer.normalizeLayer(textLayer);
+    return changed;
+  }
+
+  function prepareNativeSpeechBubbleRenderPage(page, viewportId, sceneId) {
+    if (!page || state.existingWeb.active || state.nativeBehaviorRuntime?.page?.id !== page.id) {
+      return page;
+    }
+    const runtimeTextLayers = (page.layers || []).filter((layer) => {
+      if (layer.type !== "text" || layer.role !== "dialogue-text") {
+        return false;
+      }
+      const runtimeText = state.nativeBehaviorRuntime?.getRuntimeText?.(layer.id);
+      return runtimeText && runtimeText !== layer.text;
+    });
+    if (!runtimeTextLayers.length) {
+      return page;
+    }
+    const renderPage = cloneNativePageForSpeechBubble(page);
+    runtimeTextLayers.forEach((sourceTextLayer) => {
+      const textLayer = renderPage.layers.find((layer) => layer.id === sourceTextLayer.id);
+      const runtimeText = state.nativeBehaviorRuntime?.getRuntimeText?.(sourceTextLayer.id);
+      reflowSpeechBubbleForTextLayer(renderPage, textLayer, runtimeText, viewportId, sceneId);
+    });
+    return renderPage;
+  }
+
+  function cloneNativePageForSpeechBubble(page) {
+    if (typeof structuredClone === "function") {
+      return structuredClone(page);
+    }
+    return JSON.parse(JSON.stringify(page));
+  }
+
+  function reflowSpeechBubbleForTextLayer(page, textLayer, textValue = "", viewportId = getActiveViewportKey(), sceneId = getActiveSceneId(page)) {
+    if (!page || !textLayer || textLayer.type !== "text" || textLayer.role !== "dialogue-text") {
+      return false;
+    }
+    const groupId = textLayer.groupId || "";
+    const body = (page.layers || []).find((layer) => layer.role === "dialogue-bubble" && (layer.groupId === groupId || layer.metadata?.teamerrySpeechBubblePart === "body"));
+    const tail = (page.layers || []).find((layer) => layer.role === "dialogue-tail" && (layer.groupId === groupId || layer.metadata?.teamerrySpeechBubblePart === "tail"));
+    if (!body || !tail) {
+      return false;
+    }
+    const viewport = renderer.getViewportKey(viewportId);
+    const scope = window.TBalanceNativeScenes?.getWriteScope?.(page, viewport, sceneId || "") || { type: "base", viewportId: "desktop" };
+    const anchorLayout = window.TBalanceNativeScenes?.resolveLayerState?.(body, viewport, sceneId || "")
+      || body[viewport]
+      || body.base
+      || body.desktop
+      || {};
+    const manualScale = getSpeechBubbleManualScale(textLayer);
+    const layouts = calculateSpeechBubbleLayouts(anchorLayout, textValue || getSpeechBubbleTextValue(textLayer), viewport, manualScale);
+    applySpeechBubbleTextTypography(textLayer, viewport, manualScale);
+    const bodyTarget = getNativeLayerScopeTarget(body, scope);
+    const tailTarget = getNativeLayerScopeTarget(tail, scope);
+    const textTarget = getNativeLayerScopeTarget(textLayer, scope);
+    let changed = false;
+    changed = assignSpeechBubbleLayout(bodyTarget, layouts.body) || changed;
+    changed = assignSpeechBubbleLayout(tailTarget, layouts.tail) || changed;
+    changed = assignSpeechBubbleLayout(textTarget, layouts.text) || changed;
+    return changed;
+  }
+
+  function createSpeechBubbleBodyLayout(anchorLayout = {}, textValue = "", viewportId = "desktop") {
+    return calculateSpeechBubbleLayouts(anchorLayout, textValue, viewportId).body;
+  }
+
+  function createSpeechBubbleTailLayout(bodyLayout = {}, anchorLayout = {}, viewportId = "desktop") {
+    return calculateSpeechBubbleLayouts(bodyLayout, "", viewportId).tail;
+  }
+
+  function createSpeechBubbleTextLayout(bodyLayout, textValue = "", viewportId = "desktop") {
+    return calculateSpeechBubbleLayouts(bodyLayout, textValue, viewportId).text;
+  }
+
+  function calculateSpeechBubbleLayouts(anchorLayout = {}, textValue = "", viewportId = "desktop", manualScale = 1) {
+    const metrics = estimateSpeechBubbleMetrics(textValue, viewportId, manualScale);
+    const anchorWidth = Math.max(1, Number(anchorLayout.width) || metrics.width);
+    const anchorHeight = Math.max(1, Number(anchorLayout.height) || metrics.height);
+    const centerX = Number(anchorLayout.x || 0) + anchorWidth / 2;
+    const centerY = Number(anchorLayout.y || 0) + Math.min(anchorHeight / 2, metrics.height / 2 + 8);
+    const body = {
+      x: Math.round(centerX - metrics.width / 2),
+      y: Math.round(centerY - metrics.height / 2),
+      width: metrics.width,
+      height: metrics.height,
+      rotation: Number(anchorLayout.rotation) || 0,
+      visible: true,
+      opacity: 1,
+    };
+    const tailJoinOverlap = renderer.clamp(metrics.tailHeight * 0.28, 5, 8);
+    const tail = {
+      x: Math.round(body.x + body.width * 0.43 - metrics.tailWidth / 2),
+      y: Math.round(body.y + body.height - tailJoinOverlap),
+      width: metrics.tailWidth,
+      height: metrics.tailHeight,
+      rotation: 180,
+      visible: true,
+      opacity: 1,
+    };
+    const text = {
+      x: Math.round(body.x + metrics.paddingX),
+      y: Math.round(body.y + metrics.paddingY),
+      width: Math.max(120, Math.round(body.width - metrics.paddingX * 2)),
+      height: Math.max(44, Math.round(body.height - metrics.paddingY * 2)),
+      rotation: body.rotation,
+      visible: true,
+      opacity: 1,
+    };
+    return { body, tail, text };
+  }
+
+  function getSpeechBubbleTextValue(textLayer) {
+    return String(textLayer?.text || textLayer?.content || "こんにちは").trim() || "こんにちは";
+  }
+
+  function getSpeechBubbleLayoutConfig(viewportId = "desktop") {
+    const isMobile = renderer.getViewportKey(viewportId) === "mobile";
+    return isMobile
+      ? { fontSize: 17, lineHeight: 1.35, paddingX: 30, paddingY: 18, minWidth: 300, maxWidth: 430, maxTextWidth: 320, minHeight: 96, tailWidth: 32, tailHeight: 18 }
+      : { fontSize: 20, lineHeight: 1.35, paddingX: 44, paddingY: 22, minWidth: 380, maxWidth: 590, maxTextWidth: 390, minHeight: 120, tailWidth: 40, tailHeight: 22 };
+  }
+
+  function getSpeechBubbleManualScale(layer) {
+    const scale = Number(layer?.metadata?.speechBubbleManualScale);
+    return Number.isFinite(scale) && scale > 0 ? renderer.clamp(scale, 0.35, 3) : 1;
+  }
+
+  function applySpeechBubbleTextTypography(textLayer, viewportId = "desktop", manualScale = 1) {
+    if (!textLayer || textLayer.type !== "text") {
+      return;
+    }
+    const viewport = renderer.getViewportKey(viewportId);
+    const config = getSpeechBubbleLayoutConfig(viewport);
+    const scale = renderer.clamp(Number(manualScale) || 1, 0.35, 3);
+    const styleKey = `${viewport}Style`;
+    const color = viewport === "mobile" ? "#53230e" : "#4e2213";
+    textLayer[styleKey] = Object.assign({}, textLayer[styleKey] || {}, {
+      fontSize: Math.max(8, Math.round(config.fontSize * scale * 10) / 10),
+      color,
+      align: "center",
+      weight: 700,
+      lineHeight: config.lineHeight,
+      fontFamily: viewport === "desktop" ? "'Meiryo', sans-serif" : textLayer[styleKey]?.fontFamily,
+    });
+  }
+
+  function estimateSpeechBubbleMetrics(textValue, viewportId = "desktop", manualScale = 1) {
+    const config = getSpeechBubbleLayoutConfig(viewportId);
+    const scale = renderer.clamp(Number(manualScale) || 1, 0.35, 3);
+    Object.assign(config, {
+      fontSize: config.fontSize * scale,
+      paddingX: config.paddingX * scale,
+      paddingY: config.paddingY * scale,
+      minWidth: config.minWidth * scale,
+      maxWidth: config.maxWidth * scale,
+      maxTextWidth: config.maxTextWidth * scale,
+      minHeight: config.minHeight * scale,
+      tailWidth: config.tailWidth * scale,
+      tailHeight: config.tailHeight * scale,
+    });
+    const text = String(textValue || "こんにちは").replace(/\r\n?/g, "\n");
+    const maxTextWidth = Math.max(120, Math.min(config.maxWidth - config.paddingX * 2, config.maxTextWidth || config.maxWidth));
+    const fullWidthChar = config.fontSize * 0.94;
+    const halfWidthChar = config.fontSize * 0.56;
+    const estimateSegmentWidth = (segment) => Array.from(segment || "").reduce((sum, ch) => {
+      return sum + (/[\u0000-\u00ff]/.test(ch) ? halfWidthChar : fullWidthChar);
+    }, 0);
+    let lineCount = 0;
+    let widest = 0;
+    text.split("\n").forEach((rawLine) => {
+      const line = rawLine || " ";
+      const width = Math.max(fullWidthChar, estimateSegmentWidth(line));
+      const wrappedLines = Math.max(1, Math.ceil(width / maxTextWidth));
+      lineCount += wrappedLines;
+      widest = Math.max(widest, Math.min(width, maxTextWidth));
+    });
+    const width = Math.round(Math.min(config.maxWidth, Math.max(config.minWidth, widest + config.paddingX * 2)));
+    const textHeight = lineCount * config.fontSize * config.lineHeight;
+    const height = Math.round(Math.max(config.minHeight, textHeight + config.paddingY * 2));
+    return Object.assign({}, config, { width, height, lineCount });
+  }
+
+  function assignSpeechBubbleLayout(target, nextLayout) {
+    if (!target || !nextLayout) {
+      return false;
+    }
+    let changed = false;
+    ["x", "y", "width", "height", "rotation", "visible", "opacity"].forEach((key) => {
+      if (target[key] !== nextLayout[key]) {
+        target[key] = nextLayout[key];
+        changed = true;
+      }
+    });
+    return changed;
+  }
+
+  function sortSpeechBubbleLayers(page, groupId, backupId, bodyId, tailId, textId) {
+    const order = new Map([[backupId, 0], [bodyId, 1], [tailId, 2], [textId, 3]]);
+    const indexed = (page.layers || []).map((layer, index) => ({ layer, index }));
+    indexed.sort((a, b) => {
+      const ao = order.has(a.layer.id) ? order.get(a.layer.id) : null;
+      const bo = order.has(b.layer.id) ? order.get(b.layer.id) : null;
+      if (ao == null && bo == null) {
+        return a.index - b.index;
+      }
+      if (ao == null) {
+        return -1;
+      }
+      if (bo == null) {
+        return 1;
+      }
+      return ao - bo;
+    });
+    page.layers = indexed.map((item) => item.layer);
+    (page.layers || []).forEach((layer) => {
+      if (layer.groupId === groupId) {
+        layer.groupName = "リル吹き出しセット";
+      }
+    });
+  }
+
+  function findSceneByName(page, name) {
+    const key = normalizeTextKey(name);
+    return (page?.scenes || []).find((scene) => normalizeTextKey(scene.displayName || scene.name || "").includes(key)) || null;
+  }
+
+  function findLayerByNameInPage(page, names, predicate = () => true) {
+    const keys = names.map(normalizeTextKey);
+    return (page?.layers || []).find((layer) => {
+      const key = normalizeTextKey(`${layer.name || ""} ${layer.displayName || ""}`);
+      return keys.some((name) => key.includes(name)) && predicate(layer);
+    }) || null;
+  }
+
+  function normalizeTextKey(value) {
+    return String(value || "").trim().toLowerCase();
   }
 
   function getTestPageById(pageId) {
@@ -11311,6 +12031,9 @@
     if (layerTarget === "#hokkori") {
       return "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html?hokkori=1";
     }
+    if (layerTarget === "#bottle-mail") {
+      return "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html?bottle=1";
+    }
     const teaMerryLink = getTeaMerryPageLink(raw);
     return teaMerryLink ? teaMerryLink.url : raw;
   }
@@ -11324,7 +12047,7 @@
     if (name.includes("今日のほっこり") || name.includes("ほっこり")) {
       return "#hokkori";
     }
-    if (name.includes("ボトルメール")) {
+    if (name.includes("ボトルメール") || name.includes("投稿を書く") || name.includes("投稿")) {
       return "#bottle-mail";
     }
     if (name.includes("戻る") || name.includes("back") || fileName.includes("back")) {
@@ -11361,6 +12084,12 @@
       label: "願い星を書く",
       url: "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html?wish=1",
       aliases: ["願い星を書く", "願い星", "wishstar", "wish", "#wish-star"],
+    },
+    {
+      id: "bottle-mail",
+      label: "ボトルメールを書く",
+      url: "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html?bottle=1",
+      aliases: ["ボトルメールを書く", "ボトルメール", "bottlemail", "bottle", "#bottle-mail"],
     },
     {
       id: "tea-room",
@@ -11434,14 +12163,19 @@
       || /^https:\/\/ratemaru88-blip\.github\.io\/teamerry-forest\//i.test(String(value || "").trim());
   }
 
-  function getTeaMerryLocalTestUrl(value) {
+  function getTeaMerryLocalTestUrl(value, context = {}) {
+    const urlContext = {
+      ...context,
+      viewport: context.viewport || getTestExternalViewport(context.windowKey),
+    };
     const adapterResult = adapterRegistry?.get("teamerry")?.resolveTestUrl?.(value, {
       baseUrl: window.location.href,
       currentUrl: window.location.href,
       origin: window.location.origin,
+      viewport: urlContext.viewport,
     });
     if (adapterResult?.status === "resolved" && adapterResult.url) {
-      return adapterResult.url;
+      return applyTeaMerryTestContextToUrl(adapterResult.url, value, urlContext);
     }
     const link = getTeaMerryPageLink(value);
     const raw = String(link?.url || value || "").trim();
@@ -11451,10 +12185,55 @@
     try {
       const parsed = new URL(raw, "https://ratemaru88-blip.github.io/teamerry-forest/");
       const fileName = parsed.pathname.replace(/^\/teamerry-forest\//, "") || "index.html";
-      return new URL(`../../${fileName}${parsed.search}${parsed.hash}`, window.location.href).toString();
+      const localUrl = new URL(`../../${fileName}${parsed.search}${parsed.hash}`, window.location.href).toString();
+      return applyTeaMerryTestContextToUrl(localUrl, raw, urlContext);
     } catch (error) {
       return raw;
     }
+  }
+
+  function applyTeaMerryTestContextToUrl(urlValue, sourceValue = "", context = {}) {
+    try {
+      const url = new URL(urlValue, window.location.href);
+      if (!isTeaMerryObservatoryTestUrl(url, sourceValue)) {
+        return url.toString();
+      }
+      const sceneTime = getTeaMerrySceneTimeParam(context.page || getCurrentPage(), context.sceneId);
+      if (sceneTime) {
+        url.searchParams.set("time", sceneTime);
+      }
+      return url.toString();
+    } catch (error) {
+      return urlValue;
+    }
+  }
+
+  function isTeaMerryObservatoryTestUrl(url, sourceValue = "") {
+    const path = String(url?.pathname || "").replace(/\/+$/, "");
+    if (path.endsWith("/observatory.html")) {
+      return true;
+    }
+    try {
+      const sourceUrl = new URL(sourceValue, "https://ratemaru88-blip.github.io/teamerry-forest/");
+      return String(sourceUrl.pathname || "").replace(/\/+$/, "").endsWith("/observatory.html");
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function getTeaMerrySceneTimeParam(page = getCurrentPage(), sceneId = getActiveSceneId(page)) {
+    if (!page || !sceneId) {
+      return "";
+    }
+    const scene = (page.scenes || []).find((item) => item.sceneId === sceneId) || null;
+    const key = normalizeTextKey(`${scene?.displayName || ""} ${scene?.name || ""} ${scene?.slug || ""} ${scene?.id || ""}`);
+    if (key.includes("夜") || key.includes("night")) {
+      return "night";
+    }
+    if (key.includes("昼") || key.includes("day")) {
+      return "day";
+    }
+    return "";
   }
 
   function getTestExternalDisplayMode(url, windowKey, layer = null) {
@@ -11514,7 +12293,7 @@
     const aliases = {
       hokkori: ["今日のほっこり", "ほっこり", "hokkori"],
       wishstar: ["願い星を書く", "願い星", "wishstar", "wish"],
-      bottlemail: ["ボトルメール", "bottlemail"],
+      bottlemail: ["ボトルメールを書く", "ボトルメール", "bottlemail", "bottle"],
       forestmap: ["森の地図", "森マップ", "forestmap"],
       next: ["次へ", "next"],
     };
@@ -11704,7 +12483,11 @@
     if (!isExternalUrl(url)) {
       return handleTestPageNavigation(layer, event, windowKey, getTestLayerTarget(layer, target));
     }
-    const frameUrl = isTeamerryPageUrl(url) ? getTeaMerryLocalTestUrl(url) : url;
+    const frameUrl = isTeamerryPageUrl(url) ? getTeaMerryLocalTestUrl(url, {
+      page: getTestPageById(getTestCurrentPageId(windowKey)) || getCurrentPage(),
+      sceneId: getNativeTestRuntimeSceneId(getTestPageById(getTestCurrentPageId(windowKey)) || getCurrentPage(), windowKey),
+      windowKey,
+    }) : url;
     const displayMode = getTestExternalDisplayMode(url, windowKey, layer);
     const displayModeSetting = layer?.clickAction?.displayMode || "auto";
     const key = windowKey === "secondary" ? "secondary" : "primary";
@@ -12209,6 +12992,93 @@
     return known.includes(value) ? value : "";
   }
 
+  function getNativeFlowIdForClickTarget(value) {
+    const target = getTestLayerTarget(null, String(value || "").trim());
+    if (target === "#wish-star") {
+      return "wish-star";
+    }
+    if (target === "#bottle-mail") {
+      return "bottle-mail";
+    }
+    const link = getTeaMerryPageLink(value);
+    if (link?.id === "wishstar") {
+      return "wish-star";
+    }
+    if (link?.id === "bottle-mail") {
+      return "bottle-mail";
+    }
+    return "";
+  }
+
+  function getClickTargetForNativeFlow(flowId) {
+    if (flowId === "wish-star") {
+      return "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html?wish=1";
+    }
+    if (flowId === "bottle-mail") {
+      return "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html?bottle=1";
+    }
+    return "";
+  }
+
+  function isSceneScopedNativeClickLayer(layer, page = getCurrentPage()) {
+    if (!layer || !page || state.existingWeb.active) {
+      return false;
+    }
+    const pageName = normalizeTextKey(`${page.name || page.displayName || ""} ${page.slug || ""}`);
+    const layerName = normalizeTextKey(`${layer.name || layer.displayName || ""}`);
+    return (pageName.includes("星風テラス") || pageName.includes("observatory"))
+      && (layer.role === "hit-area" || layer.hitArea?.enabled)
+      && (layerName.includes("投稿を書く") || layerName.includes("投稿"));
+  }
+
+  function getSceneScopedNativeClickBehavior(layer, sceneId = getActiveSceneId(getCurrentPage()), page = getCurrentPage()) {
+    if (!isSceneScopedNativeClickLayer(layer, page) || !sceneId) {
+      return null;
+    }
+    window.TBalanceNativeBehaviors?.normalizePage?.(page);
+    return (page.behaviors || []).find((behavior) => {
+      if (behavior.enabled === false || behavior.trigger?.type !== "click" || behavior.trigger?.targetRef !== layer.id) {
+        return false;
+      }
+      const sceneCondition = (behavior.conditions || []).find((condition) => condition.type === "sceneIs");
+      return sceneCondition?.sceneId === sceneId && (behavior.actions || []).some((action) => action.type === "openFlow");
+    }) || null;
+  }
+
+  function getSceneScopedNativeClickAction(layer, sceneId = getActiveSceneId(getCurrentPage()), page = getCurrentPage()) {
+    const behavior = getSceneScopedNativeClickBehavior(layer, sceneId, page);
+    const flowId = behavior?.actions?.find((action) => action.type === "openFlow")?.flowId || "";
+    const target = getClickTargetForNativeFlow(flowId);
+    return target ? { type: "page", target, flowId, behavior } : null;
+  }
+
+  function setSceneScopedNativeClickAction(layer, target, sceneId = getActiveSceneId(getCurrentPage()), page = getCurrentPage()) {
+    const flowId = getNativeFlowIdForClickTarget(target);
+    if (!isSceneScopedNativeClickLayer(layer, page) || !sceneId || !flowId || !window.TBalanceNativeBehaviors) {
+      return false;
+    }
+    window.TBalanceNativeBehaviors.normalizePage?.(page);
+    const displayName = flowId === "wish-star" ? "願い星を書く" : "ボトルメールを書く";
+    let behavior = getSceneScopedNativeClickBehavior(layer, sceneId, page);
+    if (!behavior) {
+      behavior = window.TBalanceNativeBehaviors.normalizeBehavior({
+        behaviorId: `bhv_${layer.id}_${sceneId}_${flowId}`.replace(/[^\w-]/g, "_"),
+        displayName,
+        trigger: { type: "click", targetRef: layer.id },
+        conditions: [{ type: "sceneIs", sceneId }],
+        actions: [{ type: "openFlow", flowId, targetRef: layer.id }],
+      });
+      page.behaviors = page.behaviors || [];
+      page.behaviors.push(behavior);
+    }
+    behavior.displayName = displayName;
+    behavior.enabled = true;
+    behavior.conditions = [{ type: "sceneIs", sceneId }];
+    behavior.actions = [{ type: "openFlow", flowId, targetRef: layer.id }];
+    layer.hitArea = Object.assign({}, layer.hitArea || {}, { enabled: true });
+    return true;
+  }
+
   function hasClickControls(layer) {
     if (!layer) {
       return false;
@@ -12251,6 +13121,9 @@
     [
       ["propName", (layer, value) => { layer.name = value; }],
       ["propLink", (layer, value) => {
+        if (setSceneScopedNativeClickAction(layer, value)) {
+          return;
+        }
         layer.link = value;
         layer.clickAction = layer.clickAction || {};
         layer.clickAction.type = value ? normalizeClickActionType(layer.clickAction.type, value) : "none";
@@ -12267,6 +13140,9 @@
         els.propClickPreset.value = "";
       }
       els.propClickPreset.disabled = nextType !== "page";
+      if (nextType === "page" && els.propClickPreset.value && setSceneScopedNativeClickAction(layer, els.propClickPreset.value)) {
+        return;
+      }
       layer.clickAction = Object.assign({}, layer.clickAction || {}, {
         type: nextType,
         target: els.propLink.value,
@@ -12283,6 +13159,12 @@
 
     els.propClickPreset.addEventListener("change", () => updateSelected((layer) => {
       const value = els.propClickPreset.value;
+      if (value && setSceneScopedNativeClickAction(layer, value)) {
+        const scoped = getSceneScopedNativeClickAction(layer);
+        els.propClickAction.value = "page";
+        els.propLink.value = scoped?.target || value;
+        return;
+      }
       layer.clickAction = Object.assign({}, layer.clickAction || {});
       if (value) {
         layer.link = value;
@@ -14251,6 +15133,12 @@
       return;
     }
     state.activeSceneIds[page.id] = sceneId;
+    if (state.preview && state.nativeBehaviorRuntime?.page?.id === page.id) {
+      state.nativeBehaviorRuntime.sceneId = sceneId;
+      state.testRuntimeSceneId = sceneId;
+      state.nativeBehaviorRuntime.firedPageOpen?.clear?.();
+      state.nativeBehaviorRuntime.firePageOpen?.();
+    }
     clearSelection();
     renderAll();
   }
@@ -14353,7 +15241,8 @@
     const mainViewport = state.windowMode === "pc-mobile" ? "desktop" : state.viewport;
     const primarySceneId = getNativeTestRuntimeSceneId(primaryRenderPage, "primary");
     ensureBackgroundLayersFitViewport(primaryRenderPage, mainViewport, primarySceneId);
-    renderer.renderPage(els.canvas, primaryRenderPage, mainViewport, {
+    const primaryDisplayPage = prepareNativeSpeechBubbleRenderPage(primaryRenderPage, mainViewport, primarySceneId);
+    renderer.renderPage(els.canvas, primaryDisplayPage, mainViewport, {
       edit: !state.preview,
       project: state.project,
       sceneId: primarySceneId,
@@ -14609,8 +15498,9 @@
       const secondaryPage = state.preview ? getTestPageById(state.testPageIds?.secondary) || page : page;
       const secondarySceneId = getNativeTestRuntimeSceneId(secondaryPage, "secondary");
       ensureBackgroundLayersFitViewport(secondaryPage, "mobile", secondarySceneId);
+      const secondaryDisplayPage = prepareNativeSpeechBubbleRenderPage(secondaryPage, "mobile", secondarySceneId);
       els.secondaryCanvas.dataset.windowLabel = "Mobile";
-      renderer.renderPage(els.secondaryCanvas, secondaryPage, "mobile", {
+      renderer.renderPage(els.secondaryCanvas, secondaryDisplayPage, "mobile", {
         edit: !state.preview,
         project: state.project,
         sceneId: secondarySceneId,
@@ -14905,15 +15795,20 @@
     if (!layer || layer.locked) {
       return;
     }
-    const layout = getCurrentLayout(layer);
+    const transformLayers = getSelectionTransformLayers(layer);
+    const layout = transformLayers.length > 1 ? getLayersBoundingBox(transformLayers) : getCurrentLayout(layer);
+    if (!layout) {
+      return;
+    }
     const box = document.createElement("div");
     box.className = "tb-selection-box";
     box.style.left = `${layout.x}px`;
     box.style.top = `${layout.y}px`;
     box.style.width = `${Math.max(1, layout.width)}px`;
     box.style.height = `${Math.max(1, layout.height)}px`;
-    box.style.transform = `rotate(${Number(layout.rotation) || 0}deg)`;
+    box.style.transform = `rotate(${transformLayers.length > 1 ? 0 : Number(layout.rotation) || 0}deg)`;
     box.dataset.layerId = layer.id;
+    box.classList.toggle("is-group-transform", transformLayers.length > 1);
     box.classList.toggle("is-free-transform", state.editorMode === "custom" && layer.transformMode === "free");
     box.classList.toggle("is-perspective-transform", state.editorMode === "custom" && layer.transformMode === "perspective");
     getHandleTypes(layer).forEach((type) => {
@@ -15051,11 +15946,12 @@
     els.propShapeFill.classList.toggle("is-shape-color-target", state.shapeColorTarget === "fill");
     els.propShapeStroke.classList.toggle("is-shape-color-target", state.shapeColorTarget === "stroke");
     els.propShadow.checked = appearance.shadow && appearance.shadow !== "none";
-    els.propLink.value = layer.link || "";
-    const clickAction = layer.clickAction || {};
-    const clickType = normalizeClickActionType(clickAction.type, layer.link || clickAction.target || "");
+    const sceneScopedClick = getSceneScopedNativeClickAction(layer);
+    els.propLink.value = sceneScopedClick?.target || layer.link || "";
+    const clickAction = sceneScopedClick || layer.clickAction || {};
+    const clickType = normalizeClickActionType(clickAction.type, sceneScopedClick?.target || layer.link || clickAction.target || "");
     els.propClickAction.value = clickType;
-    els.propClickPreset.value = clickType === "page" ? getClickPresetValue(layer.link || clickAction.target || "") : "";
+    els.propClickPreset.value = clickType === "page" ? getClickPresetValue(sceneScopedClick?.target || layer.link || clickAction.target || "") : "";
     els.propClickPreset.disabled = clickType !== "page";
     if (els.propClickDisplayMode) {
       els.propClickDisplayMode.value = clickAction.displayMode || "auto";
@@ -15093,22 +15989,24 @@
   }
 
   function renderNativePageBehaviorSummary(layer) {
+    const page = getCurrentPage();
+    window.TBalanceNativeBehaviors?.normalizePage?.(page);
+    const clockBehaviors = (page?.behaviors || []).filter((behavior) => behavior.trigger?.type === "clock");
+    const eventBehaviors = (page?.behaviors || []).filter((behavior) => behavior.trigger?.type === "event");
     if (els.nativeTestClockControls) {
-      els.nativeTestClockControls.hidden = !state.preview || state.existingWeb.active;
+      els.nativeTestClockControls.hidden = !state.preview || state.existingWeb.active || !clockBehaviors.length;
     }
     if (!els.emptyProperties || layer || state.existingWeb.active) {
       return;
     }
-    const page = getCurrentPage();
-    window.TBalanceNativeBehaviors?.normalizePage?.(page);
-    const clockBehaviors = (page?.behaviors || []).filter((behavior) => behavior.trigger?.type === "clock");
-    if (!clockBehaviors.length) {
+    if (!clockBehaviors.length && !eventBehaviors.length) {
       els.emptyProperties.textContent = "レイヤー未選択";
       return;
     }
     els.emptyProperties.innerHTML = `
       <strong>ページの標準動作</strong>
       ${clockBehaviors.map((behavior) => `<span>🕒 ${escapeHtml(window.TBalanceNativeBehaviors?.summarizeBehavior?.(behavior, { page }) || behavior.displayName || "時刻動作")}</span>`).join("")}
+      ${eventBehaviors.map((behavior) => `<button type="button" data-native-behavior-test-event="${escapeAttr(behavior.trigger.eventName || "")}" ${state.preview ? "" : "disabled"}>${escapeHtml(behavior.displayName || window.TBalanceNativeBehaviors?.summarizeBehavior?.(behavior, { page }) || "イベントTEST")}</button>`).join("")}
     `;
   }
 
@@ -15135,6 +16033,10 @@
     window.TBalanceNativeBehaviors?.normalizePage?.(page);
     const related = getNativeBehaviorsForLayer(page, layer.id);
     const conflict = hasLegacyClickAction(layer) && related.some((behavior) => behavior.trigger?.type === "click");
+    if (state.editorMode !== "custom" || state.tool !== "click") {
+      els.nativeBehaviorPanel.innerHTML = "";
+      return;
+    }
     const summaries = related.length
       ? related.map((behavior) => `
           <div class="tb-native-behavior-row">
@@ -15142,7 +16044,7 @@
             <label class="tb-check tb-ribbon-check">ON<input type="checkbox" data-native-behavior-toggle="${escapeAttr(behavior.behaviorId)}" ${behavior.enabled !== false ? "checked" : ""}></label>
           </div>
         `).join("")
-      : `<p>このLayerの標準動作はまだありません。</p>`;
+      : "";
     els.nativeBehaviorPanel.innerHTML = `
       <div class="tb-native-behavior-head">
         <strong>標準動作</strong>
@@ -15168,11 +16070,15 @@
   }
 
   function handleNativeBehaviorPanelClick(event) {
-    const button = event.target.closest("[data-native-behavior-action]");
+    const button = event.target.closest("[data-native-behavior-action], [data-native-behavior-test-event]");
     if (!button || state.existingWeb.active) {
       return;
     }
     const action = button.dataset.nativeBehaviorAction;
+    if (button.dataset.nativeBehaviorTestEvent) {
+      dispatchNativeTestEvent(button.dataset.nativeBehaviorTestEvent);
+      return;
+    }
     if (action === "random-dialogue") {
       addNativeRandomDialogueBehavior();
     }
@@ -15737,7 +16643,7 @@
         </button>
         <div>
           <strong>${escapeHtml(asset.displayName || asset.name || "画像")}</strong>
-          <small>${escapeHtml(window.TBalanceNativeAssets?.getCategoryLabel?.(asset.category) || "その他")} / ${escapeHtml(size)}</small>
+          <small>${escapeHtml(window.TBalanceNativeAssets?.getCategoryLabel?.(asset.category) || "未分類")} / ${escapeHtml(size)}</small>
         </div>
       </article>
     `;
@@ -15767,7 +16673,7 @@
         ${src ? `<img src="${escapeAttr(src)}" alt="">` : `<span>?</span>`}
       </div>
       <strong>${escapeHtml(asset.displayName || asset.name || "画像")}</strong>
-      <small>${escapeHtml(window.TBalanceNativeAssets?.getCategoryLabel?.(asset.category) || "その他")} / ${escapeHtml(size)}</small>
+      <small>${escapeHtml(window.TBalanceNativeAssets?.getCategoryLabel?.(asset.category) || "未分類")} / ${escapeHtml(size)}</small>
       ${duplicateCount > 1 ? `<p class="tb-native-asset-warning">同じ画像が${duplicateCount}件登録されています。</p>` : ""}
       <label class="tb-native-asset-category">分類
         <select data-native-asset-action="category" data-native-asset-id="${escapeAttr(asset.assetId)}">
@@ -15785,7 +16691,7 @@
   function renderNativeAssetStatus() {
     if (state.nativeAssets.duplicateNotice) {
       const notice = state.nativeAssets.duplicateNotice;
-      const currentLabel = window.TBalanceNativeAssets?.getCategoryLabel?.(notice.currentCategory) || "その他";
+      const currentLabel = window.TBalanceNativeAssets?.getCategoryLabel?.(notice.currentCategory) || "未分類";
       const requestedLabel = window.TBalanceNativeAssets?.getCategoryLabel?.(notice.requestedCategory) || currentLabel;
       const canChange = notice.requestedCategory && notice.requestedCategory !== notice.currentCategory;
       return `
@@ -15860,7 +16766,7 @@
       rememberNativeAsset(assetId);
       renderNativeAssetPanel();
     } else if (action === "change-duplicate-category") {
-      updateNativeAssetCategory(assetId, button.dataset.nativeAssetCategory || "other");
+      updateNativeAssetCategory(assetId, button.dataset.nativeAssetCategory || "uncategorized");
     }
   }
 
@@ -15894,6 +16800,13 @@
       els.nativeAssetLibraryModal.hidden = true;
     }
     renderNativeAssetPanel();
+  }
+
+  function finishNativeAssetPlacement() {
+    closeNativeAssetLibrary();
+    window.requestAnimationFrame?.(() => {
+      els.canvas?.focus?.({ preventScroll: true });
+    });
   }
 
   function handleNativeAssetLibraryDragOver(event) {
@@ -15956,7 +16869,7 @@
 
   async function updateNativeAssetCategory(assetId, category) {
     const asset = window.TBalanceNativeAssets?.findAsset?.(state.project, assetId);
-    const nextCategory = window.TBalanceNativeAssets?.normalizeCategory?.(category) || "other";
+    const nextCategory = window.TBalanceNativeAssets?.normalizeCategory?.(category) || "uncategorized";
     if (!asset) {
       showModeToast("画像が見つかりません。");
       return;
@@ -15972,7 +16885,7 @@
     state.nativeAssets.selectedAssetId = normalized?.assetId || asset.assetId;
     state.nativeAssets.duplicateNotice = null;
     state.nativeAssets.status = "ok";
-    state.nativeAssets.message = `分類を${window.TBalanceNativeAssets?.getCategoryLabel?.(nextCategory) || "その他"}に変更しました。`;
+    state.nativeAssets.message = `分類を${window.TBalanceNativeAssets?.getCategoryLabel?.(nextCategory) || "未分類"}に変更しました。`;
     if (state.nativeAssets.storageAvailable) {
       try {
         const result = await postNativeAssetRequest("/update", {
@@ -16015,7 +16928,7 @@
       constraints: { keepAspect: true, keepSquare: false, keepCircle: false },
     });
     rememberNativeAsset(asset.assetId);
-    renderNativeAssetPanel();
+    finishNativeAssetPlacement();
     showModeToast(`${asset.displayName || "画像"} をページに追加しました。`);
   }
 
@@ -16109,7 +17022,7 @@
     });
     clearImageWarnings(layer.id, getActiveViewportKey());
     rememberNativeAsset(asset.assetId);
-    renderNativeAssetPanel();
+    finishNativeAssetPlacement();
     showModeToast(`選択中のレイヤー画像を${getCurrentLayerImageScopeLabel()}へ設定しました。`);
   }
 
@@ -17152,7 +18065,7 @@
       if (layer) {
         event.preventDefault();
         event.stopPropagation();
-        setSingleSelection(layerId);
+        setLayerOnlySelection(layerId);
         beginInlineLayerRename(nameNode, layer);
       }
       return;
@@ -17160,7 +18073,7 @@
     if (event.ctrlKey || event.metaKey || event.shiftKey) {
       toggleLayerSelection(layerId);
     } else {
-      setSingleSelection(layerId);
+      setLayerOnlySelection(layerId);
     }
     renderAll();
   }
@@ -17179,7 +18092,7 @@
     }
     event.preventDefault();
     event.stopPropagation();
-    setSingleSelection(layer.id);
+    setLayerOnlySelection(layer.id);
     beginInlineLayerRename(nameNode, layer);
   }
 
@@ -17705,7 +18618,11 @@
       renderAll();
       return;
     }
-    if (!getSelectedIds().includes(id)) {
+    const selectedIds = getSelectedIds();
+    const selectedGroupCount = layer.groupId
+      ? selectedIds.filter((selectedId) => findLayer(selectedId)?.groupId === layer.groupId).length
+      : 0;
+    if (!selectedIds.includes(id) || (layer.groupId && selectedGroupCount <= 1)) {
       setSingleSelection(id);
     } else {
       state.selectedId = id;
@@ -17718,22 +18635,30 @@
     const layout = getCurrentLayout(layer);
     const point = getCanvasPoint(event);
     const handle = event.target.closest("[data-handle]");
+    const transformLayers = getSelectionTransformLayers(layer);
+    const transformOrigin = transformLayers.length > 1 ? getLayersBoundingBox(transformLayers) : layout;
     const selectedOrigins = {};
-    getSelectedLayers().forEach((selectedLayer) => {
+    const speechScaleOrigins = {};
+    transformLayers.forEach((selectedLayer) => {
       selectedOrigins[selectedLayer.id] = Object.assign({}, getCurrentLayout(selectedLayer));
+      if (selectedLayer.metadata?.speechBubbleAutoLayout) {
+        speechScaleOrigins[selectedLayer.id] = getSpeechBubbleManualScale(selectedLayer);
+      }
     });
     state.pointer = {
       id,
       type: handle ? handle.dataset.handle : "move",
       start: point,
-      origin: Object.assign({}, layout),
+      origin: Object.assign({}, transformOrigin || layout),
       selectedOrigins,
+      speechScaleOrigins,
       originCorners: renderer.clone(layer.corners || createDefaultCorners()),
       center: {
-        x: layout.x + layout.width / 2,
-        y: layout.y + layout.height / 2,
+        x: (transformOrigin || layout).x + (transformOrigin || layout).width / 2,
+        y: (transformOrigin || layout).y + (transformOrigin || layout).height / 2,
       },
     };
+    state.pointer.startAngle = Math.atan2(point.y - state.pointer.center.y, point.x - state.pointer.center.x);
     renderAll();
   }
 
@@ -19535,11 +20460,23 @@
     } else if (state.pointer.type.startsWith("corner-")) {
       moveCorner(layer, state.pointer.type.replace("corner-", ""), point);
     } else if (state.pointer.type.startsWith("resize-")) {
-      resizeLayerFromHandle(layer, state.pointer.type.replace("resize-", ""), dx, dy, event);
+      const selectedOrigins = state.pointer.selectedOrigins || {};
+      const selectedIds = Object.keys(selectedOrigins);
+      if (selectedIds.length > 1 && selectedIds.includes(layer.id)) {
+        resizeSelectionGroupFromHandle(state.pointer.type.replace("resize-", ""), dx, dy, event);
+      } else {
+        resizeLayerFromHandle(layer, state.pointer.type.replace("resize-", ""), dx, dy, event);
+      }
     } else if (state.pointer.type === "rotate") {
-      layout.rotation = Math.round(Math.atan2(point.y - state.pointer.center.y, point.x - state.pointer.center.x) * 180 / Math.PI + 90);
+      const selectedOrigins = state.pointer.selectedOrigins || {};
+      const selectedIds = Object.keys(selectedOrigins);
+      if (selectedIds.length > 1 && selectedIds.includes(layer.id)) {
+        rotateSelectionGroup(point);
+      } else {
+        layout.rotation = Math.round(Math.atan2(point.y - state.pointer.center.y, point.x - state.pointer.center.x) * 180 / Math.PI + 90);
+      }
     }
-    syncHitAreaToLayer(layer);
+    getSelectionTransformLayers(layer).forEach(syncHitAreaToLayer);
     markDirty();
     renderAll();
   }
@@ -19663,6 +20600,7 @@
 
   function finishTextEdit(textNode, layer) {
     layer.text = textNode.innerText.replace(/\n$/, "") || "テキスト";
+    reflowSpeechBubbleForTextLayer(getCurrentPage(), layer);
     state.editingTextId = "";
     markDirty();
     renderAll();
@@ -19975,7 +20913,7 @@
       const asset = window.TBalanceNativeAssets?.upsertAsset?.(state.project, result.asset) || result.asset;
       state.nativeAssets.status = "ok";
       if (result.status === "duplicate-reused") {
-        const currentCategory = asset.category || "other";
+        const currentCategory = asset.category || "uncategorized";
         state.nativeAssets.duplicateNotice = {
           assetId: asset.assetId,
           currentCategory,
@@ -20044,7 +20982,7 @@
     if (/background|forest|scene|bg|背景/.test(name)) return "background";
     if (/button|icon|ui|logo|ボタン/.test(name)) return "ui";
     if (/effect|light|spark|particle|エフェクト/.test(name)) return "effect";
-    return "other";
+    return "uncategorized";
   }
 
   function isNativeAssetMediaTypeAllowed(mediaType, fileName) {
@@ -20786,6 +21724,174 @@
       "resize-w",
       "rotate",
     ];
+  }
+
+  function getSelectionTransformLayers(anchorLayer = getSelectedLayer()) {
+    const selected = getSelectedLayers().filter((layer) => layer && !layer.locked);
+    if (selected.length <= 1) {
+      return anchorLayer && !anchorLayer.locked ? [anchorLayer] : [];
+    }
+    const anchorGroup = anchorLayer?.groupId || "";
+    if (!anchorGroup) {
+      return selected;
+    }
+    const grouped = selected.filter((layer) => layer.groupId === anchorGroup);
+    return grouped.length > 1 ? grouped : selected;
+  }
+
+  function getLayersBoundingBox(layers) {
+    const layouts = (layers || []).map((layer) => getCurrentLayout(layer)).filter(Boolean);
+    if (!layouts.length) {
+      return null;
+    }
+    const left = Math.min(...layouts.map((layout) => Number(layout.x) || 0));
+    const top = Math.min(...layouts.map((layout) => Number(layout.y) || 0));
+    const right = Math.max(...layouts.map((layout) => (Number(layout.x) || 0) + Math.max(1, Number(layout.width) || 1)));
+    const bottom = Math.max(...layouts.map((layout) => (Number(layout.y) || 0) + Math.max(1, Number(layout.height) || 1)));
+    return {
+      x: Math.round(left),
+      y: Math.round(top),
+      width: Math.max(1, Math.round(right - left)),
+      height: Math.max(1, Math.round(bottom - top)),
+      rotation: 0,
+    };
+  }
+
+  function resizeSelectionGroupFromHandle(handle, dx, dy, event) {
+    const origin = state.pointer?.origin || {};
+    const selectedOrigins = state.pointer?.selectedOrigins || {};
+    const west = handle.includes("w");
+    const east = handle.includes("e");
+    const north = handle.includes("n");
+    const south = handle.includes("s");
+    const originX = Number(origin.x) || 0;
+    const originY = Number(origin.y) || 0;
+    const originWidth = Math.max(1, Number(origin.width) || 1);
+    const originHeight = Math.max(1, Number(origin.height) || 1);
+    let nextX = originX;
+    let nextY = originY;
+    let nextWidth = originWidth;
+    let nextHeight = originHeight;
+    if (east) nextWidth = nextWidth + dx;
+    if (south) nextHeight = nextHeight + dy;
+    if (west) {
+      nextWidth = nextWidth - dx;
+      nextX = originX + dx;
+    }
+    if (north) {
+      nextHeight = nextHeight - dy;
+      nextY = originY + dy;
+    }
+    const cornerHandle = (north || south) && (east || west);
+    const horizontalOnly = (east || west) && !(north || south);
+    const verticalOnly = (north || south) && !(east || west);
+    const widthScale = Math.abs(nextWidth) / originWidth;
+    const heightScale = Math.abs(nextHeight) / originHeight;
+    let uniformScale = Math.max(0.08, cornerHandle ? Math.max(widthScale, heightScale) : horizontalOnly ? widthScale : verticalOnly ? heightScale : Math.max(widthScale, heightScale));
+    if (event?.shiftKey || event?.ctrlKey || event?.metaKey) {
+      uniformScale = Math.max(0.08, Math.max(widthScale, heightScale));
+    }
+    nextWidth = Math.max(12, originWidth * uniformScale);
+    nextHeight = Math.max(12, originHeight * uniformScale);
+    if (west) {
+      nextX = originX + originWidth - nextWidth;
+    } else if (!east) {
+      nextX = originX + (originWidth - nextWidth) / 2;
+    } else {
+      nextX = originX;
+    }
+    if (north) {
+      nextY = originY + originHeight - nextHeight;
+    } else if (!south) {
+      nextY = originY + (originHeight - nextHeight) / 2;
+    } else {
+      nextY = originY;
+    }
+    const scaleX = uniformScale;
+    const scaleY = uniformScale;
+    Object.keys(selectedOrigins).forEach((id) => {
+      const layer = findLayer(id);
+      const layerOrigin = selectedOrigins[id];
+      if (!layer || layer.locked || !layerOrigin) {
+        return;
+      }
+      const layout = getCurrentLayout(layer);
+      layout.x = Math.round(nextX + (Number(layerOrigin.x) - (Number(origin.x) || 0)) * scaleX);
+      layout.y = Math.round(nextY + (Number(layerOrigin.y) - (Number(origin.y) || 0)) * scaleY);
+      layout.width = Math.max(12, Math.round((Number(layerOrigin.width) || 1) * scaleX));
+      layout.height = Math.max(12, Math.round((Number(layerOrigin.height) || 1) * scaleY));
+      if (layer.type === "text") {
+        scaleTextLayerForGroupTransform(layer, Math.min(scaleX, scaleY));
+      }
+      syncSpeechBubbleManualScale(layer, scaleX, scaleY);
+    });
+  }
+
+  function rotateSelectionGroup(point) {
+    const center = state.pointer?.center || { x: 0, y: 0 };
+    const selectedOrigins = state.pointer?.selectedOrigins || {};
+    const angle = Math.atan2(point.y - center.y, point.x - center.x);
+    const startAngle = Number(state.pointer?.startAngle) || 0;
+    const delta = angle - startAngle;
+    const degrees = Math.round(delta * 180 / Math.PI);
+    const cos = Math.cos(delta);
+    const sin = Math.sin(delta);
+    Object.keys(selectedOrigins).forEach((id) => {
+      const layer = findLayer(id);
+      const layerOrigin = selectedOrigins[id];
+      if (!layer || layer.locked || !layerOrigin) {
+        return;
+      }
+      const layout = getCurrentLayout(layer);
+      const childCenterX = Number(layerOrigin.x) + Number(layerOrigin.width) / 2;
+      const childCenterY = Number(layerOrigin.y) + Number(layerOrigin.height) / 2;
+      const relX = childCenterX - center.x;
+      const relY = childCenterY - center.y;
+      const nextCenterX = center.x + relX * cos - relY * sin;
+      const nextCenterY = center.y + relX * sin + relY * cos;
+      layout.x = Math.round(nextCenterX - Number(layerOrigin.width) / 2);
+      layout.y = Math.round(nextCenterY - Number(layerOrigin.height) / 2);
+      layout.rotation = Math.round((Number(layerOrigin.rotation) || 0) + degrees);
+    });
+  }
+
+  function scaleTextLayerForGroupTransform(layer, scale) {
+    const factor = Math.max(0.08, Number(scale) || 1);
+    const viewport = getActiveViewportKey();
+    if (layer?.metadata?.speechBubbleAutoLayout) {
+      const baseScale = Number(state.pointer?.speechScaleOrigins?.[layer.id]) || getSpeechBubbleManualScale(layer);
+      applySpeechBubbleTextTypography(layer, viewport, renderer.clamp(baseScale * factor, 0.35, 3));
+      return;
+    }
+    const style = ensureViewportTextStyle(layer, viewport);
+    if (!state.pointer.textStyleOrigins) {
+      state.pointer.textStyleOrigins = {};
+    }
+    const key = `${layer.id}:${viewport}`;
+    if (!state.pointer.textStyleOrigins[key]) {
+      state.pointer.textStyleOrigins[key] = {
+        fontSize: Number(style.fontSize) || Number(layer.style?.fontSize) || 48,
+        lineHeight: Number(style.lineHeight) || Number(layer.style?.lineHeight) || 1.22,
+      };
+    }
+    const origin = state.pointer.textStyleOrigins[key];
+    style.fontSize = Math.max(6, Math.round(origin.fontSize * factor * 10) / 10);
+    style.lineHeight = origin.lineHeight;
+  }
+
+  function syncSpeechBubbleManualScale(layer, scaleX, scaleY) {
+    if (!layer?.groupId || !layer.metadata?.speechBubbleAutoLayout) {
+      return;
+    }
+    const localFactor = Math.max(0.08, (Math.abs(Number(scaleX) || 1) + Math.abs(Number(scaleY) || 1)) / 2);
+    const baseScale = Number(state.pointer?.speechScaleOrigins?.[layer.id]) || getSpeechBubbleManualScale(layer);
+    const factor = renderer.clamp(baseScale * localFactor, 0.35, 3);
+    const groupLayers = getCurrentPage().layers.filter((candidate) => candidate.groupId === layer.groupId);
+    groupLayers.forEach((candidate) => {
+      candidate.metadata = Object.assign({}, candidate.metadata || {}, {
+        speechBubbleManualScale: factor,
+      });
+    });
   }
 
   function resizeLayerFromHandle(layer, handle, dx, dy, event) {
@@ -21662,6 +22768,7 @@
       state.existingWeb.active = false;
       state.project = parsed;
       await loadNativeAssetRegistryFromBridge();
+      ensureNativeProjectBehaviorConnections();
       state.uiSettings = resolveUiSettings(parsed);
       state.editorMode = getStartupMode(parsed);
       syncProjectEditorSettings();
@@ -22831,6 +23938,19 @@ ${layersHtml}
   function setSingleSelection(id) {
     state.selectedId = id || "";
     state.selectedIds = id ? expandSelectionWithGroup([id]) : [];
+    const layer = id ? findLayer(id) : null;
+    if (layer?.role === "hit-area") {
+      state.showHitAreas = true;
+    }
+  }
+
+  function setLayerOnlySelection(id) {
+    state.selectedId = id || "";
+    state.selectedIds = id ? [id] : [];
+    const layer = id ? findLayer(id) : null;
+    if (layer?.role === "hit-area") {
+      state.showHitAreas = true;
+    }
   }
 
   function clearSelection() {

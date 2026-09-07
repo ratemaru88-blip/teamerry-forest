@@ -11,6 +11,7 @@ const CATEGORY_FOLDERS = {
   background: "backgrounds",
   ui: "ui",
   effect: "effects",
+  uncategorized: "other",
   other: "other",
 };
 const ALLOWED_MEDIA_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
@@ -280,7 +281,7 @@ function decodeAssetBytes(request, mediaType) {
 
 function normalizeCategory(value) {
   const key = String(value || "").trim().toLowerCase();
-  return CATEGORY_FOLDERS[key] ? key : "other";
+  return CATEGORY_FOLDERS[key] ? key : "uncategorized";
 }
 
 function normalizeMediaType(mediaType, fileName = "") {

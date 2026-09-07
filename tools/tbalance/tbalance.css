@@ -969,11 +969,12 @@ select {
 .tb-property-header {
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 8px;
   min-width: 0;
   position: relative;
   z-index: 10;
-  overflow: hidden;
+  overflow: visible;
   padding: 5px 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.035);
   background: linear-gradient(180deg, rgba(12, 18, 24, 0.98), rgba(7, 12, 17, 0.98));
@@ -981,6 +982,59 @@ select {
 
 .tb-property-header .tb-scene-switch {
   margin-left: auto;
+}
+
+.tb-property-details {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.tb-property-details summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--border-soft);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #e7f1fb;
+  font-size: 12px;
+  font-weight: 800;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tb-property-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.tb-property-details summary::after {
+  content: "▼";
+  margin-left: 6px;
+  color: var(--text-sub);
+  font-size: 9px;
+}
+
+.tb-property-details[open] summary::after {
+  content: "▲";
+}
+
+.tb-property-details-body {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 120;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(92px, max-content));
+  gap: 8px;
+  min-width: 260px;
+  max-width: min(420px, calc(100vw - 36px));
+  padding: 10px;
+  border: 1px solid rgba(87, 113, 132, 0.72);
+  border-radius: 8px;
+  background: rgba(10, 16, 22, 0.98);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
 }
 
 .tb-header-save-state {
@@ -2349,6 +2403,44 @@ body.is-space-panning .tb-canvas-viewport {
   white-space: nowrap;
 }
 
+.tb-native-test-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 2px 6px;
+  border: 1px solid rgba(87, 113, 132, 0.58);
+  border-radius: 8px;
+  background: rgba(9, 17, 24, 0.72);
+  color: #e7f5ff;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.tb-native-test-clock span {
+  font-size: 0;
+}
+
+.tb-native-test-clock span::before {
+  content: "時刻";
+  font-size: 11px;
+}
+
+.tb-native-test-clock input {
+  width: 72px;
+  min-height: 24px;
+  padding: 2px 4px;
+  font-size: 11px;
+}
+
+.tb-native-test-clock button {
+  min-height: 24px;
+  padding: 0 7px;
+  font-size: 11px;
+}
+
 .tb-existing-web-toolbar strong {
   color: #f8fbff;
   font-size: 14px;
@@ -2571,6 +2663,8 @@ body.is-retouch-active .tb-handle {
 
 .tb-canvas.is-test-window .tb-layer.is-test-hit-layer {
   opacity: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
 }
 
 .tb-canvas.is-test-window .tb-layer.is-test-clickable {
@@ -2820,10 +2914,13 @@ body.is-retouch-active .tb-handle {
   background: rgba(7, 16, 24, 0.42);
 }
 
+.tb-native-behavior-panel:empty {
+  display: none;
+}
+
 .tb-native-behavior-head,
 .tb-native-behavior-row,
-.tb-native-behavior-actions,
-.tb-native-test-clock {
+.tb-native-behavior-actions {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2850,12 +2947,12 @@ body.is-retouch-active .tb-handle {
 
 .tb-native-behavior-actions button,
 .tb-native-test-clock button {
-  min-height: 30px;
+  min-height: 24px;
 }
 
 .tb-native-test-clock {
-  margin-left: auto;
-  padding: 4px 8px;
+  margin-left: 0;
+  padding: 2px 6px;
   border: 1px solid rgba(25, 198, 232, 0.34);
   border-radius: 8px;
   background: rgba(9, 28, 40, 0.74);
@@ -2864,7 +2961,7 @@ body.is-retouch-active .tb-handle {
 }
 
 .tb-native-test-clock input {
-  width: 92px;
+  width: 72px;
 }
 
 .tb-layer-image-frame.has-image-error {
@@ -3024,6 +3121,18 @@ body.is-retouch-active .tb-handle {
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.22));
 }
 
+.tb-layer-text--dialogue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-break: normal;
+  line-break: loose;
+  overflow-wrap: normal;
+  text-shadow: none;
+}
+
 .tb-layer-text[contenteditable="true"] {
   cursor: text;
   outline: 2px solid rgba(47, 140, 255, 0.78);
@@ -3125,6 +3234,32 @@ body.is-retouch-active .tb-handle {
   border: 3px dashed rgba(48, 211, 106, 0.9);
   background: rgba(48, 211, 106, 0.12);
   pointer-events: none;
+}
+
+.tb-canvas:not(.is-preview) .tb-layer.is-hit-area-layer {
+  z-index: 4200 !important;
+  outline: 1.5px dashed rgba(177, 255, 78, 0.94);
+  outline-offset: -1px;
+  background: rgba(177, 255, 78, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(177, 255, 78, 0.2);
+}
+
+.tb-canvas:not(.is-preview) .tb-layer.is-hit-area-layer [data-shape-fill] {
+  fill: rgba(177, 255, 78, 0.08) !important;
+}
+
+.tb-canvas:not(.is-preview) .tb-layer.is-hit-area-layer [data-shape-stroke] {
+  stroke: rgba(190, 255, 86, 0.96) !important;
+  stroke-width: 2 !important;
+  stroke-dasharray: 7 5;
+}
+
+.tb-canvas:not(.is-preview) .tb-layer.is-hit-area-layer.is-selected {
+  z-index: 4300 !important;
+  outline-width: 2px;
+  outline-color: #d7ff69;
+  background: rgba(201, 255, 88, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(215, 255, 105, 0.34), 0 0 16px rgba(183, 255, 80, 0.16);
 }
 
 .tb-selection-box {
@@ -3240,14 +3375,17 @@ body.is-retouch-active .tb-handle {
 .tb-sidepanel.is-layer-tab-active .tb-layer-panel {
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
   height: auto;
+  overflow: hidden;
 }
 
 .tb-sidepanel.is-layer-tab-active .tb-layer-list {
   flex: 1 1 auto;
   min-height: 0;
+  overflow: auto;
+  align-content: start;
 }
 
 body[data-existing-web-active="true"] .tb-sidepanel {
@@ -5630,9 +5768,9 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   grid-column: 1 / -1;
   grid-row: 3;
   display: grid;
-  grid-template-columns: auto minmax(190px, 1fr) minmax(160px, 0.7fr) minmax(300px, auto);
+  grid-template-columns: auto minmax(150px, auto) minmax(180px, 1fr) minmax(150px, 0.7fr) minmax(300px, auto);
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   min-width: 0;
   padding: 0 16px;
   border-top: 1px solid var(--border);
@@ -5664,6 +5802,10 @@ body:not([data-editor-mode="custom"]) .tb-custom-fields {
   min-width: 42px;
   color: #e8f0f8;
   text-align: center;
+}
+
+.tb-statusbar .tb-canvas-size-label {
+  max-width: 290px;
 }
 
 .tb-size-status {

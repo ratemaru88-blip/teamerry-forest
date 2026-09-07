@@ -59,12 +59,12 @@
     if (typeof item === "string") {
       return { id: `item-${index + 1}`, text: item };
     }
-    const text = item.text ?? item.message ?? item.body ?? "";
+    const text = item.text ?? item.message ?? item.body ?? (Array.isArray(item.lines) ? item.lines[0] : "");
     if (!String(text).trim()) {
       return null;
     }
     return Object.assign({}, item, {
-      id: String(item.id || item.itemId || `item-${index + 1}`),
+      id: String(item.id || item.itemId || item.setId || `item-${index + 1}`),
       text: String(text),
     });
   }

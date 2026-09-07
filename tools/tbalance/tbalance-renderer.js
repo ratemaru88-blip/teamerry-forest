@@ -335,7 +335,7 @@
       }
       const node = createLayerNode(layer, key, index, settings);
       root.appendChild(node);
-      if (settings.showHitAreas && layer.hitArea?.enabled && layer.role !== "hit-area") {
+      if (settings.showHitAreas && !settings.test && layer.role !== "hit-area" && layer.hitArea?.enabled) {
         root.appendChild(createHitAreaNode(layer, key, index, settings.sceneId));
       }
     });
@@ -420,8 +420,11 @@
     if (layer?.role === "background") {
       return 0;
     }
-    if (layer?.role === "markup") {
+    if (layer?.role === "hit-area") {
       return 2;
+    }
+    if (layer?.role === "markup") {
+      return 3;
     }
     return 1;
   }
@@ -452,6 +455,8 @@
     const node = document.createElement(layer.link && !settings.edit ? "a" : "div");
     node.className = `tb-layer tb-layer--${layer.type || "image"}`;
     node.classList.toggle("is-background-layer", layer.role === "background");
+    const isHitAreaLayer = layer.role === "hit-area" || Boolean(layer.hitArea?.enabled);
+    node.classList.toggle("is-hit-area-layer", isHitAreaLayer);
     node.classList.toggle("is-test-hit-layer", Boolean(settings.test) && layer.role === "hit-area");
     const hasClickAction = Boolean(layer.link || (layer.clickAction?.type && layer.clickAction.type !== "none"));
     node.classList.toggle("is-test-clickable", Boolean(settings.test) && hasClickAction);
@@ -792,6 +797,7 @@
       fontFamily: "",
       italic: false,
       underline: false,
+      lineHeight: 1.22,
       strokeEnabled: false,
       strokeColor: "#0b1220",
       strokeWidth: 0,
@@ -805,17 +811,24 @@
     if (layer.role === "memo") {
       content.classList.add("tb-layer-text--memo");
     }
+    if (layer.role === "dialogue-text") {
+      content.classList.add("tb-layer-text--dialogue");
+    }
     const runtimeText = typeof settings.getRuntimeText === "function" ? settings.getRuntimeText(layer.id, layer) : null;
     content.textContent = runtimeText || layer.text || "テキスト";
     content.style.fontSize = `${Number(style.fontSize) || 48}px`;
     content.style.color = style.color || "#fff6db";
     content.style.textAlign = style.align || "left";
     content.style.fontWeight = style.weight || 600;
+    content.style.lineHeight = String(Number(style.lineHeight) || 1.22);
     content.style.fontFamily = style.fontFamily || "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
     content.style.fontStyle = style.italic ? "italic" : "normal";
     content.style.transform = style.italic ? "skewX(-10deg)" : "";
     content.style.transformOrigin = "center";
     content.style.textDecoration = style.underline ? "underline" : "none";
+    if (layer.role === "dialogue-text") {
+      content.style.textWrap = "balance";
+    }
     const strokeWidth = Number(style.strokeWidth || 0);
     if (style.strokeEnabled && strokeWidth > 0) {
       content.style.webkitTextStroke = `${strokeWidth}px ${style.strokeColor || "#0b1220"}`;
@@ -873,6 +886,10 @@
     } else if (type === "speechBubble") {
       const node = document.createElementNS(svg.namespaceURI, "path");
       node.setAttribute("d", "M15 8 H85 Q96 8 96 20 V68 Q96 80 85 80 H57 L50 95 L43 80 H15 Q4 80 4 68 V20 Q4 8 15 8 Z");
+      add(node);
+    } else if (layer.role === "dialogue-bubble") {
+      const node = document.createElementNS(svg.namespaceURI, "path");
+      node.setAttribute("d", "M50 5 C24 5 6 16 6 50 C6 84 24 95 50 95 H50 C76 95 94 84 94 50 C94 16 76 5 50 5 Z");
       add(node);
     } else if (type === "triangle") {
       const node = document.createElementNS(svg.namespaceURI, "polygon");
@@ -983,7 +1000,7 @@
     node.style.top = `${layout.y + Number(hit.y || 0)}px`;
     node.style.width = `${Math.max(1, Number(hit.width || layout.width))}px`;
     node.style.height = `${Math.max(1, Number(hit.height || layout.height))}px`;
-    node.style.zIndex = String(index + 1000);
+    node.style.zIndex = String(4600 + index);
     return node;
   }
 

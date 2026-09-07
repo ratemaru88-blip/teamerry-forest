@@ -158,7 +158,9 @@
     }, layer.base || layer.desktop || {});
     applyOverride(state, layer.viewportOverrides?.[viewport]);
     if (sceneId) {
-      applyOverride(state, layer.sceneOverrides?.[sceneId]);
+      if (viewport === "desktop") {
+        applyOverride(state, layer.sceneOverrides?.[sceneId]);
+      }
       applyOverride(state, layer.sceneViewportOverrides?.[sceneId]?.[viewport]);
     }
     return state;
@@ -250,7 +252,7 @@
     if (scope.type === "scene") {
       return viewportState;
     }
-    return Object.assign({}, viewportState, layer.sceneOverrides?.[scope.sceneId] || {});
+    return viewportState;
   }
 
   function cleanupAllOverrides(layer, preserveTarget = null) {
@@ -262,7 +264,6 @@
           {},
           layer.base || {},
           layer.viewportOverrides?.[viewportId] || {},
-          layer.sceneOverrides?.[sceneId] || {},
         );
         cleanupOverrideObject(layer.sceneViewportOverrides[sceneId][viewportId], inherited);
         if (!Object.keys(layer.sceneViewportOverrides[sceneId][viewportId]).length && layer.sceneViewportOverrides[sceneId][viewportId] !== preserveTarget) {

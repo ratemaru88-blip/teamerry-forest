@@ -43,11 +43,11 @@
     {
       id: "bottle-mail",
       pageId: "page-observatory",
-      label: "ボトルメール",
+      label: "ボトルメールを書く",
       sourcePath: "observatory.html",
       url: `${PROJECT_BASE_URL}observatory.html?bottle=1`,
       viewState: "bottle=1",
-      aliases: ["ボトルメール", "bottlemail", "bottle", "#bottle-mail"],
+      aliases: ["ボトルメールを書く", "ボトルメール", "bottlemail", "bottle", "#bottle-mail"],
       desktopDisplayMode: "mobile-modal",
     },
     {
