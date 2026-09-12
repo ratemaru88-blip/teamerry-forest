@@ -189,21 +189,50 @@ document.addEventListener("DOMContentLoaded", () => {
     observatoryBgmAudio.loop = true;
     observatoryBgmAudio.volume = 0.16;
     observatoryBgmAudio.preload = "auto";
+    let bgmUnlocked = false;
     window.TeaMerryObservatoryBgm = {
       audio: observatoryBgmAudio,
       mode: isNight ? "night" : "day",
       path: observatoryBgmAudio.src,
+      play: () => tryPlayObservatoryBgm(),
     };
 
-    const play = () => {
-      observatoryBgmAudio.play().catch(() => {
-        document.addEventListener("pointerdown", play, { once: true });
-        document.addEventListener("click", play, { once: true });
-        document.addEventListener("keydown", play, { once: true });
-      });
+    const removeUnlockListeners = () => {
+      document.removeEventListener("pointerdown", handleBgmUnlock, true);
+      document.removeEventListener("click", handleBgmUnlock, true);
+      document.removeEventListener("keydown", handleBgmUnlock, true);
+      window.removeEventListener("message", handleBgmMessage);
     };
 
-    play();
+    const handleBgmMessage = (event) => {
+      if (event?.data?.type === "tbalance-native-unlock-audio") {
+        tryPlayObservatoryBgm();
+      }
+    };
+
+    function tryPlayObservatoryBgm() {
+      if (bgmUnlocked && !observatoryBgmAudio.paused) {
+        return Promise.resolve();
+      }
+      return observatoryBgmAudio.play()
+        .then(() => {
+          bgmUnlocked = true;
+          removeUnlockListeners();
+        })
+        .catch(() => {
+          bgmUnlocked = false;
+        });
+    }
+
+    function handleBgmUnlock() {
+      tryPlayObservatoryBgm();
+    }
+
+    document.addEventListener("pointerdown", handleBgmUnlock, true);
+    document.addEventListener("click", handleBgmUnlock, true);
+    document.addEventListener("keydown", handleBgmUnlock, true);
+    window.addEventListener("message", handleBgmMessage);
+    tryPlayObservatoryBgm();
   }
 
   const fairies = [
@@ -359,6 +388,29 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.warn("[TeaMerry Observatory] Dialogue Engine event reaction failed:", error);
     }
+  }
+
+  function dispatchTBalanceNativeEvent(eventName, payload = {}) {
+    const name = String(eventName || "");
+    if (!name) {
+      return false;
+    }
+    const message = {
+      type: "tbalance-native-event",
+      eventName: name,
+      payload: {
+        source: "teamerry-observatory",
+        url: window.location.href,
+        time: isNight ? "night" : "day",
+        ...payload,
+      },
+    };
+
+    if (!window.parent || window.parent === window || typeof window.parent.postMessage !== "function") {
+      return false;
+    }
+    window.parent.postMessage(message, window.location.origin);
+    return true;
   }
 
   function normalizeDriftBottleHandwritingTemplate(value) {
@@ -1467,6 +1519,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }, duration);
   }
 
+  function playObservatoryVideo(video, onFailure) {
+    if (!video) {
+      if (typeof onFailure === "function") {
+        onFailure();
+      }
+      return;
+    }
+
+    const playPromise = video.play();
+    if (!playPromise || typeof playPromise.catch !== "function") {
+      return;
+    }
+
+    playPromise.catch(() => {
+      if (video.muted) {
+        if (typeof onFailure === "function") {
+          onFailure();
+        }
+        return;
+      }
+      video.muted = true;
+      const mutedPlayPromise = video.play();
+      if (mutedPlayPromise && typeof mutedPlayPromise.catch === "function") {
+        mutedPlayPromise.catch(() => {
+          if (typeof onFailure === "function") {
+            onFailure();
+          }
+        });
+      }
+    });
+  }
+
   function getJstDateKey() {
     const formatter = new Intl.DateTimeFormat("ja-JP", {
       timeZone: "Asia/Tokyo",
@@ -1830,13 +1914,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     bottleFlushVideo.currentTime = 0;
-    const playPromise = bottleFlushVideo.play();
-    if (playPromise) {
-      playPromise.catch(() => {
-        closeViews();
-        consumePendingLillActionReaction();
-      });
-    }
+    playObservatoryVideo(bottleFlushVideo, () => {
+      closeViews();
+      consumePendingLillActionReaction();
+    });
     scheduleVideoFallback();
   }
 
@@ -1932,13 +2013,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         wishLanternVideo.currentTime = 0;
-        const playPromise = wishLanternVideo.play();
-        if (playPromise) {
-          playPromise.catch(() => {
-            closeViews();
-            consumePendingLillActionReaction();
-          });
-        }
+        playObservatoryVideo(wishLanternVideo, () => {
+          closeViews();
+          consumePendingLillActionReaction();
+        });
         scheduleVideoFallback();
       }, wishLanternPauseDuration);
     }, wishLanternTalkDuration);
@@ -2047,6 +2125,9 @@ document.addEventListener("DOMContentLoaded", () => {
         event: "bottle_mail_sent",
         public: String(isPublic)
       });
+      dispatchTBalanceNativeEvent("bottle-mail-sent", {
+        public: Boolean(isPublic)
+      });
       resetBottleMessageInput();
       startBottleFlush();
     });
@@ -2063,6 +2144,9 @@ document.addEventListener("DOMContentLoaded", () => {
       showEventReaction({
         event: "wish_star_sent",
         public: String(isPublic)
+      });
+      dispatchTBalanceNativeEvent("wish-star-sent", {
+        public: Boolean(isPublic)
       });
       resetWishMessageInput();
       startWishLanternSequence();
