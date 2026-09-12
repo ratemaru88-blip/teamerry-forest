@@ -10,6 +10,14 @@
     backgroundType: "transparent",
     backgroundColor: "#ffffff",
   };
+  const runtimeAudioState = {
+    bgm: null,
+    bgmKey: "",
+    ambient: [],
+    ambientKey: "",
+    sfx: new Set(),
+    unlockHandlers: [],
+  };
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -328,6 +336,7 @@
     root.style.height = `${size.height}px`;
     root.dataset.viewport = key;
     applyStageStyle(root, page);
+    syncPageAudio(page, settings);
 
     getRenderableLayers(page).forEach((layer, index) => {
       if (!isLayerVisibleInViewport(layer, key, settings.sceneId)) {
@@ -502,7 +511,7 @@
           settings.onSelect(layer.id, event);
         }
       });
-    } else if (hasClickAction && typeof settings.onAction === "function") {
+    } else if ((hasClickAction || settings.test) && typeof settings.onAction === "function") {
       node.addEventListener("click", (event) => {
         settings.onAction(layer, event);
       });
@@ -537,30 +546,183 @@
     const sounds = getLayerSounds(layer);
     if (sounds.show || sounds.bgm) {
       window.setTimeout(() => {
-        playLayerSound(sounds.show);
-        playLayerSound(sounds.bgm);
+        playRuntimeSound(sounds.show, settings.project);
+        playRuntimeSound(sounds.bgm, settings.project);
       }, 0);
     }
     if (sounds.hover) {
-      node.addEventListener("pointerenter", () => playLayerSound(sounds.hover));
+      node.addEventListener("pointerenter", () => playRuntimeSound(sounds.hover, settings.project));
     }
     if (sounds.click) {
-      node.addEventListener("click", () => playLayerSound(sounds.click));
+      node.addEventListener("click", () => playRuntimeSound(sounds.click, settings.project));
     }
   }
 
-  function playLayerSound(sound) {
-    if (!sound?.src) {
+  function playRuntimeSound(sound, project) {
+    const resolved = resolveSoundSource(sound, project);
+    if (!resolved.src) {
       return;
     }
     try {
-      const audio = new Audio(sound.src);
-      audio.volume = clamp(Number(sound.volume ?? 80) / 100, 0, 1);
-      audio.loop = Boolean(sound.loop);
+      const audio = new Audio(resolved.src);
+      audio.volume = clamp(Number(resolved.volume ?? 80) / 100, 0, 1);
+      audio.loop = Boolean(resolved.loop);
+      audio.preload = "auto";
+      runtimeAudioState.sfx.add(audio);
+      const cleanup = () => runtimeAudioState.sfx.delete(audio);
+      audio.addEventListener("ended", cleanup, { once: true });
+      audio.addEventListener("pause", cleanup, { once: true });
       audio.play().catch(() => {});
     } catch (error) {
       // Audio playback is best-effort because browsers can block autoplay.
     }
+  }
+
+  function syncPageAudio(page, settings) {
+    const bgm = getPageBgmSound(page, settings);
+    const ambient = getPageAmbientSounds(page, settings);
+    if (settings.edit) {
+      stopPageAudio();
+      return;
+    }
+    if (!settings.test) {
+      return;
+    }
+    if (!bgm?.src && !ambient.length) {
+      stopPageAudio();
+      return;
+    }
+    const bgmKey = [
+      page?.id || page?.pageId || "",
+      settings.sceneId || "",
+      bgm?.src || "",
+      bgm?.volume ?? 80,
+      bgm?.loop ? "loop" : "once",
+    ].join("|");
+    const ambientKey = ambient.map((sound) => [
+      sound.src,
+      sound.volume ?? 80,
+      sound.loop ? "loop" : "once",
+    ].join("|")).join("||");
+    if (runtimeAudioState.bgmKey === bgmKey && runtimeAudioState.ambientKey === ambientKey) {
+      return;
+    }
+    stopPageAudio();
+    try {
+      if (bgm?.src) {
+        const audio = createPersistentAudio(bgm, true);
+        runtimeAudioState.bgm = audio;
+        runtimeAudioState.bgmKey = bgmKey;
+      }
+      runtimeAudioState.ambient = ambient.map((sound) => createPersistentAudio(sound, true));
+      runtimeAudioState.ambientKey = ambientKey;
+      window.TBalanceNativeAudioState = runtimeAudioState;
+      playPageAudioWhenAllowed();
+    } catch (error) {
+      stopPageAudio();
+    }
+  }
+
+  function getPageBgmSound(page, settings) {
+    const sceneSound = settings.sceneId
+      ? page?.sceneOverrides?.[settings.sceneId]?.sounds?.bgm
+      : null;
+    const sound = sceneSound || page?.sounds?.bgm;
+    return normalizeRenderableSound(sound, settings.project);
+  }
+
+  function getPageAmbientSounds(page, settings) {
+    const sceneAmbient = settings.sceneId
+      ? page?.sceneOverrides?.[settings.sceneId]?.sounds?.ambient
+      : null;
+    const ambient = Array.isArray(sceneAmbient) ? sceneAmbient : page?.sounds?.ambient;
+    return (Array.isArray(ambient) ? ambient : [])
+      .map((sound) => normalizeRenderableSound(sound, settings.project))
+      .filter(Boolean);
+  }
+
+  function normalizeRenderableSound(sound, project) {
+    const resolved = resolveSoundSource(sound, project);
+    return resolved.enabled && resolved.src ? resolved : null;
+  }
+
+  function resolveSoundSource(sound, project) {
+    const copy = Object.assign({ enabled: false, src: "", fileName: "", volume: 80, loop: false }, sound || {});
+    if (!copy.src && (copy.assetRef || copy.assetId) && window.TBalanceNativeAssets) {
+      const asset = window.TBalanceNativeAssets.findAsset?.(project, copy.assetRef || copy.assetId);
+      copy.src = window.TBalanceNativeAssets.resolveAssetSrc?.(asset) || "";
+      copy.fileName = copy.fileName || asset?.displayName || asset?.fileName || "";
+    }
+    return copy;
+  }
+
+  function createPersistentAudio(sound, defaultLoop) {
+    const audio = new Audio(sound.src);
+    audio.volume = clamp(Number(sound.volume ?? 80) / 100, 0, 1);
+    audio.loop = sound.loop !== false ? Boolean(sound.loop ?? defaultLoop) : false;
+    audio.preload = "auto";
+    return audio;
+  }
+
+  function playPageAudioWhenAllowed() {
+    const tryPlay = () => {
+      const audios = getPersistentAudios();
+      if (!audios.length) {
+        removePageBgmUnlockHandlers();
+        return;
+      }
+      let pending = 0;
+      audios.forEach((audio) => {
+        pending += 1;
+        audio.play()
+          .then(() => {
+            pending -= 1;
+            if (pending <= 0) {
+              removePageBgmUnlockHandlers();
+            }
+          })
+          .catch(() => {});
+      });
+    };
+    const events = ["pointerdown", "click", "keydown", "touchstart"];
+    removePageBgmUnlockHandlers();
+    runtimeAudioState.unlockHandlers = events.map((eventName) => {
+      const handler = () => tryPlay();
+      document.addEventListener(eventName, handler, true);
+      return { eventName, handler };
+    });
+    tryPlay();
+  }
+
+  function getPersistentAudios() {
+    return [runtimeAudioState.bgm].concat(runtimeAudioState.ambient || []).filter(Boolean);
+  }
+
+  function removePageBgmUnlockHandlers() {
+    runtimeAudioState.unlockHandlers.forEach(({ eventName, handler }) => {
+      document.removeEventListener(eventName, handler, true);
+    });
+    runtimeAudioState.unlockHandlers = [];
+  }
+
+  function stopPageAudio() {
+    removePageBgmUnlockHandlers();
+    getPersistentAudios().forEach((audio) => audio.pause());
+    runtimeAudioState.bgm = null;
+    runtimeAudioState.bgmKey = "";
+    runtimeAudioState.ambient = [];
+    runtimeAudioState.ambientKey = "";
+    window.TBalanceNativeAudioState = runtimeAudioState;
+  }
+
+  function cleanupRuntimeAudio() {
+    stopPageAudio();
+    runtimeAudioState.sfx.forEach((audio) => {
+      audio.pause();
+      audio.currentTime = 0;
+    });
+    runtimeAudioState.sfx.clear();
+    window.TBalanceNativeAudioState = runtimeAudioState;
   }
 
   function hasLayerSound(layer) {
@@ -575,7 +737,7 @@
     }
     ["bgm", "hover", "click", "show"].forEach((mode) => {
       const sound = sounds[mode];
-      if (sound?.enabled && (sound.src || sound.fileName)) {
+      if (sound?.enabled && (sound.src || sound.fileName || sound.assetRef || sound.assetId)) {
         result[mode] = sound;
       }
     });
@@ -1164,6 +1326,8 @@
     createBlankProject,
     createDefaultPage,
     renderPage,
+    playRuntimeSound,
+    cleanupRuntimeAudio,
     makeId,
     clamp,
   };

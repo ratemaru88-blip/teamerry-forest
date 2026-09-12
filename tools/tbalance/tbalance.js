@@ -1033,6 +1033,7 @@
       setTool("click");
       toggleToolMenu("click", event);
     });
+    ensureAmbientSoundModeButton();
     document.querySelectorAll("[data-sound-mode]").forEach((button) => {
       button.addEventListener("click", () => {
         state.soundMode = normalizeSoundMode(button.dataset.soundMode);
@@ -1153,6 +1154,7 @@
     els.propertyHeader?.addEventListener("click", handleNativeBehaviorPanelClick);
     els.propertyHeader?.addEventListener("change", handleNativeBehaviorPanelChange);
     els.nativeTestClockApply?.addEventListener("click", applyNativeTestClock);
+    window.addEventListener("message", handleTBalanceNativeEventMessage);
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", endPointer);
     window.addEventListener("resize", updateCanvasScale);
@@ -1357,6 +1359,18 @@
         closeNewCanvasDialog();
       }
     });
+  }
+
+  function ensureAmbientSoundModeButton() {
+    const menu = document.querySelector('[data-tool-menu="sound"]');
+    if (!menu || menu.querySelector('[data-sound-mode="ambient"]')) {
+      return;
+    }
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.soundMode = "ambient";
+    button.textContent = "Ambient";
+    menu.insertBefore(button, menu.querySelector('[data-sound-mode="click"]') || null);
   }
 
   function ensureNewCanvasSlugInput() {
@@ -11262,11 +11276,16 @@
         };
         return true;
       },
+      onPlaySound: (action) => playNativeBehaviorSound(action),
       onSceneChange: (sceneId) => {
         state.testRuntimeSceneId = sceneId;
         renderAll();
       },
-      onRuntimeTextChange: () => renderAll(),
+      onRuntimeTextChange: () => {
+        if (!state.deferNativeRuntimeRender) {
+          renderAll();
+        }
+      },
       onDiagnostic: (diagnostic) => {
         state.nativeBehaviorDiagnostics.push(diagnostic);
         showModeToast(diagnostic.message || "動作を実行できませんでした。");
@@ -11277,10 +11296,53 @@
 
   function stopNativeBehaviorRuntime() {
     state.nativeBehaviorRuntime?.cleanup?.();
+    renderer.cleanupRuntimeAudio?.();
     state.nativeBehaviorRuntime = null;
     state.nativeBehaviorDiagnostics = [];
     state.nativeBehaviorDataCache = new Map();
     state.testRuntimeSceneId = "";
+  }
+
+  function playNativeBehaviorSound(action = {}) {
+    const sound = resolveNativeBehaviorSound(action);
+    if (!sound) {
+      return false;
+    }
+    renderer.playRuntimeSound?.(sound, state.project);
+    return true;
+  }
+
+  function resolveNativeBehaviorSound(action = {}) {
+    const direct = getNormalizedSound(action.sound);
+    if (direct.src || direct.assetRef || direct.assetId) {
+      return direct;
+    }
+    const soundRef = String(action.soundRef || action.assetRef || action.assetId || "");
+    if (soundRef) {
+      const asset = window.TBalanceNativeAssets?.findAsset?.(state.project, soundRef);
+      if (asset) {
+        return getNormalizedSound({
+          enabled: true,
+          assetRef: asset.assetId || soundRef,
+          assetId: asset.assetId || soundRef,
+          fileName: asset.displayName || asset.fileName || soundRef,
+          volume: direct.volume,
+          loop: direct.loop,
+        });
+      }
+    }
+    const targetRef = String(action.targetRef || action.layerId || "");
+    const layer = targetRef ? findLayer(targetRef) : null;
+    if (layer) {
+      const sounds = Object.assign({}, layer.sounds || {});
+      if (layer.sound && !sounds.click) {
+        sounds.click = layer.sound;
+      }
+      const mode = normalizeSoundMode(action.soundMode || action.mode || "click");
+      const sound = getNormalizedSound(sounds[mode]);
+      return sound.src || sound.assetRef || sound.assetId ? sound : null;
+    }
+    return null;
   }
 
   function getNativeBehaviorDataSource(dataSourceId) {
@@ -11372,13 +11434,57 @@
   }
 
   function dispatchNativeTestEvent(eventName) {
-    if (!state.preview || !state.nativeBehaviorRuntime) {
+    const result = dispatchNativeEvent(eventName);
+    if (result.status === "inactive") {
       showModeToast("TEST中だけ送信完了イベントを確認できます。");
       return;
     }
-    const handled = state.nativeBehaviorRuntime.dispatchEvent?.(eventName);
-    showModeToast(handled ? "送信後の台詞を表示しました。" : "対応する送信後イベントがありません。");
+    showModeToast(result.handled ? "送信後の台詞を表示しました。" : "対応する送信後イベントがありません。");
     renderAll();
+  }
+
+  function dispatchNativeEvent(eventName, payload = {}, options = {}) {
+    if (!state.preview || !state.nativeBehaviorRuntime) {
+      return { status: "inactive", handled: false };
+    }
+    const previousDefer = state.deferNativeRuntimeRender;
+    state.deferNativeRuntimeRender = options.render === false || previousDefer;
+    let handled = false;
+    try {
+      handled = Boolean(state.nativeBehaviorRuntime.dispatchEvent?.(eventName, payload));
+    } finally {
+      state.deferNativeRuntimeRender = previousDefer;
+    }
+    if (options.render !== false) {
+      renderAll();
+    }
+    return { status: "ok", eventName: String(eventName || ""), handled };
+  }
+
+  function handleTBalanceNativeEventMessage(event) {
+    const data = event?.data;
+    if (!isTBalanceNativeEventMessage(data) || !isTrustedNativeTestEventSource(event)) {
+      return;
+    }
+    dispatchNativeEvent(data.eventName, isPlainObject(data.payload) ? data.payload : {}, { render: false });
+  }
+
+  function isTBalanceNativeEventMessage(data) {
+    const eventName = String(data?.eventName || "");
+    return isPlainObject(data)
+      && data.type === "tbalance-native-event"
+      && ["bottle-mail-sent", "wish-star-sent"].includes(eventName);
+  }
+
+  function isTrustedNativeTestEventSource(event) {
+    if (!state.preview || !state.nativeBehaviorRuntime) {
+      return false;
+    }
+    if (event.origin !== window.location.origin) {
+      return false;
+    }
+    return Array.from(document.querySelectorAll(".tb-test-external-frame"))
+      .some((frame) => frame.contentWindow && frame.contentWindow === event.source);
   }
 
   function getWindowTestLabel(windowKey) {
@@ -11470,7 +11576,7 @@
         changed = true;
       }
     });
-    const advanceRefs = [liluLayer.id, dialogueText.id, bubbleLayer?.id].filter(Boolean);
+    const advanceRefs = [liluLayer.id].filter(Boolean);
     const behaviorSeeds = [
       {
         behaviorId: "bhv_teamerry_observatory_page_open_day",
@@ -11482,6 +11588,7 @@
           dataSourceRef: dialogueSource.dataSourceId,
           targetRef: dialogueText.id,
           filter: { character: "リル", place: "星風テラス", section: "導入", conditions: ["入室", "昼"] },
+          fallbackText: "昼の星風テラスでは、書いたボトルメールを森へそっと流せるよ。",
           excludePrevious: true,
         }],
       },
@@ -11495,6 +11602,7 @@
           dataSourceRef: dialogueSource.dataSourceId,
           targetRef: dialogueText.id,
           filter: { character: "リル", place: "星風テラス", section: "導入", conditions: ["入室", "夜"] },
+          fallbackText: "夜の星風テラスでは、願い星を書いて空へ届けられるんだよ。",
           excludePrevious: true,
         }],
       },
@@ -11540,14 +11648,34 @@
       },
     ];
     behaviorSeeds.forEach((seed) => {
-      if ((page.behaviors || []).some((behavior) => behavior.behaviorId === seed.behaviorId || behavior.id === seed.behaviorId)) {
+      const existing = (page.behaviors || []).find((behavior) => behavior.behaviorId === seed.behaviorId || behavior.id === seed.behaviorId);
+      const normalized = window.TBalanceNativeBehaviors.normalizeBehavior(Object.assign({ enabled: true }, seed));
+      if (!normalized) {
         return;
       }
-      const normalized = window.TBalanceNativeBehaviors.normalizeBehavior(Object.assign({ enabled: true }, seed));
-      if (normalized) {
-        page.behaviors.push(normalized);
-        changed = true;
+      if (existing) {
+        const before = JSON.stringify({
+          trigger: existing.trigger,
+          conditions: existing.conditions,
+          actions: existing.actions,
+        });
+        const after = JSON.stringify({
+          trigger: normalized.trigger,
+          conditions: normalized.conditions,
+          actions: normalized.actions,
+        });
+        if (before !== after || existing.displayName !== normalized.displayName || existing.enabled === false) {
+          existing.trigger = normalized.trigger;
+          existing.conditions = normalized.conditions;
+          existing.actions = normalized.actions;
+          existing.enabled = true;
+          existing.displayName = normalized.displayName;
+          changed = true;
+        }
+        return;
       }
+      page.behaviors.push(normalized);
+      changed = true;
     });
     page.metadata = Object.assign({}, page.metadata || {}, {
       teamerryNativeFlow: {
@@ -12571,6 +12699,9 @@
       return;
     }
     const action = getLayerAction(layer);
+    if (action.type === "none") {
+      return;
+    }
     if (action.type === "page") {
       if (isExternalUrl(action.target)) {
         handleTestExternalNavigation(layer, event, windowKey, action.target);
@@ -15139,8 +15270,6 @@
     if (state.preview && state.nativeBehaviorRuntime?.page?.id === page.id) {
       state.nativeBehaviorRuntime.sceneId = sceneId;
       state.testRuntimeSceneId = sceneId;
-      state.nativeBehaviorRuntime.firedPageOpen?.clear?.();
-      state.nativeBehaviorRuntime.firePageOpen?.();
     }
     clearSelection();
     renderAll();
@@ -15669,6 +15798,7 @@
     frame.title = view.title || "TBalance TEST external preview";
     frame.referrerPolicy = "no-referrer-when-downgrade";
     frame.setAttribute("loading", "eager");
+    frame.setAttribute("allow", "autoplay");
     applyTestFrameViewport(frame, view, windowKey);
     wrap.append(toolbar, frame);
     canvas.appendChild(wrap);
@@ -16276,13 +16406,14 @@
     const mode = normalizeSoundMode(state.soundMode);
     const sound = getSoundSettings(target, mode);
     if (els.propSoundTarget) {
-      els.propSoundTarget.value = mode === "bgm" ? "page" : "selected";
-      els.propSoundTarget.disabled = mode === "bgm";
+      els.propSoundTarget.value = ["bgm", "ambient"].includes(mode) ? "page" : "selected";
+      els.propSoundTarget.disabled = ["bgm", "ambient"].includes(mode);
     }
     els.propSoundTrigger.value = getSoundTriggerForMode(mode);
     els.propSoundTrigger.disabled = true;
     els.propSoundFileName.textContent = sound.fileName || "未設定";
     els.propSoundFileName.classList.toggle("is-empty", !sound.fileName);
+    renderSoundScopeNote(target, mode, sound);
     els.propSoundVolume.value = Math.round(Number(sound.volume ?? 80));
     els.propSoundVolumeValue.textContent = `${els.propSoundVolume.value}%`;
     els.propSoundLoop.checked = Boolean(sound.loop);
@@ -18340,21 +18471,22 @@
     const layer = getSelectedLayer();
     if (selectedCount > 1) {
       els.statusText.textContent = `選択中: ${selectedCount} レイヤー`;
-      els.rotationStatus.textContent = "複数選択";
+      els.rotationStatus.textContent = getSelectionSoundStatusText(getSelectedIds()) || "複数選択";
     } else if (!layer) {
       els.statusText.textContent = "ID: - / 名前: -";
-      els.rotationStatus.textContent = "リンク: -";
+      els.rotationStatus.textContent = getPageSoundStatusText(getCurrentPage());
     } else {
       els.statusText.textContent = `ID: ${layer.id || "-"} / 名前: ${layer.name || "-"}`;
+      const soundText = getLayerSoundStatusText(layer);
       if (layer.type === "image") {
         const src = getLayerImageSource(layer, state.viewport);
         const warning = hasImageWarning(layer);
         const imageInfo = getRenderedImageInfo(layer.id);
         els.rotationStatus.textContent = warning
           ? "画像を表示できません。差し替えてください。"
-          : `画像OK: ${src ? "読み込み元あり" : "読み込み元なし"}${imageInfo ? ` / ${imageInfo}` : ""}${getLayerImageScopeInfo(layer)}`;
+          : `画像OK: ${src ? "読み込み元あり" : "読み込み元なし"}${imageInfo ? ` / ${imageInfo}` : ""}${getLayerImageScopeInfo(layer)}${soundText ? ` / ${soundText}` : ""}`;
       } else {
-        els.rotationStatus.textContent = `リンク: ${layer.link || "-"}`;
+        els.rotationStatus.textContent = `リンク: ${layer.link || "-"}${soundText ? ` / ${soundText}` : ""}`;
       }
     }
     updateCanvasSizeLabel();
@@ -21224,19 +21356,37 @@
   }
 
   function getSoundTarget() {
-    if (state.soundMode === "bgm" || els.propSoundTarget?.value === "page") {
-      return getCurrentPage();
+    if (["bgm", "ambient"].includes(state.soundMode) || els.propSoundTarget?.value === "page") {
+      return getPageSoundTarget(getCurrentPage(), { create: true });
     }
     return getSelectedLayer();
   }
 
+  function getPageSoundTarget(page = getCurrentPage(), options = {}) {
+    if (!page) {
+      return page;
+    }
+    const sceneId = getActiveSceneId(page);
+    const defaultSceneId = window.TBalanceNativeScenes?.getDefaultSceneId?.(page) || page.defaultSceneId || "";
+    if (!sceneId || sceneId === defaultSceneId) {
+      return page;
+    }
+    if (options.create === false) {
+      return page.sceneOverrides?.[sceneId] || null;
+    }
+    page.sceneOverrides = Object.assign({}, page.sceneOverrides || {});
+    page.sceneOverrides[sceneId] = Object.assign({}, page.sceneOverrides[sceneId] || {});
+    return page.sceneOverrides[sceneId];
+  }
+
   function normalizeSoundMode(mode) {
-    return ["bgm", "hover", "click", "show"].includes(mode) ? mode : "click";
+    return ["bgm", "ambient", "hover", "click", "show"].includes(mode) ? mode : "click";
   }
 
   function getSoundModeLabel(mode) {
     const labels = {
       bgm: "BGM",
+      ambient: "Ambient",
       hover: "ホバー音",
       click: "クリック音",
       show: "表示音",
@@ -21250,6 +21400,8 @@
       trigger: "click",
       fileName: "",
       src: "",
+      assetRef: "",
+      assetId: "",
       volume: 80,
       loop: false,
     }, sound || {});
@@ -21260,10 +21412,110 @@
       return getNormalizedSound();
     }
     const soundMode = normalizeSoundMode(mode);
+    if (soundMode === "ambient") {
+      return getAmbientSummarySound(target);
+    }
     if (soundMode === "click" && target.sound && !target.sounds?.click) {
       return getNormalizedSound(target.sound);
     }
     return getNormalizedSound(target.sounds?.[soundMode]);
+  }
+
+  function getAmbientSounds(target) {
+    return Array.isArray(target?.sounds?.ambient)
+      ? target.sounds.ambient.map(getNormalizedSound).filter((sound) => sound.enabled && (sound.fileName || sound.src || sound.assetRef || sound.assetId))
+      : [];
+  }
+
+  function getAmbientSummarySound(target) {
+    const ambient = getAmbientSounds(target);
+    if (!ambient.length) {
+      return getNormalizedSound({ loop: true });
+    }
+    const names = ambient.map((sound) => sound.fileName || sound.assetRef || sound.assetId || "Ambient").join(" / ");
+    return getNormalizedSound(Object.assign({}, ambient[ambient.length - 1], {
+      fileName: ambient.length > 1 ? `${ambient.length}件: ${names}` : names,
+      enabled: true,
+    }));
+  }
+
+  function renderSoundScopeNote(target, mode, sound) {
+    if (!els.propSoundFileName) {
+      return;
+    }
+    let note = document.getElementById("propSoundScopeNote");
+    if (!note) {
+      note = document.createElement("span");
+      note.id = "propSoundScopeNote";
+      note.className = "tb-sound-scope-note";
+      els.propSoundFileName.insertAdjacentElement("afterend", note);
+    }
+    const label = ["bgm", "ambient"].includes(mode)
+      ? getPageSoundScopeLabel(getCurrentPage())
+      : getLayerSoundScopeLabel(getSelectedLayer(), mode);
+    note.textContent = sound?.fileName
+      ? `${label}に設定済み`
+      : `${label}は未設定`;
+    note.dataset.status = sound?.fileName ? "set" : "empty";
+  }
+
+  function getPageSoundScopeLabel(page = getCurrentPage()) {
+    const sceneName = getActiveSceneName(page);
+    return `${sceneName}の${normalizeSoundMode(state.soundMode) === "ambient" ? "Ambient" : "ページBGM"}`;
+  }
+
+  function getLayerSoundScopeLabel(layer, mode = state.soundMode) {
+    const name = layer?.name || "選択レイヤー";
+    return `${name}の${getSoundModeLabel(mode)}`;
+  }
+
+  function getActiveSceneName(page = getCurrentPage()) {
+    if (!page || state.existingWeb.active) {
+      return "ページ";
+    }
+    const sceneId = getActiveSceneId(page);
+    const scene = (page.scenes || []).find((item) => item.sceneId === sceneId);
+    return scene?.displayName || scene?.name || "現在Scene";
+  }
+
+  function getPageSoundStatusText(page = getCurrentPage()) {
+    if (!page || state.existingWeb.active) {
+      return "音: -";
+    }
+    const target = getPageSoundTarget(page, { create: false }) || page;
+    const bgm = getSoundSettings(target, "bgm");
+    const ambient = getAmbientSounds(target);
+    const sceneName = getActiveSceneName(page);
+    const parts = [];
+    parts.push(bgm.enabled && bgm.fileName ? `BGM ${bgm.fileName}` : "BGM 未設定");
+    parts.push(ambient.length ? `Ambient ${ambient.length}件` : "Ambient 0件");
+    return `音: ${sceneName}: ${parts.join(" / ")}`;
+  }
+
+  function getLayerSoundStatusText(layer) {
+    const sounds = getEnabledSoundEntries(layer);
+    if (!sounds.length) {
+      return "";
+    }
+    return `音: ${sounds.map(({ mode, sound }) => `${getSoundModeLabel(mode)} ${sound.fileName || "設定済み"}`).join(" / ")}`;
+  }
+
+  function getSelectionSoundStatusText(layerIds) {
+    const layers = layerIds
+      .map((id) => findLayer(id))
+      .filter(Boolean);
+    const soundCount = layers.reduce((count, layer) => count + getEnabledSoundEntries(layer).length, 0);
+    return soundCount ? `音: ${soundCount}件のサウンド設定あり` : "";
+  }
+
+  function getEnabledSoundEntries(target) {
+    const sounds = Object.assign({}, target?.sounds || {});
+    if (target?.sound && !sounds.click) {
+      sounds.click = target.sound;
+    }
+    return ["bgm", "show", "click", "hover"]
+      .map((mode) => ({ mode, sound: getNormalizedSound(sounds[mode]) }))
+      .filter(({ sound }) => sound.enabled && (sound.fileName || sound.src || sound.assetRef || sound.assetId));
   }
 
   function updateSoundTarget(mutator) {
@@ -21275,6 +21527,30 @@
     pushHistory();
     const mode = normalizeSoundMode(state.soundMode);
     target.sounds = Object.assign({}, target.sounds || {});
+    if (mode === "ambient") {
+      const ambient = getAmbientSounds(target);
+      const sound = getNormalizedSound({ loop: true, trigger: "load" });
+      mutator(sound, target);
+      sound.trigger = "load";
+      sound.enabled = Boolean(sound.src || sound.fileName || sound.assetRef || sound.assetId);
+      if (sound.enabled) {
+        target.sounds.ambient = ambient.concat(sound);
+      } else {
+        target.sounds.ambient = ambient.map((item, index) => {
+          if (index !== ambient.length - 1) {
+            return item;
+          }
+          const copy = getNormalizedSound(item);
+          mutator(copy, target);
+          copy.trigger = "load";
+          copy.enabled = Boolean(copy.src || copy.fileName || copy.assetRef || copy.assetId);
+          return copy;
+        }).filter((item) => item.enabled);
+      }
+      markDirty();
+      renderAll();
+      return;
+    }
     target.sounds[mode] = getNormalizedSound(target.sounds[mode] || (mode === "click" ? target.sound : null));
     mutator(target.sounds[mode], target);
     target.sounds[mode].trigger = getSoundTriggerForMode(mode);
@@ -21293,6 +21569,13 @@
     }
     pushHistory();
     const mode = normalizeSoundMode(state.soundMode);
+    if (mode === "ambient") {
+      target.sounds = Object.assign({}, target.sounds || {}, { ambient: [] });
+      markDirty();
+      renderAll();
+      showModeToast("Ambientをすべて外しました。");
+      return;
+    }
     target.sounds = Object.assign({}, target.sounds || {}, { [mode]: getNormalizedSound() });
     if (mode === "click") {
       target.sound = getNormalizedSound();
@@ -21327,7 +21610,7 @@
     if (soundMode === "hover") {
       return "hover";
     }
-    if (soundMode === "bgm" || soundMode === "show") {
+    if (soundMode === "bgm" || soundMode === "ambient" || soundMode === "show") {
       return "load";
     }
     return "click";
@@ -24216,6 +24499,19 @@ ${layersHtml}
   function escapeAttr(value) {
     return escapeHtml(value);
   }
+
+  window.TBalanceNativeRuntime = {
+    dispatchEvent: dispatchNativeEvent,
+    dispatchLayerClick: (layerId) => {
+      if (!state.preview || !state.nativeBehaviorRuntime) {
+        return { status: "inactive", handled: false };
+      }
+      const handled = Boolean(state.nativeBehaviorRuntime.handleClick?.(layerId));
+      renderAll();
+      return { status: "ok", layerId: String(layerId || ""), handled };
+    },
+    isActive: () => Boolean(state.preview && state.nativeBehaviorRuntime),
+  };
 
   start();
 })();

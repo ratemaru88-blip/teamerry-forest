@@ -3,7 +3,7 @@
 
   const SUPPORTED_TRIGGERS = ["click", "clock", "pageOpen", "event"];
   const SUPPORTED_CONDITIONS = ["sceneIs", "timeAtOrAfter"];
-  const SUPPORTED_ACTIONS = ["setScene", "showRandomDialogue", "showDialogueSequence", "openFlow"];
+  const SUPPORTED_ACTIONS = ["setScene", "showRandomDialogue", "showDialogueSequence", "openFlow", "playSound"];
 
   function clone(value) {
     return value == null ? value : JSON.parse(JSON.stringify(value));
@@ -82,6 +82,15 @@
         targetRef: String(action.targetRef || action.layerId || ""),
       };
     }
+    if (action.type === "playSound") {
+      return {
+        type: "playSound",
+        soundRef: String(action.soundRef || action.assetRef || action.assetId || ""),
+        targetRef: String(action.targetRef || action.layerId || ""),
+        soundMode: String(action.soundMode || action.mode || "click"),
+        sound: normalizeSoundActionPayload(action.sound || action.audio || {}),
+      };
+    }
     if (action.type === "showDialogueSequence") {
       return {
         type: "showDialogueSequence",
@@ -100,8 +109,21 @@
       dataSourceRef: String(action.dataSourceRef || action.dataSourceId || ""),
       targetRef: String(action.targetRef || action.layerId || ""),
       textField: action.textField || "text",
+      fallbackText: String(action.fallbackText || ""),
       excludePrevious: action.excludePrevious !== false,
       filter: clone(action.filter || {}),
+    };
+  }
+
+  function normalizeSoundActionPayload(sound = {}) {
+    return {
+      enabled: sound.enabled !== false,
+      assetRef: String(sound.assetRef || sound.assetId || ""),
+      assetId: String(sound.assetId || sound.assetRef || ""),
+      fileName: String(sound.fileName || sound.name || ""),
+      src: String(sound.src || sound.url || ""),
+      volume: clamp(Number(sound.volume ?? 80), 0, 100),
+      loop: Boolean(sound.loop),
     };
   }
 
@@ -113,6 +135,14 @@
     const hour = Math.min(23, Math.max(0, Number(match[1]) || 0));
     const minute = Math.min(59, Math.max(0, Number(match[2]) || 0));
     return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+  }
+
+  function clamp(value, min, max) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) {
+      return min;
+    }
+    return Math.max(min, Math.min(max, number));
   }
 
   function getDefaultBehaviorName(trigger) {
@@ -136,6 +166,7 @@
       onSceneChange: options.onSceneChange,
       onRuntimeTextChange: options.onRuntimeTextChange,
       onOpenFlow: options.onOpenFlow,
+      onPlaySound: options.onPlaySound,
       onDiagnostic: options.onDiagnostic,
     };
     runtime.initialSceneId = runtime.sceneId;
@@ -284,6 +315,14 @@
       addDiagnostic(runtime, behavior, "open-flow-not-connected", "投稿FlowはまだNative TESTへ接続されていません。");
       return false;
     }
+    if (action.type === "playSound") {
+      const handled = runtime.onPlaySound?.(action, behavior);
+      if (handled) {
+        return true;
+      }
+      addDiagnostic(runtime, behavior, "sound-not-found", "再生するサウンドが見つかりません。");
+      return false;
+    }
     return false;
   }
 
@@ -296,16 +335,26 @@
     const result = runtime.fetchDataSource?.(action.dataSourceRef) || { status: "missing", items: [] };
     if (result.status !== "ok") {
       addDiagnostic(runtime, behavior, result.code || result.status || "data-source-error", "台詞データを読み込めません。");
-      return false;
+      return applyFallbackDialogue(runtime, behavior, action, target);
     }
     const item = pickRandomItem(runtime, behavior, action, filterItems(result.items || [], action.filter));
     if (!item) {
       addDiagnostic(runtime, behavior, "empty-data-source", "表示できる台詞がありません。");
-      return false;
+      return applyFallbackDialogue(runtime, behavior, action, target);
     }
     runtime.runtimeText.set(target.id, String(item[action.textField || "text"] || item.text || ""));
     runtime.previousItems.set(`${behavior.behaviorId}:${action.dataSourceRef}`, item.id);
     runtime.onRuntimeTextChange?.(target.id, runtime.runtimeText.get(target.id), behavior);
+    return true;
+  }
+
+  function applyFallbackDialogue(runtime, behavior, action, target) {
+    const text = String(action.fallbackText || "").trim();
+    if (!text) {
+      return false;
+    }
+    runtime.runtimeText.set(target.id, text);
+    runtime.onRuntimeTextChange?.(target.id, text, behavior);
     return true;
   }
 
@@ -325,12 +374,15 @@
       addDiagnostic(runtime, behavior, "empty-data-source", "表示できる台詞がありません。");
       return false;
     }
+    const explicitAdvanceRefs = Array.isArray(action.advanceRefs)
+      ? action.advanceRefs.filter(Boolean).map(String)
+      : [];
     const sequence = {
       behaviorId: behavior.behaviorId,
       dataSourceRef: action.dataSourceRef,
       setId: set.setId,
       targetRef: target.id,
-      advanceRefs: Array.from(new Set([target.id].concat(action.advanceRefs || []).filter(Boolean))),
+      advanceRefs: Array.from(new Set((explicitAdvanceRefs.length ? explicitAdvanceRefs : [target.id]).filter(Boolean))),
       lines: set.lines,
       index: 0,
     };
@@ -395,11 +447,12 @@
   }
 
   function filterItems(items, filter = {}) {
+    const enabledItems = (items || []).filter((item) => item?.enabled !== false);
     const entries = Object.entries(filter || {}).filter(([, value]) => value != null && String(value).trim());
     if (!entries.length) {
-      return items;
+      return enabledItems;
     }
-    return items.filter((item) => entries.every(([key, expected]) => {
+    return enabledItems.filter((item) => entries.every(([key, expected]) => {
       const actual = item?.[key];
       if (Array.isArray(actual)) {
         return Array.isArray(expected)
