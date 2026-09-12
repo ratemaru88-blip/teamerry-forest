@@ -1310,6 +1310,29 @@ body.is-eraser-active .tb-brush-panel .tb-eraser-panel-setting {
   color: rgba(217, 226, 236, 0.55);
 }
 
+.tb-sound-scope-note {
+  display: inline-flex;
+  align-items: center;
+  max-width: 210px;
+  min-height: 24px;
+  padding: 3px 8px;
+  border: 1px solid rgba(79, 199, 255, 0.32);
+  border-radius: 999px;
+  background: rgba(32, 119, 185, 0.13);
+  color: #dff5ff;
+  font-size: 11px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-sound-scope-note[data-status="empty"] {
+  border-color: rgba(139, 158, 174, 0.32);
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(217, 226, 236, 0.68);
+}
+
 .tb-property-header .tb-shape-ribbon input[type="color"],
 .tb-property-header .tb-text-ribbon input[type="color"] {
   width: 30px;
