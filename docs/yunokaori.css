@@ -1,0 +1,158 @@
+:root {
+  color-scheme: dark;
+  background: #04100d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: #04100d;
+  color: #fff7df;
+  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+}
+
+.yunokaori-page {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #04100d;
+}
+
+.yunokaori-fit {
+  position: relative;
+  width: var(--stage-width, 1920px);
+  height: var(--stage-height, 1080px);
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: center center;
+}
+
+.yunokaori-stage {
+  position: absolute;
+  inset: 0;
+  width: var(--stage-width, 1920px);
+  height: var(--stage-height, 1080px);
+  overflow: hidden;
+  background: transparent;
+}
+
+.yunokaori-stage[data-loading="true"]::before,
+.yunokaori-stage[data-error="true"]::before {
+  content: attr(data-status);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 100;
+  max-width: min(520px, 84vw);
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 247, 223, 0.28);
+  border-radius: 8px;
+  background: rgba(6, 18, 15, 0.72);
+  color: rgba(255, 247, 223, 0.88);
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.yunokaori-layer {
+  position: absolute;
+  display: block;
+  overflow: visible;
+  transform-origin: center center;
+  animation-fill-mode: both;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.yunokaori-layer--background {
+  overflow: hidden;
+}
+
+.yunokaori-layer img,
+.yunokaori-layer video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.yunokaori-layer--background img,
+.yunokaori-layer--background video {
+  object-fit: fill;
+}
+
+.yunokaori-layer--clickable {
+  cursor: pointer;
+}
+
+.yunokaori-hit-area {
+  border: 0;
+  background: transparent;
+  color: transparent;
+  text-decoration: none;
+}
+
+.yunokaori-hit-area:focus-visible {
+  outline: 4px solid rgba(255, 247, 223, 0.88);
+  outline-offset: 4px;
+}
+
+.yunokaori-audio-unlock {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 20;
+  display: none;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid rgba(255, 247, 223, 0.38);
+  border-radius: 999px;
+  background: rgba(6, 18, 15, 0.72);
+  color: #fff7df;
+  font: inherit;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.yunokaori-audio-unlock.is-visible {
+  display: inline-grid;
+  place-items: center;
+}
+
+.yunokaori-layer[data-animation="pop"] {
+  animation-name: yunokaori-pop;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes yunokaori-pop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94) rotate(var(--layer-rotation, 0deg));
+  }
+
+  to {
+    opacity: var(--layer-opacity, 1);
+    transform: translateY(0) scale(1) rotate(var(--layer-rotation, 0deg));
+  }
+}
+
+@media (max-aspect-ratio: 3 / 4), (max-width: 760px) {
+  body {
+    background: #04100d;
+  }
+}

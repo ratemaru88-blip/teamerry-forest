@@ -2499,9 +2499,70 @@
 
   const onsenPortal = document.querySelector(".forest-portal--onsen");
   if (onsenPortal) {
+    const mobileOnsenQuery = window.matchMedia("(max-aspect-ratio: 3 / 4), (max-width: 760px)");
     onsenPortal.addEventListener("pointerenter", () => {
       showCameraNotice("onsen");
     });
+    onsenPortal.addEventListener("click", (event) => {
+      if (mobileOnsenQuery.matches) {
+        return;
+      }
+      event.preventDefault();
+      playYunokaoriOpening(onsenPortal.href || "./yunokaori.html");
+    });
+  }
+
+  function playYunokaoriOpening(destination) {
+    const existing = document.querySelector("[data-yunokaori-opening]");
+    if (existing) {
+      return;
+    }
+
+    const overlay = document.createElement("div");
+    overlay.dataset.yunokaoriOpening = "true";
+    Object.assign(overlay.style, {
+      position: "fixed",
+      inset: "0",
+      zIndex: "2147483646",
+      background: "#030807",
+      display: "grid",
+      placeItems: "center",
+      overflow: "hidden",
+    });
+
+    const video = document.createElement("video");
+    video.src = "./assets/images/yunokaori/yunokaori_opening_pc.webm";
+    video.autoplay = true;
+    video.controls = false;
+    video.loop = false;
+    video.playsInline = true;
+    video.preload = "auto";
+    Object.assign(video.style, {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      background: "#030807",
+    });
+
+    let settled = false;
+    const goToYunokaori = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      window.location.href = destination || "./yunokaori.html";
+    };
+
+    video.addEventListener("ended", goToYunokaori, { once: true });
+    video.addEventListener("error", goToYunokaori, { once: true });
+    overlay.appendChild(video);
+    document.body.appendChild(overlay);
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(goToYunokaori);
+    }
+    window.setTimeout(goToYunokaori, 16000);
   }
 
   drops.forEach((drop) => {
