@@ -75,6 +75,14 @@
       aliases: ["ひみつの洞窟", "洞窟", "cave"],
     },
     {
+      id: "yunokaori",
+      pageId: "page-yunokaori",
+      label: "湯の香り温泉郷",
+      sourcePath: "yunokaori.html",
+      url: `${PROJECT_BASE_URL}yunokaori.html`,
+      aliases: ["湯の香り温泉郷", "湯の香り", "温泉郷", "yunokaori"],
+    },
+    {
       id: "komoremi",
       pageId: "page-komoremi",
       label: "木漏れ日ページ",
