@@ -241,6 +241,136 @@
       "name": "hukidasi"
     },
     {
+      "assetId": "ast_a741627e3a234bc0",
+      "id": "ast_a741627e3a234bc0",
+      "displayName": "yunokaori_backgraound_pc",
+      "mediaType": "video/webm",
+      "category": "background",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/images/yunokaori/yunokaori_backgraound_pc.webm"
+      },
+      "originalName": "yunokaori_backgraound_pc.webm",
+      "relativePath": "assets/images/yunokaori/yunokaori_backgraound_pc.webm",
+      "contentHash": "c554efcb1c5b22d80f070c91b3347223109bec3869956f6862c457e9ec2e3f08",
+      "byteLength": 1032476,
+      "width": 1920,
+      "height": 1080,
+      "variants": {
+        "source": {
+          "relativePath": "assets/images/yunokaori/yunokaori_backgraound_pc.webm"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "updatedAt": "2026-09-17T00:00:00.000Z",
+      "name": "yunokaori_backgraound_pc"
+    },
+    {
+      "assetId": "ast_ba8523acba444729",
+      "id": "ast_ba8523acba444729",
+      "displayName": "yunokaori_backgraound_mobile",
+      "mediaType": "image/webp",
+      "category": "uncategorized",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/images/yunokaori/yunokaori_backgraound_mobile.webp"
+      },
+      "originalName": "yunokaori_backgraound_mobile.webp",
+      "relativePath": "assets/images/yunokaori/yunokaori_backgraound_mobile.webp",
+      "contentHash": "ba6c7e13e6e6f320e849e6401b1fc4c8cdb354922632a1bdb5ea18f97b0a3b1f",
+      "byteLength": 352340,
+      "width": 1080,
+      "height": 1919,
+      "variants": {
+        "source": {
+          "relativePath": "assets/images/yunokaori/yunokaori_backgraound_mobile.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "updatedAt": "2026-09-17T00:00:00.000Z",
+      "name": "yunokaori_backgraound_mobile"
+    },
+    {
+      "assetId": "ast_95bbfeff043e4caa",
+      "id": "ast_95bbfeff043e4caa",
+      "displayName": "kakugen",
+      "mediaType": "image/webp",
+      "category": "ui",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/images/yunokaori/kakugen.webp"
+      },
+      "originalName": "kakugen.webp",
+      "relativePath": "assets/images/yunokaori/kakugen.webp",
+      "contentHash": "85610ba07f48bcfd1f697447f1c73f1cb458455b66c576efa337ab52b050b7e8",
+      "byteLength": 11248,
+      "width": 438,
+      "height": 112,
+      "variants": {
+        "source": {
+          "relativePath": "assets/images/yunokaori/kakugen.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "updatedAt": "2026-09-17T00:00:00.000Z",
+      "name": "kakugen"
+    },
+    {
+      "assetId": "ast_3db315d70466462e",
+      "id": "ast_3db315d70466462e",
+      "displayName": "younoikku",
+      "mediaType": "image/webp",
+      "category": "uncategorized",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/images/yunokaori/kyounoikku.webp"
+      },
+      "originalName": "kyounoikku.webp",
+      "relativePath": "assets/images/yunokaori/kyounoikku.webp",
+      "contentHash": "7aaf14bf3dfada585933fc3ddc532991bb7e0f170e9e9a69f82c88e0318c373a",
+      "byteLength": 11698,
+      "width": 441,
+      "height": 110,
+      "variants": {
+        "source": {
+          "relativePath": "assets/images/yunokaori/kyounoikku.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "updatedAt": "2026-09-17T00:00:00.000Z",
+      "name": "younoikku"
+    },
+    {
+      "assetId": "ast_6f6eba12cd504a62",
+      "id": "ast_6f6eba12cd504a62",
+      "displayName": "koremadeno",
+      "mediaType": "image/webp",
+      "category": "ui",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/images/yunokaori/koremadeno.webp"
+      },
+      "originalName": "koremadeno.webp",
+      "relativePath": "assets/images/yunokaori/koremadeno.webp",
+      "contentHash": "5e4b0329836bc3207a504624192a8f47910c4a417bde92098c3cf2f4136f5d25",
+      "byteLength": 12202,
+      "width": 444,
+      "height": 112,
+      "variants": {
+        "source": {
+          "relativePath": "assets/images/yunokaori/koremadeno.webp"
+        }
+      },
+      "status": "available",
+      "createdAt": "2026-09-17T00:00:00.000Z",
+      "updatedAt": "2026-09-17T00:00:00.000Z",
+      "name": "koremadeno"
+    },
+    {
       "assetId": "ast_b71404e08ebb489f",
       "id": "ast_b71404e08ebb489f",
       "displayName": "forest_go_buttan_1",

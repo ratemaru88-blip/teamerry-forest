@@ -138,6 +138,12 @@
       return null;
     }
     const normalized = normalizeRegistry(registry || {}, project);
+    const currentAssets = normalizeAssets(project.assets || []);
+    const mergedAssets = new Map(currentAssets.map((asset) => [asset.assetId, asset]));
+    normalized.assets.forEach((registryAsset) => {
+      const projectAsset = mergedAssets.get(registryAsset.assetId);
+      mergedAssets.set(registryAsset.assetId, mergeAssetRecords(projectAsset, registryAsset));
+    });
     project.assetRegistry = {
       schemaVersion: normalized.schemaVersion,
       projectId: normalized.projectId,
@@ -145,8 +151,40 @@
       storageRoot: normalized.storage.root || ASSET_ROOT,
       loadedAt: nowIso(),
     };
-    project.assets = normalized.assets;
+    project.assets = Array.from(mergedAssets.values());
     return normalized;
+  }
+
+  function mergeAssetRecords(projectAsset, registryAsset) {
+    if (!projectAsset) {
+      return normalizeAsset(registryAsset);
+    }
+    const merged = Object.assign({}, projectAsset, registryAsset);
+    const projectStorage = projectAsset.storage || {};
+    const registryStorage = registryAsset.storage || {};
+    const registryPath = registryStorage.relativePath || registryAsset.relativePath || "";
+    const projectPath = projectStorage.relativePath || projectAsset.relativePath || "";
+    const storagePath = registryPath || projectPath;
+    const storageMode = registryStorage.mode || projectStorage.mode || (storagePath ? "project-file" : "");
+    merged.assetId = projectAsset.assetId;
+    merged.id = registryAsset.id || projectAsset.id || projectAsset.assetId;
+    merged.storage = Object.assign({}, projectStorage, registryStorage, {
+      mode: storageMode || "missing",
+      relativePath: normalizeRelativePath(storagePath),
+    });
+    merged.relativePath = registryAsset.relativePath || registryPath || projectAsset.relativePath || projectPath || "";
+    merged.variants = mergeAssetVariants(projectAsset.variants, registryAsset.variants, merged.storage);
+    return normalizeAsset(merged);
+  }
+
+  function mergeAssetVariants(projectVariants = {}, registryVariants = {}, storage = {}) {
+    const merged = Object.assign({}, projectVariants || {}, registryVariants || {});
+    if (storage.mode === "project-file" && storage.relativePath) {
+      merged.source = Object.assign({}, projectVariants?.source || {}, registryVariants?.source || {}, {
+        relativePath: storage.relativePath,
+      });
+    }
+    return merged;
   }
 
   function upsertAsset(project, asset) {

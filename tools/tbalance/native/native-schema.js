@@ -13,6 +13,10 @@
     return new Date().toISOString();
   }
 
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
   function slugify(value, fallback = "page") {
     const ascii = String(value || "")
       .normalize("NFKD")
@@ -74,6 +78,8 @@
       stage: input.stage,
       scenes: Array.isArray(input.scenes) ? input.scenes : [],
       defaultSceneId: input.defaultSceneId || "",
+      sounds: input.sounds ? clone(input.sounds) : undefined,
+      sceneOverrides: input.sceneOverrides ? clone(input.sceneOverrides) : undefined,
       behaviors: Array.isArray(input.behaviors) ? input.behaviors : [],
       dataSourceRefs: Array.isArray(input.dataSourceRefs) ? input.dataSourceRefs : [],
       layers: Array.isArray(input.layers) ? input.layers : [],
