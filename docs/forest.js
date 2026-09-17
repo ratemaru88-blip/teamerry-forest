@@ -337,6 +337,11 @@
       return;
     }
 
+    if (document.body.classList.contains("is-yunokaori-opening")) {
+      fixedObservatoryPortal.style.removeProperty("display");
+      return;
+    }
+
     const size = getViewportSize();
     const portalWidth = Math.max(34, Math.min(48, observatoryPortalAnchor.width * stageScale));
     const left = state.x + observatoryPortalAnchor.x * stageScale;
@@ -2497,6 +2502,14 @@
     });
   });
 
+  const clearYunokaoriOpeningState = () => {
+    document.querySelector("[data-yunokaori-opening]")?.remove();
+    document.body.classList.remove("is-yunokaori-opening");
+    syncFixedObservatoryPortal();
+  };
+
+  window.addEventListener("pageshow", clearYunokaoriOpeningState);
+
   const onsenPortal = document.querySelector(".forest-portal--onsen");
   if (onsenPortal) {
     const mobileOnsenQuery = window.matchMedia("(max-aspect-ratio: 3 / 4), (max-width: 760px)");
@@ -2517,6 +2530,9 @@
     if (existing) {
       return;
     }
+
+    document.body.classList.add("is-yunokaori-opening");
+    fixedObservatoryPortal?.style.removeProperty("display");
 
     const overlay = document.createElement("div");
     overlay.dataset.yunokaoriOpening = "true";

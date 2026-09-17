@@ -1061,6 +1061,10 @@ body:not(.intro-finished) .forest-hokora {
   transform: translateY(2px) !important;
 }
 
+body.is-yunokaori-opening #fixedObservatoryPortal {
+  display: none !important;
+}
+
 .hidden-drop {
   position: absolute;
   z-index: 3;
