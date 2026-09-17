@@ -25,17 +25,17 @@ body {
 .yunokaori-page {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
   overflow: hidden;
   background: #04100d;
 }
 
 .yunokaori-fit {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
   width: var(--stage-width, 1920px);
   height: var(--stage-height, 1080px);
-  transform: scale(var(--stage-scale, 1));
+  transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
   transform-origin: center center;
 }
 
