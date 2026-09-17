@@ -6,6 +6,7 @@
   const BEFORE_NEW_STORAGE_KEY = "tbalance.beforeNewBackup.v0.1";
   const UI_SETTINGS_KEY = "tbalance.uiSettings.v0.1";
   const RUNTIME_STATE_KEY = "tbalance.runtimeState.v0.1";
+  const EXISTING_WEB_PREVIEW_KEY = "tbalance.existingWebPreview.v0.1";
   const PROJECT_DB_NAME = "tbalance-project-store";
   const PROJECT_DB_STORE = "projects";
   const PROJECT_DB_KEY = "autosave";
@@ -300,6 +301,8 @@
       },
       inspectorExpanded: false,
       reloadToken: "",
+      zoom: "fit",
+      fitScale: 1,
       drag: null,
     },
     siteMap: {
@@ -716,7 +719,9 @@
     ensureActiveSceneForPage(getCurrentPage());
     bindEvents();
     installAiBridge();
-    renderAll();
+    if (!restoreExistingWebPreviewWorkspace()) {
+      renderAll();
+    }
   }
 
   function restoreProjectRuntimeState(project) {
@@ -1788,6 +1793,8 @@
       workflow: createExistingWebWorkflowState("clean"),
       inspectorExpanded: false,
       reloadToken: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      zoom: (options.zoom ?? "fit") === "fit" ? "fit" : renderer.clamp(Number(options.zoom) || 1, 0.05, 2),
+      fitScale: 1,
       drag: null,
     };
     prepareAnalyzerForExistingWeb(info);
@@ -1981,6 +1988,95 @@
     }
   }
 
+  function persistExistingWebPreviewWorkspace() {
+    try {
+      const history = state.existingWeb.previewHistory || [];
+      if (!state.existingWeb.active || !history.length) {
+        localStorage.removeItem(EXISTING_WEB_PREVIEW_KEY);
+        return;
+      }
+      localStorage.setItem(EXISTING_WEB_PREVIEW_KEY, JSON.stringify({
+        version: 1,
+        savedAt: new Date().toISOString(),
+        pageId: state.existingWeb.pageId || "",
+        label: state.existingWeb.label || "",
+        sourcePath: state.existingWeb.sourcePath || "",
+        viewState: state.existingWeb.viewState || "",
+        targetState: state.existingWeb.targetState || null,
+        adapterId: state.existingWeb.adapterId || "none",
+        openContext: state.existingWeb.openContext || "direct",
+        viewport: state.viewport === "mobile" ? "mobile" : "desktop",
+        zoom: state.existingWeb.zoom ?? "fit",
+        workflowTab: state.existingWeb.workflow?.tab || "layers",
+        previewHistory: history,
+        previewFuture: state.existingWeb.previewFuture || [],
+      }));
+    } catch (error) {
+      console.warn("Existing Web Preview backup failed", error);
+    }
+  }
+
+  function loadExistingWebPreviewWorkspace() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(EXISTING_WEB_PREVIEW_KEY) || "null");
+      if (!stored?.sourcePath || !Array.isArray(stored.previewHistory) || !stored.previewHistory.length) {
+        return null;
+      }
+      return stored;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function restoreExistingWebPreviewWorkspace() {
+    const stored = loadExistingWebPreviewWorkspace();
+    if (!stored) {
+      return false;
+    }
+    state.viewport = stored.viewport === "mobile" ? "mobile" : "desktop";
+    openExistingWebPage({
+      pageId: stored.pageId,
+      label: stored.label,
+      sourcePath: stored.sourcePath,
+      viewState: stored.viewState,
+      targetState: stored.targetState,
+      adapterId: stored.adapterId,
+    }, {
+      openContext: stored.openContext || "recovery",
+      zoom: stored.zoom ?? "fit",
+      restorePreviewWorkspace: stored,
+    });
+    state.existingWeb.pendingPreviewRestore = stored;
+    return true;
+  }
+
+  function restoreExistingWebPreviewHistory() {
+    const stored = state.existingWeb.pendingPreviewRestore || loadExistingWebPreviewWorkspace();
+    state.existingWeb.pendingPreviewRestore = null;
+    if (!stored || normalizeExistingWebSourcePath(stored.sourcePath) !== state.existingWeb.sourcePath) {
+      return 0;
+    }
+    const restoredHistory = [];
+    (stored.previewHistory || []).forEach((change) => {
+      if (applyExistingWebPreviewInline(change, "afterInline")) {
+        restoredHistory.push(change);
+      }
+    });
+    if (!restoredHistory.length) {
+      return 0;
+    }
+    state.existingWeb.previewHistory = restoredHistory;
+    state.existingWeb.previewFuture = Array.isArray(stored.previewFuture) ? stored.previewFuture : [];
+    state.existingWeb.workflow = {
+      ...createExistingWebWorkflowState("dirty"),
+      tab: ["layers", "adjust", "analysis"].includes(stored.workflowTab) ? stored.workflowTab : "layers",
+      message: `${restoredHistory.length}件の未反映Previewを復元しました。変更を再確認してください。`,
+    };
+    syncExistingWebPreviewStateFromHistory();
+    persistExistingWebPreviewWorkspace();
+    return restoredHistory.length;
+  }
+
   function handleExistingWebFrameLoad() {
     if (!state.existingWeb.active) {
       return;
@@ -2007,7 +2103,13 @@
     installExistingWebEditMode();
     restoreExistingWebPageCheckCache();
     refreshExistingWebVirtualLayers();
-    showModeToast(`${state.existingWeb.label || state.existingWeb.sourcePath} を表示しました。`);
+    const restoredCount = restoreExistingWebPreviewHistory();
+    if (restoredCount) {
+      refreshExistingWebVirtualLayers();
+    }
+    showModeToast(restoredCount
+      ? `${restoredCount}件の未反映Previewを復元しました。`
+      : `${state.existingWeb.label || state.existingWeb.sourcePath} を表示しました。`);
     renderAll();
   }
 
@@ -3766,6 +3868,7 @@
       change,
     ].slice(-HISTORY_LIMIT);
     state.existingWeb.previewFuture = [];
+    persistExistingWebPreviewWorkspace();
   }
 
   function applyExistingWebPreviewInline(change, inlineKey) {
@@ -3979,6 +4082,13 @@
 
   function setExistingWebWorkflowManualReviewRequired(message = "", details = null) {
     const workflow = getExistingWebWorkflow();
+    const eligibility = getExistingWebWorkflowEligibility(workflow.status, getExistingWebPreviewChangeCount());
+    if (state.analyzer.safeApply?.preflight?.ok && eligibility.readyCount > 0) {
+      setExistingWebWorkflowMixedReady(message || "安全確認済みの変更は反映できます。要確認の変更は反映しません。");
+      state.existingWeb.workflow.lastResult = details || workflow.lastResult || null;
+      persistExistingWebPreviewWorkspace();
+      return;
+    }
     state.existingWeb.workflow = {
       ...workflow,
       status: "manual_review_required",
@@ -4046,6 +4156,7 @@
     state.existingWeb.impactAnalysis = null;
     syncExistingWebPreviewStateFromHistory();
     markExistingWebWorkflowDirty("Undo後のPreview状態を再確認してください。");
+    persistExistingWebPreviewWorkspace();
     refreshExistingWebVirtualLayers();
     renderAll();
     return true;
@@ -4062,6 +4173,7 @@
     state.existingWeb.impactAnalysis = null;
     syncExistingWebPreviewStateFromHistory();
     markExistingWebWorkflowDirty("Redo後のPreview状態を再確認してください。");
+    persistExistingWebPreviewWorkspace();
     refreshExistingWebVirtualLayers();
     renderAll();
     return true;
@@ -4100,6 +4212,7 @@
     state.existingWeb.impactAnalysis = null;
     state.existingWeb.drag = null;
     setExistingWebWorkflowClean("Preview変更を解除しました。");
+    persistExistingWebPreviewWorkspace();
     applyExistingWebSelectionClass();
     refreshExistingWebVirtualLayers();
     if (!options.skipRender) {
@@ -4153,8 +4266,51 @@
     } else {
       await runExistingWebAutomaticSafetyReview(changes, resolution);
     }
+    persistExistingWebPreviewWorkspace();
     showModeToast(`変更後の影響を確認しました: ${count}件`);
     renderAll();
+  }
+
+  async function retryExistingWebPendingChanges() {
+    const changes = getExistingWebWorkflowChanges();
+    const impactItems = state.existingWeb.impactAnalysis?.items || [];
+    const safeKeys = new Set(impactItems.filter((item) => item?.status === "safe").map((item) => (
+      `${item.preview?.domRef || item.domRef || ""}\u0001${item.preview?.property || ""}`
+    )));
+    const pendingChanges = changes.filter((change) => !safeKeys.has(`${change.domRef || ""}\u0001${change.property || ""}`));
+    if (!pendingChanges.length) {
+      showModeToast("再確認が必要な変更はありません。");
+      return;
+    }
+    const preservedPreflight = state.analyzer.safeApply?.preflight || null;
+    const preservedImpact = state.existingWeb.impactAnalysis;
+    const pendingResolution = {
+      ok: false,
+      batch: true,
+      status: "review_required",
+      reason: "pending-review",
+      message: `${pendingChanges.length}件を再確認します。`,
+      changes: pendingChanges.map((change) => ({
+        change,
+        selected: selectExistingWebElementForWorkflowChange(change),
+        resolution: { ok: false, status: "review_required", reason: "pending-review" },
+      })),
+    };
+    const result = await runExistingWebAutomaticSafetyReview(pendingChanges, pendingResolution);
+    if (result?.ok) {
+      await analyzeExistingWebWorkflowChanges();
+      return;
+    }
+    if (preservedPreflight?.ok) {
+      state.analyzer.safeApply.preflight = preservedPreflight;
+      state.analyzer.safeApply.result = preservedPreflight;
+      state.analyzer.safeApply.diffText = preservedPreflight.diffText || "";
+      state.existingWeb.impactAnalysis = preservedImpact;
+      const readyCount = Number(preservedPreflight.summary?.totalCandidates || preservedPreflight.operations?.length || 0);
+      setExistingWebWorkflowMixedReady(`${readyCount}件の安全確認済み変更を保持しました。${pendingChanges.length}件は要確認です。`);
+      persistExistingWebPreviewWorkspace();
+      renderAll();
+    }
   }
 
   async function prepareExistingWebSingleWorkflowResolution(change) {
@@ -4359,6 +4515,7 @@
           lastResult: result,
         };
       }
+      persistExistingWebPreviewWorkspace();
       applyExistingWebSelectionClass();
       refreshExistingWebVirtualLayers();
       return;
@@ -4376,6 +4533,7 @@
       message: "反映済みSourceを新しいBaselineとして扱います。",
       lastResult: result,
     };
+    persistExistingWebPreviewWorkspace();
     applyExistingWebSelectionClass();
     refreshExistingWebVirtualLayers();
   }
@@ -5834,12 +5992,11 @@
 
   async function promoteExistingWebReadySubsetFromResolution(localResolution, changes, fallbackMessage = "") {
     const items = getExistingWebFinalResolutionItems(localResolution, changes);
-    const summary = summarizeExistingWebFinalResolutionItems(items, changes?.length || items.length);
     const ready = getExistingWebReadyItemsForPreflight(items);
     if (!ready.candidates.length || !window.TBalanceSafeApply?.runBatchApplyPreflight) {
       return false;
     }
-    const preflight = localResolution?.batchPreflight?.ok && Number(localResolution.batchPreflight.summary?.totalCandidates || localResolution.batchPreflight.operations?.length || 0) === ready.candidates.length
+    let preflight = localResolution?.batchPreflight?.ok && Number(localResolution.batchPreflight.summary?.totalCandidates || localResolution.batchPreflight.operations?.length || 0) === ready.candidates.length
       ? localResolution.batchPreflight
       : await window.TBalanceSafeApply.runBatchApplyPreflight({
           candidates: ready.candidates,
@@ -5847,29 +6004,73 @@
           sourceWriterClient: getSafeApplyClient(),
           createSignature: window.TBalanceSafePatch?.createCandidateSignature,
         });
-    if (!preflight?.ok) {
+    let preflightCandidates = ready.candidates;
+    if (!preflight?.ok && ready.candidates.length > 1) {
+      const independentlySafe = [];
+      for (const candidate of ready.candidates) {
+        const candidatePreflight = await window.TBalanceSafeApply.runBatchApplyPreflight({
+          candidates: [candidate],
+          approvedSignatures: { [candidate.signature]: ready.approvedSignatures[candidate.signature] },
+          sourceWriterClient: getSafeApplyClient(),
+          createSignature: window.TBalanceSafePatch?.createCandidateSignature,
+        });
+        if (candidatePreflight?.ok) {
+          independentlySafe.push(candidate);
+        }
+      }
+      if (independentlySafe.length) {
+        preflightCandidates = independentlySafe;
+        preflight = await window.TBalanceSafeApply.runBatchApplyPreflight({
+          candidates: independentlySafe,
+          approvedSignatures: Object.fromEntries(independentlySafe.map((candidate) => [candidate.signature, ready.approvedSignatures[candidate.signature]])),
+          sourceWriterClient: getSafeApplyClient(),
+          createSignature: window.TBalanceSafePatch?.createCandidateSignature,
+        });
+      }
+    }
+    if (!preflight?.ok || !preflightCandidates.length) {
       return false;
     }
     state.analyzer.safeApply.preflight = preflight;
     state.analyzer.safeApply.result = preflight;
     state.analyzer.safeApply.diffText = preflight.diffText || "";
+    const safeSignatures = new Set(preflightCandidates.map((candidate) => candidate.signature));
+    const normalizedChanges = (localResolution?.changes || []).map((item) => {
+      const candidate = getExistingWebFinalItemCandidate(item);
+      if (!candidate || !isExistingWebFinalItemReady(item) || safeSignatures.has(candidate.signature)) {
+        return item;
+      }
+      return {
+        ...item,
+        resolution: {
+          ...(item.resolution || {}),
+          ok: false,
+          status: "blocked",
+          reason: "safe-subset-preflight-blocked",
+          message: "この変更は個別Preflightを通過しなかったため反映対象から除外しました。",
+        },
+      };
+    });
+    const normalizedItems = getExistingWebFinalResolutionItems({ ...localResolution, changes: normalizedChanges }, changes);
+    const normalizedSummary = summarizeExistingWebFinalResolutionItems(normalizedItems, changes?.length || normalizedItems.length);
     const normalizedResolution = {
       ...localResolution,
-      status: summary.ready >= summary.total ? "ready_to_apply" : "mixed_ready",
-      ok: summary.ready >= summary.total,
+      changes: normalizedChanges,
+      status: normalizedSummary.ready >= normalizedSummary.total ? "ready_to_apply" : "mixed_ready",
+      ok: normalizedSummary.ready >= normalizedSummary.total,
       summary: {
-        total: summary.total,
-        safe: summary.ready,
-        review: summary.review,
-        blocked: summary.review + summary.blocked,
+        total: normalizedSummary.total,
+        safe: normalizedSummary.ready,
+        review: normalizedSummary.review,
+        blocked: normalizedSummary.review + normalizedSummary.blocked,
       },
       batchPreflight: preflight,
     };
     state.existingWeb.impactAnalysis = buildExistingWebWorkflowImpactAnalysis(normalizedResolution, changes);
-    if (summary.ready >= summary.total) {
-      setExistingWebWorkflowReadyToApply(`${summary.ready}件を反映できます。`);
+    if (normalizedSummary.ready >= normalizedSummary.total) {
+      setExistingWebWorkflowReadyToApply(`${normalizedSummary.ready}件を反映できます。`);
     } else {
-      setExistingWebWorkflowMixedReady(localResolution.message || fallbackMessage || "反映可能な変更があります。要確認の変更は反映しません。");
+      setExistingWebWorkflowMixedReady(`${normalizedSummary.ready}件は反映できます。${normalizedSummary.total - normalizedSummary.ready}件は要確認です。`);
     }
     renderAll();
     return true;
@@ -7349,7 +7550,7 @@
     if (action === "size-larger") resizeExistingWebSelection(10, 10);
     if (action === "reset-preview") resetExistingWebPreview();
     if (action === "safe-change") handleExistingWebMainAction();
-    if (action === "safe-change-retry") analyzeExistingWebWorkflowChanges();
+    if (action === "safe-change-retry") retryExistingWebPendingChanges();
     if (action === "workflow-tab") setExistingWebWorkflowTab(actionSource?.dataset?.existingWebWorkflowTab || "layers");
   }
 
@@ -12734,6 +12935,11 @@
   }
 
   function setActiveWindowZoom(value) {
+    if (state.existingWeb.active) {
+      state.existingWeb.zoom = value === "fit" ? "fit" : renderer.clamp(Number(value) || 1, 0.05, 2);
+      persistExistingWebPreviewWorkspace();
+      return;
+    }
     setWindowZoom(getActiveWindowKey(), value);
   }
 
@@ -15574,20 +15780,31 @@
     if (!frame || !viewer) {
       return;
     }
+    const frameViewport = ensureExistingWebFrameStage(viewer, frame);
+    const surface = frameViewport.querySelector(".tb-existing-web-surface");
+    const stage = frameViewport.querySelector(".tb-existing-web-stage");
+    if (!surface || !stage) {
+      return;
+    }
     const viewport = state.viewport === "mobile" ? "mobile" : "desktop";
     const size = getExistingWebLayoutViewportSize(viewport);
-    const viewerRect = viewer.getBoundingClientRect();
-    const toolbar = viewer.querySelector(".tb-existing-web-toolbar");
-    const summary = viewer.querySelector(".tb-existing-web-selection-summary");
-    const toolbarHeight = toolbar?.getBoundingClientRect?.().height || 0;
-    const summaryHeight = summary?.getBoundingClientRect?.().height || 0;
-    const availableWidth = Math.max(1, viewerRect.width - 2);
-    const availableHeight = Math.max(1, viewerRect.height - toolbarHeight - summaryHeight - 2);
-    const scale = Math.max(0.05, Math.min(availableWidth / size.width, availableHeight / size.height));
+    const viewportRect = frameViewport.getBoundingClientRect();
+    const availableWidth = Math.max(1, viewportRect.width);
+    const availableHeight = Math.max(1, viewportRect.height);
+    const fitScale = Math.max(0.05, Math.min(availableWidth / size.width, availableHeight / size.height));
+    const zoom = state.existingWeb.zoom ?? "fit";
+    const scale = zoom === "fit" ? fitScale : renderer.clamp(Number(zoom) || 1, 0.05, 2);
+    const scaledWidth = Math.max(1, Math.round(size.width * scale));
+    const scaledHeight = Math.max(1, Math.round(size.height * scale));
+    state.existingWeb.fitScale = fitScale;
     frame.style.width = `${size.width}px`;
     frame.style.height = `${size.height}px`;
     frame.style.transform = `scale(${scale})`;
     frame.style.transformOrigin = "top left";
+    stage.style.width = `${scaledWidth}px`;
+    stage.style.height = `${scaledHeight}px`;
+    surface.style.width = `${Math.max(availableWidth, scaledWidth)}px`;
+    surface.style.height = `${Math.max(availableHeight, scaledHeight)}px`;
     frame.dataset.viewportMode = viewport;
     frame.dataset.layoutWidth = String(size.width);
     frame.dataset.layoutHeight = String(size.height);
@@ -15596,6 +15813,30 @@
     viewer.style.setProperty("--existing-web-layout-width", `${size.width}px`);
     viewer.style.setProperty("--existing-web-layout-height", `${size.height}px`);
     viewer.style.setProperty("--existing-web-visual-scale", String(scale));
+    if (els.zoomPercent) {
+      els.zoomPercent.textContent = `${Math.round(scale * 100)}%`;
+    }
+    if (els.zoomLabel) {
+      els.zoomLabel.textContent = zoom === "fit" ? "Fit" : `${Math.round(scale * 100)}%`;
+    }
+  }
+
+  function ensureExistingWebFrameStage(viewer, frame) {
+    let frameViewport = viewer.querySelector(".tb-existing-web-frame-viewport");
+    if (frameViewport) {
+      return frameViewport;
+    }
+    frameViewport = document.createElement("div");
+    frameViewport.className = "tb-existing-web-frame-viewport";
+    const surface = document.createElement("div");
+    surface.className = "tb-existing-web-surface";
+    const stage = document.createElement("div");
+    stage.className = "tb-existing-web-stage";
+    frame.replaceWith(frameViewport);
+    stage.appendChild(frame);
+    surface.appendChild(stage);
+    frameViewport.appendChild(surface);
+    return frameViewport;
   }
 
   function getExistingWebLayoutViewportSize(viewport) {
@@ -17528,7 +17769,7 @@
     const buttonLabel = status === "ready_to_apply"
       ? "変更を反映"
       : status === "mixed_ready"
-        ? `確認済み${readyCount}件を反映`
+        ? `安全確認済み${readyCount}件を反映`
       : status === "review_required"
         ? "変更を確認"
       : status === "manual_review_required"
@@ -17541,7 +17782,7 @@
     const disabled = canApply ? false : !canRetry;
     const primaryAction = "safe-change";
     const nextText = getExistingWebWorkflowNextActionText(status, eligibility, workflow);
-    const retryLabel = pendingCount === 1 ? "要確認1件だけ再試行" : `要確認${pendingCount}件だけ再試行`;
+    const retryLabel = pendingCount === 1 ? "要確認1件を再確認" : `要確認${pendingCount}件を再確認`;
     const tabs = [
       ["layers", "レイヤー"],
       ["adjust", "調整"],
@@ -18697,6 +18938,10 @@
   }
 
   function updateCanvasScale() {
+    if (state.existingWeb.active) {
+      applyExistingWebFrameViewport();
+      return;
+    }
     const mainViewport = state.windowMode === "pc-mobile" ? "desktop" : state.viewport;
     const primaryPage = getPrimaryPage();
     const size = getPageViewportSize(primaryPage, mainViewport);
@@ -18731,6 +18976,14 @@
   }
 
   function stepZoom(delta) {
+    if (state.existingWeb.active) {
+      const currentZoom = state.existingWeb.zoom ?? "fit";
+      const current = currentZoom === "fit" ? state.existingWeb.fitScale || 1 : Number(currentZoom) || 1;
+      state.existingWeb.zoom = renderer.clamp(current + delta, 0.1, 2);
+      persistExistingWebPreviewWorkspace();
+      updateCanvasScale();
+      return;
+    }
     const activeKey = getActiveWindowKey();
     const currentZoom = getWindowZoom(activeKey);
     const current = currentZoom === "fit" ? state.windowFitScale?.[activeKey] || state.fitScale : Number(currentZoom) || 1;
