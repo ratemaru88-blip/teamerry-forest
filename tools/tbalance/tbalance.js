@@ -23537,7 +23537,29 @@
       .trim();
   }
 
+  function saveExistingWebEditingSession(options = {}) {
+    if (!state.existingWeb.active) return false;
+
+    persistExistingWebPreviewWorkspace();
+
+    const message = options.saveAs
+      ? "既存Webでは「名前を付けて保存」は使用できません。編集状態を保存しました。Sourceへの反映はApplyで行います。"
+      : "既存Webの編集状態を保存しました。Sourceへの反映はApplyで行います。";
+    state.existingWeb.workflow = {
+      ...getExistingWebWorkflow(),
+      message,
+    };
+    showModeToast(message);
+    renderAll();
+    return true;
+  }
+
   function downloadProject(kind) {
+    if (state.existingWeb.active) {
+      saveExistingWebEditingSession();
+      return false;
+    }
+
     syncProjectEditorSettings();
     const project = normalizeStateProjectForPersistence({ touchUpdatedAt: true });
     const pageDoc = createNativePageDocument(project);
@@ -23547,6 +23569,7 @@
     downloadBlob(payload, kind === "json" ? `${baseName}.tbalance.json` : `${baseName}.tbalance`, "application/json");
     state.dirty = false;
     renderAll();
+    return true;
   }
 
   function createNativePageDocument(project) {
@@ -23582,6 +23605,11 @@
   }
 
   function saveProjectAs() {
+    if (state.existingWeb.active) {
+      saveExistingWebEditingSession({ saveAs: true });
+      return false;
+    }
+
     const name = prompt("保存ファイル名", getProjectBaseName());
     if (name === null) {
       return false;
