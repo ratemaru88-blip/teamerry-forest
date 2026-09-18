@@ -526,31 +526,31 @@ body {
 }
 
 .bookshelf-link--blog {
-  left: 74.7%;
-  top: 34.2%;
-  width: 5.2%;
-  height: 27.5%;
+  left: 76.259%;
+  top: 45.469%;
+  width: 4.096354%;
+  height: 33.543519%;
 }
 
 .bookshelf-link--contact {
-  left: 80.1%;
-  top: 34.2%;
-  width: 5.2%;
-  height: 27.5%;
+  left: 81.479%;
+  top: 45.311%;
+  width: 4.004167%;
+  height: 35.179630%;
 }
 
 .bookshelf-link--history {
-  left: 85.4%;
-  top: 34.2%;
-  width: 5.2%;
-  height: 27.5%;
+  left: 86.503%;
+  top: 46.128%;
+  width: 4.647917%;
+  height: 35.343519%;
 }
 
 .bookshelf-link--friends {
-  left: 91.2%;
-  top: 34.2%;
-  width: 5.3%;
-  height: 27.5%;
+  left: 92.395%;
+  top: 45.638%;
+  width: 4.840104%;
+  height: 37.303704%;
 }
 
 .mori-link {
@@ -612,6 +612,14 @@ body {
   .master-speech {
     left: 61.8vw;
     top: calc(21.6vw - ((75vw - 100vh) / 2));
+  }
+}
+
+@media (min-width: 769px) {
+  .master-speech {
+    min-width: 146.21px;
+    min-height: 125.26px;
+    translate: 79.41px 70.59px;
   }
 }
 
