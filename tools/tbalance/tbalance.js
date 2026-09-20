@@ -272,6 +272,7 @@
       targetState: null,
       adapterId: "none",
       mode: "edit",
+      editingDomRef: "",
       selected: null,
       virtualLayers: [],
       checks: {},
@@ -1772,6 +1773,7 @@
       adapterId: info.adapterId || state.analyzer.adapterId || "none",
       openContext: options.openContext || info.openContext || "direct",
       mode: "edit",
+      editingDomRef: "",
       selected: null,
       virtualLayers: [],
       checks: {},
@@ -1988,15 +1990,78 @@
     }
   }
 
+  function normalizeExistingWebPreviewViewport(viewport) {
+    return viewport === "mobile" ? "mobile" : "desktop";
+  }
+
+  function getExistingWebPreviewChangeViewport(change, fallbackViewport = state.viewport) {
+    return normalizeExistingWebPreviewViewport(change?.viewport || fallbackViewport);
+  }
+
+  function inferExistingWebLegacyViewport(changes, fallbackViewport = state.viewport) {
+    const fallback = normalizeExistingWebPreviewViewport(fallbackViewport);
+    const mobileSize = getExistingWebLayoutViewportSize("mobile");
+    const provesDesktop = (changes || []).some((change) => {
+      if (change?.viewportSource) {
+        return false;
+      }
+      return [change?.before, change?.after].some((bounds) => {
+        const right = Number(bounds?.x || 0) + Number(bounds?.width || 0);
+        const bottom = Number(bounds?.y || 0) + Number(bounds?.height || 0);
+        return right > Number(mobileSize.width || 0) + 2 || bottom > Number(mobileSize.height || 0) + 2;
+      });
+    });
+    return provesDesktop ? "desktop" : fallback;
+  }
+
+  function normalizeExistingWebPreviewChange(change, fallbackViewport = state.viewport) {
+    if (!change || typeof change !== "object") {
+      return change;
+    }
+    return {
+      ...change,
+      viewport: change.viewportSource
+        ? getExistingWebPreviewChangeViewport(change, fallbackViewport)
+        : normalizeExistingWebPreviewViewport(fallbackViewport),
+      viewportSource: change.viewportSource || "legacy-workspace",
+    };
+  }
+
+  function ensureExistingWebPreviewViewportScopes(fallbackViewport = state.viewport) {
+    const allChanges = [
+      ...(state.existingWeb.previewHistory || []),
+      ...(state.existingWeb.previewFuture || []),
+      ...(state.existingWeb.preview?.changes || []),
+    ];
+    const fallback = inferExistingWebLegacyViewport(allChanges, fallbackViewport);
+    state.existingWeb.previewHistory = (state.existingWeb.previewHistory || []).map((change) => (
+      normalizeExistingWebPreviewChange(change, fallback)
+    ));
+    state.existingWeb.previewFuture = (state.existingWeb.previewFuture || []).map((change) => (
+      normalizeExistingWebPreviewChange(change, fallback)
+    ));
+    state.existingWeb.preview.changes = (state.existingWeb.preview?.changes || []).map((change) => (
+      normalizeExistingWebPreviewChange(change, fallback)
+    ));
+  }
+
+  function getExistingWebPreviewHistoryForViewport(viewport = state.viewport) {
+    const targetViewport = normalizeExistingWebPreviewViewport(viewport);
+    return (state.existingWeb.previewHistory || []).filter((change) => (
+      getExistingWebPreviewChangeViewport(change, state.viewport) === targetViewport
+    ));
+  }
+
   function persistExistingWebPreviewWorkspace() {
     try {
+      ensureExistingWebPreviewViewportScopes(state.viewport);
       const history = state.existingWeb.previewHistory || [];
       if (!state.existingWeb.active || !history.length) {
         localStorage.removeItem(EXISTING_WEB_PREVIEW_KEY);
         return;
       }
       localStorage.setItem(EXISTING_WEB_PREVIEW_KEY, JSON.stringify({
-        version: 1,
+        version: 3,
         savedAt: new Date().toISOString(),
         pageId: state.existingWeb.pageId || "",
         label: state.existingWeb.label || "",
@@ -2056,33 +2121,57 @@
     if (!stored || normalizeExistingWebSourcePath(stored.sourcePath) !== state.existingWeb.sourcePath) {
       return 0;
     }
+    const fallbackViewport = inferExistingWebLegacyViewport([
+      ...(stored.previewHistory || []),
+      ...(stored.previewFuture || []),
+    ], stored.viewport);
+    const activeViewport = normalizeExistingWebPreviewViewport(state.viewport);
     const restoredHistory = [];
-    (stored.previewHistory || []).forEach((change) => {
-      if (applyExistingWebPreviewInline(change, "afterInline")) {
-        restoredHistory.push(change);
+    (stored.previewHistory || []).forEach((storedChange) => {
+      const change = normalizeExistingWebPreviewChange(storedChange, fallbackViewport);
+      if (!getExistingWebNodeByDomRef(change?.domRef)) {
+        return;
       }
+      if (change.viewport === activeViewport) {
+        applyExistingWebPreviewInline(change, "afterInline", { ignoreViewport: true });
+      }
+      restoredHistory.push(change);
     });
     if (!restoredHistory.length) {
       return 0;
     }
     state.existingWeb.previewHistory = restoredHistory;
-    state.existingWeb.previewFuture = Array.isArray(stored.previewFuture) ? stored.previewFuture : [];
+    state.existingWeb.previewFuture = Array.isArray(stored.previewFuture)
+      ? stored.previewFuture.map((change) => normalizeExistingWebPreviewChange(change, fallbackViewport))
+      : [];
+    const desktopCount = getExistingWebWorkflowChanges("desktop").length;
+    const mobileCount = getExistingWebWorkflowChanges("mobile").length;
+    const restoredCount = desktopCount + mobileCount;
     state.existingWeb.workflow = {
       ...createExistingWebWorkflowState("dirty"),
       tab: ["layers", "adjust", "analysis"].includes(stored.workflowTab) ? stored.workflowTab : "layers",
-      message: `${restoredHistory.length}件の未反映Previewを復元しました。変更を再確認してください。`,
+      message: `Previewを復元しました。PC変更 ${desktopCount}件 / Mobile変更 ${mobileCount}件。変更を再確認してください。`,
     };
     syncExistingWebPreviewStateFromHistory();
     persistExistingWebPreviewWorkspace();
-    return restoredHistory.length;
+    return restoredCount;
   }
 
   function handleExistingWebFrameLoad() {
     if (!state.existingWeb.active) {
       return;
     }
+    try {
+      if (els.existingWebFrame?.contentWindow?.location?.href === "about:blank") {
+        return;
+      }
+    } catch (error) {
+      // Continue with the normal load path when the final page is not directly readable yet.
+    }
+    syncExistingWebFrameSandbox();
     state.existingWeb.selected = null;
     state.existingWeb.drag = null;
+    state.existingWeb.editingDomRef = "";
     state.existingWeb.virtualLayers = [];
     state.existingWeb.checks = {};
     state.existingWeb.aiReviews = {};
@@ -2119,9 +2208,42 @@
     }
     state.existingWeb.mode = mode === "test" ? "test" : "edit";
     state.existingWeb.drag = null;
+    state.existingWeb.editingDomRef = "";
+    const sandboxChanged = syncExistingWebFrameSandbox();
     installExistingWebEditMode();
     applyExistingWebAudioPolicy();
+    if (sandboxChanged) {
+      reloadExistingWebFrameForSandbox();
+    }
     renderAll();
+  }
+
+  function syncExistingWebFrameSandbox() {
+    const frame = els.existingWebFrame;
+    if (!frame) {
+      return false;
+    }
+    const value = state.existingWeb.active && state.existingWeb.mode === "test"
+      ? "allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
+      : "allow-same-origin allow-scripts";
+    if (frame.getAttribute("sandbox") !== value) {
+      frame.setAttribute("sandbox", value);
+      return true;
+    }
+    return false;
+  }
+
+  function reloadExistingWebFrameForSandbox() {
+    const frame = els.existingWebFrame;
+    const url = state.existingWeb.currentUrl || frame?.getAttribute("src") || "";
+    if (!frame || !url) {
+      return;
+    }
+    persistExistingWebPreviewWorkspace();
+    frame.src = "about:blank";
+    window.setTimeout(() => {
+      frame.src = url;
+    }, 0);
   }
 
   function installExistingWebEditMode() {
@@ -2200,8 +2322,36 @@
         outline: 2px solid #2f8cff !important;
         outline-offset: 0 !important;
         pointer-events: none !important;
-        cursor: move !important;
+        cursor: default !important;
         filter: drop-shadow(0 0 4px rgba(3, 7, 18, 0.72)) !important;
+      }
+      .__tb_existing_web_transform_box--editing {
+        outline-color: #22c55e !important;
+        cursor: move !important;
+      }
+      .__tb_existing_web_transform_box--editing .__tb_existing_web_transform_label {
+        border-color: rgba(134, 239, 172, 0.9) !important;
+        background: rgba(20, 83, 45, 0.95) !important;
+      }
+      .__tb_existing_web_transform_label {
+        position: absolute !important;
+        left: 0 !important;
+        top: -28px !important;
+        max-width: min(280px, 80vw) !important;
+        overflow: hidden !important;
+        border: 1px solid rgba(255, 255, 255, 0.82) !important;
+        border-radius: 4px !important;
+        padding: 3px 6px !important;
+        background: rgba(17, 24, 39, 0.94) !important;
+        color: #ffffff !important;
+        font: 700 12px/1.25 system-ui, sans-serif !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        pointer-events: none !important;
+      }
+      .__tb_existing_web_transform_box--top_clamped .__tb_existing_web_transform_label {
+        top: 6px !important;
+        left: 8px !important;
       }
       .__tb_existing_web_handle {
         position: absolute !important;
@@ -2336,6 +2486,9 @@
     stopExistingWebNativeAction(event);
     const handle = event.target?.closest?.(".__tb_existing_web_handle");
     if (handle) {
+      if (!isExistingWebElementEditing()) {
+        return;
+      }
       const handleType = handle.dataset.tbExistingWebHandle || "";
       if (handleType === "rotate") {
         beginExistingWebRotateDrag(event);
@@ -2345,11 +2498,13 @@
       return;
     }
     if (event.target?.closest?.(".__tb_existing_web_transform_box")) {
-      beginExistingWebMoveDrag(event, state.existingWeb.selected);
+      if (isExistingWebElementEditing()) {
+        beginExistingWebMoveDrag(event, state.existingWeb.selected);
+      }
       return;
     }
     const selection = selectExistingWebElement(resolveExistingWebSelectableNode(event.target, event.clientX, event.clientY));
-    if (!selection || !canExistingWebPreviewProperty(selection, "position")) {
+    if (!selection || !isExistingWebElementEditing(selection.domRef) || !canExistingWebPreviewProperty(selection, "position")) {
       renderAll();
       return;
     }
@@ -2357,7 +2512,7 @@
   }
 
   function beginExistingWebMoveDrag(event, selection) {
-    if (!selection || !selection.node?.isConnected || !canExistingWebPreviewProperty(selection, "position")) {
+    if (!selection || !isExistingWebElementEditing(selection.domRef) || !selection.node?.isConnected || !canExistingWebPreviewProperty(selection, "position")) {
       renderAll();
       return;
     }
@@ -2415,6 +2570,11 @@
 
   function handleExistingWebKeydown(event) {
     if (!state.existingWeb.active || state.existingWeb.mode !== "edit") {
+      return;
+    }
+    if (event.key === "Escape" && isExistingWebElementEditing()) {
+      stopExistingWebNativeAction(event);
+      endExistingWebElementEdit();
       return;
     }
     const target = event.target;
@@ -2582,7 +2742,7 @@
 
   function beginExistingWebResizeDrag(event, handle) {
     const selected = state.existingWeb.selected;
-    if (!selected || !selected.node?.isConnected || !canExistingWebPreviewProperty(selected, "size")) {
+    if (!selected || !isExistingWebElementEditing(selected.domRef) || !selected.node?.isConnected || !canExistingWebPreviewProperty(selected, "size")) {
       return;
     }
     const beforeBounds = getDomNodeBounds(selected.node) || selected.bounds;
@@ -2610,7 +2770,7 @@
 
   function beginExistingWebRotateDrag(event) {
     const selected = state.existingWeb.selected;
-    if (!selected || !selected.node?.isConnected || !canExistingWebPreviewProperty(selected, "rotation")) {
+    if (!selected || !isExistingWebElementEditing(selected.domRef) || !selected.node?.isConnected || !canExistingWebPreviewProperty(selected, "rotation")) {
       return;
     }
     const beforeBounds = getDomNodeBounds(selected.node) || selected.bounds;
@@ -2651,6 +2811,10 @@
     const domRef = typeof analyzer?.getSelectorCandidate === "function"
       ? analyzer.getSelectorCandidate(node)
       : getFallbackDomRef(node);
+    if (state.existingWeb.editingDomRef && state.existingWeb.editingDomRef !== domRef) {
+      state.existingWeb.drag = null;
+      state.existingWeb.editingDomRef = "";
+    }
     const analysis = analyzeExistingWebDocument();
     const element = analysis?.elements?.find((item) => item.observed?.domRef === domRef) || null;
     const mapping = findExistingWebMapping(domRef);
@@ -2679,6 +2843,42 @@
     applyExistingWebSelectionClass();
     refreshExistingWebVirtualLayers(analysis);
     return state.existingWeb.selected;
+  }
+
+  function isExistingWebElementEditing(domRef = state.existingWeb.selected?.domRef) {
+    return Boolean(
+      state.existingWeb.active
+      && state.existingWeb.mode === "edit"
+      && domRef
+      && state.existingWeb.editingDomRef === domRef
+    );
+  }
+
+  function beginExistingWebElementEdit() {
+    const selected = state.existingWeb.selected;
+    if (!state.existingWeb.active || state.existingWeb.mode !== "edit" || !selected?.node?.isConnected) {
+      return false;
+    }
+    state.existingWeb.drag = null;
+    state.existingWeb.editingDomRef = selected.domRef;
+    applyExistingWebSelectionClass();
+    renderAll();
+    return true;
+  }
+
+  function endExistingWebElementEdit() {
+    if (!state.existingWeb.editingDomRef) {
+      return false;
+    }
+    const drag = state.existingWeb.drag;
+    if (drag?.domRef && drag.beforeInline) {
+      applyExistingWebPreviewInline({ domRef: drag.domRef, beforeInline: drag.beforeInline }, "beforeInline", { ignoreViewport: true });
+    }
+    state.existingWeb.drag = null;
+    state.existingWeb.editingDomRef = "";
+    applyExistingWebSelectionClass();
+    renderAll();
+    return true;
   }
 
   function refreshExistingWebVirtualLayers(analysis = null) {
@@ -2826,10 +3026,14 @@
   }
 
   function getExistingWebVirtualLayerName(element, node, mapping) {
+    const observed = element?.observed || {};
     if (mapping?.name || mapping?.label) {
       return mapping.name || mapping.label;
     }
-    const observed = element?.observed || {};
+    const ariaLabel = compactExistingWebLabel(observed.ariaLabel || node.getAttribute("aria-label") || "");
+    if (ariaLabel) {
+      return ariaLabel;
+    }
     const identity = getExistingWebNodeIdentityText(node, observed);
     const key = `${observed.id || ""} ${observed.className || ""} ${identity}`.toLowerCase();
     if (/speech|balloon|message|bubble|吹き出し/.test(key)) return "吹き出し";
@@ -2839,7 +3043,21 @@
     if (/forest-back|back_buttan|back-button|森へ戻る|戻る/.test(key)) return "森へ戻る";
     if (/lilu|lill/.test(key)) return "リル";
     if (/background|bg_|backdrop|scene|stage|背景/.test(key) || observed.backgroundImage) return "背景";
-    return identity || observed.id || getReadableClassName(observed.className) || observed.tag || "DOM要素";
+    return identity || getExistingWebHrefLabel(node) || observed.id || getReadableClassName(observed.className) || observed.tag || "DOM要素";
+  }
+
+  function getExistingWebHrefLabel(node) {
+    const href = node?.getAttribute?.("href") || "";
+    if (!href) {
+      return "";
+    }
+    try {
+      const url = new URL(href, node.ownerDocument?.location?.href || state.existingWeb.currentUrl || location.href);
+      const segment = decodeURIComponent(url.pathname.split("/").filter(Boolean).pop() || "");
+      return compactExistingWebLabel(segment || url.hostname.replace(/^www\./, ""));
+    } catch (error) {
+      return compactExistingWebLabel(href);
+    }
   }
 
   function getExistingWebNodeIdentityText(node, observed = {}) {
@@ -3443,6 +3661,8 @@
     }
     const box = doc.createElement("div");
     box.className = "__tb_existing_web_transform_box";
+    const editing = isExistingWebElementEditing(selected.domRef);
+    box.classList.toggle("__tb_existing_web_transform_box--editing", editing);
     if (Number(bounds.y || 0) < 58) {
       box.classList.add("__tb_existing_web_transform_box--top_clamped");
     }
@@ -3451,25 +3671,31 @@
     box.style.width = `${Math.round(Number(bounds.width || 0) * 100) / 100}px`;
     box.style.height = `${Math.round(Number(bounds.height || 0) * 100) / 100}px`;
     box.setAttribute("aria-hidden", "true");
-    ["top", "right", "bottom", "left"].forEach((edge) => {
-      const line = doc.createElement("span");
-      line.className = "__tb_existing_web_move_edge";
-      line.dataset.tbExistingWebEdge = edge;
-      box.appendChild(line);
-    });
-    const rotateArm = doc.createElement("span");
-    rotateArm.className = "__tb_existing_web_rotate_arm";
-    box.appendChild(rotateArm);
-    const rotateHandle = doc.createElement("span");
-    rotateHandle.className = "__tb_existing_web_handle";
-    rotateHandle.dataset.tbExistingWebHandle = "rotate";
-    box.appendChild(rotateHandle);
-    ["nw", "n", "ne", "e", "se", "s", "sw", "w"].forEach((handle) => {
-      const dot = doc.createElement("span");
-      dot.className = "__tb_existing_web_handle";
-      dot.dataset.tbExistingWebHandle = handle;
-      box.appendChild(dot);
-    });
+    const label = doc.createElement("span");
+    label.className = "__tb_existing_web_transform_label";
+    label.textContent = getExistingWebSelectionTitle(selected);
+    box.appendChild(label);
+    if (editing) {
+      ["top", "right", "bottom", "left"].forEach((edge) => {
+        const line = doc.createElement("span");
+        line.className = "__tb_existing_web_move_edge";
+        line.dataset.tbExistingWebEdge = edge;
+        box.appendChild(line);
+      });
+      const rotateArm = doc.createElement("span");
+      rotateArm.className = "__tb_existing_web_rotate_arm";
+      box.appendChild(rotateArm);
+      const rotateHandle = doc.createElement("span");
+      rotateHandle.className = "__tb_existing_web_handle";
+      rotateHandle.dataset.tbExistingWebHandle = "rotate";
+      box.appendChild(rotateHandle);
+      ["nw", "n", "ne", "e", "se", "s", "sw", "w"].forEach((handle) => {
+        const dot = doc.createElement("span");
+        dot.className = "__tb_existing_web_handle";
+        dot.dataset.tbExistingWebHandle = handle;
+        box.appendChild(dot);
+      });
+    }
     doc.body?.appendChild(box);
   }
 
@@ -3842,6 +4068,8 @@
     const change = {
       domRef: options.domRef || selected?.domRef || "",
       property,
+      viewport: normalizeExistingWebPreviewViewport(state.viewport),
+      viewportSource: "recorded",
       before,
       after,
       userEdit,
@@ -3863,15 +4091,22 @@
     if (!change?.domRef || !change.beforeInline || !change.afterInline) {
       return;
     }
+    const scopedChange = normalizeExistingWebPreviewChange(change, state.viewport);
     state.existingWeb.previewHistory = [
       ...(state.existingWeb.previewHistory || []),
-      change,
+      scopedChange,
     ].slice(-HISTORY_LIMIT);
     state.existingWeb.previewFuture = [];
     persistExistingWebPreviewWorkspace();
   }
 
-  function applyExistingWebPreviewInline(change, inlineKey) {
+  function applyExistingWebPreviewInline(change, inlineKey, options = {}) {
+    const activeViewport = normalizeExistingWebPreviewViewport(state.viewport);
+    if (inlineKey === "afterInline"
+      && !options.ignoreViewport
+      && getExistingWebPreviewChangeViewport(change, activeViewport) !== activeViewport) {
+      return false;
+    }
     const node = getExistingWebNodeByDomRef(change?.domRef);
     const inline = change?.[inlineKey];
     if (!node || !inline) {
@@ -3887,7 +4122,8 @@
   }
 
   function syncExistingWebPreviewStateFromHistory() {
-    const latest = state.existingWeb.previewHistory?.[state.existingWeb.previewHistory.length - 1] || null;
+    const history = getExistingWebPreviewHistoryForViewport(state.viewport);
+    const latest = history[history.length - 1] || null;
     state.existingWeb.preview = {
       active: Boolean(latest),
       changes: latest ? [latest] : [],
@@ -3977,16 +4213,22 @@
     return JSON.stringify(getExistingWebWorkflowChanges().map((change) => ({
       domRef: change.domRef || "",
       property: change.property || "",
+      viewport: getExistingWebPreviewChangeViewport(change),
       before: change.before || null,
       after: change.after || null,
       afterInline: change.afterInline || null,
     })));
   }
 
-  function getExistingWebWorkflowChanges() {
+  function getExistingWebWorkflowChanges(viewport = state.viewport) {
+    const targetViewport = normalizeExistingWebPreviewViewport(viewport);
     const byKey = new Map();
     (state.existingWeb.previewHistory || []).forEach((change) => {
       if (!change?.domRef || !change.property) {
+        return;
+      }
+      const changeViewport = getExistingWebPreviewChangeViewport(change, state.viewport);
+      if (changeViewport !== targetViewport) {
         return;
       }
       const key = `${change.domRef}\u0001${change.property}`;
@@ -3995,6 +4237,7 @@
         ...(existing || change),
         domRef: change.domRef,
         property: change.property,
+        viewport: changeViewport,
         before: existing?.before || change.before,
         after: change.after,
         beforeSource: existing?.beforeSource || change.beforeSource,
@@ -4145,13 +4388,73 @@
     };
   }
 
+  function restoreExistingWebPreviewSourceInline(viewport = state.viewport) {
+    const originalByDomRef = new Map();
+    getExistingWebPreviewHistoryForViewport(viewport).forEach((change) => {
+      if (change?.domRef && !originalByDomRef.has(change.domRef)) {
+        originalByDomRef.set(change.domRef, change);
+      }
+    });
+    originalByDomRef.forEach((change) => {
+      applyExistingWebPreviewInline(change, "beforeInline", { ignoreViewport: true });
+    });
+  }
+
+  function applyExistingWebPreviewViewport(viewport = state.viewport) {
+    const targetViewport = normalizeExistingWebPreviewViewport(viewport);
+    let applied = 0;
+    getExistingWebPreviewHistoryForViewport(targetViewport).forEach((change) => {
+      if (applyExistingWebPreviewInline(change, "afterInline", { ignoreViewport: true })) {
+        applied += 1;
+      }
+    });
+    return applied;
+  }
+
+  function resetExistingWebWorkflowForViewport() {
+    const tab = getExistingWebWorkflow().tab || "layers";
+    const count = getExistingWebPreviewChangeCount();
+    state.existingWeb.impactAnalysis = null;
+    state.existingWeb.workflow = {
+      ...createExistingWebWorkflowState(count ? "dirty" : "clean"),
+      tab,
+      message: count ? `${count}件の変更があります。` : "",
+    };
+  }
+
+  function switchExistingWebPreviewViewport(nextViewport) {
+    const currentViewport = normalizeExistingWebPreviewViewport(state.viewport);
+    const targetViewport = normalizeExistingWebPreviewViewport(nextViewport);
+    if (currentViewport === targetViewport) {
+      return;
+    }
+    ensureExistingWebPreviewViewportScopes(currentViewport);
+    state.existingWeb.drag = null;
+    state.existingWeb.editingDomRef = "";
+    persistExistingWebPreviewWorkspace();
+    restoreExistingWebPreviewSourceInline(currentViewport);
+    state.viewport = targetViewport;
+    clearSelection();
+    renderAll();
+    applyExistingWebPreviewViewport(targetViewport);
+    syncExistingWebPreviewStateFromHistory();
+    resetExistingWebWorkflowForViewport();
+    refreshExistingWebVirtualLayers();
+    applyExistingWebSelectionClass();
+    persistExistingWebPreviewWorkspace();
+    renderAll();
+  }
+
   function undoExistingWebPreview() {
     const history = state.existingWeb.previewHistory || [];
-    if (!state.existingWeb.active || !history.length) {
+    const activeViewport = normalizeExistingWebPreviewViewport(state.viewport);
+    const historyIndex = history.findLastIndex((change) => getExistingWebPreviewChangeViewport(change, activeViewport) === activeViewport);
+    if (!state.existingWeb.active || historyIndex < 0) {
       return false;
     }
-    const change = history.pop();
-    applyExistingWebPreviewInline(change, "beforeInline");
+    restoreExistingWebPreviewSourceInline(activeViewport);
+    const [change] = history.splice(historyIndex, 1);
+    applyExistingWebPreviewViewport(activeViewport);
     state.existingWeb.previewFuture = [...(state.existingWeb.previewFuture || []), change];
     state.existingWeb.impactAnalysis = null;
     syncExistingWebPreviewStateFromHistory();
@@ -4164,12 +4467,15 @@
 
   function redoExistingWebPreview() {
     const future = state.existingWeb.previewFuture || [];
-    if (!state.existingWeb.active || !future.length) {
+    const activeViewport = normalizeExistingWebPreviewViewport(state.viewport);
+    const futureIndex = future.findLastIndex((change) => getExistingWebPreviewChangeViewport(change, activeViewport) === activeViewport);
+    if (!state.existingWeb.active || futureIndex < 0) {
       return false;
     }
-    const change = future.pop();
-    applyExistingWebPreviewInline(change, "afterInline");
+    restoreExistingWebPreviewSourceInline(activeViewport);
+    const [change] = future.splice(futureIndex, 1);
     state.existingWeb.previewHistory = [...(state.existingWeb.previewHistory || []), change];
+    applyExistingWebPreviewViewport(activeViewport);
     state.existingWeb.impactAnalysis = null;
     syncExistingWebPreviewStateFromHistory();
     markExistingWebWorkflowDirty("Redo後のPreview状態を再確認してください。");
@@ -4180,29 +4486,7 @@
   }
 
   function resetExistingWebPreview(options = {}) {
-    const applied = new Set();
-    const originalByDomRef = new Map();
-    (state.existingWeb.previewHistory || []).forEach((change) => {
-      if (change?.domRef && !originalByDomRef.has(change.domRef)) {
-        originalByDomRef.set(change.domRef, change);
-      }
-    });
-    originalByDomRef.forEach((change) => {
-      if (applied.has(change.domRef)) {
-        return;
-      }
-      if (applyExistingWebPreviewInline(change, "beforeInline")) {
-        applied.add(change.domRef);
-      }
-    });
-    (state.existingWeb.preview?.changes || []).forEach((change) => {
-      if (!change?.domRef || applied.has(change.domRef)) {
-        return;
-      }
-      if (applyExistingWebPreviewInline(change, "beforeInline")) {
-        applied.add(change.domRef);
-      }
-    });
+    restoreExistingWebPreviewSourceInline(state.viewport);
     state.existingWeb.preview = {
       active: false,
       changes: [],
@@ -4275,9 +4559,13 @@
     const changes = getExistingWebWorkflowChanges();
     const impactItems = state.existingWeb.impactAnalysis?.items || [];
     const safeKeys = new Set(impactItems.filter((item) => item?.status === "safe").map((item) => (
-      `${item.preview?.domRef || item.domRef || ""}\u0001${item.preview?.property || ""}`
+      getExistingWebChangeKey(item.preview || {
+        domRef: item.domRef || "",
+        property: item.property || "",
+        viewport: state.viewport,
+      })
     )));
-    const pendingChanges = changes.filter((change) => !safeKeys.has(`${change.domRef || ""}\u0001${change.property || ""}`));
+    const pendingChanges = changes.filter((change) => !safeKeys.has(getExistingWebChangeKey(change)));
     if (!pendingChanges.length) {
       showModeToast("再確認が必要な変更はありません。");
       return;
@@ -4539,7 +4827,7 @@
   }
 
   function getExistingWebChangeKey(change = {}) {
-    return `${change.domRef || ""}\u0001${change.property || ""}`;
+    return `${getExistingWebPreviewChangeViewport(change)}\u0001${change.domRef || ""}\u0001${change.property || ""}`;
   }
 
   function getExistingWebAppliedChangeKeys(result = null, preflight = null) {
@@ -4548,7 +4836,7 @@
       const domRef = operation?.target?.domRef || "";
       const property = getExistingWebVisualPropertyForCssProperty(operation?.property || "");
       if (domRef && property) {
-        keys.add(`${domRef}\u0001${property}`);
+        keys.add(`${normalizeExistingWebPreviewViewport(state.viewport)}\u0001${domRef}\u0001${property}`);
       }
     });
     (Array.isArray(result?.appliedChanges) ? result.appliedChanges : []).forEach((change) => {
@@ -13804,6 +14092,10 @@
 
   function setViewport(viewport) {
     const nextViewport = renderer.getViewportKey(viewport);
+    if (state.existingWeb.active && nextViewport !== state.viewport) {
+      switchExistingWebPreviewViewport(nextViewport);
+      return;
+    }
     if (nextViewport === "desktop" && restoreSuspendedWindow()) {
       return;
     }
@@ -13916,6 +14208,24 @@
     }
     const style = tab === "style";
     const property = tab === "property";
+    if (state.existingWeb.active) {
+      const confirmPane = ensureExistingWebConfirmPane();
+      els.rightPanel?.classList.toggle("is-layer-tab-active", layer);
+      els.layerTab?.classList.toggle("is-active", layer);
+      els.propertyTab.classList.toggle("is-active", property);
+      els.styleTab.classList.toggle("is-active", style);
+      els.layerTab?.setAttribute("aria-selected", String(layer));
+      els.propertyTab.setAttribute("aria-selected", String(property));
+      els.styleTab.setAttribute("aria-selected", String(style));
+      els.propertyPane.hidden = !style;
+      els.stylePane.hidden = true;
+      confirmPane.hidden = !property;
+      els.propertyPane.classList.toggle("is-active", style);
+      els.stylePane.classList.remove("is-active");
+      confirmPane.classList.toggle("is-active", property);
+      renderExistingWebInspectorChrome();
+      return;
+    }
     els.rightPanel?.classList.toggle("is-layer-tab-active", layer);
     els.layerTab?.classList.toggle("is-active", layer);
     els.propertyTab.classList.toggle("is-active", property);
@@ -13927,6 +14237,66 @@
     els.stylePane.hidden = !style;
     els.propertyPane.classList.toggle("is-active", property);
     els.stylePane.classList.toggle("is-active", style);
+  }
+
+  function ensureExistingWebConfirmPane() {
+    const inspector = els.propertyPane?.parentElement;
+    let pane = document.getElementById("existingWebConfirmPane");
+    if (!pane && inspector) {
+      pane = document.createElement("section");
+      pane.id = "existingWebConfirmPane";
+      pane.className = "tb-panel tb-tab-pane tb-existing-web-confirm-pane";
+      pane.setAttribute("aria-label", "確認");
+      pane.hidden = true;
+      inspector.insertBefore(pane, els.propertyPane);
+      pane.addEventListener("click", handleExistingWebConfirmPaneClick);
+    }
+    return pane;
+  }
+
+  function ensureExistingWebInspectorContext() {
+    const inspector = els.propertyPane?.parentElement;
+    let context = document.getElementById("existingWebInspectorContext");
+    if (!context && inspector) {
+      context = document.createElement("div");
+      context.id = "existingWebInspectorContext";
+      context.className = "tb-existing-web-selection-context tb-existing-web-selection-context--sticky";
+      inspector.insertBefore(context, ensureExistingWebConfirmPane());
+      context.addEventListener("click", handleExistingWebSelectionContextClick);
+    }
+    return context;
+  }
+
+  function syncInspectorTabsForCurrentAuthority() {
+    const confirmPane = ensureExistingWebConfirmPane();
+    const context = ensureExistingWebInspectorContext();
+    if (state.existingWeb.active) {
+      els.layerTab.textContent = "レイヤー";
+      els.propertyTab.textContent = "確認";
+      els.styleTab.textContent = "カラー";
+      els.propertyPane.setAttribute("aria-label", "カラー");
+      els.stylePane.hidden = true;
+      if (context) context.hidden = false;
+      if (els.propertyTab.classList.contains("is-active")) {
+        els.propertyPane.hidden = true;
+        confirmPane.hidden = false;
+      } else if (els.styleTab.classList.contains("is-active")) {
+        els.propertyPane.hidden = false;
+        confirmPane.hidden = true;
+      } else {
+        els.propertyPane.hidden = true;
+        confirmPane.hidden = true;
+      }
+      return;
+    }
+    els.layerTab.textContent = "レイヤー";
+    els.propertyTab.textContent = "カラー";
+    els.styleTab.textContent = "ブラシ";
+    els.propertyPane.setAttribute("aria-label", "カラー");
+    if (context) context.hidden = true;
+    if (confirmPane) confirmPane.hidden = true;
+    els.propertyPane.hidden = !els.propertyTab.classList.contains("is-active");
+    els.stylePane.hidden = !els.styleTab.classList.contains("is-active");
   }
 
   function beginInspectorResize(event) {
@@ -15243,6 +15613,7 @@
 
   function renderAll() {
     const page = getCurrentPage();
+    syncInspectorTabsForCurrentAuthority();
     normalizeHitAreaVisibility(page);
     normalizeMarkupViewportVisibility(page);
     normalizeSharedImageLayouts(page);
@@ -15256,6 +15627,7 @@
     renderBrushControls();
     renderRetouchControls();
     renderLayerList();
+    renderExistingWebInspectorChrome();
     renderSettings();
     renderSiteMapPanel();
     updateViewMenuState();
@@ -15672,6 +16044,7 @@
       els.canvasViewport.classList.add("is-existing-web-view");
     }
     if (els.existingWebFrame) {
+      syncExistingWebFrameSandbox();
       applyExistingWebFrameViewport();
       const reloadToken = String(state.existingWeb.reloadToken || "");
       const needsReload = els.existingWebFrame.src !== state.existingWeb.currentUrl
@@ -17584,6 +17957,14 @@
           `).join("")}
         </div>`
       : `<p class="tb-existing-web-empty">主要DOM要素をまだ読み取れていません。ページを再読み込みしてください。</p>`;
+    if (state.editorMode !== "custom") {
+      els.layerList.innerHTML = `
+        <section class="tb-existing-web-layer-panel tb-existing-web-layer-panel--list-only">
+          ${layerRows}
+        </section>
+      `;
+      return;
+    }
     els.layerList.innerHTML = `
       <section class="tb-existing-web-layer-panel">
         <strong>既存Web 仮想レイヤー</strong>
@@ -17595,6 +17976,218 @@
         ${state.editorMode !== "custom" && workflow.tab === "analysis" ? buildExistingWebAnalysisPanel() : ""}
       </section>
     `;
+  }
+
+  function buildExistingWebPersistentSelectionContext() {
+    const selected = state.existingWeb.selected;
+    if (!selected) {
+      return `<strong>選択中：なし</strong>`;
+    }
+    const title = getExistingWebSelectionTitle(selected);
+    const href = selected.node?.getAttribute?.("href") || "";
+    const editing = isExistingWebElementEditing(selected.domRef);
+    return `<strong>選択中：${escapeHtml(title)}</strong>
+      <span>DOM：${escapeHtml(selected.domRef || "-")}</span>
+      ${href ? `<span>href：${escapeHtml(href)}</span>` : ""}
+      <div class="tb-existing-web-selection-edit">
+        ${editing ? `<span class="is-editing">編集中：${escapeHtml(title)}</span>` : `<span>選択モード</span>`}
+        <button type="button" data-existing-web-selection-edit="${editing ? "end" : "start"}">${editing ? "編集終了" : "編集する"}</button>
+      </div>`;
+  }
+
+  function handleExistingWebSelectionContextClick(event) {
+    const button = event.target.closest("[data-existing-web-selection-edit]");
+    if (!button || !state.existingWeb.active) {
+      return;
+    }
+    if (button.dataset.existingWebSelectionEdit === "end") {
+      endExistingWebElementEdit();
+    } else {
+      beginExistingWebElementEdit();
+    }
+  }
+
+  function renderExistingWebInspectorChrome() {
+    const context = ensureExistingWebInspectorContext();
+    const confirmPane = ensureExistingWebConfirmPane();
+    if (!state.existingWeb.active) {
+      if (context) context.hidden = true;
+      if (confirmPane) confirmPane.hidden = true;
+      return;
+    }
+    if (context) {
+      context.hidden = false;
+      context.innerHTML = buildExistingWebPersistentSelectionContext();
+    }
+    if (confirmPane) {
+      confirmPane.innerHTML = buildExistingWebConfirmationPanel();
+    }
+  }
+
+  function getExistingWebConfirmationMetrics() {
+    const workflow = recoverExistingWebWorkflowStateFromRuntime();
+    const changes = getExistingWebWorkflowChanges();
+    const eligibility = getExistingWebWorkflowEligibility(workflow.status, changes.length);
+    const impactItems = Array.isArray(state.existingWeb.impactAnalysis?.items)
+      ? state.existingWeb.impactAnalysis.items
+      : [];
+    const problemCount = impactItems.filter((item) => item?.status === "blocked" || item?.status === "problem").length;
+    return {
+      workflow,
+      changes,
+      totalCount: changes.length,
+      safeCount: Math.min(changes.length, eligibility.readyCount),
+      pendingCount: Math.max(0, changes.length - eligibility.readyCount),
+      problemCount,
+      impactItems,
+      applied: /反映済み|反映しました|反映済みSource/.test(String(workflow.message || "")),
+    };
+  }
+
+  function buildExistingWebConfirmationPanel() {
+    if (!state.existingWeb.active) {
+      return "";
+    }
+    const metrics = getExistingWebConfirmationMetrics();
+    const desktopCount = getExistingWebWorkflowChanges("desktop").length;
+    const mobileCount = getExistingWebWorkflowChanges("mobile").length;
+    const allViewportCount = desktopCount + mobileCount;
+    const otherViewportCount = state.viewport === "mobile" ? desktopCount : mobileCount;
+    const currentViewportLabel = state.viewport === "mobile" ? "Mobile" : "PC";
+    const otherViewportLabel = state.viewport === "mobile" ? "PC" : "Mobile";
+    let stateTitle = "まず変更を確認してください";
+    let nextAction = "変更内容を確認して、反映できる項目を判定します。";
+    let actions = `<button type="button" class="is-primary" data-existing-web-confirm-action="analyze">変更を確認</button>`;
+
+    if (state.finalPreviewComplete && allViewportCount === 0) {
+      stateTitle = "最終確認が完了しました。";
+      nextAction = "公開準備へ進めます。Source反映と公開は別の操作です。";
+      actions = "";
+    } else if (metrics.totalCount === 0 && otherViewportCount > 0) {
+      stateTitle = `${currentViewportLabel}の未反映変更はありません。`;
+      nextAction = `${otherViewportLabel}に${otherViewportCount}件の未反映変更があります。${otherViewportLabel}へ切り替えて確認してください。`;
+      actions = "";
+    } else if (metrics.totalCount === 0) {
+      stateTitle = metrics.applied ? "変更の確認が完了しました。" : "未反映の変更はありません。";
+      nextAction = "Final Previewで最終確認してください。";
+      actions = `<button type="button" class="is-primary" data-existing-web-confirm-action="final-preview">Final Previewへ</button>`;
+    } else if (metrics.applied) {
+      stateTitle = `反映可能な変更を反映しました。あと${metrics.totalCount}件の確認が必要です。`;
+      nextAction = `確認が必要な${metrics.totalCount}件を確認してください。`;
+      actions = buildExistingWebPendingChangesDisclosure(metrics, true);
+    } else if (metrics.safeCount > 0 || state.existingWeb.impactAnalysis) {
+      stateTitle = "変更を確認しました。";
+      nextAction = "TESTで見た目と動作を確認してください。";
+      actions = `
+        <button type="button" class="is-primary" data-existing-web-confirm-action="test">TESTへ</button>
+        ${metrics.safeCount ? `<button type="button" class="is-apply" data-existing-web-confirm-action="apply">安全な${metrics.safeCount}件を反映</button>` : ""}
+        ${metrics.pendingCount ? buildExistingWebPendingChangesDisclosure(metrics, false) : ""}
+      `;
+    }
+
+    return `
+      <section class="tb-existing-web-confirm-guide">
+        <header>
+          <span>現在の状態</span>
+          <h3>${escapeHtml(stateTitle)}</h3>
+        </header>
+        <div class="tb-existing-web-confirm-counts">
+          <strong>変更 ${metrics.totalCount}件</strong>
+          <span data-state="safe">反映できます：${metrics.safeCount}件</span>
+          <span data-state="review">確認が必要です：${metrics.pendingCount}件</span>
+          <span data-state="problem">問題：${metrics.problemCount}件</span>
+        </div>
+        <div class="tb-existing-web-confirm-next">
+          <span>次にすること</span>
+          <p>${escapeHtml(nextAction)}</p>
+        </div>
+        <div class="tb-existing-web-confirm-actions">${actions}</div>
+        <div class="tb-existing-web-viewport-counts" aria-label="Viewport別Preview変更数">
+          <span data-active="${state.viewport === "desktop" ? "true" : "false"}">PC変更 ${desktopCount}件</span>
+          <span data-active="${state.viewport === "mobile" ? "true" : "false"}">Mobile変更 ${mobileCount}件</span>
+        </div>
+      </section>
+    `;
+  }
+
+  function buildExistingWebPendingChangesDisclosure(metrics, primary) {
+    const impactByKey = new Map((metrics.impactItems || []).map((item) => [
+      getExistingWebChangeKey(item.preview || item),
+      item,
+    ]));
+    const pending = metrics.changes.filter((change) => {
+      const item = impactByKey.get(getExistingWebChangeKey(change));
+      return !item || item.status !== "safe";
+    });
+    const items = pending.length ? pending : metrics.changes;
+    return `
+      <details class="tb-existing-web-pending"${primary ? " open" : ""}>
+        <summary class="${primary ? "is-primary" : ""}">確認が必要な${items.length}件を見る</summary>
+        <div class="tb-existing-web-pending-list">
+          ${items.map((change) => {
+            const item = impactByKey.get(getExistingWebChangeKey(change));
+            const title = getExistingWebPreviewChangeTitle(change);
+            const reason = item?.message || "複数のCSS設定や動作への影響を確認してください。";
+            const aiReview = getExistingWebAiReview(change.domRef);
+            return `
+              <article>
+                <strong>${escapeHtml(title)} ${escapeHtml(getExistingWebPropertyLabel(change.property))}</strong>
+                <p>${escapeHtml(reason)}</p>
+                <details>
+                  <summary>詳細を見る</summary>
+                  <dl>
+                    <dt>selector</dt><dd>${escapeHtml(change.domRef || "-")}</dd>
+                    <dt>property</dt><dd>${escapeHtml(change.property || "-")}</dd>
+                    <dt>Source</dt><dd>${escapeHtml(typeof item?.source === "string" ? item.source : JSON.stringify(item?.source || {}))}</dd>
+                    <dt>影響範囲</dt><dd>${escapeHtml(getExistingWebPreviewChangeViewport(change) === "mobile" ? "Mobile" : "PC")}</dd>
+                    <dt>AI確認結果</dt><dd>${escapeHtml(aiReview?.finalCheck?.status?.label || aiReview?.status || "未確認")}</dd>
+                  </dl>
+                </details>
+              </article>
+            `;
+          }).join("")}
+        </div>
+      </details>
+    `;
+  }
+
+  function handleExistingWebConfirmPaneClick(event) {
+    const button = event.target.closest("[data-existing-web-confirm-action]");
+    if (!button || !state.existingWeb.active) {
+      return;
+    }
+    const action = button.dataset.existingWebConfirmAction || "";
+    if (action === "analyze") {
+      handleExistingWebMainAction();
+    } else if (action === "test") {
+      setExistingWebMode("test");
+      showModeToast("Existing Web TEST中です。見た目と動作を確認してください。");
+    } else if (action === "apply") {
+      handleExistingWebMainAction();
+    } else if (action === "final-preview") {
+      runFinalPreview();
+    }
+  }
+
+  function getExistingWebPreviewChangeTitle(change) {
+    const layer = (state.existingWeb.virtualLayers || []).find((item) => item.domRef === change?.domRef);
+    if (layer?.name) {
+      return layer.name;
+    }
+    const node = getExistingWebNodeByDomRef(change?.domRef);
+    if (!node) {
+      return change?.domRef || "変更";
+    }
+    return compactExistingWebLabel(
+      node.getAttribute("aria-label")
+      || node.textContent
+      || node.getAttribute("title")
+      || node.getAttribute("alt")
+      || getExistingWebHrefLabel(node)
+      || node.id
+      || getReadableClassName(node.className)
+      || node.tagName
+    ) || change?.domRef || "変更";
   }
 
   function buildExistingWebPageCheckSummary(layers) {
@@ -17743,6 +18336,8 @@
     }
     const workflow = recoverExistingWebWorkflowStateFromRuntime();
     const count = getExistingWebPreviewChangeCount();
+    const desktopCount = getExistingWebWorkflowChanges("desktop").length;
+    const mobileCount = getExistingWebWorkflowChanges("mobile").length;
     const status = count ? workflow.status : "clean";
     const eligibility = getExistingWebWorkflowEligibility(status, count);
     const readyCount = eligibility.readyCount;
@@ -17798,6 +18393,10 @@
         <div class="tb-existing-web-main-action">
           <span class="tb-existing-web-main-status">${escapeHtml(statusLabel)}</span>
           <button type="button" data-existing-web-action="${primaryAction}" class="${["ready_to_apply", "mixed_ready"].includes(status) ? "is-apply" : ""}"${disabled ? " disabled" : ""}>${escapeHtml(buttonLabel)}</button>
+        </div>
+        <div class="tb-existing-web-viewport-counts" aria-label="Viewport別Preview変更数">
+          <span data-active="${state.viewport === "desktop" ? "true" : "false"}">PC変更 ${desktopCount}件</span>
+          <span data-active="${state.viewport === "mobile" ? "true" : "false"}">Mobile変更 ${mobileCount}件</span>
         </div>
         ${nextText ? `<p class="tb-existing-web-next-action">${escapeHtml(nextText)}</p>` : ""}
         <div class="tb-existing-web-secondary-actions">
@@ -18018,8 +18617,12 @@
   }
 
   function getExistingWebLayerPreviewMarker(layer) {
-    const changed = (state.existingWeb.previewHistory || []).some((change) => change.domRef === layer.domRef)
-      || (state.existingWeb.preview?.changes || []).some((change) => change.domRef === layer.domRef);
+    const activeViewport = normalizeExistingWebPreviewViewport(state.viewport);
+    const changed = (state.existingWeb.previewHistory || []).some((change) => (
+      change.domRef === layer.domRef && getExistingWebPreviewChangeViewport(change, activeViewport) === activeViewport
+    )) || (state.existingWeb.preview?.changes || []).some((change) => (
+      change.domRef === layer.domRef && getExistingWebPreviewChangeViewport(change, activeViewport) === activeViewport
+    ));
     if (changed) return "●";
     if (layer.status?.key === "protected") return "LOCK";
     if (layer.status?.key === "problem") return "!";
@@ -18124,8 +18727,24 @@
   }
 
   function getExistingWebSelectionTitle(selected) {
+    const mappingLabel = selected.mapping?.name || selected.mapping?.label || "";
+    if (mappingLabel) {
+      return mappingLabel;
+    }
+    const ariaLabel = compactExistingWebLabel(selected.node?.getAttribute?.("aria-label") || selected.analyzerElement?.observed?.ariaLabel || "");
+    if (ariaLabel) {
+      return ariaLabel;
+    }
+    const linkText = compactExistingWebLabel(selected.node?.textContent || "");
+    if (linkText) {
+      return linkText;
+    }
+    const hrefLabel = getExistingWebHrefLabel(selected.node);
+    if (hrefLabel) {
+      return hrefLabel;
+    }
     const layer = (state.existingWeb.virtualLayers || []).find((item) => item.domRef === selected.domRef);
-    return layer?.name || selected.mapping?.tbId || selected.id || selected.className || selected.tag || selected.domRef;
+    return layer?.name || selected.id || getReadableClassName(selected.className) || selected.tag || selected.domRef;
   }
 
   function buildExistingWebNormalSelectionSummary(selected, check, preview) {
@@ -21027,6 +21646,11 @@
   function handleKeys(event) {
     if (event.key === "Escape") {
       closeToolMenus();
+      if (state.existingWeb.active && isExistingWebElementEditing()) {
+        event.preventDefault();
+        endExistingWebElementEdit();
+        return;
+      }
     }
     const activeTag = document.activeElement?.tagName;
     const inInput = activeTag === "INPUT" || activeTag === "SELECT" || activeTag === "TEXTAREA" || Boolean(document.activeElement?.isContentEditable);
