@@ -3030,6 +3030,9 @@
     if (mapping?.name || mapping?.label) {
       return mapping.name || mapping.label;
     }
+    if (isExistingWebPageBackgroundCandidate(element, node)) {
+      return "背景";
+    }
     const ariaLabel = compactExistingWebLabel(observed.ariaLabel || node.getAttribute("aria-label") || "");
     if (ariaLabel) {
       return ariaLabel;
@@ -3042,7 +3045,6 @@
     if (/hokkori/.test(key)) return "今日のほっこり";
     if (/forest-back|back_buttan|back-button|森へ戻る|戻る/.test(key)) return "森へ戻る";
     if (/lilu|lill/.test(key)) return "リル";
-    if (/background|bg_|backdrop|scene|stage|背景/.test(key) || observed.backgroundImage) return "背景";
     return identity || getExistingWebHrefLabel(node) || observed.id || getReadableClassName(observed.className) || observed.tag || "DOM要素";
   }
 
@@ -3379,7 +3381,7 @@
     }
     const observed = element?.observed || {};
     const tag = String(observed.tag || node.tagName || "").toLowerCase();
-    const bounds = observed.bounds || getDomNodeBounds(node);
+    const bounds = getDomNodeBounds(node) || observed.bounds;
     if (!bounds || Number(bounds.width || 0) <= 0 || Number(bounds.height || 0) <= 0) {
       return false;
     }
@@ -3393,15 +3395,54 @@
     const widthRatio = Number(bounds.width || 0) / viewportWidth;
     const heightRatio = Number(bounds.height || 0) / viewportHeight;
     const areaRatio = (Number(bounds.width || 0) * Number(bounds.height || 0)) / (viewportWidth * viewportHeight);
-    const pageScale = (widthRatio >= 0.7 && heightRatio >= 0.55) || areaRatio >= 0.45;
+    const pageScale = widthRatio >= 0.72 && heightRatio >= 0.55 && areaRatio >= 0.42;
     if (!pageScale) {
       return false;
     }
-    const hasBackgroundSource = Boolean(observed.backgroundImage || observed.src || node.currentSrc || node.src);
-    const isDocumentSurface = node === doc?.body || node === doc?.documentElement || ["main", "section", "article"].includes(tag);
+    const computed = getExistingWebComputed(node);
+    const liveBackgroundImage = String(view?.getComputedStyle?.(node)?.backgroundImage || "");
+    const hasBackgroundSource = Boolean(
+      (observed.backgroundImage && observed.backgroundImage !== "none")
+      || (liveBackgroundImage && liveBackgroundImage !== "none")
+      || observed.src
+      || node.currentSrc
+      || node.src
+    );
+    const rootDistance = getExistingWebRootDistance(node);
+    const isDocumentSurface = node === doc?.body
+      || node === doc?.documentElement
+      || tag === "main";
     const roleKey = `${element?.inferred?.roleCandidate || ""} ${observed.role || ""}`.toLowerCase();
-    const backgroundRole = /background|backdrop|scene|stage|canvas|surface|hero|visual/.test(roleKey);
-    return hasBackgroundSource || isDocumentSurface || backgroundRole;
+    const backgroundRole = /background|backdrop|scene|stage|surface|hero/.test(roleKey);
+    const identityKey = `${observed.id || node.id || ""} ${observed.className || node.className || ""}`.toLowerCase();
+    const backgroundIdentity = /(^|[\s_-])(background|backdrop|scene|stage|surface|hero|page|root|app)([\s_-]|$)/.test(identityKey);
+    let score = 0;
+    if (hasBackgroundSource) score += 4;
+    if (areaRatio >= 0.75) score += 4;
+    else if (areaRatio >= 0.55) score += 3;
+    else score += 2;
+    if (widthRatio >= 0.9) score += 2;
+    if (heightRatio >= 0.8) score += 2;
+    if (isDocumentSurface) score += 3;
+    if (rootDistance <= 1) score += 2;
+    else if (rootDistance <= 2) score += 1;
+    if (backgroundRole) score += 2;
+    if (backgroundIdentity) score += 2;
+    if (["span", "i", "b", "em", "strong"].includes(tag)) score -= 5;
+    if (Number(observed.childCount || node.children?.length || 0) === 0 && !isDocumentSurface) score -= 1;
+    if (["absolute", "fixed"].includes(computed.positionType) && rootDistance > 2) score -= 1;
+    return score >= 8 && (hasBackgroundSource || isDocumentSurface || backgroundRole || backgroundIdentity);
+  }
+
+  function getExistingWebRootDistance(node) {
+    const doc = node?.ownerDocument;
+    let distance = 0;
+    let current = node;
+    while (current?.parentElement && current !== doc?.body && distance < 12) {
+      current = current.parentElement;
+      distance += 1;
+    }
+    return current === doc?.body || node === doc?.body || node === doc?.documentElement ? distance : 99;
   }
 
   function isExistingWebStaticVisualElement(element, node) {
@@ -3558,9 +3599,16 @@
         if (!node || node.nodeType !== 1 || typeof node.getBoundingClientRect !== "function") {
           return false;
         }
+        if (node.closest?.(".__tb_existing_web_transform_box")) {
+          return false;
+        }
         const rect = node.getBoundingClientRect();
+        const computed = getExistingWebComputed(node);
         return rect.width >= 1
           && rect.height >= 1
+          && computed.display !== "none"
+          && computed.visibility !== "hidden"
+          && Number.parseFloat(computed.opacity || "1") > 0
           && clientX >= rect.left
           && clientX <= rect.right
           && clientY >= rect.top
@@ -3581,13 +3629,33 @@
 
   function getExistingWebSelectableScore(node) {
     const tag = node.tagName;
+    const layer = (state.existingWeb.virtualLayers || []).find((item) => item.node === node);
+    const element = layer?.analyzerElement || null;
+    const computed = getExistingWebComputed(node);
+    const rect = node.getBoundingClientRect();
+    const doc = node.ownerDocument;
+    const viewportArea = Math.max(1, Number(doc?.defaultView?.innerWidth || 0) * Number(doc?.defaultView?.innerHeight || 0));
+    const areaRatio = Math.max(0, (rect.width * rect.height) / viewportArea);
+    const directText = Array.from(node.childNodes || [])
+      .some((child) => child.nodeType === 3 && Boolean(child.textContent?.trim()));
+    const named = Boolean(node.id || node.getAttribute("aria-label") || node.getAttribute("title") || node.getAttribute("alt"));
+    const behaviorTarget = ["A", "BUTTON", "INPUT", "TEXTAREA", "SELECT", "SUMMARY"].includes(tag)
+      || /button|link|menuitem|tab|checkbox|radio/i.test(node.getAttribute("role") || "");
+    const meaningfulVisual = Boolean(layer) && (named || directText || behaviorTarget || ["IMG", "SVG", "PICTURE", "VIDEO", "CANVAS"].includes(tag));
     let score = 0;
-    if (node.id) score += 8;
-    if (["A", "BUTTON", "INPUT", "TEXTAREA", "SELECT"].includes(tag)) score += 20;
-    if (["IMG", "SVG", "PICTURE"].includes(tag)) score += 10;
-    if (node.getAttribute("role")) score += 5;
-    if (node.textContent?.trim()) score += 2;
-    if (node.children?.length) score -= Math.min(6, node.children.length);
+    if (layer) score += 36;
+    if (meaningfulVisual) score += 28;
+    if (behaviorTarget) score += 42;
+    if (isExistingWebSpeechVisualCandidate(element, node)) score += 48;
+    if (node.id) score += 14;
+    if (node.getAttribute("aria-label") || node.getAttribute("title") || node.getAttribute("alt")) score += 16;
+    if (directText) score += 14;
+    if (["IMG", "SVG", "PICTURE", "VIDEO", "CANVAS"].includes(tag)) score += 18;
+    if (computed.pointerEvents === "none" && meaningfulVisual) score += 10;
+    if (areaRatio <= 0.12) score += 12;
+    else if (areaRatio >= 0.65) score -= 20;
+    if (isExistingWebPageBackgroundCandidate(element, node)) score -= 70;
+    if (node.children?.length) score -= Math.min(10, node.children.length);
     return score;
   }
 
@@ -4389,13 +4457,24 @@
   }
 
   function restoreExistingWebPreviewSourceInline(viewport = state.viewport) {
+    const firstByChangeKey = new Map();
     const originalByDomRef = new Map();
-    getExistingWebPreviewHistoryForViewport(viewport).forEach((change) => {
-      if (change?.domRef && !originalByDomRef.has(change.domRef)) {
-        originalByDomRef.set(change.domRef, change);
+    getExistingWebPreviewHistoryForViewport(viewport).forEach((change, index) => {
+      if (!change?.domRef || !change.property) {
+        return;
+      }
+      const key = `${change.domRef}\u0001${change.property}`;
+      if (!firstByChangeKey.has(key)) {
+        firstByChangeKey.set(key, { change, index });
       }
     });
-    originalByDomRef.forEach((change) => {
+    firstByChangeKey.forEach((entry) => {
+      const existing = originalByDomRef.get(entry.change.domRef);
+      if (!existing || entry.index < existing.index) {
+        originalByDomRef.set(entry.change.domRef, entry);
+      }
+    });
+    originalByDomRef.forEach(({ change }) => {
       applyExistingWebPreviewInline(change, "beforeInline", { ignoreViewport: true });
     });
   }
@@ -4502,6 +4581,42 @@
     if (!options.skipRender) {
       renderAll();
     }
+  }
+
+  function resetExistingWebPreviewViewport(viewport = state.viewport, options = {}) {
+    const targetViewport = normalizeExistingWebPreviewViewport(viewport);
+    const history = state.existingWeb.previewHistory || [];
+    const targetHistory = history.filter((change) => (
+      getExistingWebPreviewChangeViewport(change, targetViewport) === targetViewport
+    ));
+    if (!state.existingWeb.active || !targetHistory.length) {
+      return false;
+    }
+    const activeViewport = normalizeExistingWebPreviewViewport(state.viewport);
+    if (targetViewport === activeViewport) {
+      restoreExistingWebPreviewSourceInline(targetViewport);
+    }
+    state.existingWeb.previewHistory = history.filter((change) => (
+      getExistingWebPreviewChangeViewport(change, targetViewport) !== targetViewport
+    ));
+    state.existingWeb.previewFuture = (state.existingWeb.previewFuture || []).filter((change) => (
+      getExistingWebPreviewChangeViewport(change, targetViewport) !== targetViewport
+    ));
+    state.existingWeb.impactAnalysis = null;
+    state.existingWeb.drag = null;
+    if (targetViewport === activeViewport) {
+      syncExistingWebPreviewStateFromHistory();
+      resetExistingWebWorkflowForViewport();
+      applyExistingWebSelectionClass();
+      refreshExistingWebVirtualLayers();
+    }
+    persistExistingWebPreviewWorkspace();
+    if (!options.skipRender) {
+      renderAll();
+    }
+    const viewportLabel = targetViewport === "mobile" ? "Mobile" : "PC";
+    showModeToast(`${viewportLabel}のPreview変更を元に戻しました。`);
+    return true;
   }
 
   async function handleExistingWebMainAction() {
@@ -7837,6 +7952,7 @@
     if (action === "size-smaller") resizeExistingWebSelection(-10, -10);
     if (action === "size-larger") resizeExistingWebSelection(10, 10);
     if (action === "reset-preview") resetExistingWebPreview();
+    if (action === "reset-viewport-preview") resetExistingWebPreviewViewport(state.viewport);
     if (action === "safe-change") handleExistingWebMainAction();
     if (action === "safe-change-retry") retryExistingWebPendingChanges();
     if (action === "workflow-tab") setExistingWebWorkflowTab(actionSource?.dataset?.existingWebWorkflowTab || "layers");
@@ -18054,6 +18170,7 @@
     const allViewportCount = desktopCount + mobileCount;
     const otherViewportCount = state.viewport === "mobile" ? desktopCount : mobileCount;
     const currentViewportLabel = state.viewport === "mobile" ? "Mobile" : "PC";
+    const currentViewportCount = state.viewport === "mobile" ? mobileCount : desktopCount;
     const otherViewportLabel = state.viewport === "mobile" ? "PC" : "Mobile";
     let stateTitle = "まず変更を確認してください";
     let nextAction = "変更内容を確認して、反映できる項目を判定します。";
@@ -18105,6 +18222,9 @@
         <div class="tb-existing-web-viewport-counts" aria-label="Viewport別Preview変更数">
           <span data-active="${state.viewport === "desktop" ? "true" : "false"}">PC変更 ${desktopCount}件</span>
           <span data-active="${state.viewport === "mobile" ? "true" : "false"}">Mobile変更 ${mobileCount}件</span>
+        </div>
+        <div class="tb-existing-web-viewport-reset">
+          <button type="button" data-existing-web-confirm-action="reset-viewport-preview"${currentViewportCount ? "" : " disabled"}>${currentViewportLabel}の変更${currentViewportCount}件を元に戻す</button>
         </div>
       </section>
     `;
@@ -18166,6 +18286,8 @@
       handleExistingWebMainAction();
     } else if (action === "final-preview") {
       runFinalPreview();
+    } else if (action === "reset-viewport-preview") {
+      resetExistingWebPreviewViewport(state.viewport);
     }
   }
 
@@ -18827,7 +18949,7 @@
     if (selected.tag === "a") return "リンク";
     if (selected.tag === "audio" || selected.tag === "video") return "音声/映像";
     if (/^h[1-6]$/.test(selected.tag)) return "見出し";
-    if (selected.analyzerElement?.observed?.backgroundImage) return "背景";
+    if (isExistingWebPageBackgroundCandidate(selected.analyzerElement, selected.node)) return "背景";
     return "ページ要素";
   }
 
