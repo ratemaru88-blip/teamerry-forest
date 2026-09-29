@@ -53,6 +53,14 @@
     return true;
   };
 
+  function isDebugParam(value) {
+    return value === "1" || value === "１";
+  }
+
+  function isDebugOffParam(value) {
+    return value === "0" || value === "０";
+  }
+
   function getForestDisplayName() {
     const displayName = getStoredItem(TM_DISPLAY_NAME_KEY);
     return displayName && displayName !== "さんぽさん" ? displayName : "おさんぽさん";
@@ -2206,7 +2214,7 @@
     const params = new URLSearchParams(window.location.search);
     let panelSetting = "";
     try {
-      if (params.get("debug") === "1") {
+      if (isDebugParam(params.get("debug"))) {
         window.localStorage.removeItem("teamerryForestDebugPanel");
       }
       panelSetting = window.localStorage.getItem("teamerryForestDebugPanel") || "";
@@ -2214,11 +2222,11 @@
       panelSetting = "";
     }
 
-    if (params.get("debug") === "0" || panelSetting === "off") {
+    if (isDebugOffParam(params.get("debug")) || panelSetting === "off") {
       document.body.classList.add("debug-panel-hidden");
     }
 
-    if (params.get("debug") !== "1") {
+    if (!isDebugParam(params.get("debug"))) {
       document.body.classList.add("debug-panel-hidden");
       return;
     }
