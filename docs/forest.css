@@ -1531,6 +1531,7 @@ body.mobile-walker-disabled .mobile-walker {
 }
 
 .debug-panel {
+  display: none;
   position: fixed;
   right: max(12px, env(safe-area-inset-right));
   bottom: max(12px, env(safe-area-inset-bottom));
@@ -1544,6 +1545,10 @@ body.mobile-walker-disabled .mobile-walker {
   color: var(--tea-cream);
   backdrop-filter: blur(10px);
   opacity: 0.92;
+}
+
+body.debug-panel-enabled .debug-panel {
+  display: block;
 }
 
 body.debug-panel-hidden .debug-panel {

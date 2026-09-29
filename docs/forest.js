@@ -30,8 +30,10 @@
   const TM_NAME_KEY = "teaMerryForestName";
   const TM_DISPLAY_NAME_KEY = "teaMerryDisplayName";
   const TM_NAME_DONE_KEY = "teaMerryNameDone";
+  const TM_LAST_VISIT_KEY = "teaMerryLastVisitAt";
   const TM_RETURN_SOURCE_KEY = "teaMerryReturnSource";
   const TM_RETURN_SOURCE_OBSERVATORY = "observatory";
+  const RETURN_CONFIRM_AFTER_DAYS = 14;
 
   const getStoredItem = (key) => {
     try {
@@ -60,6 +62,7 @@
     setStoredItem(TM_NAME_KEY, forestName);
     setStoredItem(TM_DISPLAY_NAME_KEY, displayName);
     setStoredItem(TM_NAME_DONE_KEY, "true");
+    touchForestVisit();
     updateWriterNames();
 
     window.dispatchEvent(new CustomEvent("teaMerryForestNameChange", {
@@ -80,6 +83,21 @@
 
   function saveWalkOnlyName() {
     persistForestName("おさんぽ", "おさんぽさん");
+  }
+
+  function touchForestVisit() {
+    setStoredItem(TM_LAST_VISIT_KEY, String(Date.now()));
+  }
+
+  function shouldConfirmReturningName() {
+    const lastVisit = Number(getStoredItem(TM_LAST_VISIT_KEY) || 0);
+
+    if (!lastVisit) {
+      return true;
+    }
+
+    const elapsed = Date.now() - lastVisit;
+    return elapsed >= RETURN_CONFIRM_AFTER_DAYS * 24 * 60 * 60 * 1000;
   }
 
   function updateWriterNames() {
@@ -175,11 +193,13 @@
     const message = document.getElementById("nameModalMessage");
 
     if (title) {
-      title.textContent = "ようこそ、TeaMerryへ。";
+      title.textContent = isConfirmMode ? "おかえりなさい、TeaMerryへ。" : "ようこそ、TeaMerryへ。";
     }
 
     if (message) {
-      message.innerHTML = "この森で呼んでほしい名前を教えてね。<br>（あとからいつでも変えられるよ。）";
+      message.innerHTML = isConfirmMode
+        ? "前の呼び名のままにする？<br>それとも、今日の呼び名を決めなおす？"
+        : "この森で呼んでほしい名前を教えてね。<br>（あとからいつでも変えられるよ。）";
     }
 
     if (forestNameInput) {
@@ -240,6 +260,12 @@
     const display = getStoredItem(TM_DISPLAY_NAME_KEY);
 
     if (done && display) {
+      if (shouldConfirmReturningName()) {
+        showNameModal("confirm");
+        return;
+      }
+
+      touchForestVisit();
       window.setTimeout(announceForestReturn, 220);
       return;
     }
@@ -264,6 +290,7 @@
         saveWalkOnlyName();
       } else {
         setStoredItem(TM_NAME_DONE_KEY, "true");
+        touchForestVisit();
         updateWriterNames();
       }
       closeNameModal();
@@ -2190,6 +2217,13 @@
     if (params.get("debug") === "0" || panelSetting === "off") {
       document.body.classList.add("debug-panel-hidden");
     }
+
+    if (params.get("debug") !== "1") {
+      document.body.classList.add("debug-panel-hidden");
+      return;
+    }
+
+    document.body.classList.add("debug-panel-enabled");
 
     debugPanel.querySelectorAll("[data-debug-time]").forEach((button) => {
       button.addEventListener("click", () => {
