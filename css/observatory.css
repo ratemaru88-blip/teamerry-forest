@@ -1740,6 +1740,7 @@ body {
   }
 
   .fairy-area {
+    --fairy-top: 48.91%;
     inset: 0;
     width: auto;
     transform: none;
@@ -1747,13 +1748,15 @@ body {
 
   .fairy {
     left: 40.46%;
-    top: 48.91%;
+    top: var(--fairy-top);
     width: 33.06%;
   }
 
   .fairy-balloon {
     left: 26.02%;
-    top: 37.6%;
+    /* Keep wrapped dialogue above the fairy, including its tail and float. */
+    top: auto;
+    bottom: calc(100% - var(--fairy-top) + 26px);
     width: 49.81%;
     min-width: 0;
     max-width: none;
