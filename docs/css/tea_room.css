@@ -499,6 +499,17 @@ body {
   white-space: pre-line;
 }
 
+/* Match the centered 1920 x 1080 background's cover bounds. */
+.bookshelf-hotspots {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100vw, calc(100vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
 .bookshelf-link {
   position: absolute;
   z-index: 15;
@@ -507,6 +518,7 @@ body {
   text-decoration: none;
   border-radius: 8px;
   outline: none;
+  pointer-events: auto;
 }
 
 .bookshelf-link::after {
@@ -779,31 +791,37 @@ body {
   }
 
   .bookshelf-link--blog {
-    left: 70.7%;
-    top: 30.7%;
-    width: 6.7%;
-    height: 15.8%;
+    left: 75.1%;
+    top: 35.6%;
+    width: 7%;
+    height: 17.2%;
   }
 
   .bookshelf-link--contact {
-    left: 77.2%;
-    top: 30.7%;
-    width: 7.5%;
-    height: 15.8%;
+    left: 82.8%;
+    top: 35.6%;
+    width: 7.2%;
+    height: 17.6%;
   }
 
   .bookshelf-link--history {
-    left: 85.1%;
-    top: 30.7%;
-    width: 7.2%;
-    height: 15.8%;
+    left: 90.7%;
+    top: 35.6%;
+    width: 7.3%;
+    height: 17.7%;
   }
 
   .bookshelf-link--friends {
-    left: 72.1%;
-    top: 47.9%;
-    width: 7.6%;
-    height: 13.3%;
+    left: 74.8%;
+    top: 57%;
+    width: 8.3%;
+    height: 14.4%;
+  }
+
+  /* Match the centered 1080 x 1920 background's contain bounds. */
+  .bookshelf-hotspots {
+    width: min(100vw, calc(100vh * 9 / 16));
+    aspect-ratio: 9 / 16;
   }
 
   .mori-link {
