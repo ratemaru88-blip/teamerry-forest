@@ -1,4 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
+  let bookTouch = null;
+
+  function rememberBookTouch(event) {
+    const touch = event.changedTouches[0];
+    if (touch) bookTouch = { x: touch.clientX, y: touch.clientY };
+  }
+
+  document.addEventListener("touchstart", rememberBookTouch, { passive: true });
+  document.addEventListener("touchend", rememberBookTouch, { passive: true });
+  document.addEventListener("touchcancel", () => { bookTouch = null; }, { passive: true });
+  document.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse") bookTouch = null;
+  }, { passive: true });
+  document.addEventListener("click", (event) => {
+    const touch = bookTouch;
+    bookTouch = null;
+    const link = event.target.closest(".bookshelf-link");
+    if (!touch || !link || event.detail === 0) return;
+
+    // Browsers can snap a tap in empty space to a nearby link.
+    const touchedLink = document.elementFromPoint(touch.x, touch.y)?.closest(".bookshelf-link");
+    if (touchedLink !== link) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+
   const BOARD_VERSION = "2026.07.20-02";
   const DATA_URL = `./data/maroudo_board/maroudo_board_current.json?v=${BOARD_VERSION}`;
   const renderer = window.TeaMerryMaroudoBoard;

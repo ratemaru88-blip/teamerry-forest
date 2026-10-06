@@ -538,31 +538,31 @@ body {
 }
 
 .bookshelf-link--blog {
-  left: 76.259%;
-  top: 45.469%;
-  width: 4.096354%;
-  height: 33.543519%;
+  left: 76.75%;
+  top: 48.15%;
+  width: 3.1%;
+  height: 28.1%;
 }
 
 .bookshelf-link--contact {
-  left: 81.479%;
-  top: 45.311%;
-  width: 4.004167%;
-  height: 35.179630%;
+  left: 81.96%;
+  top: 48.13%;
+  width: 3.04%;
+  height: 29.55%;
 }
 
 .bookshelf-link--history {
-  left: 86.503%;
-  top: 46.128%;
-  width: 4.647917%;
-  height: 35.343519%;
+  left: 87.06%;
+  top: 48.95%;
+  width: 3.53%;
+  height: 29.69%;
 }
 
 .bookshelf-link--friends {
-  left: 92.395%;
-  top: 45.638%;
-  width: 4.840104%;
-  height: 37.303704%;
+  left: 92.98%;
+  top: 48.62%;
+  width: 3.68%;
+  height: 31.33%;
 }
 
 .mori-link {
@@ -791,31 +791,31 @@ body {
   }
 
   .bookshelf-link--blog {
-    left: 75.1%;
-    top: 35.6%;
-    width: 7%;
-    height: 17.2%;
+    left: 75.94%;
+    top: 36.98%;
+    width: 5.32%;
+    height: 14.44%;
   }
 
   .bookshelf-link--contact {
-    left: 82.8%;
-    top: 35.6%;
-    width: 7.2%;
-    height: 17.6%;
+    left: 83.66%;
+    top: 37.01%;
+    width: 5.47%;
+    height: 14.78%;
   }
 
   .bookshelf-link--history {
-    left: 90.7%;
-    top: 35.6%;
-    width: 7.3%;
-    height: 17.7%;
+    left: 91.58%;
+    top: 37.02%;
+    width: 5.54%;
+    height: 14.86%;
   }
 
   .bookshelf-link--friends {
-    left: 74.8%;
-    top: 57%;
-    width: 8.3%;
-    height: 14.4%;
+    left: 75.8%;
+    top: 58.15%;
+    width: 6.3%;
+    height: 12.1%;
   }
 
   /* Match the centered 1080 x 1920 background's contain bounds. */
