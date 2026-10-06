@@ -522,6 +522,9 @@ body {
 }
 
 .drift-bottle-sender {
+  flex-shrink: 0;
+  max-width: calc(100% - 12px);
+  overflow-wrap: anywhere;
   margin: 0 0 9px 2px;
   color: #4d3b2f;
   font-size: calc(var(--letter-font-size) + var(--type-font-delta) + var(--fit-font-adjust) - 3px);
@@ -537,7 +540,7 @@ body {
   min-height: 0;
   max-height: 100%;
   margin: 0;
-  padding-left: var(--type-body-shift);
+  padding-left: max(4px, var(--type-body-shift));
   padding-right: max(6px, 0.45em);
   box-sizing: border-box;
   overflow: hidden;
@@ -619,14 +622,15 @@ body {
 .letter-line {
   display: block;
   width: fit-content;
-  max-width: var(--type-line-width);
+  max-width: calc(var(--type-line-width) - 12px);
   min-height: calc(var(--letter-line-height) + var(--type-line-extra) + var(--fit-font-adjust) + var(--line-gap, 0px));
   color: currentColor;
   opacity: var(--line-opacity, 0.92);
   font-size: calc(var(--letter-font-size) + var(--type-font-delta) + var(--fit-font-adjust) + var(--line-font-delta, 0px));
   line-height: calc(var(--letter-line-height) + var(--type-line-extra) + var(--fit-font-adjust) + var(--line-gap, 0px));
   letter-spacing: inherit;
-  white-space: nowrap;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   text-shadow: 0.15px 0.1px 0 rgba(73, 50, 36, 0.22);
   transform: translateX(var(--line-indent, 0px)) rotate(var(--line-rotate, 0deg));
   transform-origin: left center;

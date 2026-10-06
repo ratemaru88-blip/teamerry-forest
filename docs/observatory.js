@@ -983,7 +983,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const contentRect = content.getBoundingClientRect();
       const hasWideLine = Array.from(driftBottleBody.querySelectorAll(".letter-line")).some((line) => {
         const lineRect = line.getBoundingClientRect();
-        return lineRect.left < contentRect.left - 5 || lineRect.right > contentRect.right + 1;
+        return line.scrollWidth > line.clientWidth + 1 || lineRect.left < contentRect.left - 5 || lineRect.right > contentRect.right + 1;
       });
 
       return hasWideLine || driftBottleBody.scrollHeight > driftBottleBody.clientHeight + 1;
@@ -996,7 +996,17 @@ document.addEventListener("DOMContentLoaded", () => {
       adjust -= 1;
       content.style.setProperty("--fit-font-adjust", `${adjust}px`);
     }
+    driftBottleBody.style.overflowY = driftBottleBody.scrollHeight > driftBottleBody.clientHeight + 1 ? "auto" : "hidden";
   }
+
+  function refitVisibleDriftBottleLetter() {
+    if (driftBottleModal?.classList.contains("is-active")) {
+      window.requestAnimationFrame(fitDriftBottleLetterToPaper);
+    }
+  }
+
+  window.addEventListener("resize", refitVisibleDriftBottleLetter);
+  document.fonts?.addEventListener("loadingdone", refitVisibleDriftBottleLetter);
 
   function setDriftBottleBackgroundInteractivity(isModalOpen) {
     if (!driftBottleModal || !driftBottleModal.parentElement) {
