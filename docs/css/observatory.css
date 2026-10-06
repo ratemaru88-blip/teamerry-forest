@@ -23,18 +23,18 @@ body {
 }
 
 .observatory-stage {
-  --bottle-hotspot-left: 7%;
-  --bottle-hotspot-top: 34%;
-  --bottle-hotspot-width: 24%;
-  --bottle-hotspot-height: 18%;
+  --bottle-hotspot-left: 14.1%;
+  --bottle-hotspot-top: 58%;
+  --bottle-hotspot-width: 6.9%;
+  --bottle-hotspot-height: 10.3%;
   --wish-hotspot-left: 3.28%;
   --wish-hotspot-top: 65.83%;
   --wish-hotspot-width: 37.4%;
   --wish-hotspot-height: 34.07%;
-  --hokkori-day-left: 91%;
-  --hokkori-day-top: 39%;
-  --hokkori-day-width: 7%;
-  --hokkori-day-height: 13%;
+  --hokkori-day-left: 94.3%;
+  --hokkori-day-top: 39.2%;
+  --hokkori-day-width: 5.2%;
+  --hokkori-day-height: 11.5%;
   --hokkori-night-left: 74.64%;
   --hokkori-night-top: 68.52%;
   --hokkori-night-width: 20.21%;
@@ -43,7 +43,7 @@ body {
   width: min(100vw, calc(100vh * 16 / 9));
   max-height: 100vh;
   aspect-ratio: 16 / 9;
-  overflow: hidden;
+  overflow: clip;
   background: #120f0a;
 }
 
@@ -184,10 +184,9 @@ body {
 }
 
 .day-panel {
-  left: var(--bottle-hotspot-left);
-  top: var(--bottle-hotspot-top);
-  width: var(--bottle-hotspot-width);
-  height: var(--bottle-hotspot-height);
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .night-panel {
@@ -211,6 +210,8 @@ body {
 }
 
 .bottle-mail-hotspot,
+.bottle-mail-sign-hotspot,
+.bottle-mail-desk-hotspot,
 .hokkori-hotspot,
 .wish-star-hotspot {
   padding: 0;
@@ -260,6 +261,8 @@ body {
 }
 
 .bottle-mail-hotspot:focus-visible,
+.bottle-mail-sign-hotspot:focus-visible,
+.bottle-mail-desk-hotspot:focus-visible,
 .hokkori-hotspot:focus-visible,
 .wish-star-hotspot:focus-visible {
   outline: 3px solid rgba(255, 244, 188, 0.9);
@@ -269,9 +272,25 @@ body {
 
 .bottle-mail-hotspot {
   position: absolute;
-  inset: 0;
+  left: var(--bottle-hotspot-left);
+  top: var(--bottle-hotspot-top);
+  width: var(--bottle-hotspot-width);
+  height: var(--bottle-hotspot-height);
   z-index: 1;
   pointer-events: auto;
+}
+
+.bottle-mail-sign-hotspot {
+  position: absolute;
+  left: 3%;
+  top: 20.5%;
+  width: 12%;
+  height: 4.5%;
+  pointer-events: auto;
+}
+
+.bottle-mail-desk-hotspot {
+  display: none;
 }
 
 .wish-star-hotspot {
@@ -296,10 +315,10 @@ body {
 }
 
 .bottle-hokkori-hotspot {
-  right: 0;
-  bottom: 0;
-  width: 48%;
-  height: 30%;
+  left: var(--hokkori-day-left);
+  top: var(--hokkori-day-top);
+  width: var(--hokkori-day-width);
+  height: var(--hokkori-day-height);
 }
 
 .wish-hokkori-hotspot {
@@ -1697,18 +1716,18 @@ body {
   }
 
   .observatory-stage {
-    --bottle-hotspot-left: 7%;
-    --bottle-hotspot-top: 42%;
-    --bottle-hotspot-width: 34%;
-    --bottle-hotspot-height: 16%;
+    --bottle-hotspot-left: 15.5%;
+    --bottle-hotspot-top: 53%;
+    --bottle-hotspot-width: 12%;
+    --bottle-hotspot-height: 8%;
     --wish-hotspot-left: 1.85%;
     --wish-hotspot-top: 65.52%;
     --wish-hotspot-width: 46.76%;
     --wish-hotspot-height: 20.47%;
-    --hokkori-day-left: 55%;
-    --hokkori-day-top: 48%;
-    --hokkori-day-width: 24%;
-    --hokkori-day-height: 14%;
+    --hokkori-day-left: 68.5%;
+    --hokkori-day-top: 44.3%;
+    --hokkori-day-width: 8.5%;
+    --hokkori-day-height: 6.2%;
     --hokkori-night-left: 70.46%;
     --hokkori-night-top: 66.77%;
     --hokkori-night-width: 23.43%;
@@ -1744,6 +1763,23 @@ body {
     inset: 0;
     width: auto;
     transform: none;
+  }
+
+  .bottle-mail-sign-hotspot {
+    left: 3%;
+    top: 21.5%;
+    width: 20%;
+    height: 3.8%;
+  }
+
+  .bottle-mail-desk-hotspot {
+    position: absolute;
+    display: block;
+    left: 41.5%;
+    top: 43.5%;
+    width: 8%;
+    height: 6%;
+    pointer-events: auto;
   }
 
   .fairy {

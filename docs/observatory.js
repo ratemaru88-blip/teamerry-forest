@@ -30,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const forestWhisper = document.getElementById("forestWhisper");
   const forestWhisperText = document.getElementById("forestWhisperText");
   const bottleMailButton = document.getElementById("bottleMailButton");
+  const bottleMailSignButton = document.getElementById("bottleMailSignButton");
+  const bottleMailDeskButton = document.getElementById("bottleMailDeskButton");
   const hokkoriButton = document.getElementById("hokkoriButton");
   const hokkoriNightButton = document.getElementById("hokkoriNightButton");
   const wishStarButton = document.getElementById("wishStarButton");
@@ -1426,7 +1428,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const textInput = targetView && targetView.querySelector(".observatory-view__text");
     if (textInput) {
-      textInput.focus();
+      textInput.focus({ preventScroll: true });
     }
 
     if (targetView === bottleHokkoriView) {
@@ -1978,9 +1980,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (bottleMailButton) {
-    bottleMailButton.addEventListener("click", () => showView(bottleWriteView));
-  }
+  [bottleMailButton, bottleMailSignButton, bottleMailDeskButton].forEach((button) => {
+    button?.addEventListener("click", () => showView(bottleWriteView));
+  });
 
   [hokkoriButton, hokkoriNightButton].forEach((button) => {
     if (button) {
@@ -2003,7 +2005,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (bottleHokkoriButton) {
     bottleHokkoriButton.addEventListener("click", () => {
       showView(bottleHokkoriView);
-      renderHokkoriView(bottleHokkoriView, "bottle");
     });
   }
 
