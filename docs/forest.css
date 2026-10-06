@@ -743,6 +743,39 @@ a {
   transform: none;
 }
 
+/* Story arrival reuses the existing name dialog without affecting normal visits. */
+.tm-name-modal [hidden] {
+  display: none !important;
+}
+
+.tm-name-modal[data-story-step] .tm-name-card {
+  max-height: calc(100dvh - 44px);
+  overflow-y: auto;
+}
+
+.tm-name-modal[data-story-step] .tm-message {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+#musicalStoryDestination {
+  display: block;
+  padding: 14px 12px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #d9b26c, #bf8745);
+  box-shadow: 0 5px 0 rgba(112, 69, 31, 0.28);
+  color: #fffaf0;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+#musicalStoryDestination:focus-visible {
+  outline: 3px solid #6a4927;
+  outline-offset: 3px;
+}
+
 .tm-name-buttons button:focus-visible {
   outline: 3px solid rgba(255, 250, 240, 0.9);
   outline-offset: 3px;
@@ -1531,6 +1564,7 @@ body.mobile-walker-disabled .mobile-walker {
 }
 
 .debug-panel {
+  display: none;
   position: fixed;
   right: max(12px, env(safe-area-inset-right));
   bottom: max(12px, env(safe-area-inset-bottom));
@@ -1544,6 +1578,10 @@ body.mobile-walker-disabled .mobile-walker {
   color: var(--tea-cream);
   backdrop-filter: blur(10px);
   opacity: 0.92;
+}
+
+body.debug-panel-enabled .debug-panel {
+  display: block;
 }
 
 body.debug-panel-hidden .debug-panel {

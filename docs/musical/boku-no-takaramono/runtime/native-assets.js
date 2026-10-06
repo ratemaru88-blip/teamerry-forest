@@ -1,0 +1,340 @@
+(function () {
+  "use strict";
+
+  const ASSET_SCHEMA_VERSION = "tbalance.assets.v0.1";
+  const REGISTRY_PATH = "data/tbalance/project-assets.json";
+  const ASSET_ROOT = "assets";
+  const CATEGORIES = {
+    character: { label: "キャラクター", folder: "characters" },
+    background: { label: "背景", folder: "backgrounds" },
+    ui: { label: "UI・ボタン", folder: "ui" },
+    effect: { label: "エフェクト", folder: "effects" },
+    uncategorized: { label: "未分類", folder: "other" },
+    other: { label: "その他", folder: "other" },
+  };
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
+  function nowIso() {
+    return window.TBalanceNativeSchema?.nowIso?.() || new Date().toISOString();
+  }
+
+  function normalizeCategory(value) {
+    const key = String(value || "").trim().toLowerCase();
+    return CATEGORIES[key] ? key : "uncategorized";
+  }
+
+  function createRegistry(input = {}, project = {}) {
+    const projectId = input.projectId || project.projectId || project.projectRef?.projectId || "";
+    return {
+      schemaVersion: ASSET_SCHEMA_VERSION,
+      projectId,
+      assets: [],
+      updatedAt: nowIso(),
+      storage: {
+        root: ASSET_ROOT,
+        registryPath: REGISTRY_PATH,
+      },
+    };
+  }
+
+  function normalizeRegistry(input = {}, project = {}) {
+    const registry = Object.assign(createRegistry(input, project), clone(input));
+    registry.schemaVersion = registry.schemaVersion || ASSET_SCHEMA_VERSION;
+    registry.projectId = registry.projectId || project.projectId || project.projectRef?.projectId || "";
+    registry.storage = Object.assign({ root: ASSET_ROOT, registryPath: REGISTRY_PATH }, registry.storage || {});
+    registry.assets = normalizeAssets(registry.assets || input.assets || project.assets || []);
+    registry.updatedAt = registry.updatedAt || nowIso();
+    return registry;
+  }
+
+  function normalizeAssets(assets) {
+    const seen = new Set();
+    return (Array.isArray(assets) ? assets : []).map((asset) => normalizeAsset(asset)).filter((asset) => {
+      if (!asset.assetId || seen.has(asset.assetId)) {
+        return false;
+      }
+      seen.add(asset.assetId);
+      return true;
+    });
+  }
+
+  function normalizeAsset(asset = {}) {
+    const ids = window.TBalanceNativeId;
+    const assetId = asset.assetId || asset.id || ids?.createStableId("asset") || `ast_${Date.now().toString(36)}`;
+    const category = normalizeCategory(asset.category);
+    const storage = normalizeStorage(asset.storage, asset);
+    const displayName = asset.displayName || asset.name || asset.fileName || asset.originalName || assetId;
+    const now = nowIso();
+    return Object.assign({}, asset, {
+      assetId,
+      id: asset.id || assetId,
+      displayName,
+      name: asset.name || displayName,
+      mediaType: asset.mediaType || guessMediaType(asset.fileName || asset.originalName || storage.relativePath),
+      category,
+      storage,
+      originalName: asset.originalName || asset.fileName || "",
+      relativePath: asset.relativePath || storage.relativePath || "",
+      contentHash: asset.contentHash || "",
+      width: Math.max(0, Number(asset.width) || 0),
+      height: Math.max(0, Number(asset.height) || 0),
+      byteLength: Math.max(0, Number(asset.byteLength) || 0),
+      variants: normalizeVariants(asset.variants, storage),
+      status: asset.status || inferAssetStatus(storage),
+      createdAt: asset.createdAt || now,
+      updatedAt: asset.updatedAt || asset.createdAt || now,
+    });
+  }
+
+  function normalizeStorage(storage = {}, asset = {}) {
+    const mode = storage.mode || (asset.relativePath ? "project-file" : asset.legacySrc || asset.src || asset.originalSrc ? "embedded" : "missing");
+    if (mode === "project-file") {
+      return {
+        mode,
+        relativePath: normalizeRelativePath(storage.relativePath || asset.relativePath || ""),
+      };
+    }
+    if (mode === "embedded") {
+      return { mode };
+    }
+    return { mode: "missing", relativePath: normalizeRelativePath(storage.relativePath || asset.relativePath || "") };
+  }
+
+  function normalizeVariants(variants = {}, storage = {}) {
+    const source = variants.source || {};
+    if (storage.mode === "project-file") {
+      return Object.assign({}, variants, {
+        source: Object.assign({ relativePath: storage.relativePath }, source),
+      });
+    }
+    return Object.assign({}, variants);
+  }
+
+  function inferAssetStatus(storage = {}) {
+    if (storage.mode === "project-file") return "available";
+    if (storage.mode === "embedded") return "legacy-embedded";
+    return "missing";
+  }
+
+  function normalizeRelativePath(value) {
+    return String(value || "").replace(/\\/g, "/").replace(/^\/+/, "");
+  }
+
+  function guessMediaType(name = "") {
+    const lower = String(name || "").toLowerCase();
+    if (lower.endsWith(".png")) return "image/png";
+    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+    if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".webm")) return "video/webm";
+    if (lower.endsWith(".svg")) return "image/svg+xml";
+    return "";
+  }
+
+  function mergeProjectRegistry(project, registry) {
+    if (!project) {
+      return null;
+    }
+    const normalized = normalizeRegistry(registry || {}, project);
+    if (normalized.projectId && project.projectId && normalized.projectId !== project.projectId) return null;
+    const currentAssets = normalizeAssets(project.assets || []);
+    const mergedAssets = new Map(currentAssets.map((asset) => [asset.assetId, asset]));
+    normalized.assets.forEach((registryAsset) => {
+      registryAsset.projectId = normalized.projectId;
+      const projectAsset = mergedAssets.get(registryAsset.assetId);
+      mergedAssets.set(registryAsset.assetId, mergeAssetRecords(projectAsset, registryAsset));
+    });
+    project.assetRegistry = {
+      schemaVersion: normalized.schemaVersion,
+      projectId: normalized.projectId,
+      registryPath: normalized.storage.registryPath || REGISTRY_PATH,
+      storageRoot: normalized.storage.root || ASSET_ROOT,
+      loadedAt: nowIso(),
+    };
+    project.assets = Array.from(mergedAssets.values());
+    return normalized;
+  }
+
+  function mergeAssetRecords(projectAsset, registryAsset) {
+    if (!projectAsset) {
+      return normalizeAsset(registryAsset);
+    }
+    const merged = Object.assign({}, projectAsset, registryAsset);
+    const projectStorage = projectAsset.storage || {};
+    const registryStorage = registryAsset.storage || {};
+    const registryPath = registryStorage.relativePath || registryAsset.relativePath || "";
+    const projectPath = projectStorage.relativePath || projectAsset.relativePath || "";
+    const storagePath = registryPath || projectPath;
+    const storageMode = registryStorage.mode || projectStorage.mode || (storagePath ? "project-file" : "");
+    merged.assetId = projectAsset.assetId;
+    merged.id = registryAsset.id || projectAsset.id || projectAsset.assetId;
+    merged.storage = Object.assign({}, projectStorage, registryStorage, {
+      mode: storageMode || "missing",
+      relativePath: normalizeRelativePath(storagePath),
+    });
+    merged.relativePath = registryAsset.relativePath || registryPath || projectAsset.relativePath || projectPath || "";
+    merged.variants = mergeAssetVariants(projectAsset.variants, registryAsset.variants, merged.storage);
+    return normalizeAsset(merged);
+  }
+
+  function mergeAssetVariants(projectVariants = {}, registryVariants = {}, storage = {}) {
+    const merged = Object.assign({}, projectVariants || {}, registryVariants || {});
+    if (storage.mode === "project-file" && storage.relativePath) {
+      merged.source = Object.assign({}, projectVariants?.source || {}, registryVariants?.source || {}, {
+        relativePath: storage.relativePath,
+      });
+    }
+    return merged;
+  }
+
+  function upsertAsset(project, asset) {
+    if (!project) {
+      return null;
+    }
+    const normalized = normalizeAsset(asset);
+    project.assets = normalizeAssets(project.assets || []);
+    const index = project.assets.findIndex((item) => item.assetId === normalized.assetId);
+    if (index >= 0) {
+      project.assets[index] = Object.assign({}, project.assets[index], normalized, { updatedAt: nowIso() });
+    } else {
+      project.assets.push(normalized);
+    }
+    return normalized;
+  }
+
+  function findAsset(project, assetRef) {
+    const id = typeof assetRef === "string" ? assetRef : assetRef?.assetId || assetRef?.id || "";
+    return (project?.assets || []).find((asset) => asset.assetId === id || asset.id === id) || null;
+  }
+
+  function resolveAssetSrc(asset) {
+    if (!asset) {
+      return "";
+    }
+    const normalized = normalizeAsset(asset);
+    if (normalized.storage.mode === "project-file" && normalized.storage.relativePath) {
+      return encodeProjectRelativeUrl(normalized.storage.relativePath);
+    }
+    if (normalized.storage.mode === "embedded") {
+      return normalized.legacySrc || normalized.src || normalized.originalSrc || "";
+    }
+    return normalized.legacySrc || normalized.src || "";
+  }
+
+  function resolveLayerAssetSrc(project, layer, viewportKey) {
+    const asset = findAsset(project, layer?.assetRef || layer?.assetId);
+    const src = resolveAssetSrc(asset);
+    if (src) {
+      return src;
+    }
+    if (viewportKey === "mobile") {
+      return layer?.mobileSrc || layer?.src || layer?.desktopSrc || "";
+    }
+    return layer?.desktopSrc || layer?.src || layer?.mobileSrc || "";
+  }
+
+  function encodeRelativeUrl(relativePath) {
+    return normalizeRelativePath(relativePath).split("/").map((part) => encodeURIComponent(part)).join("/");
+  }
+
+  function encodeProjectRelativeUrl(relativePath) {
+    const encoded = encodeRelativeUrl(relativePath);
+    if (!encoded) {
+      return "";
+    }
+    return `../../${encoded}`;
+  }
+
+  function createAssetRefSnapshot(project, page) {
+    const refs = Array.from(new Set((page?.layers || []).flatMap((layer) => collectLayerAssetRefs(layer)).filter(Boolean)));
+    return refs.map((assetId) => {
+      const asset = findAsset(project, assetId);
+      // Embedded assets must travel with the page, not just their IDs.
+      return asset ? JSON.parse(JSON.stringify(normalizeAsset(asset))) : { assetId, status: "missing" };
+    });
+  }
+
+  function collectLayerAssetRefs(layer = {}) {
+    const refs = [layer.assetRef || layer.assetId, layer.base?.assetRef || layer.base?.assetId,
+      layer.desktop?.assetRef || layer.desktop?.assetId, layer.mobile?.assetRef || layer.mobile?.assetId];
+    Object.values(layer.viewportOverrides || {}).forEach((override) => refs.push(override.assetRef || override.assetId));
+    Object.values(layer.sceneOverrides || {}).forEach((override) => refs.push(override.assetRef || override.assetId));
+    Object.values(layer.sceneViewportOverrides || {}).forEach((viewports) => {
+      Object.values(viewports || {}).forEach((override) => refs.push(override.assetRef || override.assetId));
+    });
+    return refs;
+  }
+
+  function getCategoryLabel(category) {
+    return CATEGORIES[normalizeCategory(category)].label;
+  }
+
+  function getFormatLabel(asset = {}) {
+    const types = { "image/png": "PNG", "image/webp": "WebP", "image/jpeg": "JPEG", "video/webm": "WebM", "image/svg+xml": "SVG", "image/gif": "GIF" };
+    const type = String(asset.mediaType || "").split(";")[0].trim().toLowerCase();
+    if (types[type]) return types[type];
+    const file = asset.storage?.relativePath || asset.relativePath || asset.originalName || asset.fileName || "";
+    const extension = String(file).split(/[?#]/)[0].split(".").pop().toLowerCase();
+    const extensions = { png: "PNG", webp: "WebP", jpg: "JPEG", jpeg: "JPEG", webm: "WebM", svg: "SVG", gif: "GIF" };
+    if (extensions[extension]) return extensions[extension];
+    const dataType = String(asset.legacySrc || asset.src || "").match(/^data:([^;,]+)/i)?.[1]?.toLowerCase();
+    return types[dataType] || "不明";
+  }
+
+  function getAssetUsage(project, assetId) {
+    return (project?.pages || []).flatMap((page) => (page.layers || [])
+      .filter((layer) => collectLayerAssetRefs(layer).includes(assetId))
+      .map((layer) => ({ pageId: page.id, layerId: layer.id })));
+  }
+
+  function isolateProjectAssets(project, legacyForeignAssetIds = []) {
+    const foreignIds = new Set(legacyForeignAssetIds);
+    project.assets = (project.assets || []).filter((asset) => {
+      const unscopedFile = !asset.projectId && asset.storage?.mode === "project-file"
+        && !String(asset.storage.relativePath || "").startsWith(`assets/tbalance-projects/project-${project.projectId}/`);
+      const foreign = unscopedFile || (asset.projectId && asset.projectId !== project.projectId) || foreignIds.has(asset.assetId);
+      if (!foreign) return true;
+      if (!getAssetUsage(project, asset.assetId).length) return false;
+      asset.sourceProjectId = asset.projectId || "legacy-library";
+      asset.projectId = project.projectId;
+      return true;
+    });
+  }
+
+  function remapAssetReferences(project, oldId, newId) {
+    const visit = (value) => {
+      if (!value || typeof value !== "object") return;
+      for (const [key, item] of Object.entries(value)) {
+        if ((key === "assetRef" || key === "assetId") && item === oldId) value[key] = newId;
+        else if (item && typeof item === "object") visit(item);
+      }
+    };
+    (project.pages || []).forEach((page) => (page.layers || []).forEach(visit));
+  }
+
+  window.TBalanceNativeAssets = {
+    ASSET_SCHEMA_VERSION,
+    REGISTRY_PATH,
+    ASSET_ROOT,
+    CATEGORIES,
+    createRegistry,
+    normalizeRegistry,
+    normalizeAsset,
+    normalizeAssets,
+    normalizeCategory,
+    mergeProjectRegistry,
+    upsertAsset,
+    findAsset,
+    resolveAssetSrc,
+    resolveLayerAssetSrc,
+    encodeProjectRelativeUrl,
+    createAssetRefSnapshot,
+    getCategoryLabel,
+    getFormatLabel,
+    getAssetUsage,
+    isolateProjectAssets,
+    remapAssetReferences,
+  };
+})();

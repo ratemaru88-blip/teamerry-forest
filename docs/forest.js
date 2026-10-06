@@ -26,12 +26,20 @@
   const reuseForestNameButton = document.getElementById("reuseForestName");
   const saveForestNameButton = document.getElementById("saveForestName");
   const skipForestNameButton = document.getElementById("skipForestName");
+  const musicalArrival = new URLSearchParams(window.location.search).get("story") === "bokunotakaramono";
+  const storyWelcomeActions = document.getElementById("storyWelcomeActions");
+  const storyDestinationActions = document.getElementById("storyDestinationActions");
+  const continueMusicalStoryButton = document.getElementById("continueMusicalStory");
+  const changeMusicalNameButton = document.getElementById("changeMusicalName");
+  let storyStep = "";
 
   const TM_NAME_KEY = "teaMerryForestName";
   const TM_DISPLAY_NAME_KEY = "teaMerryDisplayName";
   const TM_NAME_DONE_KEY = "teaMerryNameDone";
+  const TM_LAST_VISIT_KEY = "teaMerryLastVisitAt";
   const TM_RETURN_SOURCE_KEY = "teaMerryReturnSource";
   const TM_RETURN_SOURCE_OBSERVATORY = "observatory";
+  const RETURN_CONFIRM_AFTER_DAYS = 14;
 
   const getStoredItem = (key) => {
     try {
@@ -51,6 +59,14 @@
     return true;
   };
 
+  function isDebugParam(value) {
+    return value === "1" || value === "１";
+  }
+
+  function isDebugOffParam(value) {
+    return value === "0" || value === "０";
+  }
+
   function getForestDisplayName() {
     const displayName = getStoredItem(TM_DISPLAY_NAME_KEY);
     return displayName && displayName !== "さんぽさん" ? displayName : "おさんぽさん";
@@ -60,6 +76,7 @@
     setStoredItem(TM_NAME_KEY, forestName);
     setStoredItem(TM_DISPLAY_NAME_KEY, displayName);
     setStoredItem(TM_NAME_DONE_KEY, "true");
+    touchForestVisit();
     updateWriterNames();
 
     window.dispatchEvent(new CustomEvent("teaMerryForestNameChange", {
@@ -80,6 +97,21 @@
 
   function saveWalkOnlyName() {
     persistForestName("おさんぽ", "おさんぽさん");
+  }
+
+  function touchForestVisit() {
+    setStoredItem(TM_LAST_VISIT_KEY, String(Date.now()));
+  }
+
+  function shouldConfirmReturningName() {
+    const lastVisit = Number(getStoredItem(TM_LAST_VISIT_KEY) || 0);
+
+    if (!lastVisit) {
+      return true;
+    }
+
+    const elapsed = Date.now() - lastVisit;
+    return elapsed >= RETURN_CONFIRM_AFTER_DAYS * 24 * 60 * 60 * 1000;
   }
 
   function updateWriterNames() {
@@ -115,6 +147,10 @@
   }
 
   function closeNameModal({ announceWelcome = false } = {}) {
+    if (musicalArrival && storyStep === "name") {
+      showMusicalStoryStep("ready");
+      return;
+    }
     nameModal?.classList.add("hidden");
 
     if (announceWelcome) {
@@ -175,11 +211,13 @@
     const message = document.getElementById("nameModalMessage");
 
     if (title) {
-      title.textContent = "ようこそ、TeaMerryへ。";
+      title.textContent = isConfirmMode ? "おかえりなさい、TeaMerryへ。" : "ようこそ、TeaMerryへ。";
     }
 
     if (message) {
-      message.innerHTML = "この森で呼んでほしい名前を教えてね。<br>（あとからいつでも変えられるよ。）";
+      message.innerHTML = isConfirmMode
+        ? "前の呼び名のままにする？<br>それとも、今日の呼び名を決めなおす？"
+        : "この森で呼んでほしい名前を教えてね。<br>（あとからいつでも変えられるよ。）";
     }
 
     if (forestNameInput) {
@@ -196,8 +234,45 @@
     }
 
     setNameModalMode(mode);
+    if (musicalArrival) {
+      storyStep = "name";
+      nameModal.dataset.storyStep = storyStep;
+      forestNameInput.hidden = false;
+      saveForestNameButton.parentElement.hidden = false;
+      storyWelcomeActions.hidden = true;
+      storyDestinationActions.hidden = true;
+      reuseForestNameButton.classList.add("hidden");
+      skipForestNameButton.textContent = "名前は決めずにおさんぽする";
+      document.getElementById("nameModalMessage").textContent =
+        "この森で呼んでほしい名前を教えてね。\n決めなくても大丈夫だよ。";
+    }
     nameModal.classList.remove("hidden");
     window.setTimeout(placeCaretAtNameEnd, 80);
+  }
+
+  function showMusicalStoryStep(step) {
+    storyStep = step;
+    nameModal.dataset.storyStep = step;
+    nameModal.classList.remove("hidden");
+    forestNameInput.hidden = true;
+    saveForestNameButton.parentElement.hidden = true;
+    storyWelcomeActions.hidden = step === "ready";
+    storyDestinationActions.hidden = step !== "ready";
+    changeMusicalNameButton.hidden = step !== "returning";
+    document.getElementById("nameModalTitle").textContent = "ミント";
+    const message = document.getElementById("nameModalMessage");
+    if (step === "welcome") {
+      message.textContent = "ミュージカル『ぼくの宝物』の続きを見に来たの？\nここは、TeaMerryの森だよ。";
+      continueMusicalStoryButton.textContent = "うん、見にきたよ";
+    } else if (step === "returning") {
+      message.textContent = `あ、${getForestDisplayName()}。\nまた来てくれたんだね。`;
+      continueMusicalStoryButton.textContent = "前の名前のままで";
+    } else {
+      message.textContent = `${getForestDisplayName()}、じゃあこっちだよ。\nミュージカル『ぼくの宝物』へ案内するね。`;
+    }
+    scene?.setAttribute("inert", "");
+    fixedObservatoryPortal?.setAttribute("inert", "");
+    (step === "ready" ? document.getElementById("musicalStoryDestination") : continueMusicalStoryButton).focus();
   }
 
   function hasObservatoryReferrer() {
@@ -235,11 +310,21 @@
     }
 
     consumeObservatoryReturn();
+    if (musicalArrival) {
+      showMusicalStoryStep("welcome");
+      return;
+    }
 
     const done = getStoredItem(TM_NAME_DONE_KEY);
     const display = getStoredItem(TM_DISPLAY_NAME_KEY);
 
     if (done && display) {
+      if (shouldConfirmReturningName()) {
+        showNameModal("confirm");
+        return;
+      }
+
+      touchForestVisit();
       window.setTimeout(announceForestReturn, 220);
       return;
     }
@@ -252,6 +337,7 @@
     showNameModalIfNeeded();
 
     window.addEventListener("pageshow", () => {
+      if (musicalArrival) return;
       if (!hasObservatoryReferrer()) {
         return;
       }
@@ -259,11 +345,40 @@
       nameModal?.classList.add("hidden");
     });
 
+    continueMusicalStoryButton?.addEventListener("click", () => {
+      if (!musicalArrival) return;
+      if (storyStep === "welcome") {
+        if (getStoredItem(TM_NAME_DONE_KEY) && getStoredItem(TM_DISPLAY_NAME_KEY)) {
+          showMusicalStoryStep("returning");
+        } else showNameModal("initial");
+      } else if (storyStep === "returning") {
+        if (!getStoredForestNameForInput()) saveWalkOnlyName();
+        else {
+          setStoredItem(TM_NAME_DONE_KEY, "true");
+          touchForestVisit();
+          updateWriterNames();
+        }
+        showMusicalStoryStep("ready");
+      }
+    });
+    changeMusicalNameButton?.addEventListener("click", () => {
+      if (musicalArrival && storyStep === "returning") showNameModal("confirm");
+    });
+    nameModal?.addEventListener("keydown", (event) => {
+      if (!musicalArrival || event.key !== "Tab") return;
+      const controls = [...nameModal.querySelectorAll("button:not(:disabled), a[href], input")]
+        .filter((el) => el.getClientRects().length);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+
     reuseForestNameButton?.addEventListener("click", () => {
       if (!getStoredForestNameForInput()) {
         saveWalkOnlyName();
       } else {
         setStoredItem(TM_NAME_DONE_KEY, "true");
+        touchForestVisit();
         updateWriterNames();
       }
       closeNameModal();
@@ -2179,7 +2294,7 @@
     const params = new URLSearchParams(window.location.search);
     let panelSetting = "";
     try {
-      if (params.get("debug") === "1") {
+      if (isDebugParam(params.get("debug"))) {
         window.localStorage.removeItem("teamerryForestDebugPanel");
       }
       panelSetting = window.localStorage.getItem("teamerryForestDebugPanel") || "";
@@ -2187,9 +2302,16 @@
       panelSetting = "";
     }
 
-    if (params.get("debug") === "0" || panelSetting === "off") {
+    if (isDebugOffParam(params.get("debug")) || panelSetting === "off") {
       document.body.classList.add("debug-panel-hidden");
     }
+
+    if (!isDebugParam(params.get("debug"))) {
+      document.body.classList.add("debug-panel-hidden");
+      return;
+    }
+
+    document.body.classList.add("debug-panel-enabled");
 
     debugPanel.querySelectorAll("[data-debug-time]").forEach((button) => {
       button.addEventListener("click", () => {
