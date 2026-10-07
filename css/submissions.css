@@ -26,3 +26,8 @@
 .tm-feedback .tm-feedback__close { flex: 0 0 32px; width: 32px; height: 32px; padding: 0; background: transparent; color: #252a26; font-size: 24px; line-height: 1; }
 .tm-feedback-dialog textarea { resize: none; height: 120px; }
 @media (max-height: 500px) { .tm-feedback-dialog { padding: 12px; } .tm-feedback__form { gap: 6px; } .tm-feedback-dialog textarea { height: 80px; } }
+.is-musical-feedback .bottle-feedback-title{position:absolute;z-index:1;left:20%;right:4%;top:1.5%;height:5.5%;margin:0;display:flex;align-items:center;justify-content:center;background:#f2d7a7;color:#5a3a22;font-size:18px;letter-spacing:0;}
+.is-musical-feedback .bottle-textarea,.is-musical-feedback .bottle-textarea:focus{height:39%;overflow-y:auto;}
+.is-musical-feedback .bottle-write-card>.tm-submission-status{position:absolute;z-index:4;left:16%;right:16%;top:81%;font-size:12px;color:#8b2929;}
+.is-musical-feedback .observatory-view--bottle-write{position:fixed;inset:0;min-height:0;height:100dvh;}
+.is-musical-feedback .bottle-write-card{width:min(420px,100vw,56.25dvh);max-height:100dvh;}

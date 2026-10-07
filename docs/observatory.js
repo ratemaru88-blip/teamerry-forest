@@ -23,6 +23,12 @@ window.TeaMerryForestName = {
 window.getForestDisplayName = getForestDisplayName;
 
 document.addEventListener("DOMContentLoaded", () => {
+  const feedbackParams = new URLSearchParams(location.search);
+  const musicalFeedback = feedbackParams.get("feedback") === "musical_feedback"
+    && feedbackParams.get("work") === "boku-no-takaramono"
+    && feedbackParams.get("returnTo") === "boku-no-takaramono";
+  let feedbackSaved = false;
+  let feedbackFinished = false;
   const observatory = document.getElementById("observatory");
   const observatoryStage = document.querySelector(".observatory-stage");
   const fairyImage = document.getElementById("fairyImage");
@@ -273,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fairyImage.alt = selectedFairy.alt;
 
   async function setInitialFairyMessage() {
+    if (feedbackFinished) return;
     if (!fairyBalloon) {
       return;
     }
@@ -294,12 +301,12 @@ document.addEventListener("DOMContentLoaded", () => {
         conditionTags: ["入室", isNight ? "夜" : "昼"],
         time: isNight ? "夜" : "昼"
       });
-      if (!lillReactionState) {
+      if (!lillReactionState && !feedbackFinished) {
         fairyBalloon.textContent = dialogueText || selectedMessage;
       }
     } catch (error) {
       console.warn("[TeaMerry Observatory] Dialogue Engine character dialogue failed:", error);
-      if (!lillReactionState) {
+      if (!lillReactionState && !feedbackFinished) {
         fairyBalloon.textContent = selectedMessage;
       }
     }
@@ -527,6 +534,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function consumePendingLillActionReaction() {
+    if (musicalFeedback && feedbackSaved) {
+      if (feedbackFinished) return;
+      feedbackFinished = true;
+      if (bottleFlushVideo) bottleFlushVideo.pause();
+      fairyBalloon.textContent = "大切に読ませていただきます。";
+      window.setTimeout(() => location.assign(new URL("./musical/boku-no-takaramono/pair-preview.html", location.href)), 3500);
+      return;
+    }
     if (!pendingLillReactionCategory) {
       return;
     }
@@ -1834,7 +1849,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startBottleFlush() {
     closeBottlePrivacyModal();
-    queueLillActionReaction("ボトルメールを出したあと");
+    if (!musicalFeedback) queueLillActionReaction("ボトルメールを出したあと");
     setVideoReturnFocus(bottleMailButton);
     showView(bottleFlushView);
 
@@ -2050,7 +2065,14 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.querySelectorAll("[data-bottle-flush]").forEach((button) => {
-    button.addEventListener("click", openBottlePrivacyModal);
+    button.addEventListener("click", async () => {
+      if (!musicalFeedback) { openBottlePrivacyModal(); return; }
+      if (feedbackSaved) return;
+      if (!await recordSubmission("musical_feedback", bottleMessageInput, bottleWriterName, bottleWriteView)) return;
+      feedbackSaved = true;
+      resetBottleMessageInput();
+      startBottleFlush();
+    });
   });
 
   let submissionPending = false;
@@ -2059,7 +2081,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let status = modal.querySelector(".tm-submission-status");
     if (!status) {
       status = document.createElement("p"); status.className = "tm-submission-status";
-      status.setAttribute("role", "status"); modal.querySelector('[role="dialog"]').appendChild(status);
+      status.setAttribute("role", "status");
+      const statusHost = type === "musical_feedback" ? modal.querySelector(".bottle-write-card") : modal.querySelector('[role="dialog"]');
+      (statusHost || modal).appendChild(status);
     }
     const controls = Array.from(document.querySelectorAll("[data-bottle-public], [data-wish-public], [data-observatory-back], [data-bottle-privacy-cancel], [data-wish-privacy-cancel]"));
     const disabled = controls.map((control) => control.disabled);
@@ -2067,9 +2091,10 @@ document.addEventListener("DOMContentLoaded", () => {
     controls.forEach((control) => { control.disabled = true; });
     status.textContent = "送信中…";
     try {
-      await window.TeaMerrySubmissions.send(type, (writer && writer.textContent.trim()) || "", input.value);
+      const name = type === "musical_feedback" ? getMusicalFeedbackName() : (writer && writer.textContent.trim()) || "";
+      await window.TeaMerrySubmissions.send(type, name, input.value, type === "musical_feedback" ? "boku-no-takaramono" : undefined);
       status.textContent = "";
-      window.TeaMerrySubmissions.notice(type === "bottle_mail"
+      if (type !== "musical_feedback") window.TeaMerrySubmissions.notice(type === "bottle_mail"
         ? "ボトルメール、ちゃんと届いたよ。大切に読ませていただきます。"
         : "願い星、ちゃんと届いたよ。大切に読ませていただきます。");
       return true;
@@ -2148,7 +2173,16 @@ document.addEventListener("DOMContentLoaded", () => {
   renderWishHokkoriStars();
 
   const initialViewParams = new URLSearchParams(window.location.search);
-  if (initialViewParams.get("wish") === "1") {
+  if (musicalFeedback) {
+    document.body.classList.add("is-musical-feedback");
+    const title = document.createElement("h2");
+    title.className = "bottle-feedback-title";
+    title.textContent = "感想を書く";
+    bottleWriteView.querySelector(".bottle-write-card").appendChild(title);
+    bottleWriterName.textContent = getMusicalFeedbackName();
+    bottleMessageInput.setAttribute("aria-label", "感想を書く");
+    showView(bottleWriteView);
+  } else if (initialViewParams.get("wish") === "1") {
     showView(wishWriteView);
   } else if (initialViewParams.get("bottle") === "1") {
     showView(bottleWriteView);
@@ -2156,5 +2190,13 @@ document.addEventListener("DOMContentLoaded", () => {
     showView(isNight ? wishHokkoriView : bottleHokkoriView);
   }
 
-  scheduleDriftBottleArrival();
+  if (!musicalFeedback) scheduleDriftBottleArrival();
+
+  function getMusicalFeedbackName() {
+    // The Mint/bottle name authority is shared; no feedback-specific storage.
+    try {
+      if (!localStorage.getItem(TM_DISPLAY_NAME_KEY)) return "お散歩さん";
+    } catch { return "お散歩さん"; }
+    return getObservatoryDisplayName();
+  }
 });

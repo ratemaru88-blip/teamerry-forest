@@ -84,7 +84,7 @@ async function main() {
       await page.waitForFunction(()=>document.documentElement.dataset.ready==='true');
       const hitId = width <= 720 ? 'lyr_81d9c73753d44c63' : 'lyr_db4f6f6480b84ae3';
       const hit = page.locator(`[data-layer-id="${hitId}"]`);
-      assert.equal(await page.locator('#musical-feedback').evaluate(el=>el.open),false);
+      assert.equal(await page.locator('#musical-feedback').count(),0);
       const native = JSON.parse(fs.readFileSync(path.join(root, prefix ? 'docs/musical/boku-no-takaramono/feedback-flow.tbalance' : 'musical/boku-no-takaramono/feedback-flow.tbalance'),'utf8'));
       const sourceLayer = native.page.layers.find(layer=>layer.id===hitId);
       const key = width <= 720 ? 'mobile' : 'desktop';
@@ -93,42 +93,52 @@ async function main() {
       const layout = await hit.evaluate(el=>({left:parseFloat(el.style.left),top:parseFloat(el.style.top),width:parseFloat(el.style.width),height:parseFloat(el.style.height)}));
       for (const [a,b] of [['left','x'],['top','y'],['width','width'],['height','height']]) assert.equal(layout[a],sourceLayer[key][b]);
       await hit.click();
-      assert.equal(await page.locator('#musical-feedback').evaluate(el=>el.open),true);
-      const dialogBox = await page.locator('#musical-feedback').boundingBox();
-      assert(dialogBox.x>=0&&dialogBox.y>=0&&dialogBox.x+dialogBox.width<=width);
-      const invalid = await page.evaluate(async () => {
-        const rejected=[];
-        for (const [type,message] of [['musical_feedback','あ'.repeat(301)],['musical_feedback',''],['musical_feedback','  '],['unknown','TEST']]) {
-          try {await TeaMerrySubmissions.send(type,'',message,'boku-no-takaramono');rejected.push(false);}
-          catch (_) {rejected.push(true);}
-        }
-        return rejected;
-      });
-      assert.deepEqual(invalid,[true,true,true,true]); assert.equal(requests.length,0);
-      const input=page.locator('#tm-feedback-message');
-      await input.fill('あ'.repeat(300)); await page.locator('button[type=submit]').click();
-      await page.waitForFunction(()=>document.querySelector('.tm-submission-status').textContent.includes('感想が届きました'));
-      assert.equal(requests.at(-1).type,'musical_feedback'); assert.equal(requests.at(-1).name,'');
-      assert.equal(await input.inputValue(),'');
-      await page.locator('#tm-feedback-name').fill('TEST 名前');
-      await input.fill('失敗テスト'); fail=true;
-      await page.locator('button[type=submit]').click();
+      await page.waitForURL('**/observatory.html?feedback=*');
+      await page.locator('#bottleWriteView.is-active').waitFor();
+      assert.equal(await page.locator('#bottleWriterName').textContent(),'お散歩さん');
+      assert.equal(await page.locator('input[name=name], #tm-feedback-name').count(),0);
+      const input=page.locator('#bottleMessageInput');
+      assert.equal(await input.getAttribute('aria-label'),'感想を書く');
+      assert.equal(await page.locator('.bottle-feedback-title').innerText(),'感想を書く');
+      for (const message of ['', 'あ'.repeat(301)]) {
+        await input.evaluate((el,value)=>{el.value=value;},message);
+        await page.locator('[data-bottle-flush]').click();
+        await page.waitForFunction(()=>document.querySelector('.tm-submission-status')?.textContent.length>0);
+        assert.equal(requests.length,0);
+      }
+      fail=true;
+      await input.fill('あ'.repeat(300));
+      await page.locator('[data-bottle-flush]').click();
       await page.waitForFunction(()=>document.querySelector('.tm-submission-status').textContent.includes('保存を確認できません'));
-      assert.equal(await input.inputValue(),'失敗テスト');
+      assert.equal(await input.inputValue(),'あ'.repeat(300));
+      assert.equal(await page.locator('.bottle-write-card > .tm-submission-status').isVisible(),true);
+      assert.equal(requests.at(-1).name,'お散歩さん');
       const retryId=requests.at(-1).requestId; fail=false;
-      await page.locator('button[type=submit]').click();
-      await page.waitForFunction(()=>document.querySelector('.tm-submission-status').textContent.includes('感想が届きました'));
+      await page.locator('[data-bottle-flush]').click();
+      await page.locator('#bottleFlushView.is-active').waitFor();
       assert.equal(requests.at(-1).requestId,retryId);
-      await page.locator('button[aria-label="感想フォームを閉じる"]').click();
-      await hit.click();
-      assert.equal(await page.locator('#tm-feedback-name').inputValue(),'TEST 名前');
+      assert.equal(requests.at(-1).type,'musical_feedback');
+      assert.equal(requests.at(-1).workId,'boku-no-takaramono');
+      assert.equal(await page.evaluate(()=>localStorage.getItem('teaMerryBottleMessages')),null);
+      await page.locator('#bottleFlushVideo').evaluate(video=>video.dispatchEvent(new Event('ended')));
+      await page.waitForFunction(()=>document.querySelector('#fairyBalloon').textContent==='大切に読ませていただきます。');
+      assert.equal(await page.locator('.is-reaction-active').count(),0);
+      await page.waitForURL('**/pair-preview.html');
+      await page.evaluate(()=>localStorage.setItem('teaMerryDisplayName','ミント設定済みさん'));
+      await page.goto(base+prefix+'/observatory.html?feedback=musical_feedback&work=boku-no-takaramono&returnTo=boku-no-takaramono&time=day');
+      await page.locator('#bottleWriteView.is-active').waitFor();
+      assert.equal(await page.locator('#bottleWriterName').textContent(),'ミント設定済みさん');
+      await input.fill('名前継承確認'); fail=true;
+      await page.locator('[data-bottle-flush]').click();
+      await page.waitForFunction(()=>document.querySelector('.tm-submission-status').textContent.includes('保存を確認できません'));
+      assert.equal(requests.at(-1).name,'ミント設定済みさん');
+      fail=false;
       await page.setViewportSize({width,height:360});
-      const compressed = await page.locator('#musical-feedback').boundingBox();
-      assert(compressed.y>=0&&compressed.y+compressed.height<=360);
-      await page.locator('#tm-feedback-message').fill('あ'.repeat(300));
-      assert.equal(await page.locator('#tm-feedback-message').evaluate(el=>getComputedStyle(el).overflowY),'auto');
+      assert.equal(await input.evaluate(el=>getComputedStyle(el).overflowY),'auto');
+      const compressed=await page.locator('.bottle-write-card').boundingBox();
+      assert(compressed.y>=0&&compressed.y+compressed.height<=361);
       await page.setViewportSize({width,height:900});
-      await page.locator('.tm-feedback').screenshot({path:path.join(root,`document/submissions-test/musical-${prefix?'docs':'root'}-${width}.png`)});
+      await page.locator('.bottle-write-card').screenshot({path:path.join(root,`document/submissions-test/musical-${prefix?'docs':'root'}-${width}.png`)});
       await page.goto(base+prefix+'/observatory.html?time=day');
       await page.waitForFunction(()=>window.TeaMerryObservatoryDriftBottle);
       for (const [type,inputId,open,insert,confirm,key] of [

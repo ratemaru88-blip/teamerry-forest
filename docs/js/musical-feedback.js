@@ -1,5 +1,17 @@
 (function () {
   "use strict";
+  window.TeaMerryMusicalFeedback = Object.freeze({
+    open() {
+      location.assign(new URL("../../observatory.html?feedback=musical_feedback&work=boku-no-takaramono&returnTo=boku-no-takaramono&time=day", location.href));
+    },
+  });
+  document.addEventListener("click", event => {
+    if (event.target.closest('a[href="#musical-feedback"]')) {
+      event.preventDefault(); window.TeaMerryMusicalFeedback.open();
+    }
+  });
+  // Retain the former visual implementation for a separate cleanup task.
+  function createLegacyFeedbackForm() {
   const section = document.createElement("dialog");
   section.id = "musical-feedback";
   section.className = "tm-feedback tm-feedback-dialog";
@@ -49,4 +61,5 @@
     } catch (error) { status.textContent = error.message; }
     finally { pending = false; button.disabled = false; input.readOnly = false; name.readOnly = false; }
   });
+  }
 })();
