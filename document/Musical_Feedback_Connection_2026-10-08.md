@@ -43,4 +43,11 @@ TBalance Core changes, registry changes, user-adjusted css/observatory.css posit
 
 ## Public Verification
 
-Pending publication commit/push and one TEST submission from GitHub Pages. Final SHA, sync status and live counts are reported in the chat after verification.
+Feature commit: c2d0d2e4cee1d54d836e7b0da0c2cc342b23acf7 (Connect musical feedback submission flow), pushed normally to main.
+GitHub Pages build/deploy run: https://github.com/ratemaru88-blip/teamerry-forest/actions/runs/37683305182
+Public URL: https://ratemaru88-blip.github.io/teamerry-forest/musical/boku-no-takaramono/pair-preview.html
+Public PC1440/Mobile390: original Stable-ID HitAreas open dialog, dialog stays inside viewport, 300 counter PASS; four-screen assets/color reveal/message/label PASS.
+Exactly one public TEST submitted: 2026-10-08 05:40:02 JST, TEST 公開後確認, 本文TEST 2026-10-08 GitHub Pages公開後の感想はこちら入口・実保存確認です。, 未確認.
+Sheet musical3 / bottle1 / wish1; total5 / unconfirmed5 / today5 / month5. All TEST rows preserved.
+Final status: pre-existing 13 modified files and 88 untracked entries retained; no unrelated files staged. No physical phone keyboard test.
+Documentation-only follow-up records the completed live verification; final HEAD and remote SHA are reported in chat.

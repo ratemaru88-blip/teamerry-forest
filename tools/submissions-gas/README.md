@@ -12,7 +12,7 @@ https://script.google.com/home/projects/1CTtkXgfYQ_XnGJ80qEWUvfVOrXJNSytPqWbLHKH
 実行者は自分、アクセスは全員（Googleログイン不要）。Sheet自体は非公開のまま。
 root/docsのendpointを以下の本番受信URLへ設定済み。
 https://script.google.com/macros/s/AKfycbwFHlIVbP6w58hJq2P3sYcX4oYmnIXcuD5-LFgApb9IHiMu0vs2JKXb8Q7srX2MbZvZ/exec
-commit / push / サイト公開は未実施。
+感想導線をc2d0d2eでcommit / mainへ通常push / サイト公開済み。Core等の既存差分は除外。
 
 ## 1. スプレッドシート
 
@@ -20,7 +20,7 @@ commit / push / サイト公開は未実施。
 ミュージカル感想 / ボトルメール / 願い星 / まとめ。
 各受信シートの表示列は日時・名前・本文・確認状態。
 まとめに総数・未確認・今日・今月を自動集計。日本時間設定済み。
-実送信のTEST行が3シートに各1件。削除・確認済みへの変更はしていない。
+TEST行は感想3件・ボトル1件・願い星1件。削除・確認済みへの変更はしていない。
 
 ## 2. Apps Script初期設定
 
@@ -95,7 +95,9 @@ Googleへの実保存が確認済みという意味ではない。
 - 再送と不正入力の後も各1件・総数3を読み戻して確認。
 - node tools/tests/submissions.cjs: root/docsのPC/スマホ回帰テストとGASモック検証も再実行成功。
 
-Web Appは公開済みだが、Webサイト自体の公開、Git stage/commit/pushは未実施。
+上記は投稿基盤完成時点の検証結果。続く感想HitArea接続・公開工程で公開前と公開後に感想を各1件追加。
+公開後確認: 2026-10-08 05:40:02 JST、感想3件・総数5、未確認/今日/今月5。TEST行を保持。
+Web AppとWebサイトは公開済み。詳細はdocument/Musical_Feedback_Connection_2026-10-08.md。
 
 公式資料:
 https://developers.google.com/apps-script/guides/web
