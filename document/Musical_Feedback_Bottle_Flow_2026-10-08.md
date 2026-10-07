@@ -28,7 +28,15 @@
 - `tools/tests/submissions.cjs`: GAS validation/deduplication; root/docs x PC/Mobile; no name input, unset and Mint-configured names, 300/301/empty, retry retention and ID, feedback animation completion and internal return, compressed-height textarea; ordinary bottle/wish three-line Reaction regression.
 - `tools/tests/published-musical.cjs`: four-screen PC/Mobile assets, canvas alignment/reveal, Kakao message and production label.
 - `tools/tests/feedback-native-final.cjs`: saved Native import, TEST rendering, PC/Mobile Actions and FINAL.
-- Public live check: pending deployment; exactly one new TEST submission will be made.
+- All listed tests passed. Public PC/Mobile assets/reveal regression also passed after deployment.
+- Feature commit: `be9ba702276c657076699bc509fb717bf0d780a2`; normal push main succeeded.
+- Pages deployment: https://github.com/ratemaru88-blip/teamerry-forest/actions/runs/37687218858
+- Exactly one public TEST submission: 2026/10/08 06:10:23 JST, existing name `ぶんちゃんさん`, 62 characters, 未確認.
+- requestId: `4152632f-8bce-41c9-8387-36214774db18`; receiver fingerprint recorded in Sheet row 5.
+- Sheet musical count 3 -> 4; total 5 -> 6; bottle 1 and wish 1 unchanged. No duplicate row.
+- Real existing video observed playing: `bottle_flush_v02.mp4`, duration 12.202667s, currentTime 4.065898s, paused false, no media error.
+- Fixed Lill bubble visibly confirmed, then automatic return to the same-origin musical page. No normal three-line Reaction was invoked.
+- Proof screenshots: `feedback-bottle-public.png`, `feedback-lill-public.png` in the current Codex visualization directory.
 
 ## Files and Git Safety
 
