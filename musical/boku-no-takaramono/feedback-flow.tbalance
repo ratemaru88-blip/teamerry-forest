@@ -2437,7 +2437,7 @@
         "id": "lyr_b9df2018c2e14bed",
         "visible": true,
         "locked": false,
-        "link": "#",
+        "link": "../../index.html",
         "hitArea": {
           "enabled": true,
           "visible": true,
@@ -2478,7 +2478,7 @@
         },
         "clickAction": {
           "type": "page",
-          "target": "#"
+          "target": "../../index.html"
         },
         "desktop": {
           "x": 810,
@@ -2905,7 +2905,7 @@
         "id": "lyr_ac2cb725f8dd446a",
         "visible": true,
         "locked": false,
-        "link": "#",
+        "link": "../../index.html",
         "hitArea": {
           "enabled": true,
           "visible": true,
@@ -2946,7 +2946,7 @@
         },
         "clickAction": {
           "type": "page",
-          "target": "#"
+          "target": "../../index.html"
         },
         "desktop": {
           "x": 1524,

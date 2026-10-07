@@ -8,6 +8,7 @@ if (!sourcePath) throw new Error('Provide the saved Native .tbalance authority p
 const source = JSON.parse(await readFile(sourcePath, 'utf8'));
 const doc = structuredClone(source);
 const ids = ['lyr_db4f6f6480b84ae3', 'lyr_81d9c73753d44c63'];
+const forestIds = ['lyr_b9df2018c2e14bed', 'lyr_ac2cb725f8dd446a'];
 const messageId = 'lyr_e0e27ee946f94375';
 const existing = JSON.parse(await readFile(path.join(root, 'docs/musical/boku-no-takaramono/kakao-message.tbalance'), 'utf8'));
 const messageAction = existing.page.layers.find(layer => layer.id === messageId)?.clickAction;
@@ -21,6 +22,12 @@ for (const id of ids) {
   layer.link = '#musical-feedback';
 }
 const comparison = structuredClone(doc);
+for (const id of forestIds) {
+  const layer = doc.page.layers.find(layer => layer.id === id);
+  assert(layer?.hitArea?.enabled, 'Expected saved forest HitArea: ' + id);
+  layer.clickAction = { type: 'page', target: '../../index.html' };
+  layer.link = '../../index.html';
+}
 comparison.page.layers.find(layer => layer.id === messageId).clickAction = source.page.layers.find(layer => layer.id === messageId).clickAction;
 for (const id of ids) {
   const layer = comparison.page.layers.find(layer => layer.id === id);

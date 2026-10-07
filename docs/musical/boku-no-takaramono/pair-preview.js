@@ -28,6 +28,10 @@
             }
             if (target && target !== "#" && ["page", "external"].includes(action.type)) {
               const url = new URL(target, location.href);
+              if (action.type === "page" && target === "../../index.html") {
+                location.assign(url.href);
+                return;
+              }
               if (["http:", "https:"].includes(url.protocol)) window.open(url.href, "_blank", "noopener");
             }
           },
