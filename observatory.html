@@ -254,7 +254,7 @@
                 <textarea
                     id="bottleMessageInput"
                     class="observatory-view__text bottle-textarea"
-                    maxlength="100"
+                    maxlength="300" rows="4"
                     aria-label="ボトルメールを書く"></textarea>
 
                 <div
@@ -265,7 +265,7 @@
                     class="observatory-view__counter bottle-counter"
                     data-counter-for="bottleMessageInput">
 
-                    0/100
+                    0 / 300
 
                 </div>
 
@@ -356,7 +356,7 @@
                 <textarea
                     id="wishMessageInput"
                     class="observatory-view__text wish-textarea"
-                    maxlength="60"
+                    maxlength="300" rows="4"
                     aria-label="願いごとを書く"></textarea>
 
                 <div
@@ -367,7 +367,7 @@
                     class="observatory-view__counter wish-counter"
                     data-counter-for="wishMessageInput">
 
-                    0 / 60
+                    0 / 300
 
                 </div>
 
@@ -562,7 +562,10 @@
 
     <script src="./js/dialogueEngine.js?v=2026.07.18-hotspot-map"></script>
     <script src="./today-hokkori.js?v=2026.07.18-hotspot-map"></script>
-    <script src="./observatory.js?v=2026.10.07-day-actions"></script>
+    <link rel="stylesheet" href="./css/submissions.css?v=20261008">
+    <script src="./js/submission-config.js?v=20261008"></script>
+    <script src="./js/submissions.js?v=20261008"></script>
+    <script src="./observatory.js?v=2026.10.08-submissions"></script>
     <script src="./js/build-info-badge.js?v=2026.07.18-hotspot-map"></script>
 
 </body>

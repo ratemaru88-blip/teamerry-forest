@@ -1,0 +1,4913 @@
+{
+  "schemaVersion": "tbalance.native.v0.1",
+  "format": "tbalance",
+  "version": "0.1.0",
+  "sourceAuthority": "tbalance",
+  "projectRef": {
+    "projectId": "prj_d005645dc6f3464c",
+    "displayName": "新規TBalance",
+    "assetRegistryPath": "data/tbalance/projects/project-prj_d005645dc6f3464c/project-assets.json"
+  },
+  "page": {
+    "pageId": "pg_3f2f44e9f46749c1",
+    "id": "pg_3f2f44e9f46749c1",
+    "displayName": "僕の宝物",
+    "name": "僕の宝物",
+    "slug": "boku-no-takaramono",
+    "sourceAuthority": "tbalance",
+    "viewports": {
+      "desktop": {
+        "viewportId": "desktop",
+        "displayName": "PC",
+        "width": 1920,
+        "height": 4320,
+        "label": "TeaMerry PC",
+        "screenHeight": 1080,
+        "screenCount": 4
+      },
+      "mobile": {
+        "viewportId": "mobile",
+        "displayName": "Mobile",
+        "width": 1080,
+        "height": 7680,
+        "label": "TeaMerry Mobile",
+        "screenHeight": 1920,
+        "screenCount": 4
+      }
+    },
+    "desktop": {
+      "viewportId": "desktop",
+      "displayName": "PC",
+      "width": 1920,
+      "height": 4320,
+      "label": "TeaMerry PC",
+      "screenHeight": 1080,
+      "screenCount": 4
+    },
+    "mobile": {
+      "viewportId": "mobile",
+      "displayName": "Mobile",
+      "width": 1080,
+      "height": 7680,
+      "label": "TeaMerry Mobile",
+      "screenHeight": 1920,
+      "screenCount": 4
+    },
+    "stage": {
+      "backgroundType": "transparent",
+      "backgroundColor": "#ffffff"
+    },
+    "scenes": [],
+    "behaviors": [],
+    "dataSourceRefs": [],
+    "layers": [
+      {
+        "id": "lyr_1dca046881134e99",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_04_mobile_color",
+        "fileName": "boku_04_mobile_color.webp",
+        "assetRef": "ast_c98a301a0b8a46b0",
+        "assetId": "ast_c98a301a0b8a46b0",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_c98a301a0b8a46b0",
+          "assetId": "ast_c98a301a0b8a46b0"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 5760,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_c98a301a0b8a46b0",
+          "assetId": "ast_c98a301a0b8a46b0"
+        },
+        "scrollFrames": {
+          "mobile": 3
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_1dca046881134e99",
+        "displayName": "boku_04_mobile_color",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_c98a301a0b8a46b0",
+          "assetId": "ast_c98a301a0b8a46b0"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 5760,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background"
+      },
+      {
+        "id": "lyr_87e935fea1724bbc",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_03_mobile_color",
+        "fileName": "boku_03_mobile_color.webp",
+        "assetRef": "ast_64e3a091fd5148b8",
+        "assetId": "ast_64e3a091fd5148b8",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_64e3a091fd5148b8",
+          "assetId": "ast_64e3a091fd5148b8"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 3840,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_64e3a091fd5148b8",
+          "assetId": "ast_64e3a091fd5148b8"
+        },
+        "scrollFrames": {
+          "mobile": 2
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_87e935fea1724bbc",
+        "displayName": "boku_03_mobile_color",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_64e3a091fd5148b8",
+          "assetId": "ast_64e3a091fd5148b8"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 3840,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background"
+      },
+      {
+        "id": "lyr_ec4c1ef40a9f464b",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_02_mobile_color",
+        "fileName": "boku_02_mobile_color.webp",
+        "assetRef": "ast_7203d0c511ff4f6d",
+        "assetId": "ast_7203d0c511ff4f6d",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_7203d0c511ff4f6d",
+          "assetId": "ast_7203d0c511ff4f6d"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 1920,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_7203d0c511ff4f6d",
+          "assetId": "ast_7203d0c511ff4f6d"
+        },
+        "scrollFrames": {
+          "mobile": 1
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_ec4c1ef40a9f464b",
+        "displayName": "boku_02_mobile_color",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_7203d0c511ff4f6d",
+          "assetId": "ast_7203d0c511ff4f6d"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 1920,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background"
+      },
+      {
+        "id": "lyr_4d54497cf4e1418f",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_04_pc_color",
+        "fileName": "boku_04_pc_color.webp",
+        "assetRef": "ast_73efa67e4ca24470",
+        "assetId": "ast_73efa67e4ca24470",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 3240,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_73efa67e4ca24470",
+          "assetId": "ast_73efa67e4ca24470"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_73efa67e4ca24470",
+          "assetId": "ast_73efa67e4ca24470"
+        },
+        "scrollFrames": {
+          "desktop": 3
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_4d54497cf4e1418f",
+        "displayName": "boku_04_pc_color",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 3240,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_73efa67e4ca24470",
+          "assetId": "ast_73efa67e4ca24470"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 0,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background"
+      },
+      {
+        "id": "lyr_ba39cd16fb284116",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_03_pc_color",
+        "fileName": "boku_03_pc_color.webp",
+        "assetRef": "ast_b0b1dcf3aa224902",
+        "assetId": "ast_b0b1dcf3aa224902",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 2160,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_b0b1dcf3aa224902",
+          "assetId": "ast_b0b1dcf3aa224902"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_b0b1dcf3aa224902",
+          "assetId": "ast_b0b1dcf3aa224902"
+        },
+        "scrollFrames": {
+          "desktop": 2
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_ba39cd16fb284116",
+        "displayName": "boku_03_pc_color",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 2160,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_b0b1dcf3aa224902",
+          "assetId": "ast_b0b1dcf3aa224902"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 0,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background"
+      },
+      {
+        "id": "lyr_9d8538c22fa04f97",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_02_pc_color",
+        "fileName": "boku_02_pc_color.webp",
+        "assetRef": "ast_a1f6a2804f744934",
+        "assetId": "ast_a1f6a2804f744934",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 1080,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_a1f6a2804f744934",
+          "assetId": "ast_a1f6a2804f744934"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_a1f6a2804f744934",
+          "assetId": "ast_a1f6a2804f744934"
+        },
+        "scrollFrames": {
+          "desktop": 1
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_9d8538c22fa04f97",
+        "displayName": "boku_02_pc_color",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 1080,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_a1f6a2804f744934",
+          "assetId": "ast_a1f6a2804f744934"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 0,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background"
+      },
+      {
+        "id": "lyr_af3a7a587f004e66",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_01_㍶_color",
+        "fileName": "boku_01_㍶_color.webp",
+        "assetRef": "ast_94a841cc08ac4a7e",
+        "assetId": "ast_94a841cc08ac4a7e",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_94a841cc08ac4a7e",
+          "assetId": "ast_94a841cc08ac4a7e"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_94a841cc08ac4a7e",
+          "assetId": "ast_94a841cc08ac4a7e"
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_af3a7a587f004e66",
+        "displayName": "boku_01_㍶_color",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_94a841cc08ac4a7e",
+          "assetId": "ast_94a841cc08ac4a7e"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "scrollFrames": {
+          "desktop": 0
+        },
+        "role": "background"
+      },
+      {
+        "id": "lyr_2bcc191074a14a14",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_01_mobile_color",
+        "fileName": "boku_01_mobile_color.webp",
+        "assetRef": "ast_fcab438b4b3c4a7d",
+        "assetId": "ast_fcab438b4b3c4a7d",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_fcab438b4b3c4a7d",
+          "assetId": "ast_fcab438b4b3c4a7d"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_fcab438b4b3c4a7d",
+          "assetId": "ast_fcab438b4b3c4a7d"
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_2bcc191074a14a14",
+        "displayName": "boku_01_mobile_color",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_fcab438b4b3c4a7d",
+          "assetId": "ast_fcab438b4b3c4a7d"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "scrollFrames": {
+          "mobile": 0
+        },
+        "role": "background"
+      },
+      {
+        "id": "lyr_22c27558eecf4003",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_01_pc_mono",
+        "fileName": "boku_01_pc_mono.webp",
+        "assetRef": "ast_a01d213da05e41c3",
+        "assetId": "ast_a01d213da05e41c3",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_a01d213da05e41c3",
+          "assetId": "ast_a01d213da05e41c3"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_a01d213da05e41c3",
+          "assetId": "ast_a01d213da05e41c3"
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_22c27558eecf4003",
+        "displayName": "boku_01_pc_mono",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_a01d213da05e41c3",
+          "assetId": "ast_a01d213da05e41c3"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "scrollFrames": {
+          "desktop": 0
+        },
+        "role": "background-mono",
+        "metadata": {
+          "backgroundPair": {
+            "colorLayerId": "lyr_af3a7a587f004e66",
+            "viewport": "desktop",
+            "screen": 1,
+            "radius": 64,
+            "enabled": true
+          }
+        }
+      },
+      {
+        "id": "lyr_4c6c312227f04764",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_02_pc_mono",
+        "fileName": "boku_02_pc_mono.webp",
+        "assetRef": "ast_f744f4ca8fb04fcb",
+        "assetId": "ast_f744f4ca8fb04fcb",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 1080,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_f744f4ca8fb04fcb",
+          "assetId": "ast_f744f4ca8fb04fcb"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_f744f4ca8fb04fcb",
+          "assetId": "ast_f744f4ca8fb04fcb"
+        },
+        "scrollFrames": {
+          "desktop": 1
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_4c6c312227f04764",
+        "displayName": "boku_02_pc_mono",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 1080,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_f744f4ca8fb04fcb",
+          "assetId": "ast_f744f4ca8fb04fcb"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 0,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background-mono",
+        "metadata": {
+          "backgroundPair": {
+            "colorLayerId": "lyr_9d8538c22fa04f97",
+            "viewport": "desktop",
+            "screen": 2,
+            "radius": 64,
+            "enabled": true
+          }
+        }
+      },
+      {
+        "id": "lyr_0e5a0b8a587f418f",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_03_pc_mono",
+        "fileName": "boku_03_pc_mono.webp",
+        "assetRef": "ast_783ccdf36fe844cf",
+        "assetId": "ast_783ccdf36fe844cf",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 2160,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_783ccdf36fe844cf",
+          "assetId": "ast_783ccdf36fe844cf"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_783ccdf36fe844cf",
+          "assetId": "ast_783ccdf36fe844cf"
+        },
+        "scrollFrames": {
+          "desktop": 2
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_0e5a0b8a587f418f",
+        "displayName": "boku_03_pc_mono",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 2160,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_783ccdf36fe844cf",
+          "assetId": "ast_783ccdf36fe844cf"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 0,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background-mono",
+        "metadata": {
+          "backgroundPair": {
+            "colorLayerId": "lyr_ba39cd16fb284116",
+            "viewport": "desktop",
+            "screen": 3,
+            "radius": 64,
+            "enabled": true
+          }
+        }
+      },
+      {
+        "id": "lyr_d96cf2ada53c425e",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_01_mobile_mono",
+        "fileName": "boku_01_mobile_mono.webp",
+        "assetRef": "ast_bce6352cbc4b4bf0",
+        "assetId": "ast_bce6352cbc4b4bf0",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_bce6352cbc4b4bf0",
+          "assetId": "ast_bce6352cbc4b4bf0"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_bce6352cbc4b4bf0",
+          "assetId": "ast_bce6352cbc4b4bf0"
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_d96cf2ada53c425e",
+        "displayName": "boku_01_mobile_mono",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_bce6352cbc4b4bf0",
+          "assetId": "ast_bce6352cbc4b4bf0"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "scrollFrames": {
+          "mobile": 0
+        },
+        "role": "background-mono",
+        "metadata": {
+          "backgroundPair": {
+            "colorLayerId": "lyr_2bcc191074a14a14",
+            "viewport": "mobile",
+            "screen": 1,
+            "radius": 64,
+            "enabled": true
+          }
+        }
+      },
+      {
+        "id": "lyr_65e2ae0bbebd489d",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_02_mobile_mono",
+        "fileName": "boku_02_mobile_mono.webp",
+        "assetRef": "ast_0b94b9c298f34610",
+        "assetId": "ast_0b94b9c298f34610",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_0b94b9c298f34610",
+          "assetId": "ast_0b94b9c298f34610"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 1920,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_0b94b9c298f34610",
+          "assetId": "ast_0b94b9c298f34610"
+        },
+        "scrollFrames": {
+          "mobile": 1
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_65e2ae0bbebd489d",
+        "displayName": "boku_02_mobile_mono",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_0b94b9c298f34610",
+          "assetId": "ast_0b94b9c298f34610"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 1920,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background-mono",
+        "metadata": {
+          "backgroundPair": {
+            "colorLayerId": "lyr_ec4c1ef40a9f464b",
+            "viewport": "mobile",
+            "screen": 2,
+            "radius": 64,
+            "enabled": true
+          }
+        }
+      },
+      {
+        "id": "lyr_8aae6ca6de944a6f",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_03_mobile_mono",
+        "fileName": "boku_03_mobile_mono.webp",
+        "assetRef": "ast_6ad0493df7f544a4",
+        "assetId": "ast_6ad0493df7f544a4",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_6ad0493df7f544a4",
+          "assetId": "ast_6ad0493df7f544a4"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 3840,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_6ad0493df7f544a4",
+          "assetId": "ast_6ad0493df7f544a4"
+        },
+        "scrollFrames": {
+          "mobile": 2
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_8aae6ca6de944a6f",
+        "displayName": "boku_03_mobile_mono",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_6ad0493df7f544a4",
+          "assetId": "ast_6ad0493df7f544a4"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 3840,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background-mono",
+        "metadata": {
+          "backgroundPair": {
+            "colorLayerId": "lyr_87e935fea1724bbc",
+            "viewport": "mobile",
+            "screen": 3,
+            "radius": 64,
+            "enabled": true
+          }
+        }
+      },
+      {
+        "id": "lyr_e17cfeb2bca24cf4",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_04_mobile_mono",
+        "fileName": "boku_04_mobile_mono.webp",
+        "assetRef": "ast_45f868ef1b6e4723",
+        "assetId": "ast_45f868ef1b6e4723",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_45f868ef1b6e4723",
+          "assetId": "ast_45f868ef1b6e4723"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 5760,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_45f868ef1b6e4723",
+          "assetId": "ast_45f868ef1b6e4723"
+        },
+        "scrollFrames": {
+          "mobile": 3
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_e17cfeb2bca24cf4",
+        "displayName": "boku_04_mobile_mono",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_45f868ef1b6e4723",
+          "assetId": "ast_45f868ef1b6e4723"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 5760,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background-mono",
+        "metadata": {
+          "backgroundPair": {
+            "colorLayerId": "lyr_1dca046881134e99",
+            "viewport": "mobile",
+            "screen": 4,
+            "radius": 64,
+            "enabled": true
+          }
+        }
+      },
+      {
+        "id": "lyr_527c461993554e32",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "boku_04_pc_mono",
+        "fileName": "boku_04_pc_mono.webp",
+        "assetRef": "ast_21baf6a38d9b4ca1",
+        "assetId": "ast_21baf6a38d9b4ca1",
+        "src": "",
+        "desktop": {
+          "x": 0,
+          "y": 3240,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_21baf6a38d9b4ca1",
+          "assetId": "ast_21baf6a38d9b4ca1"
+        },
+        "mobile": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_21baf6a38d9b4ca1",
+          "assetId": "ast_21baf6a38d9b4ca1"
+        },
+        "scrollFrames": {
+          "desktop": 3
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_527c461993554e32",
+        "displayName": "boku_04_pc_mono",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 0,
+          "y": 3240,
+          "width": 1920,
+          "height": 1080,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_21baf6a38d9b4ca1",
+          "assetId": "ast_21baf6a38d9b4ca1"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "y": 0,
+            "width": 1080,
+            "height": 1920
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "role": "background-mono",
+        "metadata": {
+          "backgroundPair": {
+            "colorLayerId": "lyr_4d54497cf4e1418f",
+            "viewport": "desktop",
+            "screen": 4,
+            "radius": 64,
+            "enabled": true
+          }
+        }
+      },
+      {
+        "id": "lyr_621f7842b348426d",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 594,
+          "height": 109
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "m予告編へ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "scroll",
+          "target": "",
+          "scrollTargets": {
+            "mobile": {
+              "screen": 2,
+              "offset": 0
+            }
+          }
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 251,
+          "y": 1407,
+          "width": 594,
+          "height": 109,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "both",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_621f7842b348426d",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 251,
+            "y": 1407,
+            "width": 594,
+            "height": 109
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_f688aa346f16469d",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 173,
+          "height": 245
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "ｍあらすじへ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "scroll",
+          "target": "",
+          "scrollTargets": {
+            "mobile": {
+              "screen": 2,
+              "offset": 0
+            }
+          }
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 65,
+          "y": 1575,
+          "width": 173,
+          "height": 245,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_f688aa346f16469d",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 65,
+            "y": 1575,
+            "width": 173,
+            "height": 245
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_9f869a8cb6eb4c1d",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 186,
+          "height": 229
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "ｍ登場人物へ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "scroll",
+          "target": "",
+          "scrollTargets": {
+            "mobile": {
+              "screen": 3,
+              "offset": 0
+            }
+          }
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 267,
+          "y": 1578,
+          "width": 186,
+          "height": 229,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_9f869a8cb6eb4c1d",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 267,
+            "y": 1578,
+            "width": 186,
+            "height": 229
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_25ee5ef6966346f4",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 186,
+          "height": 239
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "ｍ制作風景へ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "scroll",
+          "target": "",
+          "scrollTargets": {
+            "mobile": {
+              "screen": 4,
+              "offset": 0
+            }
+          }
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 482,
+          "y": 1578,
+          "width": 186,
+          "height": 239,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_25ee5ef6966346f4",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 482,
+            "y": 1578,
+            "width": 186,
+            "height": 239
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_b9df2018c2e14bed",
+        "visible": true,
+        "locked": false,
+        "link": "#",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 158,
+          "height": 245
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "ｍ森へ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "#"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 893,
+          "y": 1575,
+          "width": 158,
+          "height": 245,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_b9df2018c2e14bed",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 893,
+            "y": 1575,
+            "width": 158,
+            "height": 245
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_7b4825c1a4cb4aa8",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 302,
+          "height": 181
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "PCあらすじへ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "scroll",
+          "target": "",
+          "scrollTargets": {
+            "desktop": {
+              "screen": 2,
+              "offset": 0
+            }
+          }
+        },
+        "desktop": {
+          "x": 73,
+          "y": 825,
+          "width": 302,
+          "height": 181,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 390,
+          "y": 3765,
+          "width": 302,
+          "height": 181,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "desktop",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_7b4825c1a4cb4aa8",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 73,
+          "y": 825,
+          "width": 302,
+          "height": 181,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 390,
+            "y": 3765
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_41beb642e8bb4479",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 282,
+          "height": 201
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "PC登場人物",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "scroll",
+          "target": "",
+          "scrollTargets": {
+            "desktop": {
+              "screen": 3,
+              "offset": 0
+            }
+          }
+        },
+        "desktop": {
+          "x": 453,
+          "y": 815,
+          "width": 282,
+          "height": 201,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 390,
+          "y": 3765,
+          "width": 282,
+          "height": 201,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "desktop",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_41beb642e8bb4479",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 453,
+          "y": 815,
+          "width": 282,
+          "height": 201,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 390,
+            "y": 3765
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_0d875bdf0bce460b",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 302,
+          "height": 185
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "PC制作風景",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "scroll",
+          "target": "",
+          "scrollTargets": {
+            "desktop": {
+              "screen": 4,
+              "offset": 0
+            }
+          }
+        },
+        "desktop": {
+          "x": 808,
+          "y": 822,
+          "width": 302,
+          "height": 185,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 390,
+          "y": 3765,
+          "width": 302,
+          "height": 185,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "desktop",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_0d875bdf0bce460b",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 808,
+          "y": 822,
+          "width": 302,
+          "height": 185,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 390,
+            "y": 3765
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_ac2cb725f8dd446a",
+        "visible": true,
+        "locked": false,
+        "link": "#",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 342,
+          "height": 219
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "PC森へ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "#"
+        },
+        "desktop": {
+          "x": 1524,
+          "y": 802,
+          "width": 342,
+          "height": 219,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 390,
+          "y": 3765,
+          "width": 342,
+          "height": 219,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "desktop",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_ac2cb725f8dd446a",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 1524,
+          "y": 802,
+          "width": 342,
+          "height": 219,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 390,
+            "y": 3765
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_5fb27c1c05804b47",
+        "visible": true,
+        "locked": false,
+        "link": "https://youtu.be/BZs2clh50to",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 656,
+          "height": 392
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "予告編１",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "external",
+          "target": "https://youtu.be/BZs2clh50to"
+        },
+        "desktop": {
+          "x": 320,
+          "y": 1319,
+          "width": 570,
+          "height": 263,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 270,
+          "y": 2157,
+          "width": 656,
+          "height": 392,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "both",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_5fb27c1c05804b47",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 320,
+          "y": 1319,
+          "width": 570,
+          "height": 263,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 270,
+            "y": 2157,
+            "width": 656,
+            "height": 392
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_d901c09916774ba5",
+        "visible": true,
+        "locked": false,
+        "link": "https://youtu.be/73EntSalnY8",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 652,
+          "height": 355
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "予告編２",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "external",
+          "target": "https://youtu.be/73EntSalnY8"
+        },
+        "desktop": {
+          "x": 1003,
+          "y": 1288,
+          "width": 609,
+          "height": 321,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 267,
+          "y": 2679,
+          "width": 652,
+          "height": 355,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "both",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_d901c09916774ba5",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 1003,
+          "y": 1288,
+          "width": 609,
+          "height": 321,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 267,
+            "y": 2679,
+            "width": 652,
+            "height": 355
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_e663e3d6cf564aab",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 543,
+          "height": 121
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "PC予告編へ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "scroll",
+          "target": "",
+          "scrollTargets": {
+            "desktop": {
+              "screen": 2,
+              "offset": 0
+            }
+          }
+        },
+        "desktop": {
+          "x": 1108,
+          "y": 594,
+          "width": 543,
+          "height": 121,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 390,
+          "y": 3765,
+          "width": 543,
+          "height": 121,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "desktop",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_e663e3d6cf564aab",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 1108,
+          "y": 594,
+          "width": 543,
+          "height": 121,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 390,
+            "y": 3765
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_e0e27ee946f94375",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 168,
+          "height": 232
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "カカオ呟き",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "message",
+          "target": "ヘッドホン、その位置で聞こえるの？"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 839,
+          "y": 6465,
+          "width": 168,
+          "height": 232,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_e0e27ee946f94375",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 839,
+            "y": 6465,
+            "width": 168,
+            "height": 232
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_aa5f435d224949c5",
+        "visible": true,
+        "locked": false,
+        "link": "#",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 241,
+          "height": 65
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "m森へ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "#"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 794,
+          "y": 6985,
+          "width": 241,
+          "height": 65,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_aa5f435d224949c5",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 794,
+            "y": 6985,
+            "width": 241,
+            "height": 65
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_cb965e5c79c54fc7",
+        "visible": true,
+        "locked": false,
+        "link": "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 241,
+          "height": 68
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "m星風テラスへ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 794,
+          "y": 7087,
+          "width": 241,
+          "height": 68,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_cb965e5c79c54fc7",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 794,
+            "y": 7087,
+            "width": 241,
+            "height": 68
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_d51617af5c974f71",
+        "visible": true,
+        "locked": false,
+        "link": "https://ratemaru88.wixsite.com/teamerry/%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E3%83%9D%E3%83%AA%E3%82%B7%E3%83%BC",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 239,
+          "height": 62
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "mおみくじへ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "external",
+          "target": "https://ratemaru88.wixsite.com/teamerry/%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E3%83%9D%E3%83%AA%E3%82%B7%E3%83%BC"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 799,
+          "y": 7193,
+          "width": 239,
+          "height": 62,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_d51617af5c974f71",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 799,
+            "y": 7193,
+            "width": 239,
+            "height": 62
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_1cae8b6017574cc1",
+        "visible": true,
+        "locked": false,
+        "link": "https://ratemaru88-blip.github.io/teamerry-forest/tea_room.html",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 244,
+          "height": 65
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "mティールームへ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "https://ratemaru88-blip.github.io/teamerry-forest/tea_room.html"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 797,
+          "y": 7298,
+          "width": 244,
+          "height": 65,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_1cae8b6017574cc1",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 797,
+            "y": 7298,
+            "width": 244,
+            "height": 65
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_1ffdae16fdf24b46",
+        "visible": true,
+        "locked": false,
+        "link": "https://ratemaru88.wixsite.com/teamerry/%E3%83%86%E3%82%B9%E3%83%88",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 250,
+          "height": 59
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "mフォーチュンクッキーへ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "external",
+          "target": "https://ratemaru88.wixsite.com/teamerry/%E3%83%86%E3%82%B9%E3%83%88"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 785,
+          "y": 7395,
+          "width": 250,
+          "height": 59,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_1ffdae16fdf24b46",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 785,
+            "y": 7395,
+            "width": 250,
+            "height": 59
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_5cca9c814f094c74",
+        "visible": true,
+        "locked": false,
+        "link": "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 212,
+          "height": 179
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "m感想メールへ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "https://ratemaru88-blip.github.io/teamerry-forest/observatory.html"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 121,
+          "y": 7266,
+          "width": 212,
+          "height": 179,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_5cca9c814f094c74",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 121,
+            "y": 7266,
+            "width": 212,
+            "height": 179
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_9a88e7a3b7444f0e",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 140,
+          "height": 56
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "Mobile本編 制作中の札",
+        "role": "decoration",
+        "shape": {
+          "type": "roundRect",
+          "fill": "#ead7ad",
+          "fillEnabled": true,
+          "stroke": "#806343",
+          "strokeEnabled": true,
+          "strokeWidth": 3,
+          "radius": 5
+        },
+        "clickAction": {
+          "type": "none",
+          "target": ""
+        },
+        "desktop": {
+          "x": 725,
+          "y": 1590,
+          "width": 140,
+          "height": 56,
+          "rotation": 7,
+          "visible": true,
+          "opacity": 1
+        },
+        "mobile": {
+          "x": 725,
+          "y": 1590,
+          "width": 140,
+          "height": 56,
+          "rotation": 7,
+          "visible": true,
+          "opacity": 1
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_9a88e7a3b7444f0e",
+        "displayName": "Mobile本編 制作中の札",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 725,
+          "y": 1590,
+          "width": 140,
+          "height": 56,
+          "rotation": 7,
+          "visible": true,
+          "opacity": 1
+        },
+        "viewportOverrides": {},
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "groupId": "group_7a4d6bfea5ed455e",
+        "groupName": "Mobile本編 制作中の札",
+        "metadata": {
+          "productionLabel": true
+        }
+      },
+      {
+        "id": "lyr_dd38db72c9ad438d",
+        "visible": true,
+        "locked": true,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 140,
+          "height": 40
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "text",
+        "name": "Mobile本編 制作中の文字",
+        "role": "decoration",
+        "clickAction": {
+          "type": "none",
+          "target": ""
+        },
+        "desktop": {
+          "x": 725,
+          "y": 1598,
+          "width": 140,
+          "height": 40,
+          "rotation": 7,
+          "visible": true,
+          "opacity": 1
+        },
+        "mobile": {
+          "x": 725,
+          "y": 1598,
+          "width": 140,
+          "height": 40,
+          "rotation": 7,
+          "visible": true,
+          "opacity": 1
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_dd38db72c9ad438d",
+        "displayName": "Mobile本編 制作中の文字",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 725,
+          "y": 1598,
+          "width": 140,
+          "height": 40,
+          "rotation": 7,
+          "visible": true,
+          "opacity": 1
+        },
+        "viewportOverrides": {},
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        },
+        "groupId": "group_7a4d6bfea5ed455e",
+        "groupName": "Mobile本編 制作中の札",
+        "metadata": {
+          "productionLabel": true
+        },
+        "text": "制作中",
+        "style": {
+          "fontSize": 32,
+          "weight": 700,
+          "color": "#573d2a",
+          "align": "center",
+          "lineHeight": 1.2,
+          "fontFamily": "\"Yu Mincho\", \"Noto Serif JP\", serif"
+        }
+      },
+      {
+        "id": "lyr_81d9c73753d44c63",
+        "visible": true,
+        "locked": false,
+        "link": "#musical-feedback",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 242,
+          "height": 217
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "m感想ボトルメール",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "#musical-feedback"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 99,
+          "y": 7261,
+          "width": 242,
+          "height": 217,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_81d9c73753d44c63",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 99,
+            "y": 7261,
+            "width": 242,
+            "height": 217
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_db4f6f6480b84ae3",
+        "visible": true,
+        "locked": false,
+        "link": "#musical-feedback",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 394,
+          "height": 224
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "PC感想ボトルメールへ",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "#musical-feedback"
+        },
+        "desktop": {
+          "x": 1504,
+          "y": 3796,
+          "width": 394,
+          "height": 224,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 390,
+          "y": 3765,
+          "width": 394,
+          "height": 224,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "desktop",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_db4f6f6480b84ae3",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 1504,
+          "y": 3796,
+          "width": 394,
+          "height": 224,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 390,
+            "y": 3765
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      }
+    ],
+    "metadata": {
+      "createdAt": "2026-10-03T20:12:34.424Z",
+      "updatedAt": "2026-10-07T20:15:22.779Z"
+    }
+  },
+  "assetManifest": [
+    {
+      "assetId": "ast_c98a301a0b8a46b0",
+      "id": "ast_c98a301a0b8a46b0",
+      "displayName": "boku_04_mobile_color",
+      "name": "boku_04_mobile_color",
+      "originalName": "boku_04_mobile_color.webp",
+      "mediaType": "image/webp",
+      "width": 941,
+      "height": 1672,
+      "byteLength": 420932,
+      "contentHash": "a39e4794475c16aeb9e4fed5f414ffe88360012824cadce5853641c75d047993",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_c98a301a0b8a46b0.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_c98a301a0b8a46b0.webp"
+    },
+    {
+      "assetId": "ast_64e3a091fd5148b8",
+      "id": "ast_64e3a091fd5148b8",
+      "displayName": "boku_03_mobile_color",
+      "name": "boku_03_mobile_color",
+      "originalName": "boku_03_mobile_color.webp",
+      "mediaType": "image/webp",
+      "width": 1080,
+      "height": 1920,
+      "byteLength": 327870,
+      "contentHash": "a0fdffa0e36f8e30b117cd665cb063059362c5aa542fdc055aac11a79b3fead4",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_64e3a091fd5148b8.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_64e3a091fd5148b8.webp"
+    },
+    {
+      "assetId": "ast_7203d0c511ff4f6d",
+      "id": "ast_7203d0c511ff4f6d",
+      "displayName": "boku_02_mobile_color",
+      "name": "boku_02_mobile_color",
+      "originalName": "boku_02_mobile_color.webp",
+      "mediaType": "image/webp",
+      "width": 1080,
+      "height": 1920,
+      "byteLength": 412334,
+      "contentHash": "f910d2c5aabd4118f033e577faf4dbda335ee73e77e239463aeac3bb723f37e4",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_7203d0c511ff4f6d.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_7203d0c511ff4f6d.webp"
+    },
+    {
+      "assetId": "ast_73efa67e4ca24470",
+      "id": "ast_73efa67e4ca24470",
+      "displayName": "boku_04_pc_color",
+      "name": "boku_04_pc_color",
+      "originalName": "boku_04_pc_color.webp",
+      "mediaType": "image/webp",
+      "width": 1920,
+      "height": 1080,
+      "byteLength": 382508,
+      "contentHash": "b82a8197ecc82d17d5f598a7fd95c17682f57746acbfad83d359ad649afac59f",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_73efa67e4ca24470.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_73efa67e4ca24470.webp"
+    },
+    {
+      "assetId": "ast_b0b1dcf3aa224902",
+      "id": "ast_b0b1dcf3aa224902",
+      "displayName": "boku_03_pc_color",
+      "name": "boku_03_pc_color",
+      "originalName": "boku_03_pc_color.webp",
+      "mediaType": "image/webp",
+      "width": 1920,
+      "height": 1080,
+      "byteLength": 413272,
+      "contentHash": "58de03230ae1fedc128aa1cb8d81bbc7e40a0972e692dfe63806b7aaaeda8418",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_b0b1dcf3aa224902.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_b0b1dcf3aa224902.webp"
+    },
+    {
+      "assetId": "ast_a1f6a2804f744934",
+      "id": "ast_a1f6a2804f744934",
+      "displayName": "boku_02_pc_color",
+      "name": "boku_02_pc_color",
+      "originalName": "boku_02_pc_color.webp",
+      "mediaType": "image/webp",
+      "width": 1920,
+      "height": 1080,
+      "byteLength": 522288,
+      "contentHash": "668be6d1adf5984b0a180cb02203232f09e15c0f6b6f80ec3e03ba54a02741a6",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_a1f6a2804f744934.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_a1f6a2804f744934.webp"
+    },
+    {
+      "assetId": "ast_94a841cc08ac4a7e",
+      "id": "ast_94a841cc08ac4a7e",
+      "displayName": "boku_01_㍶_color",
+      "name": "boku_01_㍶_color",
+      "originalName": "boku_01_㍶_color.webp",
+      "mediaType": "image/webp",
+      "width": 1920,
+      "height": 1080,
+      "byteLength": 448826,
+      "contentHash": "ace273b57dc7b8f9acf900518f8eaea80bc9ba1e2f8cd6ae2eb0962c4fb2909f",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_94a841cc08ac4a7e.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_94a841cc08ac4a7e.webp"
+    },
+    {
+      "assetId": "ast_fcab438b4b3c4a7d",
+      "id": "ast_fcab438b4b3c4a7d",
+      "displayName": "boku_01_mobile_color",
+      "name": "boku_01_mobile_color",
+      "originalName": "boku_01_mobile_color.webp",
+      "mediaType": "image/webp",
+      "width": 1080,
+      "height": 1920,
+      "byteLength": 412594,
+      "contentHash": "76c451c9da7fdb5c8c971fb3619a815434480e3f4f9a33ec1bd7ce7c6ef1b98d",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_fcab438b4b3c4a7d.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_fcab438b4b3c4a7d.webp"
+    },
+    {
+      "assetId": "ast_a01d213da05e41c3",
+      "id": "ast_a01d213da05e41c3",
+      "displayName": "boku_01_pc_mono",
+      "name": "boku_01_pc_mono",
+      "originalName": "boku_01_pc_mono.webp",
+      "mediaType": "image/webp",
+      "width": 1920,
+      "height": 1080,
+      "byteLength": 395582,
+      "contentHash": "2b87cd05198b794f631434865d35a2e3c85dff5b4d3abb2de0d82c564671e7a9",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_a01d213da05e41c3.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_a01d213da05e41c3.webp"
+    },
+    {
+      "assetId": "ast_f744f4ca8fb04fcb",
+      "id": "ast_f744f4ca8fb04fcb",
+      "displayName": "boku_02_pc_mono",
+      "name": "boku_02_pc_mono",
+      "originalName": "boku_02_pc_mono.webp",
+      "mediaType": "image/webp",
+      "width": 1920,
+      "height": 1080,
+      "byteLength": 443966,
+      "contentHash": "76a503a1478d4f1fdea972d4a5cb30b71ea9f035d5f2bdd71b5e438f55e6eb86",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_f744f4ca8fb04fcb.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_f744f4ca8fb04fcb.webp"
+    },
+    {
+      "assetId": "ast_783ccdf36fe844cf",
+      "id": "ast_783ccdf36fe844cf",
+      "displayName": "boku_03_pc_mono",
+      "name": "boku_03_pc_mono",
+      "originalName": "boku_03_pc_mono.webp",
+      "mediaType": "image/webp",
+      "width": 1920,
+      "height": 1080,
+      "byteLength": 358030,
+      "contentHash": "31956aa8634fe8f53449bb581a2983516522469a456e9bd7158a16dca0d68329",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_783ccdf36fe844cf.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_783ccdf36fe844cf.webp"
+    },
+    {
+      "assetId": "ast_bce6352cbc4b4bf0",
+      "id": "ast_bce6352cbc4b4bf0",
+      "displayName": "boku_01_mobile_mono",
+      "name": "boku_01_mobile_mono",
+      "originalName": "boku_01_mobile_mono.webp",
+      "mediaType": "image/webp",
+      "width": 1080,
+      "height": 1920,
+      "byteLength": 384686,
+      "contentHash": "6cfcb2b071fd3a41a0adb8a51ba2cb77ded394aed9304e8b3b30638a72d0db29",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_bce6352cbc4b4bf0.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_bce6352cbc4b4bf0.webp"
+    },
+    {
+      "assetId": "ast_0b94b9c298f34610",
+      "id": "ast_0b94b9c298f34610",
+      "displayName": "boku_02_mobile_mono",
+      "name": "boku_02_mobile_mono",
+      "originalName": "boku_02_mobile_mono.webp",
+      "mediaType": "image/webp",
+      "width": 1080,
+      "height": 1920,
+      "byteLength": 360918,
+      "contentHash": "0957a8d5aff3d6a1d9d262c878a3ff86b2f6ec3dc33d3d040e40f19de007ef50",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_0b94b9c298f34610.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_0b94b9c298f34610.webp"
+    },
+    {
+      "assetId": "ast_6ad0493df7f544a4",
+      "id": "ast_6ad0493df7f544a4",
+      "displayName": "boku_03_mobile_mono",
+      "name": "boku_03_mobile_mono",
+      "originalName": "boku_03_mobile_mono.webp",
+      "mediaType": "image/webp",
+      "width": 1080,
+      "height": 1920,
+      "byteLength": 294988,
+      "contentHash": "5f6bb5ab38544c583c41d76c57c5868e7c3911e9d7f48a8e23a2d3f462421db7",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_6ad0493df7f544a4.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_6ad0493df7f544a4.webp"
+    },
+    {
+      "assetId": "ast_45f868ef1b6e4723",
+      "id": "ast_45f868ef1b6e4723",
+      "displayName": "boku_04_mobile_mono",
+      "name": "boku_04_mobile_mono",
+      "originalName": "boku_04_mobile_mono.webp",
+      "mediaType": "image/webp",
+      "width": 941,
+      "height": 1672,
+      "byteLength": 404168,
+      "contentHash": "8241b6be65f34657d9faa9179a6104c8622c89bf136ce30c7f4f290124d18ac5",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_45f868ef1b6e4723.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_45f868ef1b6e4723.webp"
+    },
+    {
+      "assetId": "ast_21baf6a38d9b4ca1",
+      "id": "ast_21baf6a38d9b4ca1",
+      "displayName": "boku_04_pc_mono",
+      "name": "boku_04_pc_mono",
+      "originalName": "boku_04_pc_mono.webp",
+      "mediaType": "image/webp",
+      "width": 1920,
+      "height": 1080,
+      "byteLength": 321614,
+      "contentHash": "48a57df740a3af46832e3e72c25de5231fb809a1d62e2b912873b4d2bae5735c",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_21baf6a38d9b4ca1.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_21baf6a38d9b4ca1.webp"
+    }
+  ],
+  "assetLibrary": [],
+  "meta": {
+    "createdAt": "2026-10-03T20:12:34.424Z",
+    "updatedAt": "2026-10-07T20:15:22.779Z"
+  }
+}

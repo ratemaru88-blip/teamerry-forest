@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const wishHokkoriStars = document.getElementById("wishHokkoriStars");
   const wishHokkoriCharacters = document.getElementById("wishHokkoriCharacters");
   const views = [bottleWriteView, wishWriteView, bottleHokkoriView, wishHokkoriView, wishLanternView, bottleFlushView].filter(Boolean);
-  const bottleLimitText = "🍃 ボトルに入るお手紙は100文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
+  const bottleLimitText = "🍃 ボトルに入るお手紙は300文字まで。少しだけ短くして、もう一度届けてみてくださいね。";
   const driftBottleJsonPath = "./data/export/drift_bottle_messages.json";
   const lillActionReactionsJsonPath = "./data/export/lill_action_reactions.json";
   const wishStarTsvPath = "./data/wish_star/TeaMerry_Wish_Star_Master_v01.tsv";
@@ -536,6 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!selected) {
       lillReactionState = null;
+      [fairyImage, fairyBalloon].forEach(element => element?.classList.remove("is-reaction-active"));
       return false;
     }
 
@@ -545,6 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
       currentIndex: 0,
       lines: [...selected.lines],
     };
+    [fairyImage, fairyBalloon].forEach(element => element?.classList.add("is-reaction-active"));
     showLillSpeech(lillReactionState.lines[0]);
     return true;
   }
@@ -567,6 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     lillReactionState = null;
+    [fairyImage, fairyBalloon].forEach(element => element?.classList.remove("is-reaction-active"));
     setInitialFairyMessage();
     return true;
   }
@@ -1876,7 +1879,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const maxLength = Number(bottleMessageInput.maxLength) || 100;
+    const maxLength = Number(bottleMessageInput.maxLength) || 300;
     const insertedText = event.data || "";
     if (!insertedText || getNextBottleValue(bottleMessageInput, insertedText).length <= maxLength) {
       return;
@@ -1896,7 +1899,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const maxLength = Number(bottleMessageInput.maxLength) || 100;
+    const maxLength = Number(bottleMessageInput.maxLength) || 300;
     const nextValue = getNextBottleValue(bottleMessageInput, pastedText);
     if (nextValue.length <= maxLength) {
       return;
@@ -2040,7 +2043,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    counter.textContent = `${input.value.length}/${input.maxLength}`;
+    counter.textContent = `${input.value.length} / ${input.maxLength}`;
   }
 
   document.querySelectorAll(".observatory-view__text").forEach((input) => {
@@ -2128,9 +2131,39 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", openBottlePrivacyModal);
   });
 
+  let submissionPending = false;
+  async function recordSubmission(type, input, writer, modal) {
+    if (submissionPending) return false;
+    let status = modal.querySelector(".tm-submission-status");
+    if (!status) {
+      status = document.createElement("p"); status.className = "tm-submission-status";
+      status.setAttribute("role", "status"); modal.querySelector('[role="dialog"]').appendChild(status);
+    }
+    const controls = Array.from(document.querySelectorAll("[data-bottle-public], [data-wish-public], [data-observatory-back], [data-bottle-privacy-cancel], [data-wish-privacy-cancel]"));
+    const disabled = controls.map((control) => control.disabled);
+    submissionPending = true; input.readOnly = true;
+    controls.forEach((control) => { control.disabled = true; });
+    status.textContent = "送信中…";
+    try {
+      await window.TeaMerrySubmissions.send(type, (writer && writer.textContent.trim()) || "", input.value);
+      status.textContent = "";
+      window.TeaMerrySubmissions.notice(type === "bottle_mail"
+        ? "ボトルメール、ちゃんと届いたよ。大切に読ませていただきます。"
+        : "願い星、ちゃんと届いたよ。大切に読ませていただきます。");
+      return true;
+    } catch (error) {
+      console.error("[TeaMerry submission]", error.message);
+      status.textContent = error.message; return false;
+    } finally {
+      submissionPending = false; input.readOnly = false;
+      controls.forEach((control, index) => { control.disabled = disabled[index]; });
+    }
+  }
+
   document.querySelectorAll("[data-bottle-public]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       const isPublic = button.dataset.bottlePublic === "true";
+      if (!await recordSubmission("bottle_mail", bottleMessageInput, bottleWriterName, bottlePrivacyModal)) return;
       saveBottleMessage(isPublic);
       showEventReaction({
         event: "bottle_mail_sent",
@@ -2149,8 +2182,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.querySelectorAll("[data-wish-public]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       const isPublic = button.dataset.wishPublic === "true";
+      if (!await recordSubmission("wish_star", wishMessageInput, wishWriterName, wishPrivacyModal)) return;
       saveWishMessage(isPublic);
       showEventReaction({
         event: "wish_star_sent",
