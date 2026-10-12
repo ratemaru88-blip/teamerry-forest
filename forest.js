@@ -452,6 +452,11 @@
       return;
     }
 
+    if (mobileWalkerQuery.matches) {
+      fixedObservatoryPortal.style.setProperty("display", "none", "important");
+      return;
+    }
+
     if (document.body.classList.contains("is-yunokaori-opening")) {
       fixedObservatoryPortal.style.removeProperty("display");
       return;
@@ -825,7 +830,10 @@
     mintGuide.classList.add("is-active");
   }
 
-  function showMintSpeech(message, duration = 5200) {
+  function showMintSpeech(message, duration = 5200, mobileGuide = false) {
+    if (mobileWalkerQuery.matches && !mobileGuide) {
+      return;
+    }
     if (!message) {
       return;
     }
@@ -1047,12 +1055,16 @@
       : 1 - Math.pow(-2 * value + 2, 3) / 2
   );
 
+  let mobileCameraRevision = 0;
+
   const animateCameraTo = ({ x, y, duration = 1200, onComplete }) => {
+    const revision = mobileCameraRevision;
     const startX = state.x;
     const startY = state.y;
     const startTime = performance.now();
 
     const tick = (now) => {
+      if (revision !== mobileCameraRevision) return;
       const progress = Math.min(1, (now - startTime) / duration);
       const eased = easeInOutCubic(progress);
 
@@ -1084,6 +1096,23 @@
       });
     });
   };
+
+  // The mobile overlay shares the existing camera bounds and rendering.
+  window.TeaMerryForestNavigation = Object.freeze({
+    move(dx, dy) {
+      if (!mobileWalkerQuery.matches || !state.enabled || state.dragging) return;
+      mobileCameraRevision += 1;
+      state.x -= dx;
+      state.y -= dy;
+      renderMap();
+    },
+    snapshot() {
+      return { x: state.x, y: state.y, minX: state.minX, minY: state.minY };
+    },
+    showGuide() {
+      showMintSpeech("この森はまだ奥まで続いてるよ。左下で森を動かして、右上の案内図から直接行くこともできるよ。", 7000, true);
+    },
+  });
 
   const showToast = (message) => {
     if (!toast) {
@@ -1531,6 +1560,10 @@
   const getMintGuideDelay = () => debugState.mintGuideFastMode ? 1200 : 7000;
 
   const scheduleMintGuide = () => {
+    if (mobileWalkerQuery.matches) {
+      clearMintGuideTimers();
+      return;
+    }
     if (!walkerState.enabled) {
       return;
     }
@@ -1591,7 +1624,7 @@
   };
 
   function updateWalkerFrame() {
-    if (!walkerState.enabled || !mobileWalker) {
+    if (!walkerState.enabled || !mobileWalker || mobileWalkerQuery.matches) {
       walkerState.raf = 0;
       return;
     }
@@ -2495,6 +2528,11 @@
 
   scene.addEventListener("pointerdown", (event) => {
     ensureAudio();
+
+    if (mobileWalkerQuery.matches) {
+      if (event.clientX < 24 || event.clientX > window.innerWidth - 24) return;
+      mobileCameraRevision += 1;
+    }
 
     if (!state.enabled || event.target.closest(".tm-name-modal") || event.target.closest(".debug-panel") || event.target.closest(".forest-portal") || event.target.closest("#fixedObservatoryPortal") || event.target.closest(".hidden-drop") || event.target.closest(".bottle-mail") || event.target.closest(".forest-bird")) {
       return;
