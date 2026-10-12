@@ -28,6 +28,9 @@
   let config, data, ui, sound, pending, activeFairy, drawTimer = 0, peekTimer = 0, peekStart = 0;
   let drawing = false, remaining = 0, due = 0, suspended = document.hidden;
   let secondQuip = "", quipChanged = false, quipAnimation = null, ctaObserver = null;
+  function alignBranch() {
+    if (!$("resultView").hidden) $("resultView").style.setProperty("--branch-y", document.body.offsetHeight * .2 + "px");
+  }
   function checkSecondQuip() {
     if (suspended || quipChanged || $("resultView").hidden || window.scrollY < 32 || $("omikujiMap").open) return;
     if (Number(getComputedStyle(document.querySelector(".result-comment")).opacity) < .99) return;
@@ -38,8 +41,13 @@
     $("characterLine").textContent = secondQuip;
     quipAnimation?.cancel();
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      quipAnimation = $("characterLine").animate([{opacity:0,filter:"blur(2px)"},{opacity:1,filter:"blur(0px)"}], {duration:450,easing:"ease-out"});
+      quipAnimation = document.querySelector(".comment-bubble").animate([
+        {opacity:0,transform:"translateY(4px) rotate(-1deg) scale(.88)"},
+        {opacity:1,transform:"translateY(-8px) rotate(2deg) scale(1.025)",offset:.75},
+        {opacity:1,transform:"translateY(-6px) rotate(2deg) scale(1)"}
+      ], {duration:650,easing:"cubic-bezier(.22,.61,.36,1)"});
     }
+    alignBranch();
   }
   function silence() {
     if (!sound) return;
@@ -107,6 +115,7 @@
     void $("resultView").offsetWidth;
     $("resultView").classList.add("is-revealing");
     drawing = false; pending = null; silence();
+    alignBranch();
     window.scrollTo(0, 0); $("resultTitle").focus({preventScroll:true});
   }
   function scheduleReveal(delay) {
@@ -171,6 +180,8 @@
     ctaObserver.observe($("resultActions"));
   }
   window.addEventListener("scroll", checkSecondQuip, {passive:true});
+  if ("ResizeObserver" in window) new ResizeObserver(alignBranch).observe(document.body);
+  window.addEventListener("resize", alignBranch);
   document.querySelector(".result-comment").addEventListener("animationend", checkSecondQuip);
   const mapDialog = $("omikujiMap");
   $("mapButton").addEventListener("click", async () => {

@@ -38,7 +38,7 @@ async function main() {
         assert.equal(await page.locator('#resultFairy').getAttribute('src'), fairy);
         assert.equal(await page.locator('#resultTitle').innerText(), result.title);
         const ratio = await page.locator('.result-main').evaluate(el => el.offsetWidth / innerWidth);
-        assert(ratio >= .78 && ratio <= .82, 'paper layout width is about 80%');
+        assert(ratio >= .71 && ratio <= .73, 'paper layout width is about 72%');
         const angle = await page.locator('.fortune-paper').evaluate(el => { const m = new DOMMatrix(getComputedStyle(el).transform); return Math.abs(Math.atan2(m.b,m.a)*180/Math.PI); });
         assert(angle >= 3 && angle <= 5, 'paper is visibly angled');
         const paper = await page.locator('.fortune-paper').boundingBox();
@@ -52,7 +52,8 @@ async function main() {
         assert(bubble.x+bubble.width >= character.x-12 && bubble.x+bubble.width <= character.x+12, 'tail connects bubble to character');
         assert(guide.width >= 80 && guide.x+guide.width <= width+1 && guide.y >= 0, 'visible delivery fairy at branch');
         const foot=await page.locator('#resultView').evaluate(el=>Number(el.style.getPropertyValue('--fairy-foot')));
-        assert(Math.abs(guide.y+(guide.height-guide.width)/2+guide.width*foot-height*.2)<2,'fairy feet align with the branch');
+        const branchY=await page.evaluate(()=>document.body.offsetHeight*.2);
+        assert(Math.abs(guide.y+(guide.height-guide.width)/2+guide.width*foot-branchY)<2,'fairy feet align with the branch');
         assert(character.y <= paper.y+paper.height+Math.max(16,height*.09), 'character stays between paper and stump');
         assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no horizontal overflow');
         for (const id of ['resultTitle','mainText','loveText','moneyText','itemText','characterLine']) assert(await page.locator('#'+id).evaluate(el => el.scrollWidth <= el.clientWidth+1), result.resultId+' '+id+' fits');
@@ -63,7 +64,7 @@ async function main() {
       }
       assert.deepEqual(errors, []);
       await context.close();
-      console.log(width+'x'+height+': all 25 fortunes / 80% paper / 4-degree tilt / fairy / connected lower-right quip / first-screen fit PASS');
+      console.log(width+'x'+height+': all 25 fortunes / 72% paper / 4-degree tilt / fairy / connected lower-right quip / first-screen fit PASS');
     }
     const {SECOND_QUIPS}=require('../../js/omikuji.js');
     assert.equal(SECOND_QUIPS.length,3);
@@ -79,6 +80,12 @@ async function main() {
       await page.locator('#drawButton').click();
       await page.locator('#resultView').waitFor({state:'visible'});
       assert.equal(await page.locator('#characterLine').innerText(),data.results[2].quip,'no second quip at initial reveal');
+      const firstBubble=await page.locator('.comment-bubble').evaluate(el=>getComputedStyle(el).transform);
+      assert(await page.evaluate(()=>getComputedStyle(document.body).backgroundAttachment==='scroll' && getComputedStyle(document.body,'::before').content==='none'),'one scrolling background without a second plate');
+      if(width===390 && index===2) {
+        await page.emulateMedia({reducedMotion:'no-preference'});
+        await page.waitForTimeout(2700);
+      }
       await page.evaluate(()=>{window.__quipCharacter=document.getElementById('resultCharacter');});
       const image=await page.locator('#resultCharacter').getAttribute('src');
       if(index===1) {
@@ -89,6 +96,11 @@ async function main() {
       } else await page.locator('#againButton').scrollIntoViewIfNeeded();
       await page.waitForFunction(()=>document.getElementById('resultView').dataset.quipPhase==='second');
       assert.equal(await page.locator('#characterLine').innerText(),SECOND_QUIPS[index]);
+      if(width===390 && index===2) {
+        assert(await page.locator('.comment-bubble').evaluate(el=>el.getAnimations().length>0),'whole second bubble animates, not just text');
+        await page.waitForTimeout(700);
+      }
+      assert.notEqual(await page.locator('.comment-bubble').evaluate(el=>getComputedStyle(el).transform),firstBubble,'second bubble has a distinct placement and tilt');
       assert.equal(await page.locator('#resultCharacter').count(),1);
       assert.equal(await page.locator('#resultCharacter').getAttribute('src'),image);
       assert(await page.evaluate(()=>__quipCharacter===document.getElementById('resultCharacter')),'same character DOM node retained');
@@ -98,7 +110,7 @@ async function main() {
       const branch=await page.evaluate(()=>{
         const guide=document.getElementById('resultFairy').getBoundingClientRect();
         const foot=Number(document.getElementById('resultView').style.getPropertyValue('--fairy-foot'));
-        return {feet:guide.y+(guide.height-guide.width)/2+guide.width*foot,branch:innerHeight*.2-scrollY};
+        return {feet:guide.y+(guide.height-guide.width)/2+guide.width*foot,branch:document.body.offsetHeight*.2-scrollY};
       });
       assert(Math.abs(branch.feet-branch.branch)<2,'branch and fairy scroll together');
       if(process.env.OMIKUJI_TEST_ARTIFACTS) await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'second-quip-'+width+'-'+index+'.png')});
