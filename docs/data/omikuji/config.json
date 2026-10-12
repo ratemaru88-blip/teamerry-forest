@@ -4,21 +4,22 @@
     "ja"
   ],
   "drawDelayMs": 2000,
-  "peekDurationMs": 1100,
+  "peekDurationMs": 2400,
   "assets": {
+    "drawSign": "./assets/images/omikuji/draw-sign-v1.webp",
     "background": "./assets/images/omikuji/shrine-background.webp",
     "tube": "./assets/images/omikuji/tube.png",
     "paper": "./assets/images/omikuji/paper.png",
     "shakeSound": "./assets/sounds/omikuji-shake.mp3"
   },
   "legacyCharacters": {
-    "https://static.wixstatic.com/media/e0436a_0bec673f5d9446aa9565441c313fdd84~mv2.png": "./assets/images/omikuji/result-01.png",
-    "https://static.wixstatic.com/media/e0436a_e081c175fcbe401dbf14c227162b2e0b~mv2.png": "./assets/images/omikuji/result-02.png",
-    "https://static.wixstatic.com/media/e0436a_0be880be45634930abd2394e40eaaf41~mv2.png": "./assets/images/omikuji/result-03.png",
-    "https://static.wixstatic.com/media/e0436a_3c915ad8ff72446e999e3e52333a6066~mv2.png": "./assets/images/omikuji/result-04.png",
-    "https://static.wixstatic.com/media/e0436a_53f12d503ce04b33ae15f298a1c81075~mv2.png": "./assets/images/omikuji/result-05.png",
-    "https://static.wixstatic.com/media/e0436a_fdb686155454446c83b767aaea6b846c~mv2.png": "./assets/images/omikuji/result-06.png",
-    "https://static.wixstatic.com/media/e0436a_c9553aa04b9e4c418cf5b13e5b4376e9~mv2.png": "./assets/images/omikuji/result-07.png"
+    "https://static.wixstatic.com/media/e0436a_0bec673f5d9446aa9565441c313fdd84~mv2.png": "./assets/images/omikuji/cyokopa_front.webp",
+    "https://static.wixstatic.com/media/e0436a_e081c175fcbe401dbf14c227162b2e0b~mv2.png": "./assets/images/omikuji/hoippu_front.webp",
+    "https://static.wixstatic.com/media/e0436a_0be880be45634930abd2394e40eaaf41~mv2.png": "./assets/images/omikuji/kakao_front.webp",
+    "https://static.wixstatic.com/media/e0436a_3c915ad8ff72446e999e3e52333a6066~mv2.png": "./assets/images/omikuji/peapea_front..webp",
+    "https://static.wixstatic.com/media/e0436a_53f12d503ce04b33ae15f298a1c81075~mv2.png": "./assets/images/omikuji/kakao_front.webp",
+    "https://static.wixstatic.com/media/e0436a_fdb686155454446c83b767aaea6b846c~mv2.png": "./assets/images/omikuji/pakku_front.webp",
+    "https://static.wixstatic.com/media/e0436a_c9553aa04b9e4c418cf5b13e5b4376e9~mv2.png": "./assets/images/omikuji/chachaji_front.webp"
   },
   "fairies": [
     {
@@ -74,9 +75,9 @@
   ],
   "ui": {
     "ja": {
-      "draw": "ひいてみる",
+      "draw": "おみくじを引く",
       "drawing": "そっと、シャカシャカ…",
-      "again": "もう一度ひく",
+      "again": "もう一回ひく",
       "back": "森へ戻る",
       "love": "💓 恋愛運",
       "money": "💰 金運",

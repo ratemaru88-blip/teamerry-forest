@@ -10,35 +10,58 @@ button:disabled { cursor: wait; }
 svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .omikuji-header { position: absolute; z-index: 5; inset: max(16px, env(safe-area-inset-top)) 20px auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.forest-back { display: flex; gap: 5px; align-items: center; min-height: 44px; padding: 6px 10px; background: #f7fff3e8; border-radius: 6px; font: 600 14px/1.3 sans-serif; }
-.shrine-name { font: 600 13px/1.3 sans-serif; color: #fafff5; text-shadow: 0 1px 4px #203b24; }
+.omikuji-header { justify-content: flex-end; pointer-events: none; }
+.shrine-name { font: 500 12px/1.3 sans-serif; color: #fafff5; text-shadow: 0 1px 4px #203b24; }
+.entry-return { position: absolute; z-index: 3; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); width: clamp(100px, 27vw, 124px); aspect-ratio: 1; }
 .draw-scene { position: relative; min-height: 100svh; height: 100svh; overflow: hidden; }
-.tube-scene { position: absolute; width: min(86%, 420px); height: 66%; top: 16%; left: 50%; transform: translateX(-50%); }
+.tube-scene { position: absolute; width: min(86%, 420px); height: 65%; top: 13%; left: 50%; transform: translateX(-50%); }
 .draw-control { position: relative; display: flex; align-items: center; flex-direction: column; justify-content: space-between; height: 100%; width: 100%; padding: 0; border: 0; background: transparent; }
-.draw-label { display: flex; align-items: center; justify-content: center; max-width: 100%; min-height: 52px; padding: 10px 30px; border-radius: 8px; color: #355b27; background: #fff3d9; border: 1px solid #e3ce9c; box-shadow: 0 4px 12px #4e3a182b; font-size: 22px; font-weight: 700; text-align: center; }
-.tube-image { display: block; flex: 0 1 auto; height: calc(100% - 76px); max-height: 520px; max-width: 72%; width: auto; object-fit: contain; filter: drop-shadow(0 10px 9px #352e2940); transform-origin: 50% 93%; }
+.draw-label { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: min(100%, 300px); aspect-ratio: 3 / 1; min-height: 72px; padding: 12px 22px; color: #fff0d4; background: url("../assets/images/omikuji/draw-sign-v1.webp") center / 100% 100% no-repeat; text-shadow: 1px 1px 1px #3d291e; font-size: 21px; font-weight: 700; text-align: center; }
+.tube-image { display: block; flex: 0 1 auto; height: calc(100% - 112px); max-height: 520px; max-width: 72%; width: auto; object-fit: contain; filter: drop-shadow(0 10px 9px #352e2940); transform-origin: 50% 93%; }
 .draw-control.is-shaking .tube-image { animation: shake-tube 420ms ease-in-out; }
-.peek-fairy { position: absolute; z-index: 0; bottom: 13%; left: calc(50% - 130px); width: 86px; height: 116px; object-fit: contain; opacity: 0; transform: translateX(38px) rotate(7deg); transition: opacity 180ms, transform 240ms; pointer-events: none; }
+.peek-fairy { position: absolute; z-index: 0; bottom: 13%; left: max(0px, calc(50% - 170px)); width: 130px; height: 180px; object-fit: contain; opacity: 0; transform: translateX(26px) rotate(7deg); transition: opacity 180ms, transform 240ms; pointer-events: none; }
 .peek-fairy.is-peeking { opacity: 1; transform: translateX(-4px) rotate(-8deg); }
 .draw-status { position: absolute; top: 86%; left: 24px; right: 24px; margin: 0; text-align: center; font: 600 15px/1.5 sans-serif; color: #fff; text-shadow: 0 1px 4px #244020; }
 .retry-load { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); min-height: 44px; padding: 8px 16px; border: 1px solid #eee; border-radius: 6px; }
-.result-view { min-height: 100svh; padding: 84px 20px max(28px, env(safe-area-inset-bottom)); max-width: 620px; margin: 0 auto; }
-.fortune-paper { padding: 30px 28px 22px; border-radius: 6px; background: #fff5dd url("../assets/images/omikuji/paper.png") center / 100% 100% no-repeat; box-shadow: 0 8px 24px #182b2240; color: #394835; }
+.result-view { min-height: 100svh; padding: 84px 20px max(36px, env(safe-area-inset-bottom)); max-width: 620px; margin: 0 auto; }
+.result-main { min-height: calc(100svh - 260px); }
+.fortune-paper { padding: 32px 28px; border-radius: 3px; background: #fff5dd url("../assets/images/omikuji/paper.png") center / 100% 100% no-repeat; box-shadow: 0 8px 24px #182b2240; color: #44301f; }
 .fortune-eyebrow { margin: 0 0 12px; color: #586d48; font-size: 13px; }
 h2 { margin: 0 0 18px; font-size: 28px; line-height: 1.4; font-weight: 700; overflow-wrap: anywhere; }
 .fortune-body { margin: 0 0 22px; font-size: 17px; line-height: 1.9; overflow-wrap: anywhere; }
 .fortune-details { margin: 0; padding: 16px 0; border-top: 1px solid #73806345; border-bottom: 1px solid #73806345; font-family: sans-serif; font-size: 15px; }
 .fortune-details > div { display: grid; grid-template-columns: 130px 1fr; align-items: start; gap: 8px; margin-bottom: 12px; }
 .fortune-details > div:last-child { margin-bottom: 0; }
+.fortune-details > .lucky-item { grid-template-columns: 1fr; gap: 4px; }
 dt { font-weight: 600; line-height: 1.6; }
 dd { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
-.character-quip { margin-top: 18px; display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 14px; }
-.character-quip img { width: 96px; height: 116px; object-fit: contain; }
-.character-quip p { margin: 0; font-size: 16px; line-height: 1.75; overflow-wrap: anywhere; }
-.result-actions { margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; font: 600 15px/1.4 sans-serif; }
-.result-actions button, .result-actions a { min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border: 1px solid #d8e5d3; border-radius: 6px; background: #fafef4; color: #294d35; }
-.result-actions button { background: #2e5c43; color: #fff; }
-.result-view.is-revealing .fortune-paper { animation: reveal-paper 600ms ease-out; }
+.result-comment { margin-top: 24px; min-height: 180px; display: grid; grid-template-columns: minmax(0, 1fr) 124px; align-items: center; gap: 12px; }
+.result-comment img { display: block; width: 124px; height: 180px; object-fit: contain; filter: drop-shadow(0 5px 5px #213b2940); }
+.comment-bubble { position: relative; padding: 18px 20px; border-radius: 24px; background: #fff2d7 url("../assets/images/omikuji/paper.png") center / cover; box-shadow: 0 4px 12px #213b2933; color: #44301f; }
+.comment-bubble::after { content: ""; position: absolute; right: -9px; bottom: 22px; border-left: 12px solid #fcecca; border-top: 9px solid transparent; border-bottom: 5px solid transparent; }
+.comment-bubble p { margin: 0; font-size: 16px; line-height: 1.8; overflow-wrap: anywhere; }
+.result-actions { margin-top: 32px; padding-top: 8px; display: grid; justify-items: center; gap: 8px; }
+.art-button { display: grid; place-items: center; border: 0; padding: 0; background: transparent; min-height: 48px; transition: filter 160ms, transform 160ms; }
+.art-button img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.art-button:hover { filter: brightness(1.08); }
+.art-button:active { transform: translateY(2px); }
+.again-art { width: min(100%, 340px); aspect-ratio: 3 / 1; }
+.result-actions-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: center; gap: 12px; width: 100%; }
+.map-art { width: 100%; aspect-ratio: 3 / 1; }
+.forest-art { width: 100%; aspect-ratio: 1; }
+.result-view.is-revealing .fortune-paper { animation: reveal-paper 400ms ease-out both; }
+.result-view.is-revealing .result-comment { animation: reveal-paper 400ms ease-out 600ms both; }
+body.is-suspended .result-view * { animation-play-state: paused; }
+.omikuji-map { width: min(92vw, 520px); max-height: 88svh; padding: 16px; border: 1px solid #acb9a4; border-radius: 6px; background: #f5f8f1; color: #294332; overflow-y: auto; }
+.omikuji-map::backdrop { background: #10271999; }
+.omikuji-map header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.omikuji-map h2 { font-size: 20px; margin: 0; }
+.omikuji-map header button { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid #ccd8c4; border-radius: 4px; background: #fff; }
+.map-overview { display: block; width: 100%; height: auto; }
+#mapStatus { margin: 8px 0; font: 14px/1.5 sans-serif; }
+#mapDestinations { display: grid; gap: 6px; }
+.map-destination { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 5px 10px; border: 1px solid #d2ddcb; border-radius: 4px; background: #fff; font: 15px/1.4 sans-serif; }
+.map-destination img { width: 44px; height: 36px; object-fit: contain; }
 @keyframes shake-tube { 0%,100% { transform: translateX(0) rotate(0); } 16%,50%,83% { transform: translateX(-8px) rotate(-2deg); } 33%,66% { transform: translateX(8px) rotate(2deg); } }
 @keyframes reveal-paper { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @media (min-width: 760px) {
@@ -52,14 +75,15 @@ dd { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
   .result-view { padding-left: 12px; padding-right: 12px; }
   .fortune-paper { padding: 28px 20px 20px; }
   .fortune-details > div { grid-template-columns: 1fr; gap: 2px; }
-  .character-quip { grid-template-columns: 72px 1fr; gap: 10px; }
-  .character-quip img { width: 72px; height: 94px; }
+  .result-comment { grid-template-columns: minmax(0, 1fr) 100px; gap: 10px; }
+  .result-comment img { width: 100px; height: 164px; }
+  .comment-bubble { padding: 16px; }
 }
 @media (max-height: 480px) and (orientation: landscape) {
   .tube-scene { top: 20%; height: 64%; }
-  .draw-label { min-height: 44px; font-size: 19px; }
-  .tube-image { height: calc(100% - 58px); }
-  .peek-fairy { left: calc(50% - 78px); width: 55px; height: 74px; }
+  .draw-label { width: 210px; min-height: 56px; font-size: 19px; }
+  .tube-image { height: calc(100% - 86px); }
+  .peek-fairy { left: calc(50% - 114px); width: 84px; height: 104px; }
   .draw-status { top: 88%; }
 }
 @media (prefers-reduced-motion: reduce) {

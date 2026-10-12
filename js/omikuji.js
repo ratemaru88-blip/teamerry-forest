@@ -89,17 +89,19 @@
   }
   function pause() {
     suspended = true; hideFairy(); silence();
+    document.body.classList.add("is-suspended");
     if (drawTimer) { remaining = Math.max(0, due - performance.now()); clearTimeout(drawTimer); drawTimer = 0; }
     $("drawButton").classList.remove("is-shaking");
   }
   function resume() {
     suspended = document.hidden;
+    document.body.classList.toggle("is-suspended", suspended);
     if (!suspended && drawing && pending && !drawTimer) scheduleReveal(remaining);
   }
   async function load() {
     $("drawButton").disabled = true; $("retryLoad").hidden = true;
     try {
-      const response = await fetch(new URL("../data/omikuji/config.json?v=2026.10.12-phase1-01", source));
+      const response = await fetch(new URL("../data/omikuji/config.json?v=2026.10.13-result-01", source));
       if (!response.ok) throw new Error("Config unavailable");
       config = await response.json();
       const requested = new URLSearchParams(location.search).get("lang");
@@ -112,7 +114,7 @@
         || ["title","main","love","work","item","quip"].some(key => typeof result[key] !== "string"))) throw new Error("Invalid result data");
       sound = new Audio(config.assets.shakeSound); sound.preload = "auto";
       $("drawLabel").textContent = ui.draw; $("drawButton").setAttribute("aria-label", ui.draw);
-      $("againButton").querySelector("span").textContent = ui.again;
+      $("againButton").setAttribute("aria-label", ui.again);
       entry();
     } catch (error) {
       $("drawStatus").textContent = ui?.error || "おみくじの準備ができませんでした。";
@@ -123,6 +125,46 @@
   $("drawButton").addEventListener("click", draw);
   $("againButton").addEventListener("click", () => { entry(); $("drawButton").focus({preventScroll:true}); window.scrollTo(0, 0); });
   $("retryLoad").addEventListener("click", load);
+  const mapDialog = $("omikujiMap");
+  $("mapButton").addEventListener("click", async () => {
+    silence();
+    mapDialog.showModal();
+    if ($("mapDestinations").children.length) return;
+    $("mapStatus").textContent = "準備中…";
+    try {
+      // Read the authoritative portal list without running Forest scripts or audio.
+      const response = await fetch(new URL("../index.html", source));
+      if (!response.ok) throw new Error("Map unavailable");
+      const forest = new DOMParser().parseFromString(await response.text(), "text/html");
+      const links = [...forest.querySelectorAll(".forest-portal, #fixedObservatoryPortal")];
+      if (!links.length) throw new Error("Map destinations unavailable");
+      const fragment = document.createDocumentFragment();
+      for (const portal of links) {
+        const link = document.createElement("a");
+        link.className = "map-destination";
+        const url = new URL(portal.getAttribute("href"), response.url);
+        if (!["https:", "http:"].includes(url.protocol)) continue;
+        link.href = url.href;
+        const original = portal.querySelector("img");
+        if (original) {
+          const image = document.createElement("img");
+          image.src = new URL(original.getAttribute("src"), response.url).href;
+          image.alt = "";
+          link.append(image);
+        }
+        const label = document.createElement("span");
+        label.textContent = (portal.getAttribute("aria-label") || "森の入口").replace(/へ$/, "");
+        link.append(label);
+        fragment.append(link);
+      }
+      $("mapDestinations").replaceChildren(fragment);
+      $("mapStatus").textContent = "";
+    } catch {
+      $("mapStatus").textContent = "案内図の行き先を読み込めませんでした。閉じて、もう一度開いてください。";
+    }
+  });
+  $("closeMap").addEventListener("click", () => mapDialog.close());
+  mapDialog.addEventListener("close", () => $("mapButton").focus({preventScroll:true}));
   document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); else resume(); });
   window.addEventListener("pagehide", pause); window.addEventListener("pageshow", resume);
   mobile.addEventListener("change", () => { if (!mobile.matches) hideFairy(); });

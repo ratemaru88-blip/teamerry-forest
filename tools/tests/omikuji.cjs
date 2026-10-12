@@ -12,6 +12,8 @@ assert.equal(new Set(data.results.map(x=>x.resultId)).size,25);
 assert.equal(config.fairies.length,10);
 assert(!config.fairies.some(x=>x.id==='elder'));
 assert.deepEqual(config.availableLocales,['ja']);
+assert.equal(config.peekDurationMs,2400);
+assert.equal(config.ui.ja.draw,'おみくじを引く');
 for(let i=0;i<25;i++) assert.equal(selectFortune(data.results,()=>i/25).resultId,data.results[i].resultId);
 assert.throws(()=>selectFortune([],()=>0));
 assert.throws(()=>selectFortune(data.results,()=>1));
@@ -40,7 +42,7 @@ async function main() {
       base='http://127.0.0.1:'+server.address().port;
     }
     browser=await chromium.launch({channel:'msedge',headless:true});
-    for(const [width,height,prefix] of [[320,568,''],[375,667,''],[390,844,''],[412,915,''],[667,375,''],[1366,900,''],[390,844,'/docs']]) {
+    for(const [width,height,prefix] of [[320,568,''],[360,800,''],[375,667,''],[390,844,''],[412,915,''],[430,932,''],[667,375,''],[1366,900,''],[390,844,'/docs']]) {
       if(process.env.OMIKUJI_TEST_BASE_URL && prefix)continue;
       const mobile=width<760;
       const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile});
@@ -60,19 +62,36 @@ async function main() {
         assert.equal(await page.locator('#peekFairy').getAttribute('data-character-id'),'aco');
       } else assert.equal(await page.locator('#peekFairy').isVisible(),false);
       const tube=await page.locator('.tube-image').boundingBox();
+      assert.equal(await page.locator('#drawLabel').innerText(),'おみくじを引く');
+      assert.equal(await page.locator('.forest-back').count(),0,'old white return removed');
+      assert(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight+1),'entry needs no scrolling');
+      const entryReturn=await page.locator('.entry-return').boundingBox();
+      assert(entryReturn.x>width/2 && entryReturn.y>height/2 && entryReturn.x+entryReturn.width<=width);
+      assert(entryReturn.x>=tube.x+tube.width || entryReturn.y>=tube.y+tube.height,'return sign must not cover tube');
+      if(mobile) {
+        const fairy=await page.locator('#peekFairy').boundingBox();
+        assert(fairy.width>=80 && (height<480 || fairy.width>=130),'fairy is recognizable');
+        if(width===390 && !prefix) {
+          await page.waitForTimeout(1500);
+          assert(await page.locator('#peekFairy').evaluate(el=>el.classList.contains('is-peeking')),'fairy stays longer than 1.5 seconds');
+        }
+      }
       assert(tube.y>=60 && tube.y+tube.height<=height);
       assert(tube.x>=0 && tube.x+tube.width<=width);
       if(process.env.OMIKUJI_TEST_ARTIFACTS) {
         fs.mkdirSync(process.env.OMIKUJI_TEST_ARTIFACTS,{recursive:true});
         await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'entry-'+width+(prefix?'-docs':'')+'.png')});
       }
-      await page.locator('#drawButton').click();
+      await page.locator(width===360?'#drawLabel':'.tube-image').click();
       await page.waitForFunction(()=>!window.__sounds[0].paused);
       assert.equal(await page.locator('#drawButton').isDisabled(),true);
       assert.equal(await page.locator('#peekFairy').evaluate(el=>el.classList.contains('is-peeking')),false);
       // Disabled button blocks rapid double draws.
       await page.locator('#drawButton').evaluate(el=>el.click());
       await page.waitForFunction(()=>!document.getElementById('resultView').hidden);
+      assert.equal(await page.locator('.result-comment').evaluate(el=>Number(getComputedStyle(el).opacity)),0,'paper precedes delayed comment');
+      const actions=await page.locator('.result-actions').boundingBox();
+      assert(actions.y>=height,'actions should require scrolling, not crowd first view');
       assert.equal(await page.locator('#resultTitle').innerText(),data.results[0].title);
       assert.equal(await page.locator('#mainText').innerText(),data.results[0].main);
       assert.equal(await page.locator('#loveText').innerText(),data.results[0].love.replace(/★/g,'🍃'));
@@ -81,10 +100,36 @@ async function main() {
       assert.equal(await page.locator('#characterLine').innerText(),data.results[0].quip);
       await page.locator('#resultCharacter').evaluate(img=>img.decode());
       await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.fortune-paper')).opacity)===1);
+      await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.result-comment')).opacity)===1);
+      const paper=await page.locator('.fortune-paper').boundingBox();
+      const comment=await page.locator('.result-comment').boundingBox();
+      const bubble=await page.locator('.comment-bubble').boundingBox();
+      const character=await page.locator('#resultCharacter').boundingBox();
+      assert(comment.y>=paper.y+paper.height,'comment must not cover result paper');
+      assert(bubble.x+bubble.width<=character.x,'bubble must not cover character');
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
       for(const id of ['resultTitle','mainText','loveText','moneyText','itemText','characterLine']) assert(await page.locator('#'+id).evaluate(el=>el.scrollWidth<=el.clientWidth+1),id+' must fit');
       if(process.env.OMIKUJI_TEST_ARTIFACTS) await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'result-'+width+(prefix?'-docs':'')+'.png'),fullPage:true});
       assert.equal(await page.locator('.result-actions a').getAttribute('href'),'./index.html');
+      assert.equal(await page.locator('#againButton').getAttribute('aria-label'),'もう一回ひく');
+      const again=await page.locator('#againButton').boundingBox();
+      const map=await page.locator('#mapButton').boundingBox();
+      const back=await page.locator('.forest-art').boundingBox();
+      assert(again.y+again.height<=map.y && again.y+again.height<=back.y,'retry is separate upper row');
+      assert(map.x+map.width<=back.x && map.height>=48 && back.height>=48);
+      for(const selector of ['#againButton img','#mapButton img','.forest-art img']) await page.locator(selector).evaluate(img=>img.decode());
+      await page.locator('#mapButton').click();
+      await page.waitForFunction(()=>document.getElementById('mapDestinations').children.length===7);
+      await page.locator('.map-overview').evaluate(img=>img.decode());
+      assert.equal(await page.locator('#omikujiMap').evaluate(el=>el.open),true);
+      assert.equal(await page.locator('#mapDestinations a').nth(2).getAttribute('href'),base+prefix+'/omikuji.html');
+      assert.equal(await page.evaluate(()=>__sounds.every(a=>a.paused)),true);
+      await page.keyboard.press('Escape');
+      assert.equal(await page.locator('#omikujiMap').evaluate(el=>el.open),false);
+      await page.locator('#mapButton').click();
+      await page.locator('#closeMap').click();
+      assert.equal(await page.locator('#mapDestinations a').count(),7,'no duplicate links after reopening');
+      if(process.env.OMIKUJI_TEST_ARTIFACTS) await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'actions-'+width+(prefix?'-docs':'')+'.png')});
       await page.locator('#againButton').click();
       assert.equal(await page.locator('#drawView').isVisible(),true);
       if(mobile) assert.equal(await page.locator('#peekFairy').getAttribute('data-character-id'),'berry','next visit/entry changes fairy');
@@ -124,6 +169,30 @@ async function main() {
     await failedPage.waitForFunction(()=>!document.getElementById('drawButton').disabled);
     await failed.close();
     console.log('Data loading failure / retry recovery PASS');
+    const navigation=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+    const navPage=await navigation.newPage();
+    await navPage.goto(base+'/omikuji.html');
+    await navPage.waitForFunction(()=>!document.getElementById('drawButton').disabled);
+    await navPage.locator('#drawButton').click();
+    await navPage.waitForFunction(()=>!document.getElementById('resultView').hidden);
+    await navPage.route('**/index.html',route=>route.fulfill({status:503,body:'unavailable'}));
+    await navPage.locator('#mapButton').click();
+    await navPage.waitForFunction(()=>document.getElementById('mapStatus').textContent.includes('読み込めません'));
+    await navPage.locator('#closeMap').click();
+    await navPage.unroute('**/index.html');
+    await navPage.locator('#mapButton').click();
+    await navPage.waitForFunction(()=>document.getElementById('mapDestinations').children.length===7);
+    const teaUrl=base+'/tea_room.html';
+    await navPage.route(teaUrl,route=>route.fulfill({contentType:'text/html',body:'<!doctype html><title>Navigation check</title>'}));
+    await navPage.locator('#mapDestinations a').nth(5).click();
+    await navPage.waitForURL(teaUrl);
+    await navPage.goto(base+'/omikuji.html');
+    await navPage.waitForFunction(()=>!document.getElementById('drawButton').disabled);
+    await navPage.route(base+'/index.html',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><title>Forest return check</title>'}));
+    await navPage.locator('.entry-return').click();
+    await navPage.waitForURL(base+'/index.html');
+    await navigation.close();
+    console.log('Map loading failure / recovery / actual corner navigation / Forest return PASS');
   } finally {await browser?.close();if(server) await new Promise(resolve=>server.close(resolve));}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});
