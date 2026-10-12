@@ -28,25 +28,16 @@
   dialog.setAttribute("aria-labelledby", "forestMapTitle");
   dialog.innerHTML = `<header class="forest-map-heading"><h2 id="forestMapTitle">森の案内図</h2><button class="forest-map-close" type="button" title="閉じる" aria-label="閉じる">${closeIcon}</button></header>
     <div class="forest-map-content">
-      <p class="forest-map-introduction">森を歩いて探しても、案内図からすぐ行ってもだいじょうぶ。</p>
       <figure class="forest-map-overview" aria-label="森の全体地図">
-        <img class="forest-map-image" src="./assets/backgrounds/Forest_Master_Day.png" width="1920" height="1080" loading="lazy" alt="湖と川を囲む森。左に温泉と茶房、右に洞窟と星風のテラスがあります。">
+        <img class="forest-map-image" src="./assets/backgrounds/forest-guide-evening.webp" width="960" height="540" loading="lazy" alt="夕日の映る湖と川を囲む森。左に温泉と茶房、右に洞窟と星風のテラスがあります。">
         <div class="forest-map-markers"></div>
       </figure>
+      <p class="forest-map-note">時間とともに、森の表情が変わります。</p>
       <div class="forest-map-destinations"></div>
     </div>`;
   const destinations = dialog.querySelector(".forest-map-destinations");
   const markers = dialog.querySelector(".forest-map-markers");
   const numbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"];
-  const descriptions = [
-    "雫のゲームで遊ぼう",
-    "クッキーをどうぞ",
-    "今日の運勢を見てみる",
-    "温泉でほっとひと息",
-    "洞窟の奥をのぞいてみる",
-    "お茶と森のお話をどうぞ",
-    "ボトルメールや願い星はこちら",
-  ];
   const mapPortals = [...document.querySelectorAll(".forest-portal, #fixedObservatoryPortal")];
   const updateMarkers = () => {
     const world = document.getElementById("stage");
@@ -83,17 +74,7 @@
     if (label.textContent === "フォーチュンクッキー") {
       label.replaceChildren(document.createTextNode("フォーチュン"), document.createElement("wbr"), document.createTextNode("クッキー"));
     }
-    const copy = document.createElement("span");
-    copy.className = "forest-map-card-copy";
-    const description = document.createElement("span");
-    description.className = "forest-map-card-description";
-    description.textContent = descriptions[index];
-    copy.append(label, description);
-    const action = document.createElement("span");
-    action.className = "forest-map-card-action";
-    action.setAttribute("aria-hidden", "true");
-    action.textContent = "いく";
-    link.append(copy, action);
+    link.append(label);
     destinations.append(link);
     const marker = document.createElement("span");
     marker.className = "forest-map-marker";

@@ -61,39 +61,32 @@
   .forest-map-heading { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; padding: 10px 14px; border-bottom: 1px solid #e8e6dd; }
   .forest-map-heading h2 { margin: 0; font-size: 20px; }
   .forest-map-close { display: grid; place-items: center; width: 44px; height: 44px; background: transparent; border: 0; color: inherit; }
-  .forest-map-content { min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; touch-action: pan-y; padding: 14px; }
-  .forest-map-introduction { margin: 0 0 12px; color: #4d584e; font-size: 15px; line-height: 1.6; }
-  .forest-map-overview { position: relative; margin: 0 0 16px; aspect-ratio: 16 / 9; }
-  .forest-map-image { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 6px; }
+  .forest-map-content { min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; touch-action: pan-y; padding: 10px 12px 12px; }
+  .forest-map-overview { position: relative; margin: 0; aspect-ratio: 16 / 9; }
+  .forest-map-image { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 6px; filter: brightness(1.08); }
+  .forest-map-note { margin: 6px 0 10px; color: #63685f; font-size: 12px; line-height: 1.5; }
   @media (max-height: 480px) {
     .forest-map-overview { max-width: 280px; margin-left: auto; margin-right: auto; }
   }
   .forest-map-markers { position: absolute; inset: 0; pointer-events: none; }
   .forest-map-marker {
-    position: absolute; left: clamp(16px, var(--map-x), calc(100% - 16px)); top: clamp(16px, var(--map-y), calc(100% - 16px));
-    display: grid; place-items: center; width: 28px; height: 28px; transform: translate(-50%, -50%);
-    background: #fff; color: #233d30; border: 1px solid #566c53; border-radius: 50%;
-    font: 700 22px/1 sans-serif; box-shadow: 0 1px 4px #0004;
+    position: absolute; left: clamp(10px, var(--map-x), calc(100% - 10px)); top: clamp(10px, var(--map-y), calc(100% - 10px));
+    display: grid; place-items: center; width: 17px; height: 17px; transform: translate(-50%, -50%);
+    background: #fffefaeb; color: #233d30; border: 1px solid #fff9; border-radius: 50%;
+    font: 700 14px/1 sans-serif; box-shadow: 0 1px 2px #0004;
   }
-  .forest-map-destinations { display: grid; gap: 10px; }
+  .forest-map-destinations { display: grid; gap: 4px; }
   .forest-map-card {
-    display: grid; grid-template-columns: 26px 32px minmax(0, 1fr) 38px;
-    align-items: center; gap: 8px; min-height: 82px; box-sizing: border-box;
-    padding: 12px 10px; border: 1px solid #c8bcaa; border-radius: 6px;
-    background: #fffefa; color: inherit; text-decoration: none; box-shadow: 0 2px 0 #e8e5dc;
+    display: grid; grid-template-columns: 18px 42px minmax(0, 1fr);
+    align-items: center; gap: 8px; min-height: 48px; box-sizing: border-box;
+    padding: 4px 8px; border: 1px solid #dedbd1; border-radius: 5px;
+    background: #fffefa; color: inherit; text-decoration: none; box-shadow: 0 1px 1px #0000000a;
     touch-action: pan-y; -webkit-tap-highlight-color: transparent;
   }
-  .forest-map-number { font-size: 22px; line-height: 1; font-weight: 700; }
-  .forest-map-destinations img { width: 32px; height: 36px; object-fit: contain; }
-  .forest-map-card-copy { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; text-wrap: balance; }
-  .forest-map-card-name { font-size: 16px; font-weight: 700; line-height: 1.45; word-break: keep-all; }
-  .forest-map-card-description { font-size: 15px; color: #596156; line-height: 1.5; }
-  .forest-map-card-action { border-left: 1px solid #ddd6c7; padding-left: 6px; color: #506246; font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .forest-map-number { font-size: 14px; line-height: 1; font-weight: 400; color: #596653; }
+  .forest-map-destinations img { display: block; width: 42px; height: 36px; object-fit: contain; }
+  .forest-map-card-name { min-width: 0; font-size: 16px; font-weight: 500; line-height: 1.35; word-break: keep-all; overflow-wrap: anywhere; }
   .forest-map-card:focus-visible { outline: 3px solid #58765d; outline-offset: 2px; }
   .forest-map-card:hover { background: #f1f6ed; border-color: #8c9f83; }
   .forest-map-card:active { background: #e4eddf; box-shadow: none; }
-  @media (max-width: 359px) {
-    .forest-map-card { grid-template-columns: 26px minmax(0, 1fr) 38px; }
-    .forest-map-destinations img { display: none; }
-  }
 }

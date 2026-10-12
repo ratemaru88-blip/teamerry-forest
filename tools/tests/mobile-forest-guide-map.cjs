@@ -32,6 +32,9 @@ async function main() {
       const before = await page.evaluate(()=>window.TeaMerryForestNavigation.snapshot());
       await page.locator(".forest-map-button").click();
       await page.locator(".forest-map-image").evaluate(img=>img.decode());
+      assert((await page.locator(".forest-map-image").getAttribute("src")).endsWith("forest-guide-evening.webp"));
+      assert.equal(await page.locator(".forest-map-introduction, .forest-map-card-description, .forest-map-card-action").count(),0);
+      assert((await page.locator(".forest-map-note").innerText()).includes("時間とともに"));
       assert.equal(await page.locator(".forest-navigation-stick").isVisible(),false);
       assert.equal(await page.locator(".forest-map-card").count(),7);
       assert.equal(await page.locator(".forest-map-marker").count(),7);
@@ -45,10 +48,11 @@ async function main() {
         assert.equal(await marker.innerText(),await card.locator(".forest-map-number").innerText());
         assert.equal(await card.locator(".forest-map-card-name").innerText(),expectedNames[index]);
         assert.equal(await card.getAttribute("href"),expectedPaths[index]);
-        assert((await card.locator(".forest-map-card-description").innerText()).length>0);
-        const markerBox=await marker.boundingBox(); assert(markerBox.width>=28 && markerBox.x>=map.x-1 && markerBox.x+markerBox.width<=map.x+map.width+1);
+        assert.equal(await card.locator("img").isVisible(),true,"existing UI image must remain visible even on SE");
+        await card.locator("img").evaluate(img=>img.decode());
+        const markerBox=await marker.boundingBox(); assert(markerBox.width>=16 && markerBox.width<=20 && markerBox.x>=map.x-1 && markerBox.x+markerBox.width<=map.x+map.width+1);
         await card.scrollIntoViewIfNeeded();
-        const cardBox=await card.boundingBox(); assert(cardBox.height>=44 && cardBox.x>=0 && cardBox.x+cardBox.width<=width);
+        const cardBox=await card.boundingBox(); assert(cardBox.height>=44 && cardBox.height<=56 && cardBox.x>=0 && cardBox.x+cardBox.width<=width);
         assert(await card.evaluate(el=>el.scrollWidth<=el.clientWidth),"card text must fit");
         // Exercise a real whole-card click, but intercept navigation instead of submitting visits to external sites.
         const target=await card.evaluate(el=>el.href);
@@ -67,7 +71,10 @@ async function main() {
         await page.screenshot({path:path.join(process.env.FOREST_TEST_ARTIFACTS,"guide-map-"+width+"-"+height+(prefix?"-docs":"")+".png")});
       }
       const content=page.locator(".forest-map-content");
-      assert(await content.evaluate(el=>el.scrollHeight>el.clientHeight),"map content should scroll");
+      const overflow=await content.evaluate(el=>el.scrollHeight-el.clientHeight);
+      if (width===320) assert(overflow<=180,"SE should need less than half a screen of scrolling");
+      if (height>=844) assert(overflow<=2,"all seven rows should fit on a taller phone");
+      if (overflow>20) {
       const cdp=await context.newCDPSession(page);
       const box=await content.boundingBox();
       const x=box.x+box.width/2, y=box.y+box.height*.8;
@@ -76,6 +83,7 @@ async function main() {
       await cdp.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
       await page.waitForTimeout(250);
       assert(await content.evaluate(el=>el.scrollTop>20),"touch scroll must work");
+      }
       await page.locator(".forest-map-close").click();
       await page.locator(".forest-navigation-stick").waitFor({state:"visible"});
       assert.equal(await page.locator(".forest-navigation-stick").isVisible(),true);
