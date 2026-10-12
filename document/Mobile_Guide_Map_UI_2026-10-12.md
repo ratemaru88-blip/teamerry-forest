@@ -27,6 +27,7 @@ Markers are visual only in V1; whole-card links are the primary navigation.
 - Whole-card tap area is at least 82px high; 16px names, 15px descriptions, horizontal 14px "いく" cue.
 - Tiny screens omit only the decorative thumbnail, retaining number/name/description/action.
 - Fixed dialog header keeps the 44px close control available while the content scrolls.
+- At viewport heights up to 480px, the overview is capped at 280px wide so its seven markers remain visible before scrolling. Tests assert the full overview fits initially, including 667x375 landscape.
 - Native dialog focus, Escape and backdrop closing remain.
 - Stick is hidden only during map display, restored on close; movement loop already stops on open.
 - Root and docs CSS/JS copies remain synchronized; HTML updates only the two map asset cache versions.

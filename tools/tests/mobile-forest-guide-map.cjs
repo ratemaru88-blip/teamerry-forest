@@ -37,6 +37,7 @@ async function main() {
       assert.equal(await page.locator(".forest-map-marker").count(),7);
       const map = await page.locator(".forest-map-overview").boundingBox();
       assert(map.x>=0 && map.x+map.width<=width && map.y>=0 && map.width>240);
+      assert(map.y+map.height<=height-20,"entire overview should be visible before scrolling");
       for (let index=0;index<7;index++) {
         const number=String(index+1);
         const marker=page.locator('.forest-map-marker[data-map-number="'+number+'"]');
