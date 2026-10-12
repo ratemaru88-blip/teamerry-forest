@@ -1,0 +1,76 @@
+{
+  "guideCharacterId": "mint",
+  "maxPerVisit": 4,
+  "idleLimit": 1,
+  "cooldownMs": 120000,
+  "idleAfterMs": 45000,
+  "walkingAfterMs": 15000,
+  "recentWalkingMs": 30000,
+  "speechDurationMs": 6000,
+  "characters": {
+    "mint": {
+      "name": "ミント",
+      "image": "./assets/images/effects　/mint-guide.webp"
+    }
+  },
+  "dialogue": [
+    {
+      "id": "guide_entry",
+      "guideCharacterId": "mint",
+      "trigger": "entry",
+      "text": "{displayName}、ここがTeaMerryの森だよ。ゆっくり歩いても、右上の案内図から行ってもいいよ。",
+      "priority": 100,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_map_hint",
+      "guideCharacterId": "mint",
+      "trigger": "idle",
+      "text": "どこへ行こうか迷ったら、右上の案内図を見てね。",
+      "priority": 20,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_stroll_hint",
+      "guideCharacterId": "mint",
+      "trigger": "idle",
+      "text": "左下のスティックで、もう少し先まで歩いてみようか。",
+      "priority": 20,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_pc_sunset",
+      "guideCharacterId": "mint",
+      "trigger": "walking",
+      "text": "この森ね、パソコンで見ると夕日の色が少しずつ変わるんだよ。",
+      "priority": 10,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_cacao_hint",
+      "guideCharacterId": "mint",
+      "trigger": "walking",
+      "text": "たまにカカオが、ひょこっと現れることもあるよ。",
+      "priority": 5,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_observatory",
+      "guideCharacterId": "mint",
+      "trigger": "walking",
+      "targetArea": "observatory",
+      "text": "星風テラスでは、ボトルメールや願い星を楽しめるよ。",
+      "priority": 30,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_omikuji",
+      "guideCharacterId": "mint",
+      "trigger": "walking",
+      "targetArea": "shrine",
+      "text": "あの小さな祠、森のおみくじがあるんだよ。",
+      "priority": 30,
+      "oncePerVisit": true
+    }
+  ]
+}

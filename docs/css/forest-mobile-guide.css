@@ -1,0 +1,17 @@
+@media (max-width: 759px) {
+  body.mobile-guide-active .mobile-walker:not(.has-speech),
+  body.mobile-guide-active .mobile-walker.has-speech {
+    display: block; left: 50%; top: 60%; width: 64px; height: 80px;
+    translate: -50% -50%; transition: none; pointer-events: none;
+  }
+  body.mobile-guide-active .mobile-walker__image { width: 56px; animation: walkerIdle 5s ease-in-out infinite; }
+  body.mobile-guide-active .mobile-walker__bubble {
+    bottom: calc(100% + 8px); width: min(260px, calc(100vw - 48px));
+    min-width: 0; max-width: none; padding: 9px 12px;
+    font-size: 14px; line-height: 1.6; font-weight: 500; word-break: normal;
+  }
+  .forest-narration { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    body.mobile-guide-active .mobile-walker__image { animation: none; }
+  }
+}

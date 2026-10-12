@@ -1109,8 +1109,18 @@
     snapshot() {
       return { x: state.x, y: state.y, minX: state.minX, minY: state.minY };
     },
-    showGuide() {
-      showMintSpeech("この森はまだ奥まで続いてるよ。左下で森を動かして、右上の案内図から直接行くこともできるよ。", 7000, true);
+  });
+
+  // Keep the mobile guide policy outside the shared speech renderer.
+  window.TeaMerryForestGuideSpeech = Object.freeze({
+    show(text, duration) {
+      if (!mobileWalkerQuery.matches || !mobileWalker || !debugState.toggles.walker) return false;
+      showMintSpeech(text, duration, true);
+      return true;
+    },
+    hide() {
+      window.clearTimeout(walkerState.speechTimer);
+      mobileWalker?.classList.remove("has-speech");
     },
   });
 

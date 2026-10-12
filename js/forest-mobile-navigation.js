@@ -4,7 +4,6 @@
   if (!camera) return;
   const mobile = matchMedia("(max-width: 759px)");
   const modal = document.getElementById("nameModal");
-  const seenKey = "teaMerryMobileNavigationSeenV1";
   const speed = 240; // Screen pixels per second, independent of refresh rate.
   // Lucide Map, X and ChevronUp icons (ISC license).
   const icon = (paths) => `<svg viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
@@ -88,7 +87,6 @@
   let frame = 0;
   let lastTime = 0;
   let direction = { x: 0, y: 0 };
-  let guideTimer = 0;
   const keys = new Set();
   const blocked = () => !mobile.matches || dialog.open || (modal && !modal.classList.contains("hidden"));
   const stop = () => {
@@ -189,7 +187,6 @@
     const rect = dialog.getBoundingClientRect();
     if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
   });
-  let wasNameOpen = modal && !modal.classList.contains("hidden");
   let originalNameCopy = null;
   let mobileNameCopy = "";
   const syncNameCopy = (nameOpen) => {
@@ -208,16 +205,6 @@
       + (story ? "" : "\nまたいつでも、ふらっと来てね。");
     message.textContent = mobileNameCopy;
   };
-  const showGuide = () => {
-    clearTimeout(guideTimer);
-    guideTimer = setTimeout(() => {
-      if (blocked()) return;
-      document.querySelector(".mobile-walker")?.setAttribute("aria-hidden", "false");
-      document.querySelector(".mobile-walker__bubble")?.setAttribute("role", "status");
-      camera.showGuide();
-      try { localStorage.setItem(seenKey, "1"); } catch { /* Storage may be unavailable. */ }
-    }, 500);
-  };
   const sync = () => {
     const nameOpen = modal && !modal.classList.contains("hidden");
     syncNameCopy(nameOpen);
@@ -226,12 +213,7 @@
     if (!mobile.matches) {
       if (dialog.open) dialog.close();
       document.querySelector(".mobile-walker")?.setAttribute("aria-hidden", "true");
-    } else if (!nameOpen) {
-      let seen = false;
-      try { seen = localStorage.getItem(seenKey) === "1"; } catch { /* Keep the first guide available. */ }
-      if (wasNameOpen || !seen) showGuide();
     }
-    wasNameOpen = nameOpen;
   };
   if (modal) new MutationObserver(sync).observe(modal, { attributes: true, attributeFilter: ["class", "data-mode", "data-story-step"] });
   mobile.addEventListener("change", sync);

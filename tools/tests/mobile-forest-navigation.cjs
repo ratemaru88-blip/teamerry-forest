@@ -36,16 +36,21 @@ async function main() {
     }
     browser = await chromium.launch({ channel: process.env.FOREST_TEST_BROWSER || "msedge", headless: true });
     for (const [width, height, prefix] of [[320,568,""],[375,667,""],[390,844,""],[412,915,""],[390,844,"/docs"]]) {
-      if (process.env.FOREST_TEST_DESKTOP_ONLY) continue;
+      if (process.env.FOREST_TEST_DESKTOP_ONLY || process.env.FOREST_TEST_GUIDE_CLOCK_ONLY) continue;
       if (process.env.FOREST_TEST_BASE_URL && prefix) continue;
       const context = await browser.newContext({ viewport: { width, height }, isMobile: true, hasTouch: true });
       const page = await context.newPage();
       const errors = [];
       page.on("pageerror", error => errors.push(error.message));
       await page.goto(base + prefix + "/index.html", { waitUntil: "domcontentloaded" });
-      assert((await page.locator("#nameModalMessage").innerText()).includes("登録じゃない"));
+      assert((await page.locator("#nameModalMessage").innerText()).includes("呼んでほしい名前"));
       await page.locator("#skipForestName").click();
       await page.waitForFunction(() => document.querySelector(".mobile-walker").classList.contains("has-speech"));
+      assert((await page.locator('.mobile-walker__bubble').innerText()).includes('おさんぽさん'));
+      assert.equal(await page.locator('.mobile-walker').evaluate(el => getComputedStyle(el).pointerEvents), 'none');
+      assert.equal((await page.evaluate(() => window.TeaMerryMobileGuide.snapshot())).count, 1);
+      await page.locator('.mobile-walker__image').evaluate(img => img.decode());
+      await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.mobile-walker__bubble')).opacity) === 1);
       assert.equal(await page.evaluate(() => localStorage.getItem("teaMerryDisplayName")), "おさんぽさん");
       assert.equal(await page.locator(".forest-title").isVisible(), false);
       assert.equal(await page.locator("#fixedObservatoryPortal").isVisible(), false);
@@ -66,6 +71,7 @@ async function main() {
       const touch = (type, x, y) => session.send("Input.dispatchTouchEvent", { type, touchPoints: type === "touchEnd" || type === "touchCancel" ? [] : [{ x, y }] });
       let before = await snapshot(page);
       await touch("touchStart", box.x + box.width * .8, box.y + box.height * .5);
+      assert.equal(await page.locator('.mobile-walker').evaluate(el => el.classList.contains('has-speech')), false);
       await pause(650);
       await touch("touchEnd");
       let after = await snapshot(page);
@@ -111,6 +117,7 @@ async function main() {
       assert.deepEqual(await snapshot(page), before, "edge gesture is not captured by camera");
       await page.locator(".forest-map-button").click();
       assert.equal(await page.locator("#forestMapDialog").isVisible(), true);
+      assert.equal(await page.locator('.mobile-walker').isVisible(), false, 'guide pauses while map is open');
       assert.equal(await page.locator(".forest-map-destinations a").count(), 7);
       assert.equal(await page.locator('.forest-map-destinations a[href="./tea_room.html"]').count(), 1);
       for (const image of await page.locator(".forest-map-destinations img").all()) {
@@ -121,16 +128,21 @@ async function main() {
       await page.locator(".forest-map-close").click();
       await page.waitForFunction(() => !document.querySelector(".mobile-walker").classList.contains("has-speech"));
       await pause(1800);
-      assert.equal(await page.locator(".mobile-walker").isVisible(), false, "no persistent mobile Mint");
+      assert.equal(await page.locator(".mobile-walker").isVisible(), true, "quiet mobile guide remains present");
       await page.reload({ waitUntil: "domcontentloaded" });
-      await pause(950);
+      await page.waitForFunction(() => document.body.classList.contains('mobile-guide-active'));
       assert.equal(await page.locator("#nameModal").isVisible(), false);
-      assert.equal(await page.locator(".mobile-walker").isVisible(), false, "no repeated guide on return");
+      assert.equal(await page.locator(".mobile-walker").isVisible(), true, "returning visitor still has a companion");
       if (width === 375) {
         await page.evaluate(() => window.TeaMerryForestName.save("みどり"));
         await page.reload({ waitUntil: "domcontentloaded" });
         assert.equal(await page.evaluate(() => window.getForestDisplayName()), "みどりさん");
         assert.equal(await page.locator("#nameModal").isVisible(), false);
+        await page.waitForFunction(() => document.querySelector('.mobile-walker').classList.contains('has-speech'));
+        assert((await page.locator('.mobile-walker__bubble').innerText()).includes('みどりさん'));
+        await pause(6500);
+        assert.equal(await page.locator('.mobile-walker').isVisible(), true, 'Mint stays after speech closes');
+        assert.equal(await page.locator('.mobile-walker').evaluate(el => el.classList.contains('has-speech')), false);
       }
       await stick.focus(); await page.keyboard.down("ArrowRight");
       const timings = await page.evaluate(() => new Promise(resolve => {
@@ -142,6 +154,7 @@ async function main() {
       await page.keyboard.up("ArrowRight");
       await stick.focus(); await page.keyboard.down("ArrowRight");
       await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+      assert.equal(await page.locator('.mobile-walker').isVisible(), false, 'guide pauses on blur');
       const blurred = await snapshot(page);
       await pause(150); assert.deepEqual(await snapshot(page), blurred, "window blur stops movement");
       await page.keyboard.up("ArrowRight");
@@ -149,6 +162,28 @@ async function main() {
       console.log((prefix || "root") + " " + width + "x" + height + ": touch / directions / release / cancel / boundaries / swipe / map / guide PASS; moving RAF p95=" + timings[Math.floor(timings.length*.95)].toFixed(1) + "ms");
       await context.close();
     }
+    if (!process.env.FOREST_TEST_DESKTOP_ONLY) {
+      const idleContext = await browser.newContext({viewport:{width:320,height:568}, isMobile:true, hasTouch:true});
+      const idlePage = await idleContext.newPage();
+      await idlePage.clock.install();
+      await idlePage.goto(base + '/index.html', {waitUntil:'domcontentloaded'});
+      await idlePage.clock.runFor(1500);
+      const guideResponse = idlePage.waitForResponse(response => response.url().includes('/data/forest-guide.json'));
+      await idlePage.locator('#skipForestName').click();
+      await idlePage.clock.runFor(2500);
+      await guideResponse;
+      await idlePage.clock.runFor(2000);
+      assert.equal((await idlePage.evaluate(() => window.TeaMerryMobileGuide.snapshot())).count, 1);
+      await idlePage.clock.fastForward(240000);
+      assert.equal((await idlePage.evaluate(() => window.TeaMerryMobileGuide.snapshot())).count, 2, 'one idle hint appears');
+      assert.equal(await idlePage.locator('.forest-narration').isVisible(), false);
+      await idlePage.clock.fastForward(3600000);
+      assert.equal((await idlePage.evaluate(() => window.TeaMerryMobileGuide.snapshot())).count, 2, 'hour-long idle does not repeat');
+      assert.equal(await idlePage.locator('.mobile-walker').isVisible(), true);
+      await idleContext.close();
+      console.log('Mobile clock: occasional idle hint / one-hour silence / narration suppression PASS');
+    }
+    if (process.env.FOREST_TEST_GUIDE_CLOCK_ONLY) return;
     const context = await browser.newContext({ viewport: {width:1440,height:900} });
     const page = await context.newPage();
     const errors = []; page.on("pageerror", e=>errors.push(e.message));
@@ -184,8 +219,7 @@ async function main() {
     const storyPage = await story.newPage();
     await storyPage.goto(base + "/index.html?story=bokunotakaramono", {waitUntil:"domcontentloaded"});
     await storyPage.locator("#continueMusicalStory").click();
-    assert((await storyPage.locator("#nameModalMessage").innerText()).startsWith("じゃあ、この森"));
-    assert((await storyPage.locator("#nameModalMessage").innerText()).includes("登録じゃない"));
+    assert((await storyPage.locator("#nameModalMessage").innerText()).includes("呼んでほしい名前"));
     await storyPage.locator("#skipForestName").click();
     assert.equal(await storyPage.locator("#musicalStoryDestination").isVisible(), true);
     assert.equal(await storyPage.locator(".forest-map-button").isVisible(), false, "story modal remains the active destination");
