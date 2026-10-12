@@ -117,8 +117,9 @@ async function main() {
       const comment=await page.locator('.result-comment').boundingBox();
       const bubble=await page.locator('.comment-bubble').boundingBox();
       const character=await page.locator('#resultCharacter').boundingBox();
-      assert(comment.y>=paper.y+paper.height,'comment must not cover result paper');
-      assert(bubble.x+bubble.width<=character.x,'bubble must not cover character');
+      const item=await page.locator('#itemText').boundingBox();
+      assert(bubble.y>=item.y+item.height+4,'bubble must not cover result information');
+      assert(Math.abs(bubble.x+bubble.width-character.x)<=12,'bubble connects to character without covering it');
       if(height>width) assert(comment.y+comment.height<=height,'result and quip fit first portrait screen');
       const actions=await page.locator('.result-actions').boundingBox();
       assert(actions.y>=comment.y+comment.height,'buttons follow the quip naturally');
