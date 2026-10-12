@@ -12,7 +12,7 @@ assert.equal(new Set(data.results.map(x=>x.resultId)).size,25);
 assert.equal(config.fairies.length,10);
 assert(!config.fairies.some(x=>x.id==='elder'));
 assert.deepEqual(config.availableLocales,['ja']);
-assert.equal(config.peekDurationMs,2400);
+assert.equal(config.peekDurationMs,4000);
 assert.equal(config.ui.ja.draw,'おみくじを引く');
 for(let i=0;i<25;i++) assert.equal(selectFortune(data.results,()=>i/25).resultId,data.results[i].resultId);
 assert.throws(()=>selectFortune([],()=>0));
@@ -82,7 +82,10 @@ async function main() {
         fs.mkdirSync(process.env.OMIKUJI_TEST_ARTIFACTS,{recursive:true});
         await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'entry-'+width+(prefix?'-docs':'')+'.png')});
       }
-      await page.locator(width===360?'#drawLabel':'.tube-image').click();
+      await page.locator('#drawSign').evaluate(img=>img.decode());
+      assert((await page.locator('#drawSign').getAttribute('src')).endsWith('omikuji_kanban2A.webp'));
+      await page.locator(width===360?'#drawSign':'.tube-image').click();
+      assert.equal(await page.locator('#drawLabel').textContent(),'おみくじを引く','sign does not switch to explanatory text');
       await page.waitForFunction(()=>!window.__sounds[0].paused);
       assert.equal(await page.locator('#drawButton').isDisabled(),true);
       assert.equal(await page.locator('#peekFairy').evaluate(el=>el.classList.contains('is-peeking')),false);
@@ -90,6 +93,10 @@ async function main() {
       await page.locator('#drawButton').evaluate(el=>el.click());
       await page.waitForFunction(()=>!document.getElementById('resultView').hidden);
       assert.equal(await page.locator('.result-comment').evaluate(el=>Number(getComputedStyle(el).opacity)),0,'paper precedes delayed comment');
+      assert.equal(await page.locator('#resultTitle').evaluate(el=>Number(getComputedStyle(el).opacity)),0,'paper appears before text');
+      assert.equal(await page.locator('.fortune-eyebrow').count(),0,'no extra heading copy');
+      const delays=await page.evaluate(()=>['#resultTitle','#mainText','.fortune-details > div:nth-child(1)','.fortune-details > div:nth-child(2)','.fortune-details > div:nth-child(3)','.result-comment'].map(s=>parseFloat(getComputedStyle(document.querySelector(s)).animationDelay)));
+      assert.deepEqual(delays,[.3,.5,.8,.95,1.1,1.8]);
       const actions=await page.locator('.result-actions').boundingBox();
       assert(actions.y>=height,'actions should require scrolling, not crowd first view');
       assert.equal(await page.locator('#resultTitle').innerText(),data.results[0].title);
@@ -111,7 +118,7 @@ async function main() {
       for(const id of ['resultTitle','mainText','loveText','moneyText','itemText','characterLine']) assert(await page.locator('#'+id).evaluate(el=>el.scrollWidth<=el.clientWidth+1),id+' must fit');
       if(process.env.OMIKUJI_TEST_ARTIFACTS) await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'result-'+width+(prefix?'-docs':'')+'.png'),fullPage:true});
       assert.equal(await page.locator('.result-actions a').getAttribute('href'),'./index.html');
-      assert.equal(await page.locator('#againButton').getAttribute('aria-label'),'もう一回ひく');
+      assert.equal(await page.locator('#againButton').getAttribute('aria-label'),'もう一回引く');
       const again=await page.locator('#againButton').boundingBox();
       const map=await page.locator('#mapButton').boundingBox();
       const back=await page.locator('.forest-art').boundingBox();

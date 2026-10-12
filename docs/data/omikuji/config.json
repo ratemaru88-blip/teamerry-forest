@@ -4,12 +4,12 @@
     "ja"
   ],
   "drawDelayMs": 2000,
-  "peekDurationMs": 2400,
+  "peekDurationMs": 4000,
   "assets": {
-    "drawSign": "./assets/images/omikuji/draw-sign-v1.webp",
+    "drawSign": "./assets/images/omikuji/omikuji_kanban2A.webp",
     "background": "./assets/images/omikuji/shrine-background.webp",
     "tube": "./assets/images/omikuji/tube.png",
-    "paper": "./assets/images/omikuji/paper.png",
+    "paper": "./assets/images/omikuji/paper-deckle-v1.webp",
     "shakeSound": "./assets/sounds/omikuji-shake.mp3"
   },
   "legacyCharacters": {
@@ -76,8 +76,7 @@
   "ui": {
     "ja": {
       "draw": "おみくじを引く",
-      "drawing": "そっと、シャカシャカ…",
-      "again": "もう一回ひく",
+      "again": "もう一回引く",
       "back": "森へ戻る",
       "love": "💓 恋愛運",
       "money": "💰 金運",

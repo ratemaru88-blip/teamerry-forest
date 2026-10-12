@@ -80,7 +80,6 @@
     drawing = true; pending = selectFortune(data.results);
     hideFairy();
     $("drawButton").disabled = true;
-    $("drawLabel").textContent = ui.drawing;
     $("drawStatus").textContent = "";
     $("drawButton").classList.add("is-shaking");
     silence();
@@ -101,7 +100,7 @@
   async function load() {
     $("drawButton").disabled = true; $("retryLoad").hidden = true;
     try {
-      const response = await fetch(new URL("../data/omikuji/config.json?v=2026.10.13-result-01", source));
+      const response = await fetch(new URL("../data/omikuji/config.json?v=2026.10.13-staged-02", source));
       if (!response.ok) throw new Error("Config unavailable");
       config = await response.json();
       const requested = new URLSearchParams(location.search).get("lang");
@@ -113,6 +112,7 @@
       if (!data.results?.length || data.results.some(result => !config.legacyCharacters[result.char]
         || ["title","main","love","work","item","quip"].some(key => typeof result[key] !== "string"))) throw new Error("Invalid result data");
       sound = new Audio(config.assets.shakeSound); sound.preload = "auto";
+      $("drawSign").src = config.assets.drawSign;
       $("drawLabel").textContent = ui.draw; $("drawButton").setAttribute("aria-label", ui.draw);
       $("againButton").setAttribute("aria-label", ui.again);
       entry();
