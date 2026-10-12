@@ -60,7 +60,9 @@ async function main() {
       await app.waitForFunction(()=>getComputedStyle(document.querySelector('.result-comment')).opacity==='1');
       assert.equal(await app.locator('#resultFairy').getAttribute('src'),entryFairy);
       const comment=await app.locator('.result-comment').boundingBox();
-      assert(comment.y+comment.height<=await app.evaluate(()=>innerHeight),'result and quip fit the portrait window');
+      const viewport=await app.evaluate(()=>({width:innerWidth,height:innerHeight,scrollY,result:document.getElementById('resultView').dataset.resultId,phase:document.getElementById('resultView').dataset.quipPhase}));
+      const frameBox=await page.locator('.forest-omikuji-frame').boundingBox();
+      assert(comment.y+comment.height<=frameBox.y+frameBox.height,'result and quip fit the portrait window: '+JSON.stringify({viewport,comment,frameBox}));
       if(process.env.OMIKUJI_TEST_ARTIFACTS) await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'pc-result-'+width+(prefix?'-docs':'')+'.png')});
       await app.locator('#mapButton').click();
       await app.waitForFunction(()=>document.getElementById('mapDestinations').children.length===7);

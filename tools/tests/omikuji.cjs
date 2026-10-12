@@ -131,7 +131,7 @@ async function main() {
       const again=await page.locator('#againButton').boundingBox();
       const map=await page.locator('#mapButton').boundingBox();
       const back=await page.locator('.forest-art').boundingBox();
-      assert(again.y+again.height<=map.y && again.y+again.height<=back.y,'retry is separate upper row');
+      assert(map.y+map.height<=again.y && back.y+back.height<=again.y,'retry follows map and Forest return');
       assert(map.x+map.width<=back.x && map.height>=48 && back.height>=48);
       for(const selector of ['#againButton img','#mapButton img','.forest-art img']) await page.locator(selector).evaluate(img=>img.decode());
       await page.locator('#mapButton').click();

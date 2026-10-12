@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#32553a">
   <title>森のおみくじ | TeaMerry Forest</title>
   <link rel="icon" href="./assets/images/favicon.ico">
-  <link rel="stylesheet" href="./css/omikuji.css?v=2026.10.13-composition-01">
+  <link rel="stylesheet" href="./css/omikuji.css?v=2026.10.13-branch-01">
 </head>
 <body>
   <header class="omikuji-header">
@@ -28,6 +28,7 @@
       <a class="entry-return art-button" href="./index.html" aria-label="森へ戻る" title="森へ戻る"><img src="./assets/images/buttan/forest_go_buttan_d1.webp" width="500" height="500" alt="森へ戻る"></a>
     </section>
     <section id="resultView" class="result-view" aria-labelledby="resultTitle" hidden>
+      <div class="result-scene">
       <div class="result-main"><article class="fortune-paper">
         <h2 id="resultTitle" tabindex="-1"></h2>
         <p id="mainText" class="fortune-body"></p>
@@ -38,15 +39,16 @@
         </dl>
       </article><img id="resultFairy" class="result-guide" width="84" height="100" alt=""></div>
       <aside class="result-comment" aria-label="森の仲間のひとこと">
-        <div class="comment-bubble"><p id="characterLine"></p></div>
+        <div class="comment-bubble"><p id="characterLine" aria-live="polite" aria-atomic="true"></p></div>
         <img id="resultCharacter" width="160" height="210" alt="森の仲間">
       </aside>
-      <nav class="result-actions" aria-label="おみくじの後に">
-        <button id="againButton" class="art-button again-art" type="button" aria-label="もう一回引く" title="もう一回引く"><img src="./assets/images/buttan/mouikkai.webp" width="2172" height="724" alt="もう一回引く"></button>
+      </div>
+      <nav id="resultActions" class="result-actions" aria-label="おみくじの後に">
         <div class="result-actions-row">
           <button id="mapButton" class="art-button map-art" type="button" aria-label="案内図を見る" title="案内図を見る" aria-haspopup="dialog" aria-controls="omikujiMap"><img src="./assets/images/buttan/annaizuwomiru.webp" width="2172" height="724" alt="案内図を見る"></button>
           <a class="art-button forest-art" href="./index.html" aria-label="森へ戻る" title="森へ戻る"><img src="./assets/images/buttan/forest_go_buttan_d1.webp" width="500" height="500" alt="森へ戻る"></a>
         </div>
+        <button id="againButton" class="art-button again-art" type="button" aria-label="もう一回引く" title="もう一回引く"><img src="./assets/images/buttan/mouikkai.webp" width="2172" height="724" alt="もう一回引く"></button>
       </nav>
     </section>
   </main>
@@ -56,6 +58,6 @@
     <p id="mapStatus" role="status"></p>
     <nav id="mapDestinations" aria-label="森のコーナー"></nav>
   </dialog>
-  <script src="./js/omikuji.js?v=2026.10.13-overlay-03"></script>
+  <script src="./js/omikuji.js?v=2026.10.13-branch-01"></script>
 </body>
 </html>

@@ -50,8 +50,10 @@ async function main() {
         assert(character.x > width*.55 && character.width >= 118, 'large quip character at lower right');
         assert(bubble.x < character.x && bubble.y+bubble.height/2 < character.y+character.height/2, 'bubble is left and above the character');
         assert(bubble.x+bubble.width >= character.x-12 && bubble.x+bubble.width <= character.x+12, 'tail connects bubble to character');
-        assert(guide.width >= 110 && guide.x+guide.width <= width+1 && guide.y >= 0, 'visible delivery fairy at paper corner');
-        assert(character.y <= paper.y+paper.height+12, 'character is attached to lower-right paper area');
+        assert(guide.width >= 80 && guide.x+guide.width <= width+1 && guide.y >= 0, 'visible delivery fairy at branch');
+        const foot=await page.locator('#resultView').evaluate(el=>Number(el.style.getPropertyValue('--fairy-foot')));
+        assert(Math.abs(guide.y+(guide.height-guide.width)/2+guide.width*foot-height*.2)<2,'fairy feet align with the branch');
+        assert(character.y <= paper.y+paper.height+Math.max(16,height*.09), 'character stays between paper and stump');
         assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'no horizontal overflow');
         for (const id of ['resultTitle','mainText','loveText','moneyText','itemText','characterLine']) assert(await page.locator('#'+id).evaluate(el => el.scrollWidth <= el.clientWidth+1), result.resultId+' '+id+' fits');
         if (process.env.OMIKUJI_TEST_ARTIFACTS && [0,2,16].includes(data.results.indexOf(result))) {
@@ -62,6 +64,54 @@ async function main() {
       assert.deepEqual(errors, []);
       await context.close();
       console.log(width+'x'+height+': all 25 fortunes / 80% paper / 4-degree tilt / fairy / connected lower-right quip / first-screen fit PASS');
+    }
+    const {SECOND_QUIPS}=require('../../js/omikuji.js');
+    assert.equal(SECOND_QUIPS.length,3);
+    for(const [width,height] of [[320,568],[390,844]]) for(let index=0;index<3;index++) {
+      const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
+      const page=await context.newPage();
+      await page.addInitScript(()=>{Math.random=()=>.81;});
+      await page.route('**/data/omikuji/ja.json*',route=>route.fulfill({json:{...data,results:[data.results[2]]}}));
+      await page.route('**/data/omikuji/config.json*',route=>route.fulfill({json:{...config,drawDelayMs:1}}));
+      await page.goto('http://127.0.0.1:'+server.address().port+'/omikuji.html');
+      await page.waitForFunction(()=>!document.getElementById('drawButton').disabled);
+      await page.evaluate(i=>{Math.random=()=>i/3;},index);
+      await page.locator('#drawButton').click();
+      await page.locator('#resultView').waitFor({state:'visible'});
+      assert.equal(await page.locator('#characterLine').innerText(),data.results[2].quip,'no second quip at initial reveal');
+      await page.evaluate(()=>{window.__quipCharacter=document.getElementById('resultCharacter');});
+      const image=await page.locator('#resultCharacter').getAttribute('src');
+      if(index===1) {
+        await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));window.scrollTo(0,document.documentElement.scrollHeight);});
+        await page.waitForTimeout(80);
+        assert.equal(await page.locator('#resultView').getAttribute('data-quip-phase'),'first','hidden view must not switch quips');
+        await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});
+      } else await page.locator('#againButton').scrollIntoViewIfNeeded();
+      await page.waitForFunction(()=>document.getElementById('resultView').dataset.quipPhase==='second');
+      assert.equal(await page.locator('#characterLine').innerText(),SECOND_QUIPS[index]);
+      assert.equal(await page.locator('#resultCharacter').count(),1);
+      assert.equal(await page.locator('#resultCharacter').getAttribute('src'),image);
+      assert(await page.evaluate(()=>__quipCharacter===document.getElementById('resultCharacter')),'same character DOM node retained');
+      assert(await page.locator('#characterLine').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
+      const bubble=await page.locator('.comment-bubble').boundingBox();
+      assert(bubble.x>=0 && bubble.x+bubble.width<=width,'whole bubble remains in viewport');
+      const branch=await page.evaluate(()=>{
+        const guide=document.getElementById('resultFairy').getBoundingClientRect();
+        const foot=Number(document.getElementById('resultView').style.getPropertyValue('--fairy-foot'));
+        return {feet:guide.y+(guide.height-guide.width)/2+guide.width*foot,branch:innerHeight*.2-scrollY};
+      });
+      assert(Math.abs(branch.feet-branch.branch)<2,'branch and fairy scroll together');
+      if(process.env.OMIKUJI_TEST_ARTIFACTS) await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'second-quip-'+width+'-'+index+'.png')});
+      await page.evaluate(()=>window.scrollTo(0,0));
+      await page.waitForTimeout(60);
+      assert.equal(await page.locator('#characterLine').innerText(),SECOND_QUIPS[index],'scroll back must not reroll the quip');
+      await page.locator('#againButton').click();
+      assert.equal(await page.locator('#resultView').getAttribute('data-quip-phase'),'first');
+      await page.locator('#drawButton').click();
+      await page.locator('#resultView').waitFor({state:'visible'});
+      assert.equal(await page.locator('#characterLine').innerText(),data.results[2].quip,'retry restores the first quip');
+      await context.close();
+      console.log(width+'px second quip '+(index+1)+': scroll-only / same character / three variants / hidden pause / no reroll / retry reset PASS');
     }
   } finally { await browser?.close(); if (server) await new Promise(resolve => server.close(resolve)); }
 }

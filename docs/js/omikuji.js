@@ -1,12 +1,19 @@
 (() => {
   "use strict";
+  const SECOND_QUIPS = [
+    "もう一回ひく？　でも、未来が2倍分かるわけじゃないよ。",
+    "もう一回ひく？　いいことだけ信じる。それもあり。",
+    "納得いくまで何度でもどうぞ。\n運命は自分で切り開くもの…　らしいから…"
+  ];
+  // Alpha baselines keep the existing square fairy images standing on the branch.
+  const FAIRY_FEET = {aco:.957, berry:.928, bumpy:.934, curly:.932, lavi:.955, lemon:.949, lilu:.902, miiru:.967, mint:.898, tiara:.895};
   function selectFortune(results, random = Math.random) {
     if (!Array.isArray(results) || !results.length) throw new Error("No fortunes");
     const value = random();
     if (!Number.isFinite(value) || value < 0 || value >= 1) throw new Error("Invalid random value");
     return results[Math.floor(value * results.length)];
   }
-  if (typeof module !== "undefined" && module.exports) module.exports = { selectFortune };
+  if (typeof module !== "undefined" && module.exports) module.exports = { selectFortune, SECOND_QUIPS };
   if (typeof window === "undefined") return;
   const source = document.currentScript.src;
   const embedded = window.parent !== window;
@@ -20,6 +27,20 @@
   const mobile = matchMedia("(max-width: 759px)");
   let config, data, ui, sound, pending, activeFairy, drawTimer = 0, peekTimer = 0, peekStart = 0;
   let drawing = false, remaining = 0, due = 0, suspended = document.hidden;
+  let secondQuip = "", quipChanged = false, quipAnimation = null, ctaObserver = null;
+  function checkSecondQuip() {
+    if (suspended || quipChanged || $("resultView").hidden || window.scrollY < 32 || $("omikujiMap").open) return;
+    if (Number(getComputedStyle(document.querySelector(".result-comment")).opacity) < .99) return;
+    const rect = $("resultActions").getBoundingClientRect();
+    if (rect.top >= innerHeight * .82 || rect.bottom <= 0) return;
+    quipChanged = true;
+    $("resultView").dataset.quipPhase = "second";
+    $("characterLine").textContent = secondQuip;
+    quipAnimation?.cancel();
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      quipAnimation = $("characterLine").animate([{opacity:0,filter:"blur(2px)"},{opacity:1,filter:"blur(0px)"}], {duration:450,easing:"ease-out"});
+    }
+  }
   function silence() {
     if (!sound) return;
     sound.pause();
@@ -50,6 +71,8 @@
     if (!config || !data) return;
     drawing = false; pending = null; remaining = 0;
     clearTimeout(drawTimer); drawTimer = 0; silence();
+    quipAnimation?.cancel(); quipAnimation = null; secondQuip = ""; quipChanged = false;
+    $("resultView").dataset.quipPhase = "first";
     $("drawView").hidden = false; $("resultView").hidden = true;
     document.body.classList.remove("is-result");
     $("drawButton").disabled = false;
@@ -70,10 +93,13 @@
     $("moneyText").textContent = result.work.replace(/★/g, ui.leaf);
     $("itemText").textContent = result.item;
     $("characterLine").textContent = result.quip;
+    secondQuip = selectFortune(SECOND_QUIPS);
+    quipChanged = false; $("resultView").dataset.quipPhase = "first";
     $("resultCharacter").src = config.legacyCharacters[result.char];
     $("resultFairy").src = activeFairy.image;
     $("resultFairy").dataset.characterId = activeFairy.id;
     $("resultFairy").alt = activeFairy.name + "がおみくじを届けてくれました";
+    $("resultView").style.setProperty("--fairy-foot", FAIRY_FEET[activeFairy.id] || .9);
     $("resultView").dataset.resultId = result.resultId;
     $("drawView").hidden = true; $("resultView").hidden = false;
     document.body.classList.add("is-result");
@@ -102,6 +128,7 @@
   function pause() {
     suspended = true; hideFairy(); silence();
     document.body.classList.add("is-suspended");
+    quipAnimation?.cancel(); ctaObserver?.disconnect();
     if (drawTimer) { remaining = Math.max(0, due - performance.now()); clearTimeout(drawTimer); drawTimer = 0; }
     $("drawButton").classList.remove("is-shaking");
   }
@@ -109,6 +136,7 @@
     suspended = document.hidden;
     document.body.classList.toggle("is-suspended", suspended);
     if (!suspended && drawing && pending && !drawTimer) scheduleReveal(remaining);
+    if (!suspended) { ctaObserver?.observe($("resultActions")); checkSecondQuip(); }
   }
   async function load() {
     $("drawButton").disabled = true; $("retryLoad").hidden = true;
@@ -138,6 +166,12 @@
   $("drawButton").addEventListener("click", draw);
   $("againButton").addEventListener("click", () => { entry(); $("drawButton").focus({preventScroll:true}); window.scrollTo(0, 0); });
   $("retryLoad").addEventListener("click", load);
+  if ("IntersectionObserver" in window) {
+    ctaObserver = new IntersectionObserver(checkSecondQuip, {threshold:[0,.25,.5]});
+    ctaObserver.observe($("resultActions"));
+  }
+  window.addEventListener("scroll", checkSecondQuip, {passive:true});
+  document.querySelector(".result-comment").addEventListener("animationend", checkSecondQuip);
   const mapDialog = $("omikujiMap");
   $("mapButton").addEventListener("click", async () => {
     silence();

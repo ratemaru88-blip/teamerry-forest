@@ -24,11 +24,14 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .peek-fairy.is-peeking { opacity: 1; }
 .draw-status { position: absolute; top: 86%; left: 24px; right: 24px; margin: 0; text-align: center; font: 600 15px/1.5 sans-serif; color: #fff; text-shadow: 0 1px 4px #244020; }
 .retry-load { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); min-height: 44px; padding: 8px 16px; border: 1px solid #eee; border-radius: 6px; }
-.result-view { min-height: 100svh; padding: 58px 0 max(36px, env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
+.result-view { --result-top: 58px; min-height: 100svh; padding: var(--result-top) 0 max(36px, env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
+.is-result { position: relative; isolation: isolate; background-image: url("../assets/images/omikuji/result-forest-branch-v1.webp"); background-position: center; background-size: 100% 100%; }
+.is-result::before { content: ""; position: absolute; z-index: -1; top: 0; left: 0; width: 100%; height: 100svh; background: url("../assets/images/omikuji/result-forest-branch-v1.webp") center / 100% 100% no-repeat; pointer-events: none; }
+.result-scene { min-height: calc(100svh - 235px); display: flex; flex-direction: column; }
 .is-result .omikuji-header { display: none; }
 .result-main { position: relative; width: 80%; margin-left: 8%; }
-.result-guide { position: absolute; z-index: 2; right: -38px; top: -46px; width: 140px; height: 160px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 4px 4px #213b2933); }
-.fortune-paper { padding: 26px 22px 24px; background: url("../assets/images/omikuji/paper-deckle-v1.webp") center / 100% 100% no-repeat; filter: drop-shadow(0 6px 8px #182b2240); color: #44301f; transform: rotate(-4deg); }
+.result-guide { --guide-width: min(140px, 17svh); --guide-height: calc(var(--guide-width) + 20px); position: absolute; z-index: 2; right: -38px; top: calc(20svh - var(--result-top) - (var(--guide-height) - var(--guide-width)) / 2 - var(--guide-width) * var(--fairy-foot, .9)); width: var(--guide-width); height: var(--guide-height); object-fit: contain; pointer-events: none; filter: drop-shadow(0 4px 4px #213b2933); }
+.fortune-paper { min-height: min(430px, 54svh); padding: 26px 22px 24px; background: url("../assets/images/omikuji/paper-deckle-v1.webp") center / 100% 100% no-repeat; filter: drop-shadow(0 6px 8px #182b2240); color: #44301f; transform: rotate(-4deg); }
 h2 { margin: 0 0 16px; font-size: 28px; line-height: 1.25; font-weight: 700; overflow-wrap: anywhere; }
 #resultTitle { position: relative; padding: 0 38px 16px 0; border-bottom: 1px solid #8e994e80; text-align: center; }
 #resultTitle::after { content: ""; position: absolute; bottom: -9px; left: 45%; width: 12px; height: 18px; border-radius: 85% 0 85% 0; background: #8e994e; box-shadow: 8px -5px 0 -2px #a4ad59; transform: rotate(-25deg); }
@@ -39,11 +42,10 @@ h2 { margin: 0 0 16px; font-size: 28px; line-height: 1.25; font-weight: 700; ove
 .fortune-details > .lucky-item { grid-template-columns: 1fr; gap: 4px; }
 dt { font-weight: 600; line-height: 1.5; }
 dd { margin: 0; line-height: 1.5; overflow-wrap: anywhere; }
-.result-comment { position: relative; z-index: 3; width: 88%; margin: -2px 2% 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 144px; align-items: center; gap: 0; }
+.result-comment { position: relative; z-index: 3; width: 88%; margin: auto 2% 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 144px; align-items: center; gap: 0; }
 .result-comment img { display: block; width: 144px; height: 184px; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 5px 5px #213b2940); }
-.comment-bubble { position: relative; align-self: center; margin: 0 -2px 16px 0; padding: 18px 16px; border-radius: 40% 34% 36% 30% / 28% 32% 30% 26%; background: #fff2d7 url("../assets/images/omikuji/paper.png") center / cover; box-shadow: 0 4px 12px #213b2933; color: #44301f; transform: rotate(-3deg); }
-.comment-bubble::after { content: ""; position: absolute; right: -15px; bottom: 15px; width: 22px; height: 20px; background: #fcecca; clip-path: polygon(0 0, 100% 100%, 0 70%); }
-.comment-bubble p { margin: 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.comment-bubble { position: relative; align-self: center; margin: 0 -8px 16px 0; min-height: 120px; padding: 22px 20px 32px; background: url("../assets/images/omikuji/comment-bubble-soft-v1.webp") center / 100% 100% no-repeat; filter: drop-shadow(0 4px 5px #213b2933); color: #44301f; transform: rotate(-2deg); }
+.comment-bubble p { margin: 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-line; }
 .result-actions { width: 88%; margin: 12px auto 0; display: grid; justify-items: center; gap: 8px; }
 .art-button { display: grid; place-items: center; border: 0; padding: 0; background: transparent; min-height: 48px; transition: filter 160ms, transform 160ms; }
 .art-button img { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -87,27 +89,27 @@ body.is-suspended .result-view * { animation-play-state: paused; }
   #resultTitle { font-size: 25px; }
   .result-comment { grid-template-columns: minmax(0, 1fr) 120px; }
   .result-comment img { width: 120px; height: 154px; }
-  .comment-bubble { padding: 16px 14px; }
+  .comment-bubble { min-height: 110px; padding: 20px 16px 28px; }
   .comment-bubble p { font-size: 14px; }
 }
 @media (min-height: 760px) and (orientation: portrait) {
   #resultTitle { font-size: 34px; padding-top: 8px; padding-bottom: 22px; margin-bottom: 18px; }
 }
 @media (max-height: 650px) and (orientation: portrait) {
-  .result-view { padding-top: 42px; }
+  .result-view { --result-top: 42px; }
   .fortune-paper { padding: 18px 16px; }
-  .result-guide { top: -36px; right: -30px; width: 116px; height: 134px; }
+  .result-guide { --guide-width: min(116px, 17svh); --guide-height: calc(var(--guide-width) + 18px); right: -30px; }
   #resultTitle { font-size: 23px; padding-bottom: 12px; margin-bottom: 14px; }
   .fortune-body { font-size: 14px; line-height: 1.4; margin-bottom: 10px; }
   .fortune-details { font-size: 13px; padding-top: 6px; }
   .fortune-details > div { padding: 6px 0; }
   .result-comment { grid-template-columns: minmax(0, 1fr) 118px; }
   .result-comment img { width: 118px; height: 136px; }
-  .comment-bubble { padding: 14px 12px; }
+  .comment-bubble { min-height: 108px; padding: 18px 16px 28px; }
   .comment-bubble p { font-size: 14px; line-height: 1.4; }
 }
 @media (max-height: 520px) and (orientation: portrait) {
-  .result-view { padding-top: 38px; }
+  .result-view { --result-top: 38px; }
   .fortune-paper { padding: 14px 18px; }
   #resultTitle { font-size: 22px; padding-bottom: 10px; margin-bottom: 12px; }
   .fortune-body { margin-bottom: 8px; }
