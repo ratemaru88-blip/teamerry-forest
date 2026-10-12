@@ -1,0 +1,257 @@
+{
+  "locale": "ja",
+  "sourceVersion": "2025-11-27",
+  "sourceSha256": "f9518ed61551676e95bf4a3fecb5d1220d62e42dfec67e5f148f3b8b80f7a137",
+  "results": [
+    {
+      "resultId": "forest-fortune-01",
+      "title": "ほかほか大吉",
+      "main": "あたたかい飲み物を両手で包むように、あなたのまわりにも静かなぬくもりが集まる日。どんな話も、湯気の向こうでやさしくまとまっていきます。",
+      "love": "★★★★★",
+      "work": "★★★★★",
+      "item": "緑のストラップ",
+      "quip": "ぬくもりも、カフェインも取りすぎには注意。",
+      "char": "https://static.wixstatic.com/media/e0436a_0bec673f5d9446aa9565441c313fdd84~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-02",
+      "title": "しずく大吉",
+      "main": "小さな「ありがとう」が重なって、午後には虹が一本、見えるかも。ふとしたしずくを、こぼさず受け止めて。",
+      "love": "★★★★",
+      "work": "★★★★★",
+      "item": "３色ボールペン",
+      "quip": "やさしさに包まれる一日。ありがとうをわすれずに。",
+      "char": "https://static.wixstatic.com/media/e0436a_e081c175fcbe401dbf14c227162b2e0b~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-03",
+      "title": "森の大吉",
+      "main": "今までの霧は晴れ、光がさしてきます。これからはいいことばかりが待っている予感。森の空気をいっぱい吸って。さあ一歩前へ",
+      "love": "★★★",
+      "work": "★★★★★",
+      "item": "新しいスニーカー",
+      "quip": "いいことが起きる予感。わくわく。",
+      "char": "https://static.wixstatic.com/media/e0436a_0be880be45634930abd2394e40eaaf41~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-04",
+      "title": "笑顔で大吉",
+      "main": "気持ちいい目覚め、　なんか良いことありそうな予感。鏡の中の自分にご挨拶。まだ寝癖がついてる。そんな自分もいとおしい。",
+      "love": "★★★★★",
+      "work": "★★★",
+      "item": "手鏡",
+      "quip": "左右逆でも、笑顔はそのまま。可愛いよ！",
+      "char": "https://static.wixstatic.com/media/e0436a_3c915ad8ff72446e999e3e52333a6066~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-05",
+      "title": "やわらか大吉",
+      "main": "今日のあなたは、トーストの耳よりふんわり。無理に頑張らなくても、まわりが勝手に優しくなる日。あたたかい飲み物と同じくらい、自分を甘やかして。",
+      "love": "★★★",
+      "work": "★★★★",
+      "item": "タンブラー",
+      "quip": "トーストの耳ってやわらかいの？かたいの？",
+      "char": "https://static.wixstatic.com/media/e0436a_53f12d503ce04b33ae15f298a1c81075~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-06",
+      "title": "静けさの大吉",
+      "main": "風鈴が鳴らない。でも耳の奥で、何かがやさしく鳴っている。その音が聞こえたなら、それが今日の運。",
+      "love": "★★★★",
+      "work": "★★★★",
+      "item": "森の香りの入浴剤",
+      "quip": "静かすぎて、いい音するね。心が休まるよ。",
+      "char": "https://static.wixstatic.com/media/e0436a_0bec673f5d9446aa9565441c313fdd84~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-07",
+      "title": "まろやか中吉",
+      "main": "人の話を聞くとき、うなずき多めで吉。静かにうなずくだけで、言葉がやさしく変わる。カップの底の方に、静かな幸せが沈んでいます。",
+      "love": "★★★",
+      "work": "★★★",
+      "item": "煮豆",
+      "quip": "人にやさしく。自分にやさしく。それが一番。",
+      "char": "https://static.wixstatic.com/media/e0436a_fdb686155454446c83b767aaea6b846c~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-08",
+      "title": "寝坊中吉",
+      "main": "朝が起きられなくて自己嫌悪。でも夢の中で笑ってたなら、それで十分。起きてからも、続きを笑えばいい。",
+      "love": "★★★",
+      "work": "★★★★",
+      "item": "抱きまくら",
+      "quip": "おつかれ、お茶でもどうぞ。",
+      "char": "https://static.wixstatic.com/media/e0436a_c9553aa04b9e4c418cf5b13e5b4376e9~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-09",
+      "title": "落ち葉便り中吉",
+      "main": "誰かが手紙を出し忘れたみたいに、足元に言葉がいくつも落ちている。拾って読むのは、きっとあなた。",
+      "love": "★★★★",
+      "work": "★★",
+      "item": "石焼き芋",
+      "quip": "ゆとりが新たな発見をうむ。",
+      "char": "https://static.wixstatic.com/media/e0436a_0bec673f5d9446aa9565441c313fdd84~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-10",
+      "title": "そよそよ中吉",
+      "main": "風がやさしく背中を押してくれる日。うまくいかなくても、空気がどこか味方をしてくれる。小さなことを丁寧にこなすほど、運気が静かに芽吹きます。",
+      "love": "★★★",
+      "work": "★★★",
+      "item": "よっちゃんイカ",
+      "quip": "その調子。そのまま歩いて大丈夫。",
+      "char": "https://static.wixstatic.com/media/e0436a_e081c175fcbe401dbf14c227162b2e0b~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-11",
+      "title": "もこもこ吉",
+      "main": "誰かの笑い声が、不意にあなたをやわらげる。無理に元気を出さなくても、湯気のように気持ちは上向き。　　今日は、笑われるより笑う方がお得です。",
+      "love": "★★",
+      "work": "★★★",
+      "item": "マッサージ器",
+      "quip": "笑いジワは運が上がるしるし。",
+      "char": "https://static.wixstatic.com/media/e0436a_e081c175fcbe401dbf14c227162b2e0b~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-12",
+      "title": "茶柱増量　吉",
+      "main": "茶柱が一本立った！ と思ったら七本立ってる。運がいいのか怖いのか判定不能。",
+      "love": "★★",
+      "work": "★★★",
+      "item": "歯間ブラシ",
+      "quip": "他の人にも茶柱立っとる！　新種のお茶かもしれん",
+      "char": "https://static.wixstatic.com/media/e0436a_c9553aa04b9e4c418cf5b13e5b4376e9~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-13",
+      "title": "クッキー割れ吉",
+      "main": "お茶菓子が割れたみたいに、予定も少し崩れる日。でも、かけらをつまんでみたら意外とおいしかったりする。形より味、　その過程を楽しんで。",
+      "love": "★★★",
+      "work": "★★★",
+      "item": "ドーナッツ",
+      "quip": "捨てる神あれば　拾う神あり。",
+      "char": "https://static.wixstatic.com/media/e0436a_53f12d503ce04b33ae15f298a1c81075~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-14",
+      "title": "ぬか喜びの吉",
+      "main": "いいことが起こりそうで、なぜか途中で転ぶ。けど、その拍子に新たな発見がある。悪くない日、たぶん。",
+      "love": "★★",
+      "work": "★★★",
+      "item": "クレーンゲーム",
+      "quip": "オチがついたら、それを笑えるゆとりが大事。",
+      "char": "https://static.wixstatic.com/media/e0436a_0be880be45634930abd2394e40eaaf41~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-15",
+      "title": "暴走中吉",
+      "main": "お湯を注ぎすぎて、味が未知の領域に突入。甘いのか渋いのか、自分でもわからない。今日のあなたは、たぶんそんな感じ。",
+      "love": "★★",
+      "work": "★★★",
+      "item": "ヨーグルト　プリン",
+      "quip": "ヨーグルト・プリン　甘いの？渋いの？落ち着いて。味見は一口ずつね。",
+      "char": "https://static.wixstatic.com/media/e0436a_fdb686155454446c83b767aaea6b846c~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-16",
+      "title": "スイーツ乱舞　吉",
+      "main": "ケーキを食べるたびに、運勢がリセットされる日。食べ過ぎると運がカロリーオーバー。甘さはほどほどに、現実もかじって。",
+      "love": "★★",
+      "work": "★★★",
+      "item": "毛抜き",
+      "quip": "デザートは別腹。　カロリーもゼロ。ホント？",
+      "char": "https://static.wixstatic.com/media/e0436a_0bec673f5d9446aa9565441c313fdd84~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-17",
+      "title": "ゆっくり見渡し吉",
+      "main": "妥協すること　立ち止まること　それは悪いことじゃない。　周りをちゃんと見ようとしてるだけ。背伸びばかりは疲れるよ。",
+      "love": "★★★",
+      "work": "★★",
+      "item": "笹団子",
+      "quip": "今日はペタンコの靴をはいて　お散歩しよう。緑が奇麗だよ。",
+      "char": "https://static.wixstatic.com/media/e0436a_e081c175fcbe401dbf14c227162b2e0b~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-18",
+      "title": "ふわふわ　吉",
+      "main": "運勢がふわっと浮かんで消えました。手のひらに残ったのは、ひとかけらの羽根だけ。今日は“わからない”を楽しむ日です。",
+      "love": "★★★",
+      "work": "★★★",
+      "item": "物干し竿",
+      "quip": "竿（さお）は持ち歩かないで。逮捕されます。",
+      "char": "https://static.wixstatic.com/media/e0436a_0be880be45634930abd2394e40eaaf41~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-19",
+      "title": "雨音うす　吉",
+      "main": "窓を叩く音が、昔の記憶を呼んでくる。思い出せそうで思い出せないまま、ただ静かにお茶が冷めていく。",
+      "love": "★★",
+      "work": "★★",
+      "item": "白いホッチキス",
+      "quip": "詩的だ。わかるようで　内容が全く分からない。",
+      "char": "https://static.wixstatic.com/media/e0436a_fdb686155454446c83b767aaea6b846c~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-20",
+      "title": "無重力ティーバッグ小吉",
+      "main": "あなたの思考、ただいま宙を舞っております。落ち着いて。ゆっくり腰を据えて、少しずつ味が出てきます。",
+      "love": "★★",
+      "work": "★★",
+      "item": "低反発クッション",
+      "quip": "ゆっくり座って周りを見て　一人だけ浮いてるような。。。",
+      "char": "https://static.wixstatic.com/media/e0436a_fdb686155454446c83b767aaea6b846c~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-21",
+      "title": "靄の中の　小吉",
+      "main": "今日は景色が少しぼやけて見える。焦っても、道はまだ霞の向こう。見えないまま歩く時間も、ちゃんと旅。",
+      "love": "★★★★",
+      "work": "★★★",
+      "item": "バランスボール",
+      "quip": "一歩分ずつ、霧が晴れる仕組みらしいよ。",
+      "char": "https://static.wixstatic.com/media/e0436a_e081c175fcbe401dbf14c227162b2e0b~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-22",
+      "title": "ぬるま湯小吉",
+      "main": "今日は、温め直しの日。ぬるめの紅茶みたいに、じんわりと心がほどけていく。　あせらなくていい、味が出るのはもう少し先。",
+      "love": "★★",
+      "work": "★★",
+      "item": "ケバブ。伸びるチーズ",
+      "quip": "ゆっくりでいいよ。　湯気が教えてくれるから。",
+      "char": "https://static.wixstatic.com/media/e0436a_3c915ad8ff72446e999e3e52333a6066~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-23",
+      "title": "ほっと末吉",
+      "main": "忙しさの中にも、一口ぶんの余白を。それだけで、空気の味が変わる。今日は“ぼんやり”がいちばんの仕事。",
+      "love": "★★",
+      "work": "★★",
+      "item": "激辛カップ麺",
+      "quip": "深呼吸。考えない時間もホントは大事なんだよ。",
+      "char": "https://static.wixstatic.com/media/e0436a_fdb686155454446c83b767aaea6b846c~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-24",
+      "title": "カフェイン過多凶",
+      "main": "いけると思って三杯目。そしたら心がちょっと踊りすぎた。深呼吸して、水でも飲もう。",
+      "love": "★",
+      "work": "★",
+      "item": "ChatGPT",
+      "quip": "テンション高め？それ、運気じゃなくてただのカフェインのせいだよ",
+      "char": "https://static.wixstatic.com/media/e0436a_c9553aa04b9e4c418cf5b13e5b4376e9~mv2.png"
+    },
+    {
+      "resultId": "forest-fortune-25",
+      "title": "蒸気暴走で凶",
+      "main": "テンション上がって　話しすぎ注意。お茶の湯気より　君の方が湯気が出てる。　お茶を飲んで落ち着こう",
+      "love": "★",
+      "work": "★",
+      "item": "ラベンダーの香りのお茶",
+      "quip": "周りは思った以上に冷めてるよ。",
+      "char": "https://static.wixstatic.com/media/e0436a_0be880be45634930abd2394e40eaaf41~mv2.png"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const http = require('node:http');
+const {chromium} = require('playwright');
+const root = path.resolve(__dirname, '../..');
+const data = require('../../data/omikuji/ja.json');
+const config = require('../../data/omikuji/config.json');
+const {selectFortune} = require('../../js/omikuji.js');
+assert.equal(data.results.length,25);
+assert.equal(new Set(data.results.map(x=>x.resultId)).size,25);
+assert.equal(config.fairies.length,10);
+assert(!config.fairies.some(x=>x.id==='elder'));
+assert.deepEqual(config.availableLocales,['ja']);
+for(let i=0;i<25;i++) assert.equal(selectFortune(data.results,()=>i/25).resultId,data.results[i].resultId);
+assert.throws(()=>selectFortune([],()=>0));
+assert.throws(()=>selectFortune(data.results,()=>1));
+for (const prefix of ['','docs/']) for(const asset of [...Object.values(config.assets),...Object.values(config.legacyCharacters),...config.fairies.map(x=>x.image)]) assert(fs.existsSync(path.join(root,prefix,asset)));
+for(const file of ['omikuji.html','css/omikuji.css','js/omikuji.js','data/omikuji/config.json','data/omikuji/ja.json']) assert.equal(fs.readFileSync(path.join(root,file),'utf8'),fs.readFileSync(path.join(root,'docs',file),'utf8'));
+if(process.env.OMIKUJI_SOURCE) {
+  const {extract}=require('../omikuji/extract-wix-data.cjs');
+  const original=extract(process.env.OMIKUJI_SOURCE);
+  assert.equal(data.sourceSha256,original.sha256);
+  assert.deepEqual(data.results.map(({resultId,...value})=>value),original.results,'all original text, ratings, items, quips and character associations preserved');
+}
+console.log('Data: 25 original fortunes / uniform selection / assets / 10 fairies without Elder / locale / docs mirror PASS');
+async function main() {
+  let server,browser;
+  try {
+    let base=process.env.OMIKUJI_TEST_BASE_URL;
+    if(!base) {
+      server=http.createServer((req,res)=>{
+        const pathname=decodeURIComponent(new URL(req.url,'http://local').pathname);
+        const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
+        if(!file.startsWith(root+path.sep))return res.writeHead(403).end();
+        res.setHeader('Content-Type',({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.css':'text/css','.png':'image/png','.webp':'image/webp','.mp3':'audio/mpeg'})[path.extname(file)]||'application/octet-stream');
+        fs.createReadStream(file).on('error',()=>res.writeHead(404).end()).pipe(res);
+      });
+      await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+      base='http://127.0.0.1:'+server.address().port;
+    }
+    browser=await chromium.launch({channel:'msedge',headless:true});
+    for(const [width,height,prefix] of [[320,568,''],[375,667,''],[390,844,''],[412,915,''],[667,375,''],[1366,900,''],[390,844,'/docs']]) {
+      if(process.env.OMIKUJI_TEST_BASE_URL && prefix)continue;
+      const mobile=width<760;
+      const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile});
+      const page=await context.newPage();
+      const errors=[],external=[];
+      page.on('pageerror',e=>errors.push(e.message));
+      page.on('request',r=>{if(new URL(r.url()).origin!==new URL(base).origin) external.push(r.url());});
+      await page.addInitScript(()=>{Math.random=()=>0; window.__sounds=[]; const NativeAudio=window.Audio; window.Audio=function(...args){const a=new NativeAudio(...args); __sounds.push(a); return a;};});
+      await page.goto(base+prefix+'/omikuji.html',{waitUntil:'domcontentloaded'});
+      await page.waitForFunction(()=>!document.getElementById('drawButton').disabled);
+      await page.locator('.tube-image').evaluate(img=>img.decode());
+      await page.waitForFunction(()=>window.__sounds[0]?.duration>0);
+      if(mobile) {
+        await page.waitForFunction(()=>document.getElementById('peekFairy').classList.contains('is-peeking'));
+        await page.locator('#peekFairy').evaluate(img=>img.decode());
+        await page.waitForFunction(()=>Number(getComputedStyle(document.getElementById('peekFairy')).opacity)===1);
+        assert.equal(await page.locator('#peekFairy').getAttribute('data-character-id'),'aco');
+      } else assert.equal(await page.locator('#peekFairy').isVisible(),false);
+      const tube=await page.locator('.tube-image').boundingBox();
+      assert(tube.y>=60 && tube.y+tube.height<=height);
+      assert(tube.x>=0 && tube.x+tube.width<=width);
+      if(process.env.OMIKUJI_TEST_ARTIFACTS) {
+        fs.mkdirSync(process.env.OMIKUJI_TEST_ARTIFACTS,{recursive:true});
+        await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'entry-'+width+(prefix?'-docs':'')+'.png')});
+      }
+      await page.locator('#drawButton').click();
+      await page.waitForFunction(()=>!window.__sounds[0].paused);
+      assert.equal(await page.locator('#drawButton').isDisabled(),true);
+      assert.equal(await page.locator('#peekFairy').evaluate(el=>el.classList.contains('is-peeking')),false);
+      // Disabled button blocks rapid double draws.
+      await page.locator('#drawButton').evaluate(el=>el.click());
+      await page.waitForFunction(()=>!document.getElementById('resultView').hidden);
+      assert.equal(await page.locator('#resultTitle').innerText(),data.results[0].title);
+      assert.equal(await page.locator('#mainText').innerText(),data.results[0].main);
+      assert.equal(await page.locator('#loveText').innerText(),data.results[0].love.replace(/★/g,'🍃'));
+      assert.equal(await page.locator('#moneyText').innerText(),data.results[0].work.replace(/★/g,'🍃'));
+      assert.equal(await page.locator('#itemText').innerText(),data.results[0].item);
+      assert.equal(await page.locator('#characterLine').innerText(),data.results[0].quip);
+      await page.locator('#resultCharacter').evaluate(img=>img.decode());
+      await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.fortune-paper')).opacity)===1);
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+      for(const id of ['resultTitle','mainText','loveText','moneyText','itemText','characterLine']) assert(await page.locator('#'+id).evaluate(el=>el.scrollWidth<=el.clientWidth+1),id+' must fit');
+      if(process.env.OMIKUJI_TEST_ARTIFACTS) await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'result-'+width+(prefix?'-docs':'')+'.png'),fullPage:true});
+      assert.equal(await page.locator('.result-actions a').getAttribute('href'),'./index.html');
+      await page.locator('#againButton').click();
+      assert.equal(await page.locator('#drawView').isVisible(),true);
+      if(mobile) assert.equal(await page.locator('#peekFairy').getAttribute('data-character-id'),'berry','next visit/entry changes fairy');
+      // Keep the draw from completing while hidden, without replaying audio.
+      await page.locator('#drawButton').click();
+      await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true}); document.dispatchEvent(new Event('visibilitychange'));});
+      assert.equal(await page.evaluate(()=>__sounds.every(a=>a.paused)),true);
+      await page.waitForTimeout(2200);
+      assert.equal(await page.locator('#resultView').isVisible(),false);
+      await page.evaluate(()=>{delete document.hidden;document.dispatchEvent(new Event('visibilitychange'));});
+      await page.waitForFunction(()=>!document.getElementById('resultView').hidden);
+      assert.deepEqual(errors,[]);assert.deepEqual(external,[],'runtime must be independent of Wix');
+      console.log((prefix||'root')+' '+width+'x'+height+': entry / fairy / shake / sound state / preserved result / retry / hidden pause / local assets PASS');
+      await context.close();
+    }
+    const context=await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+    const page=await context.newPage();
+    await page.route('**/data/omikuji/ja.json*',route=>route.fulfill({json:{...data,results:[{...data.results[0],main:'<script>window.__unsafe=1</script>',quip:'<img src=x onerror=window.__unsafe=2>'}]}}));
+    await page.goto(base+'/omikuji.html?lang=en');
+    await page.waitForFunction(()=>!document.getElementById('drawButton').disabled);
+    assert.equal(await page.locator('html').getAttribute('lang'),'ja','missing EN data falls back without invented translations');
+    await page.locator('#drawButton').click();
+    await page.waitForFunction(()=>!document.getElementById('resultView').hidden);
+    assert.equal(await page.evaluate(()=>window.__unsafe),undefined);
+    assert.equal(await page.locator('#mainText script').count(),0);
+    assert((await page.locator('#mainText').innerText()).includes('<script>'));
+    await context.close();
+    console.log('Safe text / locale fallback / reduced motion PASS');
+    const failed=await browser.newContext({viewport:{width:320,height:568}});
+    const failedPage=await failed.newPage();
+    await failedPage.route('**/data/omikuji/ja.json*',route=>route.fulfill({status:503,body:'unavailable'}));
+    await failedPage.goto(base+'/omikuji.html');
+    await failedPage.locator('#retryLoad').waitFor({state:'visible'});
+    assert.equal(await failedPage.locator('#drawButton').isDisabled(),true);
+    await failedPage.unroute('**/data/omikuji/ja.json*');
+    await failedPage.locator('#retryLoad').click();
+    await failedPage.waitForFunction(()=>!document.getElementById('drawButton').disabled);
+    await failed.close();
+    console.log('Data loading failure / retry recovery PASS');
+  } finally {await browser?.close();if(server) await new Promise(resolve=>server.close(resolve));}
+}
+main().catch(error=>{console.error(error);process.exitCode=1;});

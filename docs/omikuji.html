@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#32553a">
+  <title>森のおみくじ | TeaMerry Forest</title>
+  <link rel="icon" href="./assets/images/favicon.ico">
+  <link rel="stylesheet" href="./css/omikuji.css?v=2026.10.12-phase1-01">
+</head>
+<body>
+  <header class="omikuji-header">
+    <a class="forest-back" href="./index.html" aria-label="森へ戻る" title="森へ戻る"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7M5 12h14"/></svg><span>森へ戻る</span></a>
+    <span class="shrine-name">TeaMerry Forest</span>
+  </header>
+  <main>
+    <h1 class="sr-only">森のおみくじ</h1>
+    <section id="drawView" class="draw-scene" aria-label="森のおみくじをひく">
+      <div class="tube-scene">
+        <img id="peekFairy" class="peek-fairy" alt="" aria-hidden="true" hidden>
+        <button id="drawButton" class="draw-control" type="button" disabled aria-label="ひいてみる">
+          <span id="drawLabel" class="draw-label">ひいてみる</span>
+          <img class="tube-image" src="./assets/images/omikuji/tube.png" width="243" height="547" alt="">
+        </button>
+      </div>
+      <p id="drawStatus" class="draw-status" role="status">準備中…</p>
+      <button id="retryLoad" class="retry-load" type="button" hidden>読み込み直す</button>
+    </section>
+    <section id="resultView" class="result-view" aria-labelledby="resultTitle" hidden>
+      <article class="fortune-paper">
+        <p class="fortune-eyebrow">森から届いた、今日の一枚</p>
+        <h2 id="resultTitle" tabindex="-1"></h2>
+        <p id="mainText" class="fortune-body"></p>
+        <dl class="fortune-details">
+          <div><dt id="loveLabel"></dt><dd id="loveText"></dd></div>
+          <div><dt id="moneyLabel"></dt><dd id="moneyText"></dd></div>
+          <div class="lucky-item"><dt id="itemLabel"></dt><dd id="itemText"></dd></div>
+        </dl>
+        <div class="character-quip">
+          <img id="resultCharacter" width="110" height="130" alt="森の仲間">
+          <p id="characterLine"></p>
+        </div>
+      </article>
+      <nav class="result-actions" aria-label="おみくじの後に">
+        <button id="againButton" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.6 6.4M3 4v7h7"/></svg><span>もう一度ひく</span></button>
+        <a href="./index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7M5 12h14"/></svg><span>森へ戻る</span></a>
+      </nav>
+    </section>
+  </main>
+  <script src="./js/omikuji.js?v=2026.10.12-phase1-01"></script>
+</body>
+</html>

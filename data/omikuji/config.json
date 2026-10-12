@@ -1,0 +1,89 @@
+{
+  "defaultLocale": "ja",
+  "availableLocales": [
+    "ja"
+  ],
+  "drawDelayMs": 2000,
+  "peekDurationMs": 1100,
+  "assets": {
+    "background": "./assets/images/omikuji/shrine-background.webp",
+    "tube": "./assets/images/omikuji/tube.png",
+    "paper": "./assets/images/omikuji/paper.png",
+    "shakeSound": "./assets/sounds/omikuji-shake.mp3"
+  },
+  "legacyCharacters": {
+    "https://static.wixstatic.com/media/e0436a_0bec673f5d9446aa9565441c313fdd84~mv2.png": "./assets/images/omikuji/result-01.png",
+    "https://static.wixstatic.com/media/e0436a_e081c175fcbe401dbf14c227162b2e0b~mv2.png": "./assets/images/omikuji/result-02.png",
+    "https://static.wixstatic.com/media/e0436a_0be880be45634930abd2394e40eaaf41~mv2.png": "./assets/images/omikuji/result-03.png",
+    "https://static.wixstatic.com/media/e0436a_3c915ad8ff72446e999e3e52333a6066~mv2.png": "./assets/images/omikuji/result-04.png",
+    "https://static.wixstatic.com/media/e0436a_53f12d503ce04b33ae15f298a1c81075~mv2.png": "./assets/images/omikuji/result-05.png",
+    "https://static.wixstatic.com/media/e0436a_fdb686155454446c83b767aaea6b846c~mv2.png": "./assets/images/omikuji/result-06.png",
+    "https://static.wixstatic.com/media/e0436a_c9553aa04b9e4c418cf5b13e5b4376e9~mv2.png": "./assets/images/omikuji/result-07.png"
+  },
+  "fairies": [
+    {
+      "id": "aco",
+      "name": "アコ",
+      "image": "./assets/images/forest_fairy/aco_v01.webp"
+    },
+    {
+      "id": "berry",
+      "name": "ベリー",
+      "image": "./assets/images/forest_fairy/berry_v01.webp"
+    },
+    {
+      "id": "bumpy",
+      "name": "バンピー",
+      "image": "./assets/images/forest_fairy/bumpy_v01.webp"
+    },
+    {
+      "id": "curly",
+      "name": "カーリー",
+      "image": "./assets/images/forest_fairy/curly_v01.webp"
+    },
+    {
+      "id": "lavi",
+      "name": "ラヴィ",
+      "image": "./assets/images/forest_fairy/lavi_v01.webp"
+    },
+    {
+      "id": "lemon",
+      "name": "レモン",
+      "image": "./assets/images/forest_fairy/lemon_v01.webp"
+    },
+    {
+      "id": "lilu",
+      "name": "リル",
+      "image": "./assets/images/forest_fairy/lilu_v01.webp"
+    },
+    {
+      "id": "miiru",
+      "name": "ミール",
+      "image": "./assets/images/forest_fairy/miiru_v01.webp"
+    },
+    {
+      "id": "mint",
+      "name": "ミント",
+      "image": "./assets/images/forest_fairy/mint_v01.webp"
+    },
+    {
+      "id": "tiara",
+      "name": "ティアラ",
+      "image": "./assets/images/forest_fairy/tiara_v01.webp"
+    }
+  ],
+  "ui": {
+    "ja": {
+      "draw": "ひいてみる",
+      "drawing": "そっと、シャカシャカ…",
+      "again": "もう一度ひく",
+      "back": "森へ戻る",
+      "love": "💓 恋愛運",
+      "money": "💰 金運",
+      "item": "🎁 ラッキーアイテム",
+      "error": "おみくじの準備ができませんでした。",
+      "retry": "読み込み直す",
+      "leaf": "🍃"
+    }
+  }
+}
