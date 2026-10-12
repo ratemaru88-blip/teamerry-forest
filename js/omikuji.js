@@ -9,9 +9,16 @@
   if (typeof module !== "undefined" && module.exports) module.exports = { selectFortune };
   if (typeof window === "undefined") return;
   const source = document.currentScript.src;
+  const embedded = window.parent !== window;
+  if (!embedded && matchMedia("(min-width: 760px)").matches) {
+    const forest = new URL("../index.html", source);
+    forest.searchParams.set("omikuji", "1");
+    location.replace(forest);
+    return;
+  }
   const $ = id => document.getElementById(id);
   const mobile = matchMedia("(max-width: 759px)");
-  let config, data, ui, sound, pending, drawTimer = 0, peekTimer = 0, peekStart = 0;
+  let config, data, ui, sound, pending, activeFairy, drawTimer = 0, peekTimer = 0, peekStart = 0;
   let drawing = false, remaining = 0, due = 0, suspended = document.hidden;
   function silence() {
     if (!sound) return;
@@ -24,25 +31,27 @@
   }
   function peek() {
     hideFairy();
-    if (!mobile.matches || suspended) return;
     let previous = "";
     try { previous = localStorage.getItem("teaMerryOmikujiLastFairy") || ""; } catch {}
     const candidates = config.fairies.filter(fairy => fairy.id !== previous);
     const fairy = selectFortune(candidates.length ? candidates : config.fairies);
+    activeFairy = fairy;
     $("peekFairy").src = fairy.image;
     $("peekFairy").dataset.characterId = fairy.id;
     $("peekFairy").hidden = false;
     try { localStorage.setItem("teaMerryOmikujiLastFairy", fairy.id); } catch {}
+    if (!mobile.matches || suspended) return;
     peekStart = setTimeout(() => {
       $("peekFairy").classList.add("is-peeking");
       peekTimer = setTimeout(hideFairy, config.peekDurationMs);
-    }, 350);
+    }, 80);
   }
   function entry() {
     if (!config || !data) return;
     drawing = false; pending = null; remaining = 0;
     clearTimeout(drawTimer); drawTimer = 0; silence();
     $("drawView").hidden = false; $("resultView").hidden = true;
+    document.body.classList.remove("is-result");
     $("drawButton").disabled = false;
     $("drawButton").classList.remove("is-shaking");
     $("drawLabel").textContent = ui.draw; $("drawStatus").textContent = "";
@@ -62,8 +71,12 @@
     $("itemText").textContent = result.item;
     $("characterLine").textContent = result.quip;
     $("resultCharacter").src = config.legacyCharacters[result.char];
+    $("resultFairy").src = activeFairy.image;
+    $("resultFairy").dataset.characterId = activeFairy.id;
+    $("resultFairy").alt = activeFairy.name + "がおみくじを届けてくれました";
     $("resultView").dataset.resultId = result.resultId;
     $("drawView").hidden = true; $("resultView").hidden = false;
+    document.body.classList.add("is-result");
     $("resultView").classList.remove("is-revealing");
     void $("resultView").offsetWidth;
     $("resultView").classList.add("is-revealing");
@@ -100,7 +113,7 @@
   async function load() {
     $("drawButton").disabled = true; $("retryLoad").hidden = true;
     try {
-      const response = await fetch(new URL("../data/omikuji/config.json?v=2026.10.13-staged-02", source));
+      const response = await fetch(new URL("../data/omikuji/config.json?v=2026.10.13-overlay-03", source));
       if (!response.ok) throw new Error("Config unavailable");
       config = await response.json();
       const requested = new URLSearchParams(location.search).get("lang");
@@ -169,5 +182,23 @@
   window.addEventListener("pagehide", pause); window.addEventListener("pageshow", resume);
   mobile.addEventListener("change", () => { if (!mobile.matches) hideFairy(); });
   document.querySelectorAll('a[href="./index.html"]').forEach(link => link.addEventListener("click", pause));
+  window.TeaMerryOmikuji = Object.freeze({stop:pause});
+  if (embedded) {
+    const returnToForest = () => {
+      pause();
+      window.parent.postMessage({type:"teamerry:omikuji-close"}, location.origin);
+    };
+    document.querySelectorAll('a[href="./index.html"]').forEach(link => link.addEventListener("click", event => {
+      event.preventDefault();
+      returnToForest();
+    }));
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !mapDialog.open) { event.preventDefault(); returnToForest(); }
+    });
+    $("mapDestinations").addEventListener("click", event => {
+      const link = event.target.closest("a");
+      if (link) { pause(); link.target = "_top"; }
+    });
+  }
   load();
 })();

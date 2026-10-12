@@ -16,30 +16,33 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .draw-scene { position: relative; min-height: 100svh; height: 100svh; overflow: hidden; }
 .tube-scene { position: absolute; width: min(86%, 420px); height: 65%; top: 13%; left: 50%; transform: translateX(-50%); }
 .draw-control { position: relative; display: flex; align-items: center; flex-direction: column; justify-content: space-between; height: 100%; width: 100%; padding: 0; border: 0; background: transparent; }
-.draw-label { display: block; flex-shrink: 0; width: min(100%, 300px); aspect-ratio: 1430 / 517; }
+.draw-label { display: block; flex-shrink: 0; width: min(85%, 255px); aspect-ratio: 1430 / 517; }
 .draw-label > img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .tube-image { display: block; flex: 0 1 auto; height: calc(100% - 124px); max-height: 520px; max-width: 72%; width: auto; object-fit: contain; filter: drop-shadow(0 10px 9px #352e2940); transform-origin: 50% 93%; }
 .draw-control.is-shaking .tube-image { animation: shake-tube 420ms ease-in-out; }
-.peek-fairy { position: absolute; z-index: 0; bottom: 13%; left: max(0px, calc(50% - 170px)); width: 130px; height: 180px; object-fit: contain; opacity: 0; transform: rotate(-4deg); transition: opacity 800ms ease-in-out; pointer-events: none; }
+.peek-fairy { position: absolute; z-index: 2; bottom: 0; left: max(0px, calc(50% - 110px)); width: 130px; height: 180px; object-fit: contain; opacity: 0; transition: opacity 800ms ease-in-out; pointer-events: none; }
 .peek-fairy.is-peeking { opacity: 1; }
 .draw-status { position: absolute; top: 86%; left: 24px; right: 24px; margin: 0; text-align: center; font: 600 15px/1.5 sans-serif; color: #fff; text-shadow: 0 1px 4px #244020; }
 .retry-load { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); min-height: 44px; padding: 8px 16px; border: 1px solid #eee; border-radius: 6px; }
-.result-view { min-height: 100svh; padding: 84px 20px max(36px, env(safe-area-inset-bottom)); max-width: 620px; margin: 0 auto; }
-.result-main { min-height: calc(100svh - 300px); }
-.fortune-paper { padding: 36px 28px; background: url("../assets/images/omikuji/paper-deckle-v1.webp") center / 100% 100% no-repeat; filter: drop-shadow(0 6px 8px #182b2240); color: #44301f; transform: rotate(-1.4deg); }
-h2 { margin: 0 0 18px; font-size: 28px; line-height: 1.4; font-weight: 700; overflow-wrap: anywhere; }
-.fortune-body { margin: 0 0 22px; font-size: 17px; line-height: 1.9; overflow-wrap: anywhere; }
-.fortune-details { margin: 0; padding: 16px 0; border-top: 1px solid #73806345; border-bottom: 1px solid #73806345; font-family: sans-serif; font-size: 15px; }
-.fortune-details > div { display: grid; grid-template-columns: 130px 1fr; align-items: start; gap: 8px; margin-bottom: 12px; }
+.result-view { min-height: 100svh; padding: 64px 16px max(36px, env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
+.is-result .omikuji-header { display: none; }
+.result-main { position: relative; }
+.result-guide { position: absolute; z-index: 2; right: -4px; top: -44px; width: 84px; height: 100px; object-fit: contain; pointer-events: none; }
+.fortune-paper { padding: 26px 24px; background: url("../assets/images/omikuji/paper-deckle-v1.webp") center / 100% 100% no-repeat; filter: drop-shadow(0 6px 8px #182b2240); color: #44301f; transform: rotate(-1.4deg); }
+h2 { margin: 0 0 14px; font-size: 26px; line-height: 1.35; font-weight: 700; overflow-wrap: anywhere; }
+#resultTitle { padding-right: 44px; }
+.fortune-body { margin: 0 0 14px; font-size: 16px; line-height: 1.65; overflow-wrap: anywhere; }
+.fortune-details { margin: 0; padding: 12px 0; border-top: 1px solid #73806345; border-bottom: 1px solid #73806345; font-family: sans-serif; font-size: 14px; }
+.fortune-details > div { display: grid; grid-template-columns: 100px 1fr; align-items: start; gap: 8px; margin-bottom: 8px; }
 .fortune-details > div:last-child { margin-bottom: 0; }
 .fortune-details > .lucky-item { grid-template-columns: 1fr; gap: 4px; }
 dt { font-weight: 600; line-height: 1.6; }
 dd { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
-.result-comment { margin-top: 20px; min-height: 196px; display: grid; grid-template-columns: minmax(0, 1fr) 140px; align-items: center; gap: 0; }
-.result-comment img { display: block; width: 140px; height: 196px; object-fit: contain; filter: drop-shadow(0 5px 5px #213b2940); }
+.result-comment { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) 100px; align-items: center; gap: 0; }
+.result-comment img { display: block; width: 100px; height: 124px; object-fit: contain; filter: drop-shadow(0 5px 5px #213b2940); }
 .comment-bubble { position: relative; padding: 18px 20px; border-radius: 24px; background: #fff2d7 url("../assets/images/omikuji/paper.png") center / cover; box-shadow: 0 4px 12px #213b2933; color: #44301f; }
 .comment-bubble::after { content: ""; position: absolute; right: -9px; bottom: 22px; border-left: 12px solid #fcecca; border-top: 9px solid transparent; border-bottom: 5px solid transparent; }
-.comment-bubble p { margin: 0; font-size: 16px; line-height: 1.8; overflow-wrap: anywhere; }
+.comment-bubble p { margin: 0; font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
 .result-actions { margin-top: 32px; padding-top: 8px; display: grid; justify-items: center; gap: 8px; }
 .art-button { display: grid; place-items: center; border: 0; padding: 0; background: transparent; min-height: 48px; transition: filter 160ms, transform 160ms; }
 .art-button img { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -55,7 +58,8 @@ dd { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
 .result-view.is-revealing .fortune-details > div:nth-child(1) { animation: reveal-ink 400ms ease-out 800ms both; }
 .result-view.is-revealing .fortune-details > div:nth-child(2) { animation: reveal-ink 400ms ease-out 950ms both; }
 .result-view.is-revealing .fortune-details > div:nth-child(3) { animation: reveal-ink 400ms ease-out 1100ms both; }
-.result-view.is-revealing .result-comment { animation: reveal-paper 450ms ease-out 1800ms both; }
+.result-view.is-revealing .result-guide { animation: reveal-paper 450ms ease-out 1500ms both; }
+.result-view.is-revealing .result-comment { animation: reveal-paper 450ms ease-out 2100ms both; }
 body.is-suspended .result-view * { animation-play-state: paused; }
 .omikuji-map { width: min(92vw, 520px); max-height: 88svh; padding: 16px; border: 1px solid #acb9a4; border-radius: 6px; background: #f5f8f1; color: #294332; overflow-y: auto; }
 .omikuji-map::backdrop { background: #10271999; }
@@ -80,11 +84,32 @@ body.is-suspended .result-view * { animation-play-state: paused; }
   .omikuji-header { left: 12px; right: 12px; }
   .shrine-name { font-size: 12px; }
   .result-view { padding-left: 12px; padding-right: 12px; }
-  .fortune-paper { padding: 32px 24px; }
-  .fortune-details > div { grid-template-columns: 1fr; gap: 2px; }
+  .fortune-paper { padding: 24px 20px; }
   .result-comment { grid-template-columns: minmax(0, 1fr) 100px; gap: 0; }
-  .result-comment img { width: 100px; height: 164px; }
+  .result-comment img { width: 100px; height: 124px; }
   .comment-bubble { padding: 16px; }
+}
+@media (max-height: 650px) and (orientation: portrait) {
+  .result-view { padding-top: 52px; }
+  .fortune-paper { padding: 20px; }
+  #resultTitle { font-size: 23px; margin-bottom: 10px; }
+  .fortune-body { font-size: 15px; line-height: 1.5; margin-bottom: 10px; }
+  .fortune-details { padding: 8px 0; }
+  .fortune-details > div { margin-bottom: 6px; }
+  .result-comment img { width: 100px; height: 96px; }
+  .comment-bubble { padding: 12px 14px; }
+  .comment-bubble p { font-size: 14px; line-height: 1.5; }
+}
+@media (max-height: 520px) and (orientation: portrait) {
+  .result-view { padding-top: 44px; }
+  .result-guide { top: -36px; width: 72px; height: 84px; }
+  .fortune-paper { padding: 16px 20px; }
+  #resultTitle { font-size: 22px; margin-bottom: 8px; }
+  .fortune-body { line-height: 1.45; margin-bottom: 8px; }
+  .fortune-details { padding: 6px 0; }
+  .fortune-details > div { margin-bottom: 4px; }
+  .result-comment { margin-top: 8px; }
+  .result-comment img { height: 84px; }
 }
 @media (max-height: 480px) and (orientation: landscape) {
   .tube-scene { top: 20%; height: 64%; }

@@ -1,0 +1,8 @@
+.forest-omikuji-dialog { padding: 0; border: 1px solid #9ca98b; border-radius: 6px; width: min(420px, 90vw); height: min(88dvh, 900px); max-width: 90vw; max-height: 90dvh; overflow: hidden; background: #254635; color: #f6f5e9; box-shadow: 0 12px 36px #16251b40; }
+.forest-omikuji-dialog[open] { display: grid; grid-template-rows: 40px minmax(0, 1fr); }
+.forest-omikuji-dialog::backdrop { background: #1020184d; }
+.forest-omikuji-heading { display: flex; justify-content: space-between; align-items: center; padding: 0 8px 0 14px; gap: 12px; font: 14px/1.4 sans-serif; }
+.forest-omikuji-close { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; color: inherit; background: transparent; border: 0; cursor: pointer; }
+.forest-omikuji-close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+.forest-omikuji-close:focus-visible { outline: 2px solid #f3e3ae; outline-offset: -3px; }
+.forest-omikuji-frame { display: block; width: 100%; height: 100%; min-height: 0; border: 0; }

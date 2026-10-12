@@ -4,7 +4,7 @@
     "ja"
   ],
   "drawDelayMs": 2000,
-  "peekDurationMs": 4000,
+  "peekDurationMs": 3000,
   "assets": {
     "drawSign": "./assets/images/omikuji/omikuji_kanban2A.webp",
     "background": "./assets/images/omikuji/shrine-background.webp",

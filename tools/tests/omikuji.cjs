@@ -12,7 +12,7 @@ assert.equal(new Set(data.results.map(x=>x.resultId)).size,25);
 assert.equal(config.fairies.length,10);
 assert(!config.fairies.some(x=>x.id==='elder'));
 assert.deepEqual(config.availableLocales,['ja']);
-assert.equal(config.peekDurationMs,4000);
+assert.equal(config.peekDurationMs,3000);
 assert.equal(config.ui.ja.draw,'おみくじを引く');
 for(let i=0;i<25;i++) assert.equal(selectFortune(data.results,()=>i/25).resultId,data.results[i].resultId);
 assert.throws(()=>selectFortune([],()=>0));
@@ -42,7 +42,7 @@ async function main() {
       base='http://127.0.0.1:'+server.address().port;
     }
     browser=await chromium.launch({channel:'msedge',headless:true});
-    for(const [width,height,prefix] of [[320,568,''],[360,800,''],[375,667,''],[390,844,''],[412,915,''],[430,932,''],[667,375,''],[1366,900,''],[390,844,'/docs']]) {
+    for(const [width,height,prefix] of [[320,568,''],[360,800,''],[375,667,''],[390,844,''],[412,915,''],[430,932,''],[667,375,''],[390,844,'/docs']]) {
       if(process.env.OMIKUJI_TEST_BASE_URL && prefix)continue;
       const mobile=width<760;
       const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile});
@@ -70,6 +70,10 @@ async function main() {
       assert(entryReturn.x>=tube.x+tube.width || entryReturn.y>=tube.y+tube.height,'return sign must not cover tube');
       if(mobile) {
         const fairy=await page.locator('#peekFairy').boundingBox();
+        assert(fairy.x>=0 && fairy.x+fairy.width<=width && fairy.y+fairy.height<=height,'whole fairy stays in viewport');
+        assert.equal(await page.locator('#peekFairy').evaluate(el=>getComputedStyle(el).zIndex),'2','fairy sits in front of tube');
+        const sign=await page.locator('.draw-label').boundingBox();
+        assert(sign.width<=255,'sign is subordinate to tube');
         assert(fairy.width>=80 && (height<480 || fairy.width>=130),'fairy is recognizable');
         if(width===390 && !prefix) {
           await page.waitForTimeout(1500);
@@ -95,10 +99,11 @@ async function main() {
       assert.equal(await page.locator('.result-comment').evaluate(el=>Number(getComputedStyle(el).opacity)),0,'paper precedes delayed comment');
       assert.equal(await page.locator('#resultTitle').evaluate(el=>Number(getComputedStyle(el).opacity)),0,'paper appears before text');
       assert.equal(await page.locator('.fortune-eyebrow').count(),0,'no extra heading copy');
-      const delays=await page.evaluate(()=>['#resultTitle','#mainText','.fortune-details > div:nth-child(1)','.fortune-details > div:nth-child(2)','.fortune-details > div:nth-child(3)','.result-comment'].map(s=>parseFloat(getComputedStyle(document.querySelector(s)).animationDelay)));
-      assert.deepEqual(delays,[.3,.5,.8,.95,1.1,1.8]);
-      const actions=await page.locator('.result-actions').boundingBox();
-      assert(actions.y>=height,'actions should require scrolling, not crowd first view');
+      const delays=await page.evaluate(()=>['#resultTitle','#mainText','.fortune-details > div:nth-child(1)','.fortune-details > div:nth-child(2)','.fortune-details > div:nth-child(3)','.result-guide','.result-comment'].map(s=>parseFloat(getComputedStyle(document.querySelector(s)).animationDelay)));
+      assert.deepEqual(delays,[.3,.5,.8,.95,1.1,1.5,2.1]);
+      assert.equal(await page.locator('#resultFairy').getAttribute('src'),await page.locator('#peekFairy').getAttribute('src'),'same fairy delivers the result');
+      assert.equal(await page.locator('#resultFairy').getAttribute('data-character-id'),'aco');
+      await page.locator('#resultFairy').evaluate(img=>img.decode());
       assert.equal(await page.locator('#resultTitle').innerText(),data.results[0].title);
       assert.equal(await page.locator('#mainText').innerText(),data.results[0].main);
       assert.equal(await page.locator('#loveText').innerText(),data.results[0].love.replace(/★/g,'🍃'));
@@ -114,6 +119,9 @@ async function main() {
       const character=await page.locator('#resultCharacter').boundingBox();
       assert(comment.y>=paper.y+paper.height,'comment must not cover result paper');
       assert(bubble.x+bubble.width<=character.x,'bubble must not cover character');
+      if(height>width) assert(comment.y+comment.height<=height,'result and quip fit first portrait screen');
+      const actions=await page.locator('.result-actions').boundingBox();
+      assert(actions.y>=comment.y+comment.height,'buttons follow the quip naturally');
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
       for(const id of ['resultTitle','mainText','loveText','moneyText','itemText','characterLine']) assert(await page.locator('#'+id).evaluate(el=>el.scrollWidth<=el.clientWidth+1),id+' must fit');
       if(process.env.OMIKUJI_TEST_ARTIFACTS) await page.screenshot({path:path.join(process.env.OMIKUJI_TEST_ARTIFACTS,'result-'+width+(prefix?'-docs':'')+'.png'),fullPage:true});
@@ -151,6 +159,27 @@ async function main() {
       assert.deepEqual(errors,[]);assert.deepEqual(external,[],'runtime must be independent of Wix');
       console.log((prefix||'root')+' '+width+'x'+height+': entry / fairy / shake / sound state / preserved result / retry / hidden pause / local assets PASS');
       await context.close();
+    }
+    for(const [width,height] of [[320,568],[390,844],[418,486]]) {
+      const coverage=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+      const screen=await coverage.newPage();
+      let selected=data.results[0];
+      await screen.route('**/data/omikuji/ja.json*',route=>route.fulfill({json:{...data,results:[selected]}}));
+      await screen.route('**/data/omikuji/config.json*',route=>route.fulfill({json:{...config,drawDelayMs:1}}));
+      for(const result of data.results) {
+        selected=result;
+        await screen.goto(base+'/omikuji.html');
+        await screen.waitForFunction(()=>!document.getElementById('drawButton').disabled);
+        const fairy=await screen.locator('#peekFairy').getAttribute('src');
+        await screen.locator('#drawButton').click();
+        await screen.waitForFunction(()=>!document.getElementById('resultView').hidden);
+        assert.equal(await screen.locator('#resultFairy').getAttribute('src'),fairy);
+        const comment=await screen.locator('.result-comment').boundingBox();
+        assert(comment.y+comment.height<=height,result.resultId+' fits first screen at '+width);
+        for(const id of ['resultTitle','mainText','loveText','moneyText','itemText','characterLine']) assert(await screen.locator('#'+id).evaluate(el=>el.scrollWidth<=el.clientWidth+1),result.resultId+' '+id+' fits');
+      }
+      await coverage.close();
+      console.log('All 25 fortunes / same delivering fairy / first screen / text fits at '+width+' PASS');
     }
     const context=await browser.newContext({viewport:{width:320,height:568},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
     const page=await context.newPage();
