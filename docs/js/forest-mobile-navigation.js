@@ -26,12 +26,50 @@
   dialog.id = "forestMapDialog";
   dialog.className = "forest-map-dialog";
   dialog.setAttribute("aria-labelledby", "forestMapTitle");
-  dialog.innerHTML = `<header class="forest-map-heading"><h2 id="forestMapTitle">森の案内図</h2><button class="forest-map-close" type="button" title="閉じる" aria-label="閉じる">${closeIcon}</button></header><div class="forest-map-destinations"></div>`;
+  dialog.innerHTML = `<header class="forest-map-heading"><h2 id="forestMapTitle">森の案内図</h2><button class="forest-map-close" type="button" title="閉じる" aria-label="閉じる">${closeIcon}</button></header>
+    <div class="forest-map-content">
+      <p class="forest-map-introduction">森を歩いて探しても、案内図からすぐ行ってもだいじょうぶ。</p>
+      <figure class="forest-map-overview" aria-label="森の全体地図">
+        <img class="forest-map-image" src="./assets/backgrounds/Forest_Master_Day.png" width="1920" height="1080" loading="lazy" alt="湖と川を囲む森。左に温泉と茶房、右に洞窟と星風のテラスがあります。">
+        <div class="forest-map-markers"></div>
+      </figure>
+      <div class="forest-map-destinations"></div>
+    </div>`;
   const destinations = dialog.querySelector(".forest-map-destinations");
+  const markers = dialog.querySelector(".forest-map-markers");
+  const numbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦"];
+  const descriptions = [
+    "雫のゲームで遊ぼう",
+    "クッキーをどうぞ",
+    "今日の運勢を見てみる",
+    "温泉でほっとひと息",
+    "洞窟の奥をのぞいてみる",
+    "お茶と森のお話をどうぞ",
+    "ボトルメールや願い星はこちら",
+  ];
+  const mapPortals = [...document.querySelectorAll(".forest-portal, #fixedObservatoryPortal")];
+  const updateMarkers = () => {
+    const world = document.getElementById("stage");
+    mapPortals.forEach((portal, index) => {
+      const style = getComputedStyle(portal);
+      // The floating observatory link is camera-relative; use its existing world anchor.
+      const x = portal.id === "fixedObservatoryPortal" ? 1560 : parseFloat(style.left);
+      const y = portal.id === "fixedObservatoryPortal" ? 220 : parseFloat(style.top);
+      const marker = markers.children[index];
+      marker.style.setProperty("--map-x", `${x / world.offsetWidth * 100}%`);
+      marker.style.setProperty("--map-y", `${y / world.offsetHeight * 100}%`);
+    });
+  };
   // Reuse actual portal URLs and artwork instead of maintaining a second route list.
-  for (const portal of document.querySelectorAll(".forest-portal, #fixedObservatoryPortal")) {
+  for (const [index, portal] of mapPortals.entries()) {
     const link = document.createElement("a");
     link.href = portal.getAttribute("href");
+    link.className = "forest-map-card";
+    link.dataset.mapNumber = String(index + 1);
+    const number = document.createElement("span");
+    number.className = "forest-map-number";
+    number.textContent = numbers[index];
+    link.append(number);
     const image = portal.querySelector("img");
     if (image) {
       const thumbnail = document.createElement("img");
@@ -40,9 +78,29 @@
       link.append(thumbnail);
     }
     const label = document.createElement("span");
+    label.className = "forest-map-card-name";
     label.textContent = (portal.getAttribute("aria-label") || "森の入口").replace(/へ$/, "");
-    link.append(label);
+    if (label.textContent === "フォーチュンクッキー") {
+      label.replaceChildren(document.createTextNode("フォーチュン"), document.createElement("wbr"), document.createTextNode("クッキー"));
+    }
+    const copy = document.createElement("span");
+    copy.className = "forest-map-card-copy";
+    const description = document.createElement("span");
+    description.className = "forest-map-card-description";
+    description.textContent = descriptions[index];
+    copy.append(label, description);
+    const action = document.createElement("span");
+    action.className = "forest-map-card-action";
+    action.setAttribute("aria-hidden", "true");
+    action.textContent = "いく";
+    link.append(copy, action);
     destinations.append(link);
+    const marker = document.createElement("span");
+    marker.className = "forest-map-marker";
+    marker.dataset.mapNumber = String(index + 1);
+    marker.textContent = numbers[index];
+    marker.setAttribute("aria-label", `${index + 1} ${label.textContent}`);
+    markers.append(marker);
   }
   document.body.append(dialog);
   let pointer = null;
@@ -134,11 +192,18 @@
   mapButton.addEventListener("click", () => {
     if (blocked()) return;
     stop();
+    updateMarkers();
+    dialog.querySelector(".forest-map-content").scrollTop = 0;
     dialog.showModal();
+    overlay.classList.add("is-map-open");
     mapButton.setAttribute("aria-expanded", "true");
   });
   dialog.querySelector(".forest-map-close").addEventListener("click", () => dialog.close());
-  dialog.addEventListener("close", () => { mapButton.setAttribute("aria-expanded", "false"); mapButton.focus(); });
+  dialog.addEventListener("close", () => {
+    overlay.classList.remove("is-map-open");
+    mapButton.setAttribute("aria-expanded", "false");
+    mapButton.focus();
+  });
   dialog.addEventListener("click", event => {
     const rect = dialog.getBoundingClientRect();
     if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
