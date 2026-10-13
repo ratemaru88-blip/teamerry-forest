@@ -5,8 +5,8 @@ async function main() {
   const browser=await chromium.launch({channel:'msedge',headless:true});
   try {
     for(const [width,height] of [[390,844],[1366,900]]) {
-      const entranceX=width<760?1640:1589.1;
-      const entranceY=width<760?330:259.4;
+      const entranceX=width<760?1588.63:1589.1;
+      const entranceY=width<760?261.62:259.4;
       const context=await browser.newContext({viewport:{width,height}});
       const page=await context.newPage(), errors=[];
       page.on('pageerror',e=>errors.push(e.message));

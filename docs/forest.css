@@ -2265,6 +2265,11 @@ body.debug-panel-hidden .debug-panel {
 }
 
 @media (max-width: 759px) {
+  .forest-portal--observatory {
+    left: 1588.63px;
+    top: 261.62px;
+  }
+
   html,
   body {
     width: 100%;
