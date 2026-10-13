@@ -46,7 +46,7 @@ function visit(value) {
 visit(doc.page);
 const manifest = [];
 for (const id of used) {
-  const asset = [...(source.assetLibrary || []), ...source.assetManifest].find(asset => (asset.assetId || asset.id) === id);
+  const asset = [...source.assetManifest, ...(source.assetLibrary || [])].find(asset => (asset.assetId || asset.id) === id);
   assert(asset, 'Missing asset: ' + id);
   let bytes, mediaType = asset.mediaType;
   if (asset.storage?.mode === 'project-file') bytes = await readFile(path.resolve(root, asset.storage.relativePath));

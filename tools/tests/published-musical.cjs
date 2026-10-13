@@ -1,4 +1,6 @@
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 const { chromium } = require("playwright");
 const base = process.env.FOREST_TEST_BASE_URL || "http://127.0.0.1:8788/docs";
 async function main() {
@@ -12,6 +14,19 @@ async function main() {
       await page.goto(base + "/musical/boku-no-takaramono/pair-preview.html");
       await page.waitForFunction(() => [...document.querySelectorAll("[data-scratch]")].filter((c) => c.dataset.scratch === "ready").length === 4);
       assert.equal(await page.locator("#content").getAttribute("data-viewport"), key);
+      const stickerId = key === "desktop" ? "lyr_831007540e9c4bbf" : "lyr_b574dcb98a7c4da6";
+      const sticker = page.locator(`[data-layer-id="${stickerId}"]`);
+      await sticker.locator("img").evaluate(img => {
+        if (!img.complete || !img.naturalWidth) throw new Error("Updated color instruction image did not load");
+      });
+      const expected = key === "desktop" ? { x: 1692, y: -1, width: 210, height: 152 }
+        : { x: 845, y: -18, width: 216, height: 216 };
+      const actual = await sticker.evaluate(el => ({ x: parseFloat(el.style.left), y: parseFloat(el.style.top),
+        width: parseFloat(el.style.width), height: parseFloat(el.style.height) }));
+      assert.deepEqual(actual, expected, "Instruction sticker must keep the saved TBalance layout");
+      const output = path.resolve(`_codex_screenshots/takaramono-update-${key}.png`);
+      fs.mkdirSync(path.dirname(output), { recursive: true });
+      await page.screenshot({ path: output });
       const masks = page.locator("[data-scratch]");
       for (let index = 0; index < 4; index++) {
         const mask = masks.nth(index);

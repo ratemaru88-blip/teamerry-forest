@@ -4608,11 +4608,238 @@
           "direction": "up",
           "strength": 30
         }
+      },
+      {
+        "id": "lyr_b574dcb98a7c4da6",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "irotuke_siiru",
+        "fileName": "irotuke_siiru.webp",
+        "assetRef": "ast_06a1f040dca64145",
+        "assetId": "ast_06a1f040dca64145",
+        "src": "",
+        "desktop": {
+          "x": 1658,
+          "y": 0,
+          "width": 243,
+          "height": 175,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_06a1f040dca64145",
+          "assetId": "ast_06a1f040dca64145"
+        },
+        "mobile": {
+          "x": 845,
+          "y": -18,
+          "width": 216,
+          "height": 216,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_06a1f040dca64145",
+          "assetId": "ast_06a1f040dca64145"
+        },
+        "scrollFrames": {
+          "desktop": 0
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": true,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_b574dcb98a7c4da6",
+        "displayName": "irotuke_siiru",
+        "visibilityMode": "mobile",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 1658,
+          "y": 0,
+          "width": 243,
+          "height": 175,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_06a1f040dca64145",
+          "assetId": "ast_06a1f040dca64145"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 845,
+            "y": -18,
+            "width": 216,
+            "height": 216
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_831007540e9c4bbf",
+        "visible": true,
+        "locked": false,
+        "link": "",
+        "hitArea": {
+          "enabled": false,
+          "visible": false,
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "image",
+        "name": "PC_iruzuke",
+        "fileName": "PC_iruzuke.webp",
+        "assetRef": "ast_648c4dc9b3c148de",
+        "assetId": "ast_648c4dc9b3c148de",
+        "src": "",
+        "desktop": {
+          "x": 1692,
+          "y": -1,
+          "width": 210,
+          "height": 152,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_648c4dc9b3c148de",
+          "assetId": "ast_648c4dc9b3c148de"
+        },
+        "mobile": {
+          "x": 779,
+          "y": 220,
+          "width": 260,
+          "height": 152,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_648c4dc9b3c148de",
+          "assetId": "ast_648c4dc9b3c148de"
+        },
+        "scrollFrames": {
+          "desktop": 0
+        },
+        "appearance": {
+          "opacity": 1,
+          "brightness": 1,
+          "shadow": "soft",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": true,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_831007540e9c4bbf",
+        "displayName": "PC_iruzuke",
+        "visibilityMode": "desktop",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 1692,
+          "y": -1,
+          "width": 210,
+          "height": 152,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 1,
+          "assetRef": "ast_648c4dc9b3c148de",
+          "assetId": "ast_648c4dc9b3c148de"
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 779,
+            "y": 220,
+            "width": 260
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
       }
     ],
     "metadata": {
       "createdAt": "2026-10-03T20:12:34.424Z",
-      "updatedAt": "2026-10-07T20:15:22.779Z"
+      "updatedAt": "2026-10-13T16:57:03.523Z"
     }
   },
   "assetManifest": [
@@ -4903,11 +5130,47 @@
         "relativePath": "assets/musical/boku-no-takaramono/ast_21baf6a38d9b4ca1.webp"
       },
       "relativePath": "assets/musical/boku-no-takaramono/ast_21baf6a38d9b4ca1.webp"
+    },
+    {
+      "assetId": "ast_06a1f040dca64145",
+      "id": "ast_06a1f040dca64145",
+      "displayName": "irotuke_siiru",
+      "name": "irotuke_siiru",
+      "originalName": "irotuke_siiru.webp",
+      "mediaType": "image/webp",
+      "width": 407,
+      "height": 267,
+      "byteLength": 36776,
+      "contentHash": "1e58c3053fa64a29c6a52bcc210c4f2f8ec35886de8f95c3473eb615984ab136",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_06a1f040dca64145.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_06a1f040dca64145.webp"
+    },
+    {
+      "assetId": "ast_648c4dc9b3c148de",
+      "id": "ast_648c4dc9b3c148de",
+      "displayName": "PC_iruzuke",
+      "name": "PC_iruzuke",
+      "originalName": "PC_iruzuke.webp",
+      "mediaType": "image/webp",
+      "width": 1448,
+      "height": 1086,
+      "byteLength": 244684,
+      "contentHash": "37ca4053554103203fb84c2d78c6f507335636cb2c4f12b491585c6a7fb6de1e",
+      "status": "available",
+      "storage": {
+        "mode": "project-file",
+        "relativePath": "assets/musical/boku-no-takaramono/ast_648c4dc9b3c148de.webp"
+      },
+      "relativePath": "assets/musical/boku-no-takaramono/ast_648c4dc9b3c148de.webp"
     }
   ],
   "assetLibrary": [],
   "meta": {
     "createdAt": "2026-10-03T20:12:34.424Z",
-    "updatedAt": "2026-10-07T20:15:22.779Z"
+    "updatedAt": "2026-10-13T16:57:03.523Z"
   }
 }
