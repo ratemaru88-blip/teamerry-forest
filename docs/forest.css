@@ -2246,6 +2246,11 @@ body.debug-panel-hidden .debug-panel {
     --map-base-height: 1080px;
   }
 
+  .forest-portal--observatory {
+    left: 1589.1px;
+    top: 259.4px;
+  }
+
   .forest-toast {
     bottom: clamp(22px, 5vh, 48px);
   }

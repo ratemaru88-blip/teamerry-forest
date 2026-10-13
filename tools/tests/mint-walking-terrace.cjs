@@ -1,10 +1,12 @@
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
-const base='http://127.0.0.1:8841';
+const base=process.env.TEAMERRY_TEST_BASE_URL || 'http://127.0.0.1:8841';
 async function main() {
   const browser=await chromium.launch({channel:'msedge',headless:true});
   try {
     for(const [width,height] of [[390,844],[1366,900]]) {
+      const entranceX=width<760?1640:1589.1;
+      const entranceY=width<760?330:259.4;
       const context=await browser.newContext({viewport:{width,height}});
       const page=await context.newPage(), errors=[];
       page.on('pageerror',e=>errors.push(e.message));
@@ -52,11 +54,11 @@ async function main() {
         await page.locator('[data-debug-time="'+time+'"]').evaluate(el=>el.click());
         await page.clock.runFor(2000);
         assert(await link.isVisible(),'terrace visible in '+time);
-        const anchored=await link.evaluate(el=>{
+        const anchored=await link.evaluate((el,[entranceX,entranceY])=>{
           const r=el.getBoundingClientRect(),w=document.getElementById('stage').getBoundingClientRect();
-          return Math.abs((r.x+r.width/2-w.x)/w.width-1640/1920)<.001
-            &&Math.abs((r.y+r.height/2-w.y)/w.height-330/1080)<.001;
-        });
+          return Math.abs((r.x+r.width/2-w.x)/w.width-entranceX/1920)<.001
+            &&Math.abs((r.y+r.height/2-w.y)/w.height-entranceY/1080)<.001;
+        },[entranceX,entranceY]);
         assert(anchored,'entrance remains attached to world coordinates');
         const box=await link.boundingBox();
         assert(box.x>=0&&box.y>=0&&box.x+box.width<=width&&box.y+box.height<=height);
@@ -80,10 +82,10 @@ async function main() {
       await centerEntrance();
       await page.setViewportSize({width:width+60,height:height-40});
       await page.clock.runFor(300);
-      assert(await link.evaluate(el=>{
+      assert(await link.evaluate((el,entranceX)=>{
         const r=el.getBoundingClientRect(),w=document.getElementById('stage').getBoundingClientRect();
-        return Math.abs((r.x+r.width/2-w.x)/w.width-1640/1920)<.001;
-      }),'resize preserves world anchor');
+        return Math.abs((r.x+r.width/2-w.x)/w.width-entranceX/1920)<.001;
+      },entranceX),'resize preserves world anchor');
       await page.setViewportSize({width,height});await page.clock.runFor(300);
       await centerEntrance();
       await page.route('**/observatory.html',route=>route.fulfill({contentType:'text/html',body:'<title>Terrace navigation test</title>'}));
