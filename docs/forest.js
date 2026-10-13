@@ -137,13 +137,11 @@
   }
 
   function announceForestWelcome() {
-    const message = getForestWelcomeMessage();
-
-    showMintSpeech(message, 6200);
+    window.dispatchEvent(new Event("teaMerryForestGuideEntry"));
   }
 
   function announceForestReturn() {
-    showMintSpeech(getForestReturnMessage(), 5200);
+    window.dispatchEvent(new Event("teaMerryForestGuideEntry"));
   }
 
   function closeNameModal({ announceWelcome = false } = {}) {
@@ -215,9 +213,7 @@
     }
 
     if (message) {
-      message.innerHTML = isConfirmMode
-        ? "前の呼び名のままにする？<br>それとも、今日の呼び名を決めなおす？"
-        : "この森で呼んでほしい名前を教えてね。<br>（あとからいつでも変えられるよ。）";
+      message.textContent = "呼んでほしい名前があれば教えてね。";
     }
 
     if (forestNameInput) {
@@ -242,9 +238,9 @@
       storyWelcomeActions.hidden = true;
       storyDestinationActions.hidden = true;
       reuseForestNameButton.classList.add("hidden");
-      skipForestNameButton.textContent = "名前は決めずにおさんぽする";
+      skipForestNameButton.textContent = "おさんぽさんで進む";
       document.getElementById("nameModalMessage").textContent =
-        "この森で呼んでほしい名前を教えてね。\n決めなくても大丈夫だよ。";
+        "呼んでほしい名前があれば教えてね。";
     }
     nameModal.classList.remove("hidden");
     window.setTimeout(placeCaretAtNameEnd, 80);
@@ -439,45 +435,6 @@
     startY: 0,
     originX: 0,
     originY: 0,
-  };
-
-  const observatoryPortalAnchor = {
-    x: 1560,
-    y: 220,
-    width: 44,
-  };
-
-  const syncFixedObservatoryPortal = () => {
-    if (!fixedObservatoryPortal) {
-      return;
-    }
-
-    if (mobileWalkerQuery.matches) {
-      fixedObservatoryPortal.style.setProperty("display", "none", "important");
-      return;
-    }
-
-    if (document.body.classList.contains("is-yunokaori-opening")) {
-      fixedObservatoryPortal.style.removeProperty("display");
-      return;
-    }
-
-    const size = getViewportSize();
-    const portalWidth = Math.max(34, Math.min(48, observatoryPortalAnchor.width * stageScale));
-    const left = state.x + observatoryPortalAnchor.x * stageScale;
-    const top = state.y + observatoryPortalAnchor.y * stageScale;
-    const isVisible = (
-      left >= 0 &&
-      left + portalWidth <= size.width &&
-      top >= 0 &&
-      top <= size.height
-    );
-
-    fixedObservatoryPortal.style.setProperty("display", isVisible ? "block" : "none", "important");
-    fixedObservatoryPortal.style.setProperty("left", `${left}px`, "important");
-    fixedObservatoryPortal.style.setProperty("top", `${top}px`, "important");
-    fixedObservatoryPortal.style.setProperty("right", "auto", "important");
-    fixedObservatoryPortal.style.setProperty("width", `${portalWidth}px`, "important");
   };
 
   const isCoarsePointer = window.matchMedia("(hover: none), (pointer: coarse)").matches;
@@ -831,6 +788,8 @@
   }
 
   function showMintSpeech(message, duration = 5200, mobileGuide = false) {
+    if (document.hidden || !nameModal?.classList.contains("hidden") || document.querySelector("dialog[open]")
+      || mintGuide?.classList.contains("has-speech") || mobileWalker?.classList.contains("has-speech")) return false;
     if (mobileWalkerQuery.matches && !mobileGuide) {
       return;
     }
@@ -852,7 +811,7 @@
       walkerState.speechTimer = window.setTimeout(() => {
         mobileWalker.classList.remove("has-speech");
       }, duration);
-      return;
+      return true;
     }
 
     if (!mintGuide || !mintGuideBubble || mobileWalkerQuery.matches) {
@@ -874,6 +833,7 @@
     showMintSpeech.timer = window.setTimeout(() => {
       mintGuide.classList.remove("has-speech");
     }, duration);
+    return true;
   }
 
   const kakaoWalkerAssets = {
@@ -1028,7 +988,6 @@
 
     document.documentElement.style.setProperty("--camera-x", cameraX);
     document.documentElement.style.setProperty("--camera-y", cameraY);
-    syncFixedObservatoryPortal();
   };
 
   const resizeStage = () => {
@@ -1114,13 +1073,14 @@
   // Keep the mobile guide policy outside the shared speech renderer.
   window.TeaMerryForestGuideSpeech = Object.freeze({
     show(text, duration) {
-      if (!mobileWalkerQuery.matches || !mobileWalker || !debugState.toggles.walker) return false;
-      showMintSpeech(text, duration, true);
-      return true;
+      if (mobileWalkerQuery.matches && (!mobileWalker || !debugState.toggles.walker)) return false;
+      return showMintSpeech(text, duration, true) === true;
     },
     hide() {
       window.clearTimeout(walkerState.speechTimer);
       mobileWalker?.classList.remove("has-speech");
+      window.clearTimeout(showMintSpeech.timer);
+      mintGuide?.classList.remove("has-speech");
     },
   });
 
@@ -2269,12 +2229,7 @@
   };
 
   const scheduleNarration = (delay = getDebugDelay(26000, 74000, 3000, 5000)) => {
-    setDebugTimer("narration", () => {
-      if (Math.random() < 0.78) {
-        showNarration();
-      }
-      scheduleNarration();
-    }, delay);
+    // The shared guide now owns periodic conversation; event messages stay separate.
   };
 
   const addScreenEffect = (className, x, y) => {
@@ -2675,7 +2630,6 @@
   const clearYunokaoriOpeningState = () => {
     document.querySelector("[data-yunokaori-opening]")?.remove();
     document.body.classList.remove("is-yunokaori-opening");
-    syncFixedObservatoryPortal();
   };
 
   window.addEventListener("pageshow", clearYunokaoriOpeningState);

@@ -8,7 +8,7 @@
   <link rel="icon" href="./assets/icons/favicon.ico">
   <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
   <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="forest.css?v=2026.10.06-story-01">
+  <link rel="stylesheet" href="forest.css?v=2026.10.13-mint-05">
   <link rel="stylesheet" href="./css/forest-mobile-navigation.css?v=2026.10.12-map-compact-04">
   <link rel="stylesheet" href="./css/forest-mobile-guide.css?v=2026.10.12-guide-01">
   <link rel="stylesheet" href="./css/forest-omikuji-overlay.css?v=2026.10.13-overlay-01">
@@ -62,6 +62,9 @@
 
           <a class="forest-portal forest-portal--contact" href="./tea_room.html" aria-label="まろうど茶房">
             <img src="./assets/images/ui/maroudo_tearoom_ui.webp" alt="">
+          </a>
+          <a class="forest-portal forest-portal--observatory" href="./observatory.html" id="fixedObservatoryPortal" aria-label="星風のテラスへ">
+            <img src="./assets/images/ui/observatory_ui.webp" alt="星風のテラス">
           </a>
           <button class="hidden-drop hidden-drop--one" type="button" aria-label="光る雫を調べる"></button>
           <button class="hidden-drop hidden-drop--two" type="button" aria-label="光る雫を調べる"></button>
@@ -132,18 +135,13 @@
     </aside>
   </main>
 
-  <a href="./observatory.html" id="fixedObservatoryPortal" aria-label="星風のテラスへ">
-    <img src="./assets/images/ui/observatory_ui.webp" alt="星風のテラス">
-  </a>
-
   <div id="nameModal" class="tm-name-modal hidden" role="dialog" aria-modal="true" aria-labelledby="nameModalTitle" aria-describedby="nameModalMessage">
     <div class="tm-name-card">
       <img src="./assets/images/forest_fairy/mint_v01.webp" class="tm-mint" alt="ミント">
 
       <p id="nameModalTitle" class="tm-name-title">ようこそ、TeaMerryへ。</p>
       <p id="nameModalMessage" class="tm-message">
-        この森で呼んでほしい名前を教えてね。<br>
-        （あとからいつでも変えられるよ。）
+        呼んでほしい名前があれば教えてね。
       </p>
 
       <input
@@ -157,7 +155,7 @@
       <div class="tm-name-buttons">
         <button id="saveForestName" type="button" disabled>この名前で決まり</button>
         <button id="reuseForestName" class="hidden" type="button">前回の呼び名のまま</button>
-        <button id="skipForestName" type="button">ただのおさんぽなので決めない</button>
+        <button id="skipForestName" type="button">おさんぽさんで進む</button>
       </div>
       <div id="storyWelcomeActions" class="tm-name-buttons" hidden>
         <button id="continueMusicalStory" type="button">うん、見にきたよ</button>
@@ -169,10 +167,10 @@
     </div>
   </div>
 
-  <script src="forest.js?v=2026.10.12-guide-01"></script>
+  <script src="forest.js?v=2026.10.13-mint-04"></script>
   <script src="./js/forest-omikuji-overlay.js?v=2026.10.13-overlay-01"></script>
-  <script src="./js/forest-mobile-navigation.js?v=2026.10.12-guide-01"></script>
-  <script src="./js/forest-mobile-guide.js?v=2026.10.12-guide-01"></script>
+  <script src="./js/forest-mobile-navigation.js?v=2026.10.13-mint-04"></script>
+  <script src="./js/forest-mobile-guide.js?v=2026.10.13-mint-05"></script>
   <script src="./js/build-info-badge.js?v=2026.07.17-09"></script>
 </body>
 </html>

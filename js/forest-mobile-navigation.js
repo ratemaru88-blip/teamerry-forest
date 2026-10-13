@@ -42,9 +42,8 @@
     const world = document.getElementById("stage");
     mapPortals.forEach((portal, index) => {
       const style = getComputedStyle(portal);
-      // The floating observatory link is camera-relative; use its existing world anchor.
-      const x = portal.id === "fixedObservatoryPortal" ? 1560 : parseFloat(style.left);
-      const y = portal.id === "fixedObservatoryPortal" ? 220 : parseFloat(style.top);
+      const x = parseFloat(style.left);
+      const y = parseFloat(style.top);
       const marker = markers.children[index];
       marker.style.setProperty("--map-x", `${x / world.offsetWidth * 100}%`);
       marker.style.setProperty("--map-y", `${y / world.offsetHeight * 100}%`);
@@ -199,10 +198,7 @@
     }
     if (!nameOpen || document.getElementById("forestNameInput")?.hidden) return;
     if (message.textContent !== mobileNameCopy) originalNameCopy = message.innerHTML;
-    const story = modal.dataset.storyStep === "name";
-    mobileNameCopy = (story ? "じゃあ、この森で呼んでほしい名前を教えてね。" : "この森で呼んでほしい名前を教えてね。")
-      + "\nお散歩だけなら、「おさんぽさん」でもだいじょうぶ。\n登録じゃないから、気楽に遊んでいってね。"
-      + (story ? "" : "\nまたいつでも、ふらっと来てね。");
+    mobileNameCopy = "呼んでほしい名前があれば教えてね。";
     message.textContent = mobileNameCopy;
   };
   const sync = () => {

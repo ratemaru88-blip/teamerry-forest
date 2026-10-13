@@ -53,7 +53,8 @@ async function main() {
       await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.mobile-walker__bubble')).opacity) === 1);
       assert.equal(await page.evaluate(() => localStorage.getItem("teaMerryDisplayName")), "おさんぽさん");
       assert.equal(await page.locator(".forest-title").isVisible(), false);
-      assert.equal(await page.locator("#fixedObservatoryPortal").isVisible(), false);
+      assert.equal(await page.locator("#fixedObservatoryPortal").isVisible(), true);
+      assert.equal(await page.locator("#fixedObservatoryPortal").evaluate(el=>getComputedStyle(el).position), "absolute");
       const stick = page.locator(".forest-navigation-stick");
       const box = await stick.boundingBox();
       assert(box.width >= width * .25 && box.width <= width * .31);
@@ -140,7 +141,7 @@ async function main() {
         assert.equal(await page.locator("#nameModal").isVisible(), false);
         await page.waitForFunction(() => document.querySelector('.mobile-walker').classList.contains('has-speech'));
         assert((await page.locator('.mobile-walker__bubble').innerText()).includes('みどりさん'));
-        await pause(6500);
+        await pause(require('../../data/forest-guide.json').speechDurationMs + 500);
         assert.equal(await page.locator('.mobile-walker').isVisible(), true, 'Mint stays after speech closes');
         assert.equal(await page.locator('.mobile-walker').evaluate(el => el.classList.contains('has-speech')), false);
       }
@@ -175,13 +176,15 @@ async function main() {
       await idlePage.clock.runFor(2000);
       assert.equal((await idlePage.evaluate(() => window.TeaMerryMobileGuide.snapshot())).count, 1);
       await idlePage.clock.fastForward(240000);
+      await idlePage.clock.runFor(1000);
       assert.equal((await idlePage.evaluate(() => window.TeaMerryMobileGuide.snapshot())).count, 2, 'one idle hint appears');
       assert.equal(await idlePage.locator('.forest-narration').isVisible(), false);
       await idlePage.clock.fastForward(3600000);
-      assert.equal((await idlePage.evaluate(() => window.TeaMerryMobileGuide.snapshot())).count, 2, 'hour-long idle does not repeat');
+      await idlePage.clock.runFor(1000);
+      assert.equal((await idlePage.evaluate(() => window.TeaMerryMobileGuide.snapshot())).count, 3, 'long idle gives another distinct line');
       assert.equal(await idlePage.locator('.mobile-walker').isVisible(), true);
       await idleContext.close();
-      console.log('Mobile clock: occasional idle hint / one-hour silence / narration suppression PASS');
+      console.log('Mobile clock: occasional distinct idle hints / narration suppression PASS');
     }
     if (process.env.FOREST_TEST_GUIDE_CLOCK_ONLY) return;
     const context = await browser.newContext({ viewport: {width:1440,height:900} });
@@ -190,7 +193,7 @@ async function main() {
     await page.goto(base + "/index.html", {waitUntil:"domcontentloaded"});
     await page.locator("#forestNameInput").fill("みどり");
     await page.locator("#saveForestName").click();
-    await pause(900);
+    await page.waitForFunction(()=>document.querySelector('.mint-guide').classList.contains('has-speech'));
     assert.equal(await page.locator(".forest-title").isVisible(), true);
     assert.equal(await page.locator(".forest-navigation-stick").isVisible(), false);
     assert.equal(await page.locator(".forest-map-button").isVisible(), false);

@@ -1,8 +1,9 @@
 (() => {
   "use strict";
   class GuideVisit {
-    constructor(data, now = 0, previousIdleId = "") {
+    constructor(data, now = 0, previousIdleId = "", platform = "mobile") {
       this.data = data;
+      this.platform = platform;
       this.used = new Set();
       this.count = 0;
       this.idleCount = 0;
@@ -25,17 +26,19 @@
       if (this.count) this.lastSpeech = now;
     }
     choose(now, { ready = true, moving = false, areas = [] } = {}) {
-      if (!ready || moving || this.count >= this.data.maxPerVisit) return null;
+      if (!ready || this.count >= this.data.maxPerVisit) return null;
       let trigger;
-      if (!this.count) trigger = "entry";
+      if (!this.count) { if (moving) return null; trigger = "entry"; }
       else {
         if (now - this.lastSpeech < this.cooldown) return null;
-        if (this.walkingMs >= this.data.walkingAfterMs && now - this.lastMovement <= this.data.recentWalkingMs) trigger = "walking";
-        else if (this.idleCount < this.data.idleLimit && now - this.lastInteraction >= this.data.idleAfterMs) trigger = "idle";
+        if (areas.length && now - this.lastInteraction >= 2500 && this.data.dialogue.some(line => line.targetArea && areas.includes(line.targetArea) && !this.used.has(line.id))) trigger = "walking";
+        else if (this.walkingMs >= this.data.walkingAfterMs && now - this.lastMovement <= this.data.recentWalkingMs) trigger = "walking";
+        else if (!moving && this.idleCount < this.data.idleLimit && now - this.lastInteraction >= this.data.idleAfterMs) trigger = "idle";
         else return null;
       }
       const candidates = this.data.dialogue.filter(line => line.guideCharacterId === this.data.guideCharacterId
-        && line.trigger === trigger && !this.used.has(line.id) && (!line.targetArea || areas.includes(line.targetArea)));
+        && line.trigger === trigger && !this.used.has(line.id) && (!line.platform || line.platform === this.platform)
+        && (!line.targetArea || areas.includes(line.targetArea)));
       candidates.sort((a,b) => {
         if (trigger === "idle") {
           const difference = Number(a.id === this.previousIdleId) - Number(b.id === this.previousIdleId);
@@ -58,8 +61,8 @@
   if (typeof window === "undefined") return;
   const source = document.currentScript.src;
   const mobile = matchMedia("(max-width: 759px)");
-  const actor = document.querySelector(".mobile-walker");
-  const bubble = document.querySelector(".mobile-walker__bubble");
+  let actor = document.querySelector(mobile.matches ? ".mobile-walker" : ".mint-guide");
+  let bubble = actor?.querySelector(mobile.matches ? ".mobile-walker__bubble" : ".mint-guide__bubble");
   const speech = window.TeaMerryForestGuideSpeech;
   if (!actor || !bubble || !speech) return;
   const modal = document.getElementById("nameModal");
@@ -67,11 +70,13 @@
   const idleKey = "teaMerryGuideLastIdleId";
   let visit = null, loading = null, previousCamera = null, lastTick = performance.now();
   let wasReady = false, inputPointer = null, lastPointer = null, entryDue = 0;
+  let pointerMovedAt = -Infinity;
   const movementKeys = new Set();
   let pageVisible = true;
   let heartbeat = 0;
-  const ready = () => mobile.matches && !document.hidden && pageVisible
+  const ready = () => !document.hidden && pageVisible
     && (!modal || modal.classList.contains("hidden")) && !map?.open
+    && !document.querySelector("dialog[open]")
     && document.body.classList.contains("intro-finished");
   const hide = () => {
     speech.hide();
@@ -82,39 +87,42 @@
   const readIdle = () => { try { return localStorage.getItem(idleKey) || ""; } catch { return ""; } };
   const load = () => {
     if (loading) return;
-    loading = fetch(new URL("../data/forest-guide.json?v=2026.10.12-guide-01", source)).then(response => {
+    loading = fetch(new URL("../data/forest-guide.json?v=2026.10.13-mint-03", source)).then(response => {
       if (!response.ok) throw new Error("Guide data unavailable");
       return response.json();
     }).then(data => {
       if (!data.characters?.[data.guideCharacterId] || !Array.isArray(data.dialogue)
-        || data.maxPerVisit < 1 || data.maxPerVisit > 4 || data.cooldownMs < 120000
+        || data.maxPerVisit < 1 || data.maxPerVisit > 24 || data.cooldownMs < 45000
         || new Set(data.dialogue.map(line => line.id)).size !== data.dialogue.length
         || data.dialogue.some(line => typeof line.id !== "string" || typeof line.text !== "string")) throw new Error("Invalid guide data");
       const character = data.characters[data.guideCharacterId];
       actor.querySelector("img").src = character.image;
       actor.dataset.guideCharacterId = data.guideCharacterId;
-      visit = new GuideVisit(data, performance.now(), readIdle());
+      visit = new GuideVisit(data, performance.now(), readIdle(), mobile.matches ? "mobile" : "pc");
       refresh();
     }).catch(error => { console.warn(error.message); });
   };
   const areas = () => {
-    const visible = (x,y) => x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight;
+    const visible = (x,y) => x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight
+      && (mobile.matches || (lastPointer && Math.hypot(x-lastPointer.x,y-lastPointer.y) < 110));
     const result = [];
     const shrine = document.querySelector(".forest-portal--shrine")?.getBoundingClientRect();
     if (shrine && visible(shrine.x + shrine.width / 2, shrine.y + shrine.height / 2)) result.push("shrine");
-    const world = document.getElementById("stage").getBoundingClientRect();
-    if (visible(world.x + world.width * 1560 / 1920, world.y + world.height * 220 / 1080)) result.push("observatory");
+    const game = document.querySelector(".forest-portal--game")?.getBoundingClientRect();
+    if (game && visible(game.x + game.width / 2, game.y + game.height / 2)) result.push("game");
+    const observatory = document.getElementById("fixedObservatoryPortal")?.getBoundingClientRect();
+    if (observatory && visible(observatory.x + observatory.width / 2, observatory.y + observatory.height / 2)) result.push("observatory");
     return result;
   };
   function refresh() {
     const now = performance.now(), active = ready();
-    if (mobile.matches && !document.hidden && pageVisible) {
+    if (!document.hidden && pageVisible) {
       if (!heartbeat) heartbeat = setInterval(tick, 1000);
     } else {
       clearInterval(heartbeat);
       heartbeat = 0;
     }
-    document.body.classList.toggle("mobile-guide-active", active);
+    document.body.classList.toggle("mobile-guide-active", active && mobile.matches);
     actor.setAttribute("aria-hidden", String(!active));
     bubble.setAttribute("role", "status");
     bubble.setAttribute("aria-hidden", String(!active || !actor.classList.contains("has-speech")));
@@ -127,15 +135,14 @@
     refresh();
     const now = performance.now(), elapsed = now - lastTick;
     lastTick = now;
-    if (!ready() || !visit) return;
+    if (!ready() || !visit || actor.classList.contains("has-speech")) return;
     const camera = window.TeaMerryForestNavigation.snapshot();
     if (previousCamera && Math.hypot(camera.x - previousCamera.x, camera.y - previousCamera.y) > 1) {
       visit.move(now, elapsed);
-      hide();
     }
     previousCamera = camera;
     const line = now >= entryDue ? visit.choose(now, {
-      moving: inputPointer !== null || movementKeys.size > 0, areas: areas(),
+      moving: inputPointer !== null || movementKeys.size > 0 || performance.now() - pointerMovedAt < 2000, areas: areas(),
     }) : null;
     if (!line) return;
     const name = window.getForestDisplayName?.() || "おさんぽさん";
@@ -147,16 +154,25 @@
       try { localStorage.setItem(idleKey, line.id); } catch { /* Private mode still has visit-local limits. */ }
     }
   }
-  const interact = () => { visit?.interact(performance.now()); hide(); };
+  const interact = (hideSpeech = false) => { visit?.interact(performance.now()); if (mobile.matches && hideSpeech) hide(); };
   document.addEventListener("pointerdown", event => {
-    if (!mobile.matches) return;
-    interact();
+    interact(true);
     if (ready() && event.target.closest(".forest-scene, .forest-navigation-stick")) {
       inputPointer = event.pointerId;
       lastPointer = { x: event.clientX, y: event.clientY };
     }
   }, true);
   document.addEventListener("pointermove", event => {
+    if (!mobile.matches) {
+      const now = performance.now();
+      if (lastPointer && Math.hypot(event.clientX-lastPointer.x,event.clientY-lastPointer.y)>2) {
+        visit?.move(now, Math.min(1000, now-pointerMovedAt));
+        pointerMovedAt = now;
+      }
+      lastPointer = {x:event.clientX,y:event.clientY};
+      interact();
+      return;
+    }
     if (event.pointerId !== inputPointer) return;
     if (lastPointer && Math.hypot(event.clientX - lastPointer.x, event.clientY - lastPointer.y) > 2) interact();
     lastPointer = { x: event.clientX, y: event.clientY };
@@ -165,8 +181,7 @@
     if (event.pointerId === inputPointer) { inputPointer = null; lastPointer = null; }
   }, true);
   document.addEventListener("keydown", event => {
-    if (!mobile.matches) return;
-    interact();
+    interact(!event.repeat);
     if (ready() && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(event.key)) movementKeys.add(event.key);
   });
   document.addEventListener("keyup", event => movementKeys.delete(event.key));
@@ -179,7 +194,14 @@
   window.addEventListener("pagehide", () => { pageVisible = false; pause(); });
   window.addEventListener("pageshow", () => { pageVisible = true; refresh(); });
   document.addEventListener("visibilitychange", pause);
-  mobile.addEventListener("change", pause);
+  mobile.addEventListener("change", () => {
+    pause();
+    actor = document.querySelector(mobile.matches ? ".mobile-walker" : ".mint-guide");
+    bubble = actor.querySelector(mobile.matches ? ".mobile-walker__bubble" : ".mint-guide__bubble");
+    if (visit) visit.platform = mobile.matches ? "mobile" : "pc";
+    refresh();
+  });
+  window.addEventListener("teaMerryForestGuideEntry", refresh);
   if (modal) new MutationObserver(refresh).observe(modal, { attributes: true, attributeFilter: ["class"] });
   if (map) new MutationObserver(refresh).observe(map, { attributes: true, attributeFilter: ["open"] });
   window.TeaMerryMobileGuide = Object.freeze({ snapshot: () => visit?.snapshot() || null });

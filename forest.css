@@ -687,7 +687,17 @@ a {
 .tm-message {
   margin: 0 0 18px;
   font-size: 1rem;
-  line-height: 1.85;
+  line-height: 1.6;
+}
+
+@media (max-height: 650px) {
+  .tm-name-modal { padding: 12px; }
+  .tm-name-card { padding: 16px; }
+  .tm-mint { width: 82px; margin-bottom: 6px; }
+  .tm-message { margin-bottom: 12px; }
+  .tm-name-input { padding: 10px; }
+  .tm-name-buttons { margin-top: 12px; gap: 8px; }
+  .tm-name-buttons button { padding: 10px; }
 }
 
 .tm-name-input {
@@ -1048,54 +1058,17 @@ body:not(.intro-finished) .forest-hokora {
   z-index: 5;
 }
 
-/* 星風のテラスUI */
-#fixedObservatoryPortal {
-  position: fixed !important;
-  right: max(92px, calc(env(safe-area-inset-right) + 92px)) !important;
-  top: max(18px, env(safe-area-inset-top)) !important;
-  left: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  translate: none !important;
-  rotate: 0deg !important;
-  scale: 1 !important;
-  z-index: 2147483647 !important;
-  display: block !important;
-  width: clamp(64px, 7vw, 88px) !important;
-  height: auto !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  text-decoration: none !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  cursor: pointer;
-  touch-action: manipulation !important;
-  contain: layout paint style !important;
-  isolation: isolate !important;
-  will-change: auto !important;
-}
-
-#fixedObservatoryPortal img {
-  display: block !important;
-  width: 100% !important;
-  height: auto !important;
-  max-width: none !important;
-  pointer-events: none !important;
-  transform: none !important;
-  translate: none !important;
-  animation: none !important;
-  filter: drop-shadow(0 6px 12px rgba(7, 18, 12, 0.36)) !important;
-}
-
-#fixedObservatoryPortal:active {
-  transform: translateY(2px) !important;
+/* Shares the forest world transform with the other corner entrances. */
+.forest-portal--observatory {
+  --portal-size: 44px;
+  --portal-opacity: 0.94;
+  left: 1640px;
+  top: 330px;
+  z-index: 5;
 }
 
 body.is-yunokaori-opening #fixedObservatoryPortal {
-  display: none !important;
+  display: none;
 }
 
 .hidden-drop {
@@ -2354,13 +2327,6 @@ body.debug-panel-hidden .debug-panel {
     font-size: 0.94rem;
   }
 
-  #fixedObservatoryPortal {
-    right: max(82px, calc(env(safe-area-inset-right) + 82px)) !important;
-    top: max(14px, env(safe-area-inset-top)) !important;
-    width: clamp(58px, 16vw, 74px) !important;
-    display: block !important;
-  }
-
   .debug-panel {
     left: 10px;
     right: auto;
@@ -2380,13 +2346,6 @@ body.debug-panel-hidden .debug-panel {
 }
 
 @media (hover: none), (pointer: coarse) {
-  #fixedObservatoryPortal {
-    right: max(82px, calc(env(safe-area-inset-right) + 82px)) !important;
-    top: max(14px, env(safe-area-inset-top)) !important;
-    width: clamp(58px, 16vw, 74px) !important;
-    display: block !important;
-  }
-
   .mint-guide {
     display: none;
   }

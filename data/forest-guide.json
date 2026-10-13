@@ -1,12 +1,12 @@
 {
   "guideCharacterId": "mint",
-  "maxPerVisit": 4,
-  "idleLimit": 1,
-  "cooldownMs": 120000,
-  "idleAfterMs": 45000,
+  "maxPerVisit": 8,
+  "idleLimit": 5,
+  "cooldownMs": 45000,
+  "idleAfterMs": 30000,
   "walkingAfterMs": 15000,
   "recentWalkingMs": 30000,
-  "speechDurationMs": 6000,
+  "speechDurationMs": 8500,
   "characters": {
     "mint": {
       "name": "ミント",
@@ -15,15 +15,40 @@
   },
   "dialogue": [
     {
+      "id": "guide_walking_forest",
+      "guideCharacterId": "mint",
+      "trigger": "walking",
+      "text": "この小道、もう少し先まで一緒に歩いてみようか。",
+      "priority": 10,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_walking_rest",
+      "guideCharacterId": "mint",
+      "trigger": "walking",
+      "text": "急がなくていいよ。気になる景色があったら、ひと休みしよう。",
+      "priority": 10,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_walking_acorn",
+      "guideCharacterId": "mint",
+      "trigger": "walking",
+      "text": "金のどんぐり、どこかに隠れているかな。一緒に探してみよう。",
+      "priority": 5,
+      "oncePerVisit": true
+    },
+    {
       "id": "guide_entry",
       "guideCharacterId": "mint",
       "trigger": "entry",
-      "text": "{displayName}、ここがTeaMerryの森だよ。ゆっくり歩いても、右上の案内図から行ってもいいよ。",
+      "text": "{displayName}、こんにちは。この森はいつでも無料で遊べるよ。気が向いたときに、ふらっと来てね。",
       "priority": 100,
       "oncePerVisit": true
     },
     {
       "id": "guide_map_hint",
+      "platform": "mobile",
       "guideCharacterId": "mint",
       "trigger": "idle",
       "text": "どこへ行こうか迷ったら、右上の案内図を見てね。",
@@ -32,6 +57,7 @@
     },
     {
       "id": "guide_stroll_hint",
+      "platform": "mobile",
       "guideCharacterId": "mint",
       "trigger": "idle",
       "text": "左下のスティックで、もう少し先まで歩いてみようか。",
@@ -41,15 +67,17 @@
     {
       "id": "guide_pc_sunset",
       "guideCharacterId": "mint",
-      "trigger": "walking",
+      "trigger": "idle",
+      "platform": "pc",
       "text": "この森ね、パソコンで見ると夕日の色が少しずつ変わるんだよ。",
       "priority": 10,
       "oncePerVisit": true
     },
     {
       "id": "guide_cacao_hint",
+      "platform": "pc",
       "guideCharacterId": "mint",
-      "trigger": "walking",
+      "trigger": "idle",
       "text": "たまにカカオが、ひょこっと現れることもあるよ。",
       "priority": 5,
       "oncePerVisit": true
@@ -68,8 +96,33 @@
       "guideCharacterId": "mint",
       "trigger": "walking",
       "targetArea": "shrine",
-      "text": "あの小さな祠、森のおみくじがあるんだよ。",
+      "text": "今日のおみくじ、引いてみる？",
       "priority": 30,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_game",
+      "guideCharacterId": "mint",
+      "trigger": "walking",
+      "targetArea": "game",
+      "text": "雫ゲームの赤い毒キノコには気をつけてね。",
+      "priority": 30,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_quiet",
+      "guideCharacterId": "mint",
+      "trigger": "idle",
+      "text": "今日はずいぶん静かだね。少しだけ、森の音を聞いていこうか。",
+      "priority": 10,
+      "oncePerVisit": true
+    },
+    {
+      "id": "guide_acorn",
+      "guideCharacterId": "mint",
+      "trigger": "idle",
+      "text": "金のどんぐりを見つけたら触ってみてね。森の小さな出来事に会えるよ。",
+      "priority": 10,
       "oncePerVisit": true
     }
   ]
