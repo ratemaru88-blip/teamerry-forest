@@ -7,6 +7,17 @@
   "walkingAfterMs": 15000,
   "recentWalkingMs": 30000,
   "speechDurationMs": 8500,
+  "homeScreen": {
+    "text": "また来るとき用に、この森のマーク、携帯のホーム画面に置いておく？",
+    "acceptText": "置いておく",
+    "dismissText": "今はいい",
+    "doneText": "わかった",
+    "iosText": "Safariの共有ボタンから「ホーム画面に追加」を選んでね。",
+    "androidText": "ブラウザのメニューから「ホーム画面に追加」を選んでね。",
+    "delayMs": 15000,
+    "quietMs": 5000,
+    "dismissDays": 7
+  },
   "characters": {
     "mint": {
       "name": "ミント",

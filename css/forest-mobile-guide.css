@@ -11,6 +11,15 @@
     font-size: 14px; line-height: 1.6; font-weight: 500; word-break: normal;
   }
   .forest-narration { display: none; }
+  body.mobile-guide-active .mobile-walker.has-home-screen.has-speech .mobile-walker__bubble { pointer-events: auto; }
+  .forest-home-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .forest-home-actions button {
+    min-height: 44px; flex: 1; padding: 6px 10px; border: 1px solid #9caf90;
+    border-radius: 6px; background: #e8f0dc; color: #24472e;
+    font: inherit; font-size: 13px; cursor: pointer; touch-action: manipulation;
+  }
+  .forest-home-actions button:last-child { background: #fffaf0; }
+  .forest-home-actions button:focus-visible { outline: 2px solid #366c4a; outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
     body.mobile-guide-active .mobile-walker__image { animation: none; }
   }

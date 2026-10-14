@@ -69,7 +69,7 @@
   const map = document.getElementById("forestMapDialog");
   const idleKey = "teaMerryGuideLastIdleId";
   let visit = null, loading = null, previousCamera = null, lastTick = performance.now();
-  let wasReady = false, inputPointer = null, lastPointer = null, entryDue = 0;
+  let wasReady = false, inputPointer = null, lastPointer = null, entryDue = 0, enteredAt = 0;
   let pointerMovedAt = -Infinity;
   const movementKeys = new Set();
   let pageVisible = true;
@@ -79,6 +79,7 @@
     && !document.querySelector("dialog[open]")
     && document.body.classList.contains("intro-finished");
   const hide = () => {
+    window.TeaMerryForestHomeScreen?.close();
     speech.hide();
     bubble.textContent = "";
     bubble.setAttribute("aria-hidden", "true");
@@ -87,7 +88,7 @@
   const readIdle = () => { try { return localStorage.getItem(idleKey) || ""; } catch { return ""; } };
   const load = () => {
     if (loading) return;
-    loading = fetch(new URL("../data/forest-guide.json?v=2026.10.13-mint-03", source)).then(response => {
+    loading = fetch(new URL("../data/forest-guide.json?v=2026.10.14-home-01", source)).then(response => {
       if (!response.ok) throw new Error("Guide data unavailable");
       return response.json();
     }).then(data => {
@@ -126,7 +127,7 @@
     actor.setAttribute("aria-hidden", String(!active));
     bubble.setAttribute("role", "status");
     bubble.setAttribute("aria-hidden", String(!active || !actor.classList.contains("has-speech")));
-    if (active && !wasReady) { entryDue = now + 700; previousCamera = null; visit?.pause(now); }
+    if (active && !wasReady) { entryDue = now + 700; if (!enteredAt) enteredAt = now; previousCamera = null; visit?.pause(now); }
     if (!active && wasReady) { hide(); visit?.pause(now); }
     wasReady = active;
     if (active) load();
@@ -141,9 +142,12 @@
       visit.move(now, elapsed);
     }
     previousCamera = camera;
-    const line = now >= entryDue ? visit.choose(now, {
-      moving: inputPointer !== null || movementKeys.size > 0 || performance.now() - pointerMovedAt < 2000, areas: areas(),
-    }) : null;
+    window.TeaMerryForestHomeScreen?.close();
+    const moving = inputPointer !== null || movementKeys.size > 0 || now - pointerMovedAt < 2000;
+    const line = now >= entryDue ? visit.choose(now, { moving, areas: areas() }) : null;
+    if (visit.count && window.TeaMerryForestHomeScreen?.offer({
+      data: visit.data, actor, bubble, now, enteredAt, lastInteraction: visit.lastInteraction, moving, line
+    })) { visit.lastSpeech = now; return; }
     if (!line) return;
     const name = window.getForestDisplayName?.() || "おさんぽさん";
     bubble.setAttribute("aria-hidden", "false");
@@ -156,6 +160,7 @@
   }
   const interact = (hideSpeech = false) => { visit?.interact(performance.now()); if (mobile.matches && hideSpeech) hide(); };
   document.addEventListener("pointerdown", event => {
+    if (event.target.closest(".forest-home-actions")) return;
     interact(true);
     if (ready() && event.target.closest(".forest-scene, .forest-navigation-stick")) {
       inputPointer = event.pointerId;
@@ -181,6 +186,7 @@
     if (event.pointerId === inputPointer) { inputPointer = null; lastPointer = null; }
   }, true);
   document.addEventListener("keydown", event => {
+    if (event.target.closest(".forest-home-actions")) return;
     interact(!event.repeat);
     if (ready() && ["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(event.key)) movementKeys.add(event.key);
   });
