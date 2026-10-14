@@ -3530,8 +3530,8 @@
           "opacity": 0.45
         },
         "mobile": {
-          "x": 794,
-          "y": 6985,
+          "x": 419.5,
+          "y": 927.5,
           "width": 241,
           "height": 65,
           "rotation": 0,
@@ -3568,8 +3568,8 @@
         },
         "viewportOverrides": {
           "mobile": {
-            "x": 794,
-            "y": 6985,
+            "x": 419.5,
+            "y": 927.5,
             "width": 241,
             "height": 65
           }
@@ -4835,11 +4835,239 @@
           "direction": "up",
           "strength": 30
         }
+      },
+      {
+        "id": "lyr_8e1868c1d76a4364",
+        "visible": true,
+        "locked": false,
+        "link": "../../index.html",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 300,
+          "height": 86
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "森のお散歩道",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "../../index.html"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 757,
+          "y": 6965,
+          "width": 300,
+          "height": 86,
+          "rotation": -2,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_8e1868c1d76a4364",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 757,
+            "y": 6965,
+            "height": 86,
+            "rotation": -2
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
+      },
+      {
+        "id": "lyr_e7e6dfc378df4667",
+        "visible": true,
+        "locked": false,
+        "link": "../../index.html",
+        "hitArea": {
+          "enabled": true,
+          "visible": true,
+          "x": 0,
+          "y": 0,
+          "width": 509,
+          "height": 75
+        },
+        "corners": {
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          },
+          "topRight": {
+            "x": 1,
+            "y": 0
+          },
+          "bottomRight": {
+            "x": 1,
+            "y": 1
+          },
+          "bottomLeft": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        "transformMode": "normal",
+        "type": "shape",
+        "name": "m＿森へ戻る",
+        "role": "hit-area",
+        "shape": {
+          "type": "rect",
+          "fill": "rgba(48, 211, 106, 0.12)",
+          "fillEnabled": true,
+          "stroke": "#30d36a",
+          "strokeEnabled": true,
+          "strokeWidth": 3
+        },
+        "clickAction": {
+          "type": "page",
+          "target": "../../index.html"
+        },
+        "desktop": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "mobile": {
+          "x": 253,
+          "y": 6683,
+          "width": 509,
+          "height": 75,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "visibilityMode": "mobile",
+        "appearance": {
+          "opacity": 0.45,
+          "brightness": 1,
+          "shadow": "none",
+          "shadowType": "soft",
+          "shadowSize": 16,
+          "shadowColor": "rgba(0, 0, 0, 0.38)",
+          "shadowOpacity": 38
+        },
+        "constraints": {
+          "keepAspect": false,
+          "keepSquare": false,
+          "keepCircle": false
+        },
+        "layerId": "lyr_e7e6dfc378df4667",
+        "displayName": "四角当たり判定",
+        "flipX": false,
+        "flipY": false,
+        "base": {
+          "x": 810,
+          "y": 2085,
+          "width": 300,
+          "height": 150,
+          "rotation": 0,
+          "visible": true,
+          "opacity": 0.45
+        },
+        "viewportOverrides": {
+          "mobile": {
+            "x": 253,
+            "y": 6683,
+            "width": 509,
+            "height": 75
+          }
+        },
+        "sceneOverrides": {},
+        "sceneViewportOverrides": {},
+        "animation": {
+          "enabled": false,
+          "type": "none",
+          "trigger": "load",
+          "duration": 1,
+          "delay": 0,
+          "repeat": "once",
+          "direction": "up",
+          "strength": 30
+        }
       }
     ],
     "metadata": {
       "createdAt": "2026-10-03T20:12:34.424Z",
-      "updatedAt": "2026-10-13T16:57:03.523Z"
+      "updatedAt": "2026-10-14T23:43:10.222Z"
     }
   },
   "assetManifest": [
@@ -5171,6 +5399,6 @@
   "assetLibrary": [],
   "meta": {
     "createdAt": "2026-10-03T20:12:34.424Z",
-    "updatedAt": "2026-10-13T16:57:03.523Z"
+    "updatedAt": "2026-10-14T23:43:10.222Z"
   }
 }
