@@ -6,7 +6,9 @@
     const canvas = document.createElement("canvas");
     canvas.dataset.scratch = "loading";
     canvas.setAttribute("aria-label", "マウスを動かすと色が現れる画像");
-    Object.assign(canvas.style, { position: "absolute", inset: "0", width: "100%", height: "100%", pointerEvents: eventRoot ? "none" : enabled ? "auto" : "none", touchAction: "pan-y" });
+    const touchDrawing = enabled && pointerTypes.includes("touch");
+    // The touched canvas must be hit-testable for its gesture policy to apply.
+    Object.assign(canvas.style, { position: "absolute", inset: "0", width: "100%", height: "100%", pointerEvents: touchDrawing ? "auto" : eventRoot ? "none" : enabled ? "auto" : "none", touchAction: touchDrawing ? "none" : "pan-y" });
     node.appendChild(canvas);
     const color = new Image(), mono = new Image();
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
