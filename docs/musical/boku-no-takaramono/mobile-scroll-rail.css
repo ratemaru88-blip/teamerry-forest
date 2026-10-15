@@ -1,0 +1,27 @@
+.musical-scroll-rail { display: none; }
+@media (max-width: 720px) {
+  .musical-scroll-rail:not([hidden]) {
+    display: block; position: fixed; z-index: 40;
+    right: env(safe-area-inset-right, 0px);
+    top: max(20px, env(safe-area-inset-top));
+    bottom: max(20px, env(safe-area-inset-bottom));
+    width: 32px; padding: 0; border: 0; border-radius: 8px;
+    background: rgba(25, 55, 39, .08);
+    touch-action: none; user-select: none; -webkit-user-select: none;
+    cursor: grab;
+  }
+  .musical-scroll-rail::before {
+    content: ""; position: absolute; inset: 0 13px;
+    border-radius: 4px; background: rgba(29, 62, 43, .22);
+    box-shadow: 0 0 0 1px rgba(255, 255, 240, .25);
+    pointer-events: none;
+  }
+  .musical-scroll-rail__thumb {
+    position: absolute; top: 0; left: 10px; width: 12px; min-height: 44px;
+    border: 1px solid rgba(255, 255, 240, .7); border-radius: 6px;
+    background: rgba(74, 107, 75, .72); box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+    pointer-events: none;
+  }
+  .musical-scroll-rail.is-dragging { cursor: grabbing; background: rgba(25, 55, 39, .16); }
+  .musical-scroll-rail:focus-visible { outline: 2px solid #eef2d6; outline-offset: -3px; }
+}
